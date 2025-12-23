@@ -1,0 +1,10 @@
+#include "Secrets.xcconfig"
+
+TEAM_ID=
+
+PRODUCT_NAME=HuKi
+PRODUCT_BUNDLE_IDENTIFIER=hu.mostoha.mobile.ios.huki$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
+
