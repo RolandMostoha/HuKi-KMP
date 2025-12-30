@@ -1,0 +1,34 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/android
+        with:
+          MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+
+      - name: Detekt
+        run: ./gradlew detekt
+
+      - name: Ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Android Lint
+        run: ./gradlew lint
+
+      - name: Unit tests
+        run: ./gradlew test
+
+      - name: Build
+        run: ./gradlew assembleDebug
