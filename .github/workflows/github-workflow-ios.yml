@@ -1,0 +1,37 @@
+name: iOS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: [ macos-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/ios
+        with:
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+
+      - name: Install Tools
+        run: brew install swiftlint xcbeautify
+
+      - name: SwiftLint
+        run: |
+          cd iosApp
+          swiftlint
+
+      - name: Build iOS App
+        run: |
+          cd iosApp
+          set -o pipefail && xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            clean build | xcbeautify
