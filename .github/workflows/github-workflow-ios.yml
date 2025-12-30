@@ -33,5 +33,6 @@ jobs:
             -project iosApp.xcodeproj \
             -scheme iosApp \
             -configuration Debug \
+            -skipPackagePluginValidation \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             clean build | xcbeautify
