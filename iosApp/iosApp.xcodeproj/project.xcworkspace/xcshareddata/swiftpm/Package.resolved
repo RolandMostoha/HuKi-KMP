@@ -1,5 +1,5 @@
 {
-  "originHash" : "c48d77ebe93e854e8e2b4bbddf1d5fe4977e5a87efa4e14ea29c90b3e5919e31",
+  "originHash" : "760ea9afca0877794a2c831ff0f7cb1c09f9316443c5afca7b6a77bf7dae1e08",
   "pins" : [
     {
       "identity" : "mapbox-common-ios",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "ee4ce10df85ba26d5a537825b667b5a2b88b6a62",
         "version" : "11.17.1"
+      }
+    },
+    {
+      "identity" : "swiftlintplugins",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
+      "state" : {
+        "revision" : "ecafb5b056cb7995324f0d310a61f30661d00cad",
+        "version" : "0.62.2"
       }
     },
     {

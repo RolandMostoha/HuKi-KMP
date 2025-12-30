@@ -1,4 +1,24 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# HuKi - Hungarian Hiking Map #
+
+HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
+
+The app helps you plan trips and discover the hiking trails of Hungary.
+
+HuKi is live Android app, implemented under:
+
+https://github.com/RolandMostoha/HuKi-Android
+
+The purpose of the KMP project is meant to implement HuKi on iOS platform as well, so KMP was my no-brainer choice to transform my app to support both platforms.
+
+## Goals
+
+The project was born for the following reasons:
+
+1. My personal entertainment - it's my beloved pet project in which I can try out tech outside of my job.
+2. It comes in handy for hikers to have trips in Hungary. No need to download tiles or setup layers manually.
+3. I got asked many times to implement HuKi on iOS platform as well
+
+## Project structure
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
@@ -16,24 +36,57 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
   The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
   can add code to the platform-specific folders here too.
 
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
----
-
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+## Integration & Delivery
+
+The project uses `GitHub Actions` to ensure code quality.
+
+The following steps are running on the CI server on `main` push:
+
+### Kotlin (shared code) + Android
+
+1. Detekt - Static code analysis for Kotlin code
+2. Ktlint - Enforces industry standard Kotlin style & formatting rules
+3. Android Lint - Standard Android linter from Google
+4. Compose Lints - Lint extension to avoid common Jetpack Compose mistakes
+5. Unit tests
+6. Android build
+
+```shell
+./gradlew detekt ktlintCheck lint test assembleDebug
+```
+
+### iOS
+1. SwiftLint - Enforces Swift style and conventions
+2. Xcode build
+
+```shell
+swiftlint xcodebuild 
+```
+
+## Project License
+
+```
+MIT License
+
+Copyright (c) 2020-2026 Roland Mostoha
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

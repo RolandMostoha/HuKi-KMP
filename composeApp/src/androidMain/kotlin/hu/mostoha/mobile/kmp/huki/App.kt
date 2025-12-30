@@ -21,18 +21,17 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.style.MapStyle
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
-fun App() {
+fun App(modifier: Modifier = Modifier) {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
+            modifier =
+                modifier
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .safeContentPadding()
+                    .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onClick = { showContent = !showContent }) {
@@ -41,25 +40,26 @@ fun App() {
             MapboxMap(
                 modifier = Modifier.fillMaxSize(),
                 style = { MapStyle(Style.OUTDOORS) },
-                mapViewportState = rememberMapViewportState {
-                    setCameraOptions {
-                        zoom(MapConstants.HUNGARY_ZOOM_LEVEL)
-                        center(
-                            Point.fromLngLat(
-                                MapConstants.BUDAPEST_LONGITUDE,
-                                MapConstants.BUDAPEST_LATITUDE,
-                                BoundingBox.fromLngLats(
-                                    MapConstants.HUNGARY_BOX_WEST,
-                                    MapConstants.HUNGARY_BOX_SOUTH,
-                                    MapConstants.HUNGARY_BOX_EAST,
-                                    MapConstants.HUNGARY_BOX_NORTH,
-                                )
+                mapViewportState =
+                    rememberMapViewportState {
+                        setCameraOptions {
+                            zoom(MapConstants.HUNGARY_ZOOM_LEVEL)
+                            center(
+                                Point.fromLngLat(
+                                    MapConstants.BUDAPEST_LONGITUDE,
+                                    MapConstants.BUDAPEST_LATITUDE,
+                                    BoundingBox.fromLngLats(
+                                        MapConstants.HUNGARY_BOX_WEST,
+                                        MapConstants.HUNGARY_BOX_SOUTH,
+                                        MapConstants.HUNGARY_BOX_EAST,
+                                        MapConstants.HUNGARY_BOX_NORTH,
+                                    ),
+                                ),
                             )
-                        )
-                        pitch(0.0)
-                        bearing(0.0)
-                    }
-                },
+                            pitch(0.0)
+                            bearing(0.0)
+                        }
+                    },
             )
         }
     }

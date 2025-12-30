@@ -64,8 +64,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    lint {
+        abortOnError = true
+    }
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    lintChecks(libs.compose.lint.checks)
 }
