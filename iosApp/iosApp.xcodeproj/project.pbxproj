@@ -22,13 +22,6 @@
 			);
 			target = 732A8B6982C2D1CCB52F0968 /* iosApp */;
 		};
-		30BD1E862EFAE6E900CD3768 /* Exceptions for "Configuration" folder in "iosApp" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Secrets.xcconfig,
-			);
-			target = 732A8B6982C2D1CCB52F0968 /* iosApp */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,9 +35,6 @@
 		};
 		A8795A49EAC062F4C5704EFF /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				30BD1E862EFAE6E900CD3768 /* Exceptions for "Configuration" folder in "iosApp" target */,
-			);
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -86,6 +76,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7E8AA58913ED8B8F58749E2E /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
+				30BD1E982EFBCBD200CD3768 /* Run Script */,
 				30BD1E742EFAE2DC00CD3768 /* Compile Kotlin Framework */,
 				79B6DB3DC79B90A5AE79EE11 /* Sources */,
 				D8D327D30997DEA839114820 /* Frameworks */,
@@ -94,6 +85,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				30BD1E9B2EFBCF6C00CD3768 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4E05C4AB383E64F4131B52E6 /* iosApp */,
@@ -114,7 +106,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					732A8B6982C2D1CCB52F0968 = {
 						CreatedOnToolsVersion = 16.2;
@@ -132,6 +124,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				30BD1E812EFAE3AD00CD3768 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
+				30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2F0795DE8B4FD8C854FA6817 /* Products */;
@@ -173,6 +166,25 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexport JAVA_HOME=\"/Users/$USER/Applications/Android Studio.app/Contents/jbr/Contents/Home/\"\nexport PATH=${PATH}:$JAVA_HOME/bin\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
+		30BD1E982EFBCBD200CD3768 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n  swiftlint lint --strict --reporter xcode\nelse\n  echo \"SwiftLint not installed\"\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -184,6 +196,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		30BD1E9B2EFBCF6C00CD3768 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 30BD1E9A2EFBCF6C00CD3768 /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4F4E98AE4F3EF367F385723F /* Debug */ = {
@@ -223,6 +242,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -246,6 +266,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -254,13 +275,11 @@
 		57B889860B731141085E6EF7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -283,13 +302,11 @@
 		B09B3B75F962F1C15607488B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -346,6 +363,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -362,6 +380,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -399,6 +418,14 @@
 				version = 11.17.1;
 			};
 		};
+		30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = exactVersion;
+				version = 0.62.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -406,6 +433,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 30BD1E812EFAE3AD00CD3768 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
 			productName = MapboxMaps;
+		};
+		30BD1E9A2EFBCF6C00CD3768 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

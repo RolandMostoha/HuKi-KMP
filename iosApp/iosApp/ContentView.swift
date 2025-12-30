@@ -1,6 +1,6 @@
-import SwiftUI
-import Shared
 import MapboxMaps
+import Shared
+import SwiftUI
 
 struct ContentView: View {
     @State private var showContent = false
@@ -11,11 +11,12 @@ struct ContentView: View {
                     showContent = !showContent
                 }
             }
-            
-            let center = CLLocationCoordinate2D(latitude: MapConstants.shared.BUDAPEST_LATITUDE, longitude:  MapConstants.shared.BUDAPEST_LONGITUDE)
             Map(
                 initialViewport: .camera(
-                    center: center,
+                    center: CLLocationCoordinate2D(
+                        latitude: MapConstants.shared.BUDAPEST_LATITUDE,
+                        longitude: MapConstants.shared.BUDAPEST_LONGITUDE
+                    ),
                     zoom: MapConstants.shared.HUNGARY_ZOOM_LEVEL,
                     bearing: 0,
                     pitch: 0
