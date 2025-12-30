@@ -1,0 +1,20 @@
+name: "Checkout with secrets"
+description: "Checkout the repository with secrets"
+inputs:
+  MAPBOX_ACCESS_TOKEN:
+    description: "MapBox Access Token"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code with history
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Create Secrets.xcconfig
+      shell: bash
+      run: |
+        cat > iosApp/Configuration/Secrets.xcconfig <<EOF
+        MAPBOX_ACCESS_TOKEN = ${{ inputs.MAPBOX_ACCESS_TOKEN }}
+        EOF
