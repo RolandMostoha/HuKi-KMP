@@ -1,0 +1,24 @@
+# --- SENSITIVE DATA & SECRETS ---
+local.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+google-services.json
+GoogleService-Info.plist
+secrets.xml
+.env*
+**/Secrets.xcconfig
+**/mapbox_access_token.xml
+
+# --- BUILD ARTIFACTS ---
+/build/
+.gradle/
+.kotlin/
+composeApp/build/
+iosApp/build/
+
+# --- PLATFORM SPECIFIC CONFIGS ---
+# Exclude if you don't want Gemini suggesting changes to Xcode internal files
+*.xcodeproj/
+*.xcworkspace/
