@@ -36,6 +36,8 @@ jobs:
           swiftlint
 
       - name: Build iOS App
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
         run: |
           cd iosApp
           set -o pipefail && xcodebuild \
