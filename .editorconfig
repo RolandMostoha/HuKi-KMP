@@ -1,9 +1,11 @@
 root = true
 
-# All Kotlin files)
-[*.{kt,kts}]
-ktlint_function_naming_ignore_when_annotated_with = Composable
-
 # Kotlin DSL only
 [*.gradle.kts]
 ktlint_standard_chain-method-continuation = disabled
+
+# All Kotlin files)
+[*.{kt,kts}]
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_spacing-between-declarations-with-annotations = disabled
+ktlint_function_naming_ignore_when_annotated_with = Composable

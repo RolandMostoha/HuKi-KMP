@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		30BD1E832EFAE3AD00CD3768 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 30BD1E822EFAE3AD00CD3768 /* MapboxMaps */; };
+		30F1783F2F0A437300E92005 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = 30F1783E2F0A437300E92005 /* KMPNativeCoroutinesAsync */; };
+		30F178412F0A437300E92005 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 30F178402F0A437300E92005 /* KMPNativeCoroutinesCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +47,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30F1783F2F0A437300E92005 /* KMPNativeCoroutinesAsync in Frameworks */,
 				30BD1E832EFAE3AD00CD3768 /* MapboxMaps in Frameworks */,
+				30F178412F0A437300E92005 /* KMPNativeCoroutinesCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +97,8 @@
 			name = iosApp;
 			packageProductDependencies = (
 				30BD1E822EFAE3AD00CD3768 /* MapboxMaps */,
+				30F1783E2F0A437300E92005 /* KMPNativeCoroutinesAsync */,
+				30F178402F0A437300E92005 /* KMPNativeCoroutinesCore */,
 			);
 			productName = iosApp;
 			productReference = 1A9A712AB036D9037ECB1140 /* HuKi.app */;
@@ -125,6 +131,7 @@
 			packageReferences = (
 				30BD1E812EFAE3AD00CD3768 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 				30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				30F1783D2F0A437300E92005 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2F0795DE8B4FD8C854FA6817 /* Products */;
@@ -426,6 +433,14 @@
 				version = 0.62.2;
 			};
 		};
+		30F1783D2F0A437300E92005 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-NativeCoroutines.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -438,6 +453,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		30F1783E2F0A437300E92005 /* KMPNativeCoroutinesAsync */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30F1783D2F0A437300E92005 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesAsync;
+		};
+		30F178402F0A437300E92005 /* KMPNativeCoroutinesCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30F1783D2F0A437300E92005 /* XCRemoteSwiftPackageReference "KMP-NativeCoroutines" */;
+			productName = KMPNativeCoroutinesCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

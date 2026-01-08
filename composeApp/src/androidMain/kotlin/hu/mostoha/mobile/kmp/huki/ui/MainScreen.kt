@@ -1,0 +1,78 @@
+package hu.mostoha.mobile.kmp.huki.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
+import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
+import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    MainContent(
+        uiState = uiState,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+@Composable
+private fun MainContent(
+    uiState: MainUiState,
+    onEvent: (MainUiEvents) -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .fillMaxSize(),
+    ) {
+        MapContent(uiState.mapUiState)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
+        ) {
+            FloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                shape = CircleShape,
+                onClick = { onEvent(MainUiEvents.MyLocationClicked) },
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MyLocation,
+                    contentDescription = "My location",
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun MainContentPreview() {
+    MainContent(
+        uiState = MainUiState(),
+        onEvent = {},
+    )
+}

@@ -1,14 +1,12 @@
-# HuKi - Hungarian Hiking Map #
+# HuKi-KMP - Hungarian Hiking Map #
 
 HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
 
 The app helps you plan trips and discover the hiking trails of Hungary.
 
-HuKi is a live Android app, implemented under:
+HuKi is a live Android app, implemented under: https://github.com/RolandMostoha/HuKi-Android
 
-https://github.com/RolandMostoha/HuKi-Android
-
-The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my no-brainer choice to transform my app to support both platforms.
+The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform my app to support both platforms.
 
 ## Goals
 
