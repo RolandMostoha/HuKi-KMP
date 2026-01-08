@@ -18,9 +18,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
             implementation(libs.mapbox.android)
             implementation(libs.mapbox.android.compose)
+            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.compose.material.icons)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
