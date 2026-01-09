@@ -13,39 +13,53 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun MapContent(
     mapUiState: MapUiState,
+    uiEffect: Flow<MainUiEffects>,
     modifier: Modifier = Modifier,
 ) {
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
-            center(Point.fromLngLat(mapUiState.longitude, mapUiState.latitude))
-            zoom(mapUiState.zoomLevel)
+            center(Point.fromLngLat(mapUiState.cameraPosition.longitude, mapUiState.cameraPosition.latitude))
+            zoom(mapUiState.cameraPosition.zoom)
         }
     }
-    LaunchedEffect(mapUiState.latitude, mapUiState.longitude, mapUiState.zoomLevel) {
-        mapViewportState.flyTo(
-            cameraOptions = cameraOptions {
-                center(Point.fromLngLat(mapUiState.longitude, mapUiState.latitude))
-                zoom(mapUiState.zoomLevel)
-            },
-            animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(MapConstants.DEFAULT_MAP_ANIMATION_DURATION.inWholeMilliseconds)
-            },
-        )
+    val mapState = rememberMapState()
+
+    LaunchedEffect(Unit) {
+        uiEffect.collect { effect ->
+            when (effect) {
+                is MainUiEffects.MoveCamera -> {
+                    mapViewportState.flyTo(
+                        cameraOptions = cameraOptions {
+                            center(Point.fromLngLat(effect.cameraPosition.longitude, effect.cameraPosition.latitude))
+                            zoom(effect.cameraPosition.zoom)
+                        },
+                        animationOptions = MapAnimationOptions.mapAnimationOptions {
+                            duration(MapConstants.DEFAULT_MAP_ANIMATION_DURATION.inWholeMilliseconds)
+                        },
+                    )
+                }
+            }
+        }
     }
 
     MapboxMap(
         modifier = modifier.fillMaxSize(),
         style = { MapStyle(Style.OUTDOORS) },
         mapViewportState = mapViewportState,
+        mapState = mapState,
         scaleBar = {
             ScaleBar(
                 contentPadding = insetPadding,
@@ -74,5 +88,6 @@ fun MapContent(
 private fun MapPreview() {
     MapContent(
         mapUiState = MapUiState(),
+        uiEffect = emptyFlow(),
     )
 }
