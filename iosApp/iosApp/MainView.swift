@@ -8,8 +8,7 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
-            Map(viewport: $viewport)
-                .mapStyle(.outdoors)
+            Map(viewport: $viewport).mapStyle(.outdoors)
             VStack {
                 Spacer()
                 HStack {
@@ -43,10 +42,7 @@ struct MainView: View {
 
     private func handleInitialState(_ initialUiState: MainUiState) {
         viewport = .camera(
-            center: CLLocationCoordinate2D(
-                latitude: initialUiState.mapUiState.cameraPosition.latitude,
-                longitude: initialUiState.mapUiState.cameraPosition.longitude
-            ),
+            center: initialUiState.mapUiState.cameraPosition.location.coordinate,
             zoom: mainViewModel.uiState.mapUiState.cameraPosition.zoom
         )
     }
@@ -54,13 +50,11 @@ struct MainView: View {
     private func handleEffect(_ effect: MainUiEffects) {
         switch effect {
         case let effect as MainUiEffectsMoveCamera:
-            let cameraPosition = effect.cameraPosition
-            let center = CLLocationCoordinate2D(
-                latitude: cameraPosition.latitude,
-                longitude: cameraPosition.longitude
-            )
             withViewportAnimation(.default(maxDuration: 1)) {
-                viewport = .camera(center: center, zoom: cameraPosition.zoom)
+                viewport = .camera(
+                    center: effect.cameraPosition.location.coordinate,
+                    zoom: effect.cameraPosition.zoom
+                )
             }
         default:
             break

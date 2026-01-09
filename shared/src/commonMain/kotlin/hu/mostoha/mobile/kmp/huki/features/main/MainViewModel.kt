@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +30,10 @@ class MainViewModel : ViewModel() {
         when (event) {
             MainUiEvents.MyLocationClicked -> {
                 val cameraPosition = CameraPosition(
-                    latitude = 47.716808,
-                    longitude = 18.895073,
+                    location = Location(
+                        latitude = 47.716808,
+                        longitude = 18.895073,
+                    ),
                     zoom = 13.0,
                 )
                 _uiState.update { uiState ->
