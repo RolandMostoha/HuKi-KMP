@@ -3,9 +3,9 @@
 ## Project Overview
 - **Domain:** Hiking application.
 - **Type:** Kotlin Multiplatform Mobile (KMP).
-- **Primary Framework:** Compose Multiplatform for UI.
-- **Target Platforms:** Android, iOS.
 - **KMP approach**: "Do not share UI", iOS UI written in SwiftUI.
+- **Primary Framework:** Jetpack Compose for Android, SwiftUi for iOS
+- **Target Platforms:** Android, iOS.
 - **Module Structure:** 
 - - `:composeApp`: Android native code.
 - - `:iosApp`: iOS native code.
@@ -18,6 +18,7 @@
 - Androidx ViewModel: ViewModel bridge for KMP
 - Koin: Used for DI.
 - KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
+- moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI

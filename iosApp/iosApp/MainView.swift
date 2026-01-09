@@ -21,10 +21,11 @@ struct MainView: View {
                             Image(systemName: "location.fill")
                                 .fontWeight(.bold)
                                 .padding(8)
-                        }
+                        },
                     )
                     .buttonBorderShape(.circle)
                     .glassIfAvailable()
+                    .accessibilityLabel(Strings().get(id: SharedRes.strings().main_my_location_accessibility, args: []))
                 }
                 .safeAreaPadding()
                 .padding(.bottom, 64)

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.mokoResources) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
 }
@@ -20,7 +21,6 @@ subprojects {
         allRules = true
         buildUponDefaultConfig = true
         autoCorrect = false
-
         source.setFrom(
             "src/commonMain/kotlin",
             "src/androidMain/kotlin",
@@ -34,7 +34,6 @@ subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         debug.set(true)
-        enableExperimentalRules.set(true)
         android.set(true)
         filter {
             exclude("**/generated/**")

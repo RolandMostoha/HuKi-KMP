@@ -6,8 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 
 fun CameraPosition.toCameraOptions(): CameraOptions =
-    CameraOptions
-        .Builder()
+    CameraOptions.Builder()
         .center(location.toPoint())
         .zoom(zoom)
         .build()
