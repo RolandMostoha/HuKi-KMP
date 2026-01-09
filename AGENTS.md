@@ -21,8 +21,10 @@
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
+- ViewModel - Bridge between UI and business logic.
 - UiState - Immutable data class describing the UI state for a screen at a point in time
 - UiEvents - Intents / Actions / Inputs that trigger UI state changes
+- UiEffects - One-shot events
 
 ## Best Practices
 ### Android

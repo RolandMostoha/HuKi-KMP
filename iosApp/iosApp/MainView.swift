@@ -4,26 +4,66 @@ import SwiftUI
 
 struct MainView: View {
     @ObservedObject private var mainViewModel = MainViewModelWrapper()
+    @State private var viewport = Viewport.camera()
 
     var body: some View {
-        VStack {
-            Map(
-                initialViewport: .camera(
-                    center: CLLocationCoordinate2D(
-                        latitude: mainViewModel.uiState.mapUiState.latitude,
-                        longitude: mainViewModel.uiState.mapUiState.longitude
-                    ),
-                    zoom: mainViewModel.uiState.mapUiState.zoomLevel,
-                    bearing: 0,
-                    pitch: 0
-                )
-            )
-            .mapStyle(.outdoors)
+        ZStack {
+            Map(viewport: $viewport)
+                .mapStyle(.outdoors)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(
+                        action: {
+                            mainViewModel.viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
+                        },
+                        label: {
+                            Image(systemName: "location.fill")
+                                .fontWeight(.bold)
+                                .padding(8)
+                        }
+                    )
+                    .buttonBorderShape(.circle)
+                    .glassIfAvailable()
+                }
+                .safeAreaPadding()
+                .padding(.bottom, 64)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea()
+        .task { handleInitialState(await mainViewModel.observeUiState()) }
         .task {
-            await mainViewModel.startObserving()
+            await mainViewModel.observeUiEffect { effect in
+                handleEffect(effect)
+            }
+        }
+    }
+
+    private func handleInitialState(_ initialUiState: MainUiState) {
+        viewport = .camera(
+            center: CLLocationCoordinate2D(
+                latitude: initialUiState.mapUiState.cameraPosition.latitude,
+                longitude: initialUiState.mapUiState.cameraPosition.longitude
+            ),
+            zoom: mainViewModel.uiState.mapUiState.cameraPosition.zoom
+        )
+    }
+
+    private func handleEffect(_ effect: MainUiEffects) {
+        switch effect {
+        case let effect as MainUiEffectsMoveCamera:
+            let cameraPosition = effect.cameraPosition
+            let center = CLLocationCoordinate2D(
+                latitude: cameraPosition.latitude,
+                longitude: cameraPosition.longitude
+            )
+            withViewportAnimation(.default(maxDuration: 1)) {
+                viewport = .camera(center: center, zoom: cameraPosition.zoom)
+            }
+        default:
+            break
         }
     }
 }

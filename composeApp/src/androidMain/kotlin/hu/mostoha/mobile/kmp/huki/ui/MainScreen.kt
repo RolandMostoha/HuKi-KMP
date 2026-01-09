@@ -20,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -32,6 +35,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
 
     MainContent(
         uiState = uiState,
+        uiEffect = viewModel.uiEffect,
         onEvent = viewModel::onEvent,
     )
 }
@@ -39,6 +43,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
 @Composable
 private fun MainContent(
     uiState: MainUiState,
+    uiEffect: Flow<MainUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
 ) {
     Box(
@@ -46,7 +51,10 @@ private fun MainContent(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .fillMaxSize(),
     ) {
-        MapContent(uiState.mapUiState)
+        MapContent(
+            mapUiState = uiState.mapUiState,
+            uiEffect = uiEffect,
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -73,6 +81,7 @@ private fun MainContent(
 private fun MainContentPreview() {
     MainContent(
         uiState = MainUiState(),
+        uiEffect = emptyFlow(),
         onEvent = {},
     )
 }
