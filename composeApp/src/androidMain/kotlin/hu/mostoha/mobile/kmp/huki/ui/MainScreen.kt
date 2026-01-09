@@ -20,10 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
+import hu.mostoha.mobile.kmp.huki.ui.components.stringResource
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -69,7 +71,7 @@ private fun MainContent(
             ) {
                 Icon(
                     imageVector = Icons.Filled.MyLocation,
-                    contentDescription = "My location",
+                    contentDescription = stringResource(SharedRes.strings.main_my_location_accessibility),
                 )
             }
         }

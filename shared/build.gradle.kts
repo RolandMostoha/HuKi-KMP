@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.nativeCoroutines)
+    alias(libs.plugins.mokoResources)
 }
 
 kotlin {
@@ -19,6 +20,8 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             export(libs.androidx.lifecycle.viewmodel)
+            export(libs.moko.resources)
+            export(libs.moko.graphics)
             baseName = "Shared"
             isStatic = true
         }
@@ -27,12 +30,14 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
+            api(libs.moko.resources)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.koin.test)
+            implementation(libs.moko.resources.test)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
@@ -40,6 +45,9 @@ kotlin {
         }
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+            compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
         }
     }
 }
@@ -54,4 +62,10 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+
+multiplatformResources {
+    resourcesPackage.set("hu.mostoha.mobile.huki.shared")
+    resourcesClassName.set("SharedRes")
+    iosMinimalDeploymentTarget.set("18.0")
 }

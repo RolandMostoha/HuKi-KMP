@@ -27,6 +27,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		305BDE9F2F11585000A60BF0 /* Scripts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Scripts;
+			sourceTree = "<group>";
+		};
 		4E05C4AB383E64F4131B52E6 /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -67,6 +72,7 @@
 		CA50BA94F37EE1A1ABF50FF7 = {
 			isa = PBXGroup;
 			children = (
+				305BDE9F2F11585000A60BF0 /* Scripts */,
 				A8795A49EAC062F4C5704EFF /* Configuration */,
 				4E05C4AB383E64F4131B52E6 /* iosApp */,
 				2F0795DE8B4FD8C854FA6817 /* Products */,
@@ -83,6 +89,7 @@
 				30BD1E982EFBCBD200CD3768 /* Run Script */,
 				30BD1E742EFAE2DC00CD3768 /* Compile Kotlin Framework */,
 				79B6DB3DC79B90A5AE79EE11 /* Sources */,
+				305BDE9E2F1146B300A60BF0 /* Generate moko-resources */,
 				D8D327D30997DEA839114820 /* Frameworks */,
 				7AC2AAFB4B5FB5EF0D613F66 /* Resources */,
 			);
@@ -92,6 +99,7 @@
 				30BD1E9B2EFBCF6C00CD3768 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				305BDE9F2F11585000A60BF0 /* Scripts */,
 				4E05C4AB383E64F4131B52E6 /* iosApp */,
 			);
 			name = iosApp;
@@ -154,6 +162,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		305BDE9E2F1146B300A60BF0 /* Generate moko-resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate moko-resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "source \"${SRCROOT}/scripts/setup_java.sh\"\n\n# Copy moko-resources\n\"$SRCROOT/../gradlew\" -p \"$SRCROOT/../\" :shared:copyFrameworkResourcesToApp \\\n    -Pmoko.resources.PLATFORM_NAME=\"$PLATFORM_NAME\" \\\n    -Pmoko.resources.CONFIGURATION=\"${KOTLIN_FRAMEWORK_BUILD_TYPE:-$CONFIGURATION}\" \\\n    -Pmoko.resources.ARCHS=\"$ARCHS\" \\\n    -Pmoko.resources.BUILT_PRODUCTS_DIR=\"$BUILT_PRODUCTS_DIR\" \\\n    -Pmoko.resources.CONTENTS_FOLDER_PATH=\"$CONTENTS_FOLDER_PATH\"\n";
+		};
 		30BD1E742EFAE2DC00CD3768 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -171,7 +197,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Find a valid Java installation\nif [ -n \"$JAVA_HOME\" ]; then\n    echo \"Using JAVA_HOME from environment: $JAVA_HOME\"\nelse\n    # Your specific path (User Applications)\n    if [ -d \"$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ]; then\n        export JAVA_HOME=\"$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home\"\n    # Standard path (Global Applications - common for other devs)\n    elif [ -d \"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ]; then\n        export JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\"\n    # System Java Fallback\n    elif [ -x \"/usr/libexec/java_home\" ]; then\n        export JAVA_HOME=$(/usr/libexec/java_home)\n    fi\n    echo \"Resolved JAVA_HOME to: $JAVA_HOME\"\nfi\nexport PATH=\"$JAVA_HOME/bin:$PATH\"\n\n# KMP build script\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "source \"${SRCROOT}/scripts/setup_java.sh\"\n\n# KMP build script\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 		30BD1E982EFBCBD200CD3768 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

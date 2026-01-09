@@ -6,5 +6,10 @@
 	<string>$(MAPBOX_ACCESS_TOKEN)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>hu</string>
+	</array>
 </dict>
 </plist>
