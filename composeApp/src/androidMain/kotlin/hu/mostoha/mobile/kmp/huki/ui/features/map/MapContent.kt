@@ -8,9 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
-import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.rememberMapState
@@ -18,6 +16,7 @@ import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -30,10 +29,7 @@ fun MapContent(
 ) {
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val mapViewportState = rememberMapViewportState {
-        setCameraOptions {
-            center(Point.fromLngLat(mapUiState.cameraPosition.longitude, mapUiState.cameraPosition.latitude))
-            zoom(mapUiState.cameraPosition.zoom)
-        }
+        setCameraOptions(mapUiState.cameraPosition.toCameraOptions())
     }
     val mapState = rememberMapState()
 
@@ -42,10 +38,7 @@ fun MapContent(
             when (effect) {
                 is MainUiEffects.MoveCamera -> {
                     mapViewportState.flyTo(
-                        cameraOptions = cameraOptions {
-                            center(Point.fromLngLat(effect.cameraPosition.longitude, effect.cameraPosition.latitude))
-                            zoom(effect.cameraPosition.zoom)
-                        },
+                        cameraOptions = effect.cameraPosition.toCameraOptions(),
                         animationOptions = MapAnimationOptions.mapAnimationOptions {
                             duration(MapConstants.DEFAULT_MAP_ANIMATION_DURATION.inWholeMilliseconds)
                         },
