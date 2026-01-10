@@ -2,14 +2,14 @@ package hu.mostoha.mobile.kmp.huki.features.map
 
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.util.MapConstants
+import hu.mostoha.mobile.kmp.huki.util.MapConfiguration
 
 data class MapUiState(
     val cameraPosition: CameraPosition = CameraPosition(
-        zoom = MapConstants.HUNGARY_ZOOM_LEVEL,
+        zoom = MapConfiguration.HUNGARY_ZOOM_LEVEL,
         location = Location(
-            latitude = MapConstants.HUNGARY_CENTER_LATITUDE,
-            longitude = MapConstants.HUNGARY_CENTER_LONGITUDE,
+            latitude = MapConfiguration.HUNGARY_CENTER_LATITUDE,
+            longitude = MapConfiguration.HUNGARY_CENTER_LONGITUDE,
         ),
     ),
 ) {
