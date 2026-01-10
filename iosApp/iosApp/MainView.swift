@@ -8,7 +8,18 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
-            Map(viewport: $viewport).mapStyle(.outdoors)
+            Map(viewport: $viewport) {
+                RasterSource(id: Layer.turistautak.layerId)
+                    .tiles(Layer.turistautak.tiles)
+                    .tileSize(Double(Layer.turistautak.tileSize))
+                    .minzoom(Double(Layer.turistautak.minZoom))
+                    .maxzoom(Double(Layer.turistautak.maxZoom))
+                RasterLayer(id: Layer.turistautak.layerId, source: Layer.turistautak.layerId)
+            }
+            .mapStyle(.outdoors)
+            .gestureOptions(GestureOptions(
+                rotateEnabled: MapConfiguration().MAP_ROTATION_ENABLED
+            ))
             VStack {
                 Spacer()
                 HStack {
@@ -21,7 +32,7 @@ struct MainView: View {
                             Image(systemName: "location.fill")
                                 .fontWeight(.bold)
                                 .padding(8)
-                        },
+                        }
                     )
                     .buttonBorderShape(.circle)
                     .glassIfAvailable()

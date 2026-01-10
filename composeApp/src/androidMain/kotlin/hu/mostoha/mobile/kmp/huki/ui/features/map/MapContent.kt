@@ -12,12 +12,19 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.rememberMapState
+import com.mapbox.maps.extension.compose.style.LongValue
 import com.mapbox.maps.extension.compose.style.MapStyle
+import com.mapbox.maps.extension.compose.style.StringListValue
+import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
+import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.Layer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
-import hu.mostoha.mobile.kmp.huki.util.MapConstants
+import hu.mostoha.mobile.kmp.huki.util.MapConfiguration
+import hu.mostoha.mobile.kmp.huki.util.MapConfiguration.MAP_ROTATION_ENABLED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -31,7 +38,9 @@ fun MapContent(
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(mapUiState.cameraPosition.toCameraOptions())
     }
-    val mapState = rememberMapState()
+    val mapState = rememberMapState {
+        gesturesSettings = GesturesSettings { rotateEnabled = MAP_ROTATION_ENABLED }
+    }
 
     LaunchedEffect(Unit) {
         uiEffect.collect { effect ->
@@ -40,7 +49,7 @@ fun MapContent(
                     mapViewportState.flyTo(
                         cameraOptions = effect.cameraPosition.toCameraOptions(),
                         animationOptions = MapAnimationOptions.mapAnimationOptions {
-                            duration(MapConstants.DEFAULT_MAP_ANIMATION_DURATION.inWholeMilliseconds)
+                            duration(MapConfiguration.MAP_CAMERA_ANIMATION_DURATION.inWholeMilliseconds)
                         },
                     )
                 }
@@ -73,7 +82,17 @@ fun MapContent(
                 contentPadding = insetPadding,
             )
         },
-    )
+    ) {
+        RasterLayer(
+            layerId = Layer.TURISTAUTAK.layerId,
+            sourceState = rememberRasterSourceState {
+                tileSize = LongValue(Layer.TURISTAUTAK.tileSize)
+                tiles = StringListValue(Layer.TURISTAUTAK.tiles)
+                minZoom = LongValue(Layer.TURISTAUTAK.minZoom)
+                maxZoom = LongValue(Layer.TURISTAUTAK.maxZoom)
+            },
+        )
+    }
 }
 
 @Preview
