@@ -4,9 +4,11 @@ HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
 
 The app helps you plan trips and discover the hiking trails of Hungary.
 
-HuKi is a live Android app, implemented under: https://github.com/RolandMostoha/HuKi-Android
+The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform the app to support both platforms.
 
-The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform my app to support both platforms.
+HuKi (legacy) is a live Android app:
+- Implemented under: https://github.com/RolandMostoha/HuKi-Android
+- Published on Google Play: https://play.google.com/store/apps/details?id=hu.mostoha.mobile.android.huki
 
 ## Goals
 
@@ -14,27 +16,29 @@ The project was born for the following reasons:
 
 1. My personal entertainment - it's my beloved pet project in which I can try out tech outside of my job.
 2. It comes in handy for hikers to have trips in Hungary. No need to download tiles or setup layers manually.
-3. I got asked many times to implement HuKi on iOS platform as well
+3. Learn and improve
 
-## Project structure
+## Project Overview
+- **Domain**: Hiking application for Hungarian landscapes, trails, destinations.
+- **Type**: Kotlin Multiplatform (KMP).
+- **Target Platforms**: Android, iOS.
+- **KMP approach**: "Do not share UI", so iOS UI is written in SwiftUI.
+- **UI Frameworks**: Jetpack Compose for Android, SwiftUi for iOS.
+- **Target Platform APIs**:
+    - Android: minSdk=26, targetSdk=36
+    - iOS: Xcode=26.1.1+, Deployment Target=18.2
+- **Project Structure**:
+    - `:composeApp`: Android native code.
+    - `:iosApp`: iOS native code.
+    - `:shared`: Shared kotlin code.
+        - `:shared:commonMain`: Common code.
+        - `:shared:androidMain`: Android specific shared code.
+        - `:shared:iosMain`: iOS specific shared code.
+- **Supported app languages**: English, Hungarian.
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+### Tech stack & architecture
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Always refer to the [AGENTS.md](AGENTS.md) file for detailed technical documentation, architecture rules, and coding constraints.
 
 ## Integration & Delivery
 

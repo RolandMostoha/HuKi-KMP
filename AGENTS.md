@@ -1,18 +1,21 @@
 # Project Context: Kotlin Multiplatform (KMP)
 
 ## Project Overview
-- **Domain**: Hiking application for Hungarian trails, destinations.
-- **Type**: Kotlin Multiplatform Mobile (KMP).
-- **KMP approach**: **"Do not share UI"**, iOS UI written in SwiftUI.
-- **Primary Framework**: Jetpack Compose for Android, SwiftUi for iOS.
+- **Domain**: Hiking application for Hungarian landscapes, trails, destinations.
+- **Type**: Kotlin Multiplatform (KMP).
 - **Target Platforms**: Android, iOS.
-- **Target APIs**: 
-- - Android: minSdk=26, targetSdk=36
-- - iOS: Xcode=26.1.1+, DEPLOYMENT_TARGET=18.2
-- **Structure overview**:
-- - `:composeApp`: Android native code.
-- - `:iosApp`: iOS native code.
-- - `:shared`: Shared kotlin code.
+- **KMP approach**: "Do not share UI", so iOS UI is written in SwiftUI.
+- **UI Frameworks**: Jetpack Compose for Android, SwiftUi for iOS.
+- **Target Platform APIs**:
+  - Android: minSdk=26, targetSdk=36
+  - iOS: Xcode=26.1.1+, Deployment Target=18.2
+- **Project Structure**:
+  - `:composeApp`: Android native code.
+  - `:iosApp`: iOS native code.
+  - `:shared`: Shared kotlin code.
+    - `:shared:commonMain`: Common code.
+    - `:shared:androidMain`: Android specific shared code.
+    - `:shared:iosMain`: iOS specific shared code.
 - **Supported app languages**: English, Hungarian.
 
 ## Technology Stack
@@ -49,19 +52,19 @@ UI → UiEvent → ViewModel → UiState
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
 - Prefer KMP libraries for wrapping platform-specific code.
 - Prefer interface-based injection via Koin DI for platform-specific code.
-- Expect/Actual: Use `expect`/`actual` if you want to be able to call the function from anywhere in your code, without having to inject an instance everywhere e.g. log("message"), strings("id").
+- Expect/Actual: Use `expect`/`actual` if you want to call the function from anywhere in your code, without having to inject an instance e.g. `log("message")`, `strings("id")`.
 - Use `kotlinx-datetime` for time.
 - Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings and images to ensure cross-platform compatibility.
 
 ## Unit tests
 - Use `Given X, when Y, then Z`
-- You may skip `given` where it is not suitable (ex: without input parameters)
+- You may skip `given` where it's not suitable (ex: without input parameters)
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
 
 ### Jetpack Compose - Android
 - Naming convention for whole pages: `[X]Screen`
-- Naming convention for content in pages (to have stateless, previewable Composables): `[X]Content`
+- Naming convention for content in pages `[X]Content` (to have stateless, previewable Composables): 
 - Package for reusable UI components: `/ui/components`
 - UI Package for features: `/ui/features/[feature]/`
 - Always have Previews for Composables
