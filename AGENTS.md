@@ -1,21 +1,23 @@
 # Project Context: Kotlin Multiplatform (KMP)
 
 ## Project Overview
-- **Domain:** Hiking application.
-- **Type:** Kotlin Multiplatform Mobile (KMP).
-- **KMP approach**: "Do not share UI", iOS UI written in SwiftUI.
-- **Primary Framework:** Jetpack Compose for Android, SwiftUi for iOS
-- **Target Platforms:** Android, iOS.
-- **Module Structure:** 
+- **Domain**: Hiking application for Hungarian trails, destinations.
+- **Type**: Kotlin Multiplatform Mobile (KMP).
+- **KMP approach**: **"Do not share UI"**, iOS UI written in SwiftUI.
+- **Primary Framework**: Jetpack Compose for Android, SwiftUi for iOS.
+- **Target Platforms**: Android, iOS.
+- **Target APIs**: 
+- - Android: minSdk=26, targetSdk=36
+- - iOS: Xcode=26.1.1+, DEPLOYMENT_TARGET=18.2
+- **Structure overview**:
 - - `:composeApp`: Android native code.
 - - `:iosApp`: iOS native code.
 - - `:shared`: Shared kotlin code.
-
-## Architectural Standards
+- **Supported app languages**: English, Hungarian.
 
 ## Technology Stack
 - MapBox: Used for map view.
-- Androidx ViewModel: ViewModel bridge for KMP
+- Androidx ViewModel: ViewModel bridge for KMP.
 - Koin: Used for DI.
 - KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
 - moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
@@ -23,30 +25,48 @@
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
 - ViewModel - Bridge between UI and business logic.
-- UiState - Immutable data class describing the UI state for a screen at a point in time
-- UiEvents - Intents / Actions / Inputs that trigger UI state changes
-- UiEffects - One-shot events
+- UiState - Immutable data class describing the UI state for a screen at a point in time.
+- UiEvents - Intents / Actions / Inputs that trigger UI state changes.
+- UiEffects - One-shot events (Toasts, Navigation).
+
+```
+UI → UiEvent → ViewModel → UiState
+                  ↓
+               UiEffect
+```
+
+### Architecture rules
+- One ViewModel per screen.
+- UiState = StateFlow
+- UiEffect = Channel → Flow
 
 ## Best Practices
-### Android
-#### Jetpack Compose
+
+### Jetpack Compose - Android
 - Naming convention for whole pages: `[X]Screen`
 - Naming convention for content in pages (to have stateless, previewable Composables): `[X]Content`
 - Package for reusable UI components: `/ui/components`
 - UI Package for features: `/ui/features/[feature]/`
 - Always have Previews for Composables
 - Only pass ViewModel to the hosting Screen's Composable
+- UI Components:Keep Composables stateless by hoisting state to ViewModels.
 
-## Code Quality & Linting
+### SwiftUI - iOS
+- Use dedicated Liquid Glass components and styles where possible.
+- If needed, add API wrappers for Liquid Glass styles, e.g. `if #available(iOS 26, *)`
+
+### Code Quality & Linting
 ### Android
-- **Formatting:** We use **ktlint**. Refer to `.editorconfig` in the root for specific formatting rules.
-- **Static Analysis:** We use **Detekt**. Strictly follow the rules defined in `tools/quality/HuKi-detekt.yml`.
+- **Formatting:** Use **ktlint**. Refer to `.editorconfig` in the root for specific formatting rules.
+- **Static Analysis:** Use **Detekt**. Strictly follow the rules defined in `tools/quality/HuKi-detekt.yml`.
 ### iOS
-- **Formatting:** We use **SwiftLint**
+- **Formatting:** Use **SwiftLint**
 
-## Coding Rules & Constraints
-1. **Common First:** Logic must reside in `commonMain` whenever possible.
-2. **Expect/Actual:** Use `expect`/`actual` keywords only when a library wrapper isn't available. Prefer interface-based injection via Koin for platform-specific code.
-3. **No Java in Common:** Strictly avoid `java.*` imports in `commonMain`. Use `kotlinx-datetime` for time.
-4. **UI Components:** Keep Composables stateless by hoisting state to ViewModels.
-5. **Resources:** Use the `composeRes` (Moko-resources or standard Compose resources) for strings and images to ensure cross-platform compatibility.
+## KMP Coding Rules & Constraints
+- Common First: Logic must reside in `commonMain` whenever possible.
+- No Java in Common: Strictly avoid `java.*` imports in `commonMain`. 
+- Prefer KMP libraries for wrapping platform-specific code.
+- Prefer interface-based injection via Koin DI for platform-specific code.
+- Expect/Actual: Use `expect`/`actual` if you want to be able to call the function from anywhere in your code, without having to inject an instance everywhere e.g. log("message"), strings("id"). 
+- Use `kotlinx-datetime` for time.
+- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings and images to ensure cross-platform compatibility.
