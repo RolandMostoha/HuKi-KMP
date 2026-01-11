@@ -38,6 +38,9 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.koin.test)
             implementation(libs.moko.resources.test)
+            implementation(libs.kotest.core)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)

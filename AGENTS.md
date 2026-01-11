@@ -21,6 +21,8 @@
 - Koin: Used for DI.
 - KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
 - moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
+- Turbine: Unit test flows `Flow.test { awaitItem() }`.
+- Kotest: Unit test assertions, like `shouldBe`.
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
@@ -40,7 +42,22 @@ UI → UiEvent → ViewModel → UiState
 - UiState = StateFlow
 - UiEffect = Channel → Flow
 
-## Best Practices
+## Coding Rules & Constraints
+
+## KMP
+- Common First: Logic must reside in `commonMain` whenever possible.
+- No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
+- Prefer KMP libraries for wrapping platform-specific code.
+- Prefer interface-based injection via Koin DI for platform-specific code.
+- Expect/Actual: Use `expect`/`actual` if you want to be able to call the function from anywhere in your code, without having to inject an instance everywhere e.g. log("message"), strings("id").
+- Use `kotlinx-datetime` for time.
+- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings and images to ensure cross-platform compatibility.
+
+## Unit tests
+- Use `Given X, when Y, then Z`
+- You may skip `given` where it is not suitable (ex: without input parameters)
+- Use Kotest assertions
+- Use Turbine for `Flow` testing
 
 ### Jetpack Compose - Android
 - Naming convention for whole pages: `[X]Screen`
@@ -61,12 +78,3 @@ UI → UiEvent → ViewModel → UiState
 - **Static Analysis:** Use **Detekt**. Strictly follow the rules defined in `tools/quality/HuKi-detekt.yml`.
 ### iOS
 - **Formatting:** Use **SwiftLint**
-
-## KMP Coding Rules & Constraints
-- Common First: Logic must reside in `commonMain` whenever possible.
-- No Java in Common: Strictly avoid `java.*` imports in `commonMain`. 
-- Prefer KMP libraries for wrapping platform-specific code.
-- Prefer interface-based injection via Koin DI for platform-specific code.
-- Expect/Actual: Use `expect`/`actual` if you want to be able to call the function from anywhere in your code, without having to inject an instance everywhere e.g. log("message"), strings("id"). 
-- Use `kotlinx-datetime` for time.
-- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings and images to ensure cross-platform compatibility.
