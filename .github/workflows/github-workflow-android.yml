@@ -10,6 +10,7 @@ on:
 
 jobs:
   verify:
+    name: Verify & UnitTest & Build
     runs-on: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v4
@@ -32,3 +33,42 @@ jobs:
 
       - name: Build Android
         run: ./gradlew assembleDebug
+
+  e2e_tests:
+    name: E2E tests
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/android
+        with:
+          MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Build Debug APK
+        run: | 
+          ./gradlew :composeApp:assembleDebug
+          APK_PATH=$(find composeApp/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          echo "PATH_APK=$APK_PATH" >> $GITHUB_ENV
+
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run e2e tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          arch: x86_64
+          target: google_apis_playstore
+          disable-spellchecker: true
+          script: |
+            adb wait-for-device
+            adb install "$PATH_APK"
+            maestro test .maestro/ -e APP_ID=hu.mostoha.mobile.android.huki --device emulator-5554
