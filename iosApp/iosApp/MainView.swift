@@ -6,6 +6,8 @@ struct MainView: View {
     @ObservedObject private var mainViewModel = MainViewModelWrapper()
     @State private var viewport = Viewport.camera()
 
+    private let strings = Strings()
+
     var body: some View {
         ZStack {
             Map(viewport: $viewport) {
@@ -18,8 +20,9 @@ struct MainView: View {
             }
             .mapStyle(.outdoors)
             .gestureOptions(GestureOptions(
-                rotateEnabled: MapConfiguration().MAP_ROTATION_ENABLED
+                rotateEnabled: MapConfiguration.shared.MAP_ROTATION_ENABLED
             ))
+            .accessibilityIdentifier(TestTags.shared.MAP_MAPBOX)
             VStack {
                 Spacer()
                 HStack {
@@ -34,9 +37,10 @@ struct MainView: View {
                                 .padding(8)
                         }
                     )
+                    .accessibilityIdentifier(TestTags.shared.MAIN_MY_LOCATION_BUTTON)
                     .buttonBorderShape(.circle)
                     .glassIfAvailable()
-                    .accessibilityLabel(Strings().get(id: SharedRes.strings().main_my_location_accessibility, args: []))
+                    .accessibilityLabel(strings.get(id: SharedRes.strings().main_my_location_accessibility, args: []))
                 }
                 .safeAreaPadding()
                 .padding(.bottom, 64)

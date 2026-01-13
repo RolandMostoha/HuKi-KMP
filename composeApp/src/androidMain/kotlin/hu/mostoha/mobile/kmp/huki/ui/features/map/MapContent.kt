@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapboxMap
@@ -25,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Layer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.util.MapConfiguration
 import hu.mostoha.mobile.kmp.huki.util.MapConfiguration.MAP_ROTATION_ENABLED
+import hu.mostoha.mobile.kmp.huki.util.TestTags
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -42,7 +44,7 @@ fun MapContent(
         gesturesSettings = GesturesSettings { rotateEnabled = MAP_ROTATION_ENABLED }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(uiEffect) {
         uiEffect.collect { effect ->
             when (effect) {
                 is MainUiEffects.MoveCamera -> {
@@ -58,7 +60,9 @@ fun MapContent(
     }
 
     MapboxMap(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .testTag(TestTags.MAP_MAPBOX)
+            .fillMaxSize(),
         style = { MapStyle(Style.OUTDOORS) },
         mapViewportState = mapViewportState,
         mapState = mapState,

@@ -10,6 +10,7 @@ on:
 
 jobs:
   verify:
+    name: Verify & Build & E2E tests
     runs-on: [ macos-latest ]
     steps:
       - uses: actions/checkout@v4
@@ -51,4 +52,26 @@ jobs:
             -configuration Debug \
             -skipPackagePluginValidation \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -derivedDataPath build \
+            SYMROOT=$(pwd)/build \
             clean build | xcbeautify
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Run e2e tests
+        uses: futureware-tech/simulator-action@v4
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 300000 # 5 minutes for slow CI
+        with:
+          model: 'iPhone 17'
+          os: 'iOS'
+          wait_for_boot: true
+      - run: |
+          APP_PATH="$GITHUB_WORKSPACE/iosApp/build/Debug-iphonesimulator/HuKi.app"
+
+          xcrun simctl install booted "$APP_PATH"
+
+          maestro test .maestro/ -e APP_ID=hu.mostoha.mobile.ios.huki
