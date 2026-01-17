@@ -23,6 +23,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.androidx.material3)
             implementation(libs.compose.material.icons)
         }
         commonMain.dependencies {

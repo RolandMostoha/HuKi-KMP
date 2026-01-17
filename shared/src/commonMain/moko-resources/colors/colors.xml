@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- format: #RRGGBB[AA] or 0xRRGGBB[AA] or RRGGBB[AA] where [AA] - optional -->
+    <color name="primary">
+        <light>#136313</light>
+        <dark>#6BBA6F</dark>
+    </color>
+    <color name="onPrimary">
+        <light>#ffffff</light>
+        <dark>#232323</dark>
+    </color>
+</resources>

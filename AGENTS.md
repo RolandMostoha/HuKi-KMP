@@ -24,6 +24,7 @@
 ## Technology Stack
 - MapBox: Used for map view.
 - Androidx ViewModel: ViewModel bridge for KMP.
+- Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
 - KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
 - moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
@@ -51,14 +52,17 @@ UI → UiEvent → ViewModel → UiState
 
 ## Coding Rules & Constraints
 
+## General
+- Don't fight the framework, use the native side best practices
+- Common First: Business logic must reside in `commonMain` whenever possible.
+- Prefer official + community KMP libraries for wrapping platform-specific code.
+
 ## KMP
-- Common First: Logic must reside in `commonMain` whenever possible.
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
-- Prefer KMP libraries for wrapping platform-specific code.
 - Prefer interface-based injection via Koin DI for platform-specific code.
 - Expect/Actual: Use `expect`/`actual` if you want to call the function from anywhere in your code, without having to inject an instance e.g. `log("message")`, `strings("id")`.
 - Use `kotlinx-datetime` for time.
-- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings and images to ensure cross-platform compatibility.
+- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings, colors, fonts, images to ensure cross-platform compatibility.
 
 ## Unit tests
 - Use `Given X, when Y, then Z`
@@ -73,6 +77,7 @@ UI → UiEvent → ViewModel → UiState
 - For shared test tags, use the `TestTags` object
 
 ### Jetpack Compose - Android
+- Look as native as possible - Material3
 - Naming convention for whole pages: `[X]Screen`
 - Naming convention for content in pages `[X]Content` (to have stateless, previewable Composables): 
 - Package for reusable UI components: `/ui/components`
@@ -82,6 +87,7 @@ UI → UiEvent → ViewModel → UiState
 - UI Components:Keep Composables stateless by hoisting state to ViewModels.
 
 ### SwiftUI - iOS
+- Look as native as possible - Liquid Glass
 - Use dedicated Liquid Glass components and styles where possible.
 - If needed, add API wrappers for Liquid Glass styles, e.g. `if #available(iOS 26, *)`
 
