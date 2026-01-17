@@ -1,0 +1,4 @@
+excluded:
+  - build
+  - iosApp/build
+  - DerivedData

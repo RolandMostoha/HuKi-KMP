@@ -86,7 +86,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7E8AA58913ED8B8F58749E2E /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
-				30BD1E982EFBCBD200CD3768 /* Run Script */,
+				30BD1E982EFBCBD200CD3768 /* Run Swiftlint Script */,
 				30BD1E742EFAE2DC00CD3768 /* Compile Kotlin Framework */,
 				79B6DB3DC79B90A5AE79EE11 /* Sources */,
 				305BDE9E2F1146B300A60BF0 /* Generate moko-resources */,
@@ -199,7 +199,7 @@
 			shellPath = /bin/sh;
 			shellScript = "source \"${SRCROOT}/scripts/setup_java.sh\"\n\n# KMP build script\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
-		30BD1E982EFBCBD200CD3768 /* Run Script */ = {
+		30BD1E982EFBCBD200CD3768 /* Run Swiftlint Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -209,14 +209,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = "Run Swiftlint Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n  swiftlint lint --strict --reporter xcode\nelse\n  echo \"SwiftLint not installed\"\nfi\n";
+			shellScript = "if command -v swiftlint >/dev/null; then\n  swiftlint lint \\\n    --config \"${SRCROOT}/.swiftlint.yml\" \\\n    --strict \\\n    --reporter xcode\nelse\n  echo \"warning: SwiftLint not installed\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
