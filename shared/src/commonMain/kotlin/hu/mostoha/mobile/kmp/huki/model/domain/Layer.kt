@@ -16,6 +16,6 @@ enum class Layer(
         ),
         tileSize = 256,
         minZoom = 5,
-        maxZoom = 17,
+        maxZoom = 18,
     ),
 }

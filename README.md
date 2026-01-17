@@ -54,24 +54,68 @@ The following steps are running on the CI server on `main` push:
 4. Compose Lints - Lint extension to avoid common Jetpack Compose mistakes
 5. Unit tests
 6. Android build
+7. Android E2E UI tests - Using `Maestro`
 
 ```shell
-./gradlew detekt ktlintCheck lint test assembleDebug
+./gradlew detekt ktlintCheck lint test assembleDebug maestro test
 ```
 
 ### iOS
 1. SwiftLint - Enforces Swift style and conventions
 2. Xcode build
+3. iOS E2E UI tests - Using `Maestro`
 
 ```shell
-swiftlint xcodebuild 
+swiftlint xcodebuild maestro test
+```
+
+## Testing
+
+I'm a big fan of testing so the aim is to be fairly covered with Unit, Instrumentation and UI tests.
+
+### Unit tests
+
+Kotlin based Unit tests for the shared code, using `Kotest` for assertions and `Turbine` for Flow testing.
+
+**Android:**
+
+```shell
+./gradlew test
+```
+
+### Instrumentation tests (without UI)
+
+Instrumentation tests are running on emulators/simulators but UI is not involved.
+
+E.g.: DB, networking, files etc.
+
+**Android:**
+
+```shell
+./gradlew connectedAndroidTest
+```
+
+### E2E UI tests
+
+E2E UI tests require emulator/simulator and UI enabled.
+
+Using `Maestro`, the goal here is "written-once, test both": wherever possible, one UI test case `yaml` is written for both Android/iOS.
+
+UI test cases are created under: `./.maestro/*.yml`
+
+Running the tests:
+
+```shell
+maestro test
 ```
 
 ## Security
 
 ### MapBox
 
-MapBox access token is stored in an XML under `composeApp/src/androidMain/res/values/mapbox_access_token.xml`.
+Personal `MapBox` access token is required to test the app's map related features.  
+
+The key is stored in an XML under `composeApp/src/androidMain/res/values/mapbox_access_token.xml`.
 
 The XML token is converted to GitHub secret with: 
 

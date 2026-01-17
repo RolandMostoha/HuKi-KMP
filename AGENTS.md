@@ -9,6 +9,9 @@
 - **Target Platform APIs**:
   - Android: minSdk=26, targetSdk=36
   - iOS: Xcode=26.1.1+, Deployment Target=18.2
+- **Package IDs**:
+  - Android: `hu.mostoha.mobile.android.huki`
+  - iOS: `hu.mostoha.mobile.ios.huki`
 - **Project Structure**:
   - `:composeApp`: Android native code.
   - `:iosApp`: iOS native code.
@@ -26,6 +29,7 @@
 - moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
 - Turbine: Unit test flows `Flow.test { awaitItem() }`.
 - Kotest: Unit test assertions, like `shouldBe`.
+- Maestro: E2E UI testing for Android + iOS.
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
@@ -61,6 +65,12 @@ UI → UiEvent → ViewModel → UiState
 - You may skip `given` where it's not suitable (ex: without input parameters)
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
+
+## E2E UI testing
+- Test cases are written in Maestro `yaml` files under `./maestro/*.yaml`
+- Global, reusable flows are under under `./maestro/subflows/*.yaml`
+- Wherever possible, write one test case `yaml` for both Android+iOS : "written-once, test both"
+- For shared test tags, use the `TestTags` object
 
 ### Jetpack Compose - Android
 - Naming convention for whole pages: `[X]Screen`
