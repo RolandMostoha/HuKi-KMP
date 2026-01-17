@@ -19,14 +19,16 @@ ktlint = "14.0.1"
 androidx-viewmodel = "2.10.0"
 koin = "4.1.1"
 native-coroutines = "1.0.0"
+material3 = "1.4.0"
 material-icons = "1.7.3"
 moko-resources = "0.25.2"
-moko-graphics = "0.10.0"
+moko-graphics = "0.10.1"
 kotest = "6.0.7"
 turbine = "1.2.1"
 kotlinx-coroutines-test = "1.10.2"
 
 [libraries]
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mapbox-android = { module = "com.mapbox.maps:android-ndk27", version.ref = "mapbox-android" }
 mapbox-android-compose = { module = "com.mapbox.extension:maps-compose-ndk27", version.ref = "mapbox-android" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }

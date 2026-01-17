@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.FloatingActionButton
@@ -19,14 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
-import hu.mostoha.mobile.kmp.huki.ui.components.stringResource
+import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.ui.components.mokoString
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import kotlinx.coroutines.flow.Flow
@@ -68,13 +67,14 @@ private fun MainContent(
                 modifier = Modifier
                     .testTag(TestTags.MAIN_MY_LOCATION_BUTTON)
                     .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                shape = CircleShape,
+                    .padding(Dimens.Default),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 onClick = { onEvent(MainUiEvents.MyLocationClicked) },
             ) {
                 Icon(
                     imageVector = Icons.Filled.MyLocation,
-                    contentDescription = stringResource(SharedRes.strings.main_my_location_accessibility),
+                    contentDescription = mokoString(SharedRes.strings.main_my_location_accessibility),
                 )
             }
         }

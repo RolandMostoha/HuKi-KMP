@@ -31,6 +31,7 @@ kotlin {
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.moko.resources)
+            api(libs.moko.graphics)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
         }
@@ -48,9 +49,7 @@ kotlin {
         }
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-            compilerOptions {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
-            }
+            languageSettings.enableLanguageFeature("ExpectActualClasses")
         }
     }
 }
