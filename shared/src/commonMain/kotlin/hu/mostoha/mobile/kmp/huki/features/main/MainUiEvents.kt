@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
 sealed interface MainUiEvents {
-    object MyLocationClicked : MainUiEvents
+    data object MyLocationClicked : MainUiEvents
+    data object FollowingDisabled : MainUiEvents
 }

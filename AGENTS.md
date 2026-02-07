@@ -22,12 +22,15 @@
 - **Supported app languages**: English, Hungarian.
 
 ## Technology Stack
-- MapBox: Used for map view.
+- MapBox: Used for the map engine. Mapbox version: `11.17.X`
+  - MapBox Compose extensions
+  - MapBox SwiftUi extensions
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
 - KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
-- moko-resources: Share resources (String, Colors, Images, Fonts) between iOS/Android.
+- moko-resources: Share Strings, Colors, Images (SVG), Fonts.
+- Kermit: Logging.
 - Turbine: Unit test flows `Flow.test { awaitItem() }`.
 - Kotest: Unit test assertions, like `shouldBe`.
 - Maestro: E2E UI testing for Android + iOS.
@@ -62,11 +65,10 @@ UI → UiEvent → ViewModel → UiState
 - Prefer interface-based injection via Koin DI for platform-specific code.
 - Expect/Actual: Use `expect`/`actual` if you want to call the function from anywhere in your code, without having to inject an instance e.g. `log("message")`, `strings("id")`.
 - Use `kotlinx-datetime` for time.
-- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for strings, colors, fonts, images to ensure cross-platform compatibility.
+- Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for shared strings, colors, fonts.
 
 ## Unit tests
-- Use `Given X, when Y, then Z`
-- You may skip `given` where it's not suitable (ex: without input parameters)
+- Use `Given X, When Y, Then Z`
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
 
@@ -84,7 +86,7 @@ UI → UiEvent → ViewModel → UiState
 - UI Package for features: `/ui/features/[feature]/`
 - Always have Previews for Composables
 - Only pass ViewModel to the hosting Screen's Composable
-- UI Components:Keep Composables stateless by hoisting state to ViewModels.
+- UI Components: keep Composables stateless.
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass

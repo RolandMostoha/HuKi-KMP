@@ -22,6 +22,7 @@ kotlin {
             export(libs.androidx.lifecycle.viewmodel)
             export(libs.moko.resources)
             export(libs.moko.graphics)
+            export(libs.moko.permissions)
             baseName = "Shared"
             isStatic = true
         }
@@ -32,8 +33,11 @@ kotlin {
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.moko.resources)
             api(libs.moko.graphics)
+            api(libs.moko.permissions)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.moko.permissions.location)
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -42,6 +46,7 @@ kotlin {
             implementation(libs.kotest.core)
             implementation(libs.turbine)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.moko.permissions.test)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
@@ -49,7 +54,9 @@ kotlin {
         }
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-            languageSettings.enableLanguageFeature("ExpectActualClasses")
+            compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
         }
     }
 }

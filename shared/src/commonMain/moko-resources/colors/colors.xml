@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- format: #RRGGBB[AA] or 0xRRGGBB[AA] or RRGGBB[AA] where [AA] - optional -->
     <color name="primary">
         <light>#136313</light>
         <dark>#6BBA6F</dark>
     </color>
+    <color name="primaryStrong">
+        <light>#125C12</light>
+        <dark>#7ac17d</dark>
+    </color>
+    <color name="primaryLight">
+        <light>#89dd72</light>
+        <dark>#52ad56</dark>
+    </color>
     <color name="onPrimary">
         <light>#ffffff</light>
         <dark>#232323</dark>
+    </color>
+    <color name="icon">
+        <light>#404040</light>
+        <dark>#B3ffffff</dark>
+    </color>
+    <color name="iconStrong">
+        <light>#363636</light>
+        <dark>#DEffff</dark>
+    </color>
+    <color name="background">
+        <light>#fffff7</light>
+        <dark>#2D2D2D</dark>
+    </color>
+    <color name="accuracyRing">
+        <light>#89dd72</light>
+        <dark>#52ad56</dark>
     </color>
 </resources>

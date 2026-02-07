@@ -19,6 +19,7 @@ private fun lightColors(): ColorScheme {
     return lightColorScheme(
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
+        background = SharedRes.colors.background.toComposeColor(context),
     )
 }
 
@@ -28,6 +29,7 @@ private fun darkColors(): ColorScheme {
     return darkColorScheme(
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
+        background = SharedRes.colors.background.toComposeColor(context),
     )
 }
 

@@ -21,11 +21,10 @@ final class MainViewModelWrapper: ObservableObject {
             do {
                 let sequence = asyncSequence(for: viewModel.uiStateFlow)
                 for try await uiSate in sequence {
-                    print("Main: UiSate=\(uiSate)")
                     self.uiState = uiSate
                 }
             } catch {
-                print("Main: failed UiState observing with error: \(error)")
+                print("MainViewModelWrapper: failed UiState observing with error: \(error)")
             }
         }
         return uiState
@@ -36,11 +35,10 @@ final class MainViewModelWrapper: ObservableObject {
             do {
                 let sequence = asyncSequence(for: viewModel.uiEffect)
                 for try await uiEffect in sequence {
-                    print("Main: UiEffect=\(uiEffect)")
                     onEffect(uiEffect)
                 }
             } catch {
-                print("Main: failed UiEffect observing with error: \(error)")
+                print("MainViewModelWrapper: failed UiEffect observing with error: \(error)")
             }
         }
     }

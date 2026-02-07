@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="main_my_location_accessibility">My location</string>
+    <string name="my_location_a11y">My location</string>
+    <string name="my_location_a11y_not_available">My location - Not available</string>
+    <string name="my_location_a11y_default">My location - Visible</string>
+    <string name="my_location_a11y_following">My location - Following</string>
+    <string name="my_location_a11y_live_compass">My location - Live compass</string>
+    <string name="my_location_a11y_compass">My location - Compass</string>
 </resources>
