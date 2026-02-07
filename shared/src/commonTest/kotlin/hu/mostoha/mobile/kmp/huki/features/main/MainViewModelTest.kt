@@ -7,15 +7,37 @@ import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
+
+    private val testDispatcher = StandardTestDispatcher()
+
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `Given not granted location permission, When allow, Then uiState is Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 with(awaitItem().myLocationState) {
@@ -37,6 +59,7 @@ class MainViewModelTest {
     fun `Given not granted location permission, When disallow, Then uiState is Denied`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 with(awaitItem().myLocationState) {
@@ -58,6 +81,7 @@ class MainViewModelTest {
     fun `Given granted location permission, When init, Then uiState is Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 with(awaitItem().myLocationState) {
@@ -72,6 +96,7 @@ class MainViewModelTest {
     fun `Given Following my location, When MyLocationClicked, Then uiState is FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
@@ -87,6 +112,7 @@ class MainViewModelTest {
     fun `Given FollowingLiveCompass my location, When MyLocationClicked, Then uiState is Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
@@ -104,6 +130,7 @@ class MainViewModelTest {
     fun `Given Following my location, When MyLocationUpdated, Then uiState is Default`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiState.test {
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
@@ -119,6 +146,7 @@ class MainViewModelTest {
     fun `Given granted location permission, When init, Then uiEffect is ShowMyLocation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiEffect.test {
                 awaitItem() shouldBe MainUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
@@ -131,6 +159,7 @@ class MainViewModelTest {
     fun `Given granted location permission, When MyLocationClicked, Then uiEffect is animated ShowMyLocation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
 
             viewModel.uiEffect.test {
                 awaitItem() shouldBe MainUiEffects.ShowMyLocation(
