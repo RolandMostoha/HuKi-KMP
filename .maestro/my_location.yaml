@@ -1,7 +1,0 @@
-appId: ${APP_ID}
----
-- launchApp
-- assertVisible:
-    id: "map_mapbox"
-- tapOn:
-    id: "main_my_location_button"

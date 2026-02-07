@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- assertVisible:
+    id: MAP_MAPBOX
+- assertVisible:
+    text: "My location - Following"
+- tapOn:
+    id: MAIN_MY_LOCATION_BUTTON
+- assertVisible:
+    text: "My location - Live compass"
+- swipe:
+    direction: LEFT
+- assertVisible:
+    text: "My location - Visible"

@@ -24,7 +24,8 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.androidx.material3)
-            implementation(libs.compose.material.icons)
+            implementation(libs.moko.permissions.compose)
+            implementation(libs.kermit)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

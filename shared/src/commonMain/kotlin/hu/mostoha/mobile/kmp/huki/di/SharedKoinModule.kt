@@ -1,5 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.di
 
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
@@ -11,6 +13,9 @@ val viewModelModule = module {
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
+    Logger.setLogWriters(platformLogWriter())
+    Logger.setTag("HuKi")
+
     startKoin {
         config?.invoke(this)
         modules(viewModelModule)

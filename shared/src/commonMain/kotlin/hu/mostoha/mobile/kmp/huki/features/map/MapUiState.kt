@@ -11,6 +11,8 @@ data class MapUiState(
             latitude = MapConfiguration.HUNGARY_CENTER_LATITUDE,
             longitude = MapConfiguration.HUNGARY_CENTER_LONGITUDE,
         ),
+        bearing = 0.0,
+        pitch = 0.0,
     ),
 ) {
     companion object {

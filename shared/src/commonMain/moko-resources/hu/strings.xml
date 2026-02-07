@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="main_my_location_accessibility">Saját pozícióm</string>
+    <string name="my_location_a11y">Saját pozíció</string>
+    <string name="my_location_a11y_not_available">Saját pozíció - Nem elérhető</string>
+    <string name="my_location_a11y_default">Saját pozíció - Látható</string>
+    <string name="my_location_a11y_following">Saját pozíció - Követés</string>
+    <string name="my_location_a11y_live_compass">Saját pozíció - Élő iránytű</string>
+    <string name="my_location_a11y_compass">Saját pozíció - Iránytű</string>
 </resources>
