@@ -64,7 +64,7 @@ jobs:
       - name: Run Maestro e2e tests
         uses: futureware-tech/simulator-action@v4
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 300000 # 5 minutes for slow CI
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes for slow CI
         with:
           model: 'iPhone 17'
           os: 'iOS'
