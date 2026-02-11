@@ -71,8 +71,8 @@ jobs:
           wait_for_boot: true
       - run: |
           APP_PATH="$GITHUB_WORKSPACE/iosApp/build/Debug-iphonesimulator/HuKi.app"
-          xcrun simctl install booted "$APP_PATH"
           xcrun simctl location booted set 47.7168079,18.8950729
+          xcrun simctl install booted "$APP_PATH"
           maestro test .maestro/ -e APP_ID=hu.mostoha.mobile.ios.huki --debug-output ./
 
       - name: Upload Maestro Test Reports
