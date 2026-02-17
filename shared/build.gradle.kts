@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.nativeCoroutines)
     alias(libs.plugins.mokoResources)
+    alias(libs.plugins.skie)
 }
 
 kotlin {
@@ -77,4 +77,10 @@ multiplatformResources {
     resourcesPackage.set("hu.mostoha.mobile.huki.shared")
     resourcesClassName.set("SharedRes")
     iosMinimalDeploymentTarget.set("18.0")
+}
+
+skie {
+    features {
+        enableSwiftUIObservingPreview = true
+    }
 }

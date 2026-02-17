@@ -4,7 +4,7 @@ import SwiftUI
 @main
 struct HukiApp: App {
     init() {
-        IosKoinModuleKt.doInitKoin()
+        doInitKoin()
     }
 
     var body: some Scene {
