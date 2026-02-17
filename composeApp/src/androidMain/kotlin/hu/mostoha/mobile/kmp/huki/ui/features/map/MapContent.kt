@@ -44,7 +44,6 @@ import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
-import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Layer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
@@ -62,7 +61,6 @@ import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun MapContent(
-    mapUiState: MapUiState,
     onEvent: (MainUiEvents) -> Unit,
     uiEffect: Flow<MainUiEffects>,
     modifier: Modifier = Modifier,
@@ -70,7 +68,7 @@ fun MapContent(
     val context = LocalContext.current
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val mapViewportState = rememberMapViewportState {
-        setCameraOptions(mapUiState.cameraPosition.toCameraOptions())
+        setCameraOptions(MapConfiguration.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
     val mapState = rememberMapState {
         gesturesSettings = GesturesSettings { rotateEnabled = MapConfiguration.MAP_ROTATION_ENABLED }
@@ -212,7 +210,6 @@ fun MapContent(
 @Composable
 private fun MapPreview() {
     MapContent(
-        mapUiState = MapUiState(),
         onEvent = {},
         uiEffect = emptyFlow(),
     )

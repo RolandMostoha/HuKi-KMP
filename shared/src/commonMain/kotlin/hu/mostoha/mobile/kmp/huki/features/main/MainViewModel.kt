@@ -3,8 +3,6 @@ package hu.mostoha.mobile.kmp.huki.features.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
@@ -25,13 +23,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(val permissionsController: PermissionsController) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
-
-    @NativeCoroutinesState
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     private val _uiEffect = Channel<MainUiEffects>()
-
-    @NativeCoroutines
     val uiEffect: Flow<MainUiEffects> = _uiEffect.receiveAsFlow()
 
     init {

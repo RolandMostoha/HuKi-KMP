@@ -18,11 +18,11 @@ detekt = "2.0.0-alpha.1"
 ktlint = "14.0.1"
 androidx-viewmodel = "2.10.0"
 koin = "4.1.1"
-native-coroutines = "1.0.0"
 material3 = "1.4.0"
 moko-resources = "0.25.2"
 moko-graphics = "0.10.1"
 moko-permissions = "0.20.1"
+skie = "0.10.10"
 kotest = "6.0.7"
 turbine = "1.2.1"
 kotlinx-coroutines-test = "1.10.2"
@@ -66,7 +66,7 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multi-platform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-nativeCoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "native-coroutines" }
 mokoResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

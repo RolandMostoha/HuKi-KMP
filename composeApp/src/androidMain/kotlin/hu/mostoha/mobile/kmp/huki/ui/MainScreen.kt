@@ -64,7 +64,6 @@ private fun MainContent(
             .fillMaxSize(),
     ) {
         MapContent(
-            mapUiState = uiState.mapUiState,
             uiEffect = uiEffect,
             onEvent = onEvent,
         )
