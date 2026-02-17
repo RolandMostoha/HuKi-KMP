@@ -61,7 +61,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run e2e tests
+      - name: Run Maestro e2e tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -70,5 +70,14 @@ jobs:
           disable-spellchecker: true
           script: |
             adb wait-for-device
+            adb emu geo fix 18.8950729 47.7168079
             adb install "$PATH_APK"
-            maestro test .maestro/ -e APP_ID=hu.mostoha.mobile.android.huki --device emulator-5554
+            maestro test .maestro/ -e APP_ID=hu.mostoha.mobile.android.huki --device emulator-5554 --debug-output ./
+
+      - name: Upload Maestro Test Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-e2e-reports
+          path: ./.maestro/tests/
+          retention-days: 7
+        if: always()

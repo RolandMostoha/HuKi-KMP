@@ -2,15 +2,42 @@ appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
-    permissions: { all: allow }
+    permissions: { all: unset }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
 - assertVisible:
-    id: MAP_MAPBOX
+    text: "My location - Not available"
+- tapOn:
+    id: MAIN_MY_LOCATION_BUTTON
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "While using the app"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Allow While Using App"
+- extendedWaitUntil:
+    visible: WAIT_FOR_LOCATION
+    optional: true
+    timeout: 5000
 - assertVisible:
     text: "My location - Following"
 - tapOn:
     id: MAIN_MY_LOCATION_BUTTON
 - assertVisible:
     text: "My location - Live compass"
+- extendedWaitUntil:
+    visible: WAIT_FOR_CAMERA
+    optional: true
+    timeout: 500
 - swipe:
     direction: LEFT
 - assertVisible:
