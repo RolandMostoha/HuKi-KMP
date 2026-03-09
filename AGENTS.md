@@ -28,7 +28,11 @@
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
-- KMP-NativeCoroutines: Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
+- SKIE - Swift - Kotlin interop tools
+  - SwiftUI Observing pattern to eliminate ViewModel wrappers.
+  - Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
+  - Swift style + Exhaustive switching enums.
+  - Global functions.
 - moko-resources: Share Strings, Colors, Images (SVG), Fonts.
 - Kermit: Logging.
 - Turbine: Unit test flows `Flow.test { awaitItem() }`.
