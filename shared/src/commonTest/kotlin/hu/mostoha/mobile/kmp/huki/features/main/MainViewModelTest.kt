@@ -5,6 +5,7 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted location permission, When allow, Then uiState is Granted Following`() {
+    fun `Given not granted location permission, When allow, Then uiState has Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
             advanceUntilIdle()
@@ -56,7 +57,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted location permission, When disallow, Then uiState is Denied`() {
+    fun `Given not granted location permission, When disallow, Then uiState has Denied`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
             advanceUntilIdle()
@@ -78,7 +79,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted location permission, When init, Then uiState is Granted Following`() {
+    fun `Given granted location permission, When init, Then uiState has Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -93,7 +94,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following my location, When MyLocationClicked, Then uiState is FollowingLiveCompass`() {
+    fun `Given Following my location, When MyLocationClicked, Then uiState has FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -109,7 +110,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass my location, When MyLocationClicked, Then uiState is Following`() {
+    fun `Given FollowingLiveCompass my location, When MyLocationClicked, Then uiState has Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -127,7 +128,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following my location, When MyLocationUpdated, Then uiState is Default`() {
+    fun `Given Following my location, When MyLocationUpdated, Then uiState has Default MyLocationStatus`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -148,8 +149,8 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.uiEffect.test {
-                awaitItem() shouldBe MainUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
                 ensureAllEventsConsumed()
             }
         }
@@ -161,19 +162,70 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.uiEffect.test {
-                awaitItem() shouldBe MainUiEffects.ShowMyLocation(
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(
                     MyLocationStatus.Following,
                     animated = false,
                 )
 
                 viewModel.onEvent(MainUiEvents.MyLocationClicked)
 
-                awaitItem() shouldBe MainUiEffects.ShowMyLocation(
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(
                     MyLocationStatus.FollowingLiveCompass,
                     animated = true,
                 )
                 ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When LayersClicked, Then uiEffect is ShowLayersBottomSheet`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.LayersClicked)
+
+                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given OUTDOORS, When BaseLayerSelected, Then uiState has SATELLITE`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.baseLayer shouldBe BaseLayer.OUTDOORS
+
+                viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.SATELLITE))
+
+                awaitItem().mapUiState.baseLayer shouldBe BaseLayer.SATELLITE
+            }
+        }
+    }
+
+    @Test
+    fun `When HikingLayerSelected, Then uiState has switched hiking layer visibility`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
             }
         }
     }
