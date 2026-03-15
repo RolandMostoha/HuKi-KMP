@@ -151,7 +151,6 @@ private fun FloatingActionContainer(
             verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
         ) {
             SmallFloatingActionButton(
-                modifier = Modifier.testTag(TestTags.MAIN_FAB_LAYERS),
                 containerColor = MaterialTheme.colorScheme.surface,
                 shape = CircleShape,
                 onClick = { onLayersClicked() },

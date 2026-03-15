@@ -73,7 +73,6 @@ fun LayersBottomSheet(
                 actions = {
                     IconButton(
                         onClick = { onDismissRequest() },
-                        modifier = Modifier.testTag(TestTags.LAYERS_CLOSE),
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         ),

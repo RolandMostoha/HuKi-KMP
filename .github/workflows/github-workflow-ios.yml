@@ -65,7 +65,7 @@ jobs:
         uses: futureware-tech/simulator-action@v4
         timeout-minutes: 35
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes for slow CI
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes
         with:
           os: 'iOS'
           model: 'iPhone 17 Pro'
@@ -76,10 +76,13 @@ jobs:
           APP_ID="hu.mostoha.mobile.ios.huki"
           APP_PATH="$GITHUB_WORKSPACE/iosApp/build/Debug-iphonesimulator/HuKi.app"
           UDID="CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7"
+          
           xcrun simctl location booted set 47.7168079,18.8950729
           xcrun simctl spawn booted defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
           xcrun simctl install booted "$APP_PATH"
-          maestro test .maestro/ -e APP_ID="$APP_ID" --device "$UDID" --debug-output ./
+          
+          maestro test .maestro/maestro_my_location.yaml -e APP_ID="$APP_ID" --device "$UDID" --debug-output ./
+          maestro test .maestro/maestro_layers.yaml -e APP_ID="$APP_ID" --device "$UDID" --debug-output ./
 
       - name: Upload Maestro Test Reports
         uses: actions/upload-artifact@v4
