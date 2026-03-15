@@ -9,3 +9,16 @@ extension Shared.Location {
         )
     }
 }
+
+extension Shared.BaseLayer {
+    var mapStyle: MapStyle {
+        switch self {
+        case .outdoors:
+            return .outdoors
+        case .street:
+            return .streets
+        case .satellite:
+            return .satellite
+        }
+    }
+}

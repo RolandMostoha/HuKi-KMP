@@ -3,6 +3,8 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.CameraState
+import com.mapbox.maps.Style
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 
@@ -23,3 +25,10 @@ fun CameraState.toCameraPosition() =
         bearing = bearing,
         pitch = pitch,
     )
+
+fun BaseLayer.toMapStyle(): String =
+    when (this) {
+        BaseLayer.OUTDOORS -> Style.OUTDOORS
+        BaseLayer.STREET -> Style.MAPBOX_STREETS
+        BaseLayer.SATELLITE -> Style.SATELLITE
+    }

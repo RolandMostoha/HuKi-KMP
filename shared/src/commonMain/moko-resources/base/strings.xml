@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="a11y_close">Close</string>
+
     <string name="my_location_a11y">My location</string>
     <string name="my_location_a11y_not_available">My location - Not available</string>
     <string name="my_location_a11y_default">My location - Visible</string>
     <string name="my_location_a11y_following">My location - Following</string>
     <string name="my_location_a11y_live_compass">My location - Live compass</string>
     <string name="my_location_a11y_compass">My location - Compass</string>
+
+    <string name="layers_base_layers_title">Base Map</string>
+    <string name="layers_base_outdoors_title">Outdoors</string>
+    <string name="layers_base_streets_title">Streets</string>
+    <string name="layers_base_satellite_title">Satellite</string>
+    <string name="layers_overlay_layers_title">Overlays</string>
+    <string name="layers_overlay_hiking_title">Hiking trails</string>
+    <string name="layers_overlay_gpx_title">GPX layer</string>
+    <string name="layers_a11y_fab">Layers</string>
 </resources>

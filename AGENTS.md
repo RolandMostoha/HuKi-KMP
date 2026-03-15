@@ -5,7 +5,7 @@
 - **Type**: Kotlin Multiplatform (KMP).
 - **Target Platforms**: Android, iOS.
 - **KMP approach**: "Do not share UI", so iOS UI is written in SwiftUI.
-- **UI Frameworks**: Jetpack Compose for Android, SwiftUi for iOS.
+- **UI Frameworks**: Jetpack Compose for Android, SwiftUI for iOS.
 - **Target Platform APIs**:
   - Android: minSdk=26, targetSdk=36
   - iOS: Xcode=26.1.1+, Deployment Target=18.2
@@ -24,7 +24,7 @@
 ## Technology Stack
 - MapBox: Used for the map engine. Mapbox version: `11.17.X`
   - MapBox Compose extensions
-  - MapBox SwiftUi extensions
+  - MapBox SwiftUI extensions
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
@@ -60,9 +60,9 @@ UI → UiEvent → ViewModel → UiState
 ## Coding Rules & Constraints
 
 ## General
-- Don't fight the framework, use the native side best practices
+- Don't fight the framework → use the native side best practices
 - Common First: Business logic must reside in `commonMain` whenever possible.
-- Prefer official + community KMP libraries for wrapping platform-specific code.
+- Prefer official + community KMP libraries for wrapping platform-specific code
 
 ## KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
@@ -84,11 +84,12 @@ UI → UiEvent → ViewModel → UiState
 
 ### Jetpack Compose - Android
 - Look as native as possible - Material3
+- Entry Point: `HuKiApplication` + `MainActivity` + `MainScreen`
 - Naming convention for whole pages: `[X]Screen`
 - Naming convention for content in pages `[X]Content` (to have stateless, previewable Composables): 
 - Package for reusable UI components: `/ui/components`
 - UI Package for features: `/ui/features/[feature]/`
-- Always have Previews for Composables
+- Use @Preview whenever possible
 - Only pass ViewModel to the hosting Screen's Composable
 - UI Components: keep Composables stateless.
 
@@ -96,6 +97,8 @@ UI → UiEvent → ViewModel → UiState
 - Look as native as possible - Liquid Glass
 - Use dedicated Liquid Glass components and styles where possible.
 - If needed, add API wrappers for Liquid Glass styles, e.g. `if #available(iOS 26, *)`
+- Entry Point: `HukiApp` + `MainView`
+- UI Package for features: `/UI/Views/[feature]/`
 
 ### Code Quality & Linting
 ### Android
