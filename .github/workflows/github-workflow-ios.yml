@@ -69,7 +69,7 @@ jobs:
         with:
           os: 'iOS'
           model: 'iPhone 17 Pro'
-          udid: 'E31B999E-1170-4710-AAFA-3428A2F60427'
+          udid: 'CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7'
           wait_for_boot: true
           erase_before_boot: true
       - run: |
