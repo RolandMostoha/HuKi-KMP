@@ -33,7 +33,7 @@ struct LayersSheetView: View {
                     .buttonStyle(.plain)
                     .contentShape(Circle())
                     .padding(.trailing, 8)
-                    .accessibilityIdentifier(TestTags.shared.LAYERS_CLOSE)
+                    .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close, args: []))
                 }
             }
             .padding(.top, 26)

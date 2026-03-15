@@ -89,7 +89,6 @@ struct MainView: View {
                     )
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                    .accessibilityIdentifier(TestTags.shared.MAIN_FAB_LAYERS)
                     .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab, args: []))
                     Button(
                         action: {
