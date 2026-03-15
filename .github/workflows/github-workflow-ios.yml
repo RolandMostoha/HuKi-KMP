@@ -51,7 +51,7 @@ jobs:
             -scheme iosApp \
             -configuration Debug \
             -skipPackagePluginValidation \
-            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -destination 'platform=iOS Simulator' \
             -derivedDataPath build \
             SYMROOT=$(pwd)/build \
             clean build | xcbeautify
