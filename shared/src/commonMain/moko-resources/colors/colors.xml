@@ -28,8 +28,12 @@
         <light>#fffff7</light>
         <dark>#2D2D2D</dark>
     </color>
+    <color name="backgroundLight">
+        <light>#f1f3f5</light>
+        <dark>#212121</dark>
+    </color>
     <color name="accuracyRing">
-        <light>#89dd72</light>
-        <dark>#52ad56</dark>
+        <light>#1363138A</light>
+        <dark>#6BBA6F8A</dark>
     </color>
 </resources>

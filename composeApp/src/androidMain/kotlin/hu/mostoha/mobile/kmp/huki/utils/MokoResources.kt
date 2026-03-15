@@ -1,4 +1,4 @@
-package hu.mostoha.mobile.kmp.huki.ui.components
+package hu.mostoha.mobile.kmp.huki.utils
 
 import android.content.Context
 import androidx.compose.runtime.Composable
