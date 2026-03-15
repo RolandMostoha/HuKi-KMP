@@ -75,7 +75,7 @@ jobs:
       - run: |
           APP_ID="hu.mostoha.mobile.ios.huki"
           APP_PATH="$GITHUB_WORKSPACE/iosApp/build/Debug-iphonesimulator/HuKi.app"
-          UDID="E31B999E-1170-4710-AAFA-3428A2F60427"
+          UDID="CB3DAAF1-A853-4818-BFF6-1CE5393DBEE7"
           xcrun simctl location booted set 47.7168079,18.8950729
           xcrun simctl spawn booted defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
           xcrun simctl install booted "$APP_PATH"
