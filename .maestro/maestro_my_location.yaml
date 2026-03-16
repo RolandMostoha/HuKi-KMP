@@ -29,7 +29,7 @@ appId: ${APP_ID}
             optional: false
       - tapOn: "Allow While Using App"
 - extendedWaitUntil:
-    visible: WAIT_FOR_LOCATION
+    visible: HARDCODED_WAIT
     optional: true
     timeout: 5000
 - assertVisible:
@@ -38,11 +38,11 @@ appId: ${APP_ID}
     id: MAIN_FAB_MY_LOCATION_BUTTON
 - assertVisible:
     text: "My location - Live compass"
-- extendedWaitUntil:
-    visible: WAIT_FOR_CAMERA
-    optional: true
-    timeout: 500
 - swipe:
     direction: LEFT
+- extendedWaitUntil:
+    visible: HARDCODED_WAIT
+    optional: true
+    timeout: 2000
 - assertVisible:
     text: "My location - Visible"
