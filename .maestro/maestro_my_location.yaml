@@ -28,10 +28,6 @@ appId: ${APP_ID}
             timeout: 10000
             optional: false
       - tapOn: "Allow While Using App"
-- extendedWaitUntil:
-    visible: HARDCODED_WAIT
-    optional: true
-    timeout: 5000
 - assertVisible:
     text: "My location - Following"
 - tapOn:
@@ -40,9 +36,5 @@ appId: ${APP_ID}
     text: "My location - Live compass"
 - swipe:
     direction: LEFT
-- extendedWaitUntil:
-    visible: HARDCODED_WAIT
-    optional: true
-    timeout: 2000
 - assertVisible:
     text: "My location - Visible"
