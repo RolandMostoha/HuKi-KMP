@@ -11,6 +11,7 @@ on:
 jobs:
   verify:
     name: Verify & Build & E2E tests
+    timeout-minutes: 35
     runs-on: [ macos-latest ]
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +64,6 @@ jobs:
 
       - name: Run Maestro e2e tests
         uses: futureware-tech/simulator-action@v4
-        timeout-minutes: 35
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes
         with:

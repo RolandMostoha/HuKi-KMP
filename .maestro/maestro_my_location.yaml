@@ -23,6 +23,10 @@ appId: ${APP_ID}
     when:
       platform: iOS
     commands:
+      - extendedWaitUntil:
+            visible: "Allow While Using App"
+            timeout: 10000
+            optional: false
       - tapOn: "Allow While Using App"
 - extendedWaitUntil:
     visible: WAIT_FOR_LOCATION
