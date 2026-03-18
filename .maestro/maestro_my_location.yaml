@@ -34,6 +34,8 @@ appId: ${APP_ID}
     id: MAIN_FAB_MY_LOCATION_BUTTON
 - assertVisible:
     text: "My location - Live compass"
+- takeScreenshot:
+    path: "./.maestro/screenshots/before_swipe"
 - swipe:
     direction: LEFT
 - assertVisible:

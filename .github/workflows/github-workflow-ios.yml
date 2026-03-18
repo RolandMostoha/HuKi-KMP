@@ -84,6 +84,10 @@ jobs:
           maestro test .maestro/maestro_my_location.yaml -e APP_ID="$APP_ID" --device "$UDID" --debug-output ./
           maestro test .maestro/maestro_layers.yaml -e APP_ID="$APP_ID" --device "$UDID" --debug-output ./
 
+      - name: Export Simulator Logs
+        if: always()
+        run: xcrun simctl diagnose -v --output ./sim_logs
+
       - name: Upload Maestro Test Reports
         uses: actions/upload-artifact@v4
         with:
