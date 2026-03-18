@@ -11,7 +11,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import hu.mostoha.mobile.huki.shared.SharedRes
-import hu.mostoha.mobile.kmp.huki.ui.components.toComposeColor
+import hu.mostoha.mobile.kmp.huki.utils.toComposeColor
 
 @Composable
 private fun lightColors(): ColorScheme {
@@ -20,6 +20,10 @@ private fun lightColors(): ColorScheme {
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
         background = SharedRes.colors.background.toComposeColor(context),
+        primaryContainer = SharedRes.colors.background.toComposeColor(context),
+        secondaryContainer = SharedRes.colors.background.toComposeColor(context),
+        surface = SharedRes.colors.background.toComposeColor(context),
+        surfaceVariant = SharedRes.colors.backgroundLight.toComposeColor(context),
     )
 }
 
@@ -30,6 +34,10 @@ private fun darkColors(): ColorScheme {
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
         background = SharedRes.colors.background.toComposeColor(context),
+        primaryContainer = SharedRes.colors.background.toComposeColor(context),
+        secondaryContainer = SharedRes.colors.background.toComposeColor(context),
+        surface = SharedRes.colors.background.toComposeColor(context),
+        surfaceVariant = SharedRes.colors.backgroundLight.toComposeColor(context),
     )
 }
 
