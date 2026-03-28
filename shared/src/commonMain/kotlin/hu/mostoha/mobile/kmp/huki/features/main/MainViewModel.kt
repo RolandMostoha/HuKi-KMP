@@ -10,6 +10,8 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +22,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(val permissionsController: PermissionsController) : ViewModel() {
+class MainViewModel(
+    val permissionsController: PermissionsController,
+    val gpxRepository: GpxRepository,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
@@ -38,30 +43,22 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
     fun onEvent(event: MainUiEvents) {
         Logger.d { "MainEvent: $event" }
         when (event) {
-            MainUiEvents.MyLocationClicked -> enableMyLocation()
-            MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState { uiState ->
-                uiState.copy(myLocationStatus = MyLocationStatus.Default)
-            }
-            MainUiEvents.LayersClicked -> sendEffect(MainUiEffects.ShowLayersBottomSheet)
-            is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState { uiState ->
-                uiState.copy(baseLayer = event.baseLayer)
-            }
-            MainUiEvents.HikingLayerSelected -> _uiState.updateMapUiState { uiState ->
-                uiState.copy(hikingLayerVisible = uiState.hikingLayerVisible.not())
-            }
-            MainUiEvents.GpxLayerSelected -> {
-                // TODO
-            }
-        }
-    }
-
-    private fun sendEffect(uiEffect: UiEffect) {
-        viewModelScope.launch {
-            Logger.d { "UiEffect: $uiEffect" }
-            when (uiEffect) {
-                is MainUiEffects -> _mainUiEffects.send(uiEffect)
-                is MapUiEffects -> _mapUiEffects.send(uiEffect)
-            }
+            MainUiEvents.MyLocationClicked ->
+                enableMyLocation()
+            MainUiEvents.FollowingDisabled ->
+                _uiState.updateMyLocationState { it.copy(myLocationStatus = MyLocationStatus.Default) }
+            MainUiEvents.LayersClicked ->
+                sendEffect(MainUiEffects.ShowLayersBottomSheet(show = true))
+            MainUiEvents.LayersDismissed ->
+                sendEffect(MainUiEffects.ShowLayersBottomSheet(show = false))
+            is MainUiEvents.BaseLayerSelected ->
+                _uiState.updateMapUiState { it.copy(baseLayer = event.baseLayer) }
+            MainUiEvents.HikingLayerSelected ->
+                _uiState.updateMapUiState { it.copy(hikingLayerVisible = it.hikingLayerVisible.not()) }
+            MainUiEvents.GpxLayerSelected ->
+                showGpxFilePicker()
+            is MainUiEvents.GpxFileSelected ->
+                importGpx(event.uri)
         }
     }
 
@@ -93,7 +90,6 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
         viewModelScope.launch {
             runCatching {
                 permissionsController.providePermission(Permission.LOCATION)
-
                 enableMyLocation()
             }.onFailure { exception ->
                 _uiState.updateMyLocationState { uiState ->
@@ -127,6 +123,32 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
                 )
             }
             sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+        }
+    }
+
+    private fun showGpxFilePicker() {
+        sendEffect(MainUiEffects.ShowLayersBottomSheet(show = false))
+        sendEffect(MainUiEffects.ShowGpxFilePicker)
+    }
+
+    private fun importGpx(uri: String) {
+        viewModelScope.launch {
+            val gpxDetails = gpxRepository.readGpxFile(uri)
+            _uiState.updateMapUiState { it.copy(gpxDetails = gpxDetails) }
+
+            val bounds = gpxDetails.locations + gpxDetails.waypoints.map { it.location }
+            sendEffect(MapUiEffects.UpdateCamera(bounds = bounds, contentPadding = SharedDimens.GPX_CONTENT_PADDING))
+            sendEffect(MainUiEffects.ShowLayersBottomSheet(show = false))
+        }
+    }
+
+    private fun sendEffect(uiEffect: UiEffect) {
+        viewModelScope.launch {
+            Logger.d { "UiEffect: $uiEffect" }
+            when (uiEffect) {
+                is MainUiEffects -> _mainUiEffects.send(uiEffect)
+                is MapUiEffects -> _mapUiEffects.send(uiEffect)
+            }
         }
     }
 

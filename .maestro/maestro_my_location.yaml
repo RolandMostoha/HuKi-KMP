@@ -10,8 +10,7 @@ appId: ${APP_ID}
     visible:
       id: MAP_MAPBOX
     timeout: 10000
-- assertVisible:
-    text: "My location - Not available"
+- assertVisible: "My location - Not available"
 - tapOn:
     id: MAIN_FAB_MY_LOCATION_BUTTON
 - runFlow:
@@ -28,15 +27,14 @@ appId: ${APP_ID}
             timeout: 10000
             optional: false
       - tapOn: "Allow While Using App"
-- assertVisible:
-    text: "My location - Following"
+- assertVisible: "My location - Following"
 - tapOn:
     id: MAIN_FAB_MY_LOCATION_BUTTON
-- assertVisible:
-    text: "My location - Live compass"
-- takeScreenshot:
-    path: "./.maestro/screenshots/before_swipe"
+- extendedWaitUntil:
+    visible: SLEEP
+    timeout: 3000
+    optional: true
+- assertVisible: "My location - Live compass"
 - swipe:
     direction: LEFT
-- assertVisible:
-    text: "My location - Visible"
+- assertVisible: "My location - Visible"

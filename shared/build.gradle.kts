@@ -2,9 +2,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.mokoResources)
     alias(libs.plugins.skie)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -38,6 +40,10 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.moko.permissions.location)
             implementation(libs.kermit)
+            implementation(libs.filekit.core)
+            implementation(libs.maplibre.gpx)
+            implementation(libs.maplibre.turf)
+            implementation(libs.maplibre.units)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -5,8 +5,15 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +39,20 @@ class MainViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    val gpxRepository = mock<GpxRepository>()
+
+    private fun createViewModel(grantedPermission: Boolean, allowPermission: Boolean = true): MainViewModel {
+        val allow = if (allowPermission) setOf(Permission.LOCATION) else emptySet()
+        val granted = if (grantedPermission) setOf(Permission.LOCATION) else emptySet()
+        return MainViewModel(
+            permissionsController = createPermissionControllerMock(
+                allow = allow,
+                granted = granted,
+            ),
+            gpxRepository = gpxRepository,
+        )
     }
 
     @Test
@@ -188,7 +209,7 @@ class MainViewModelTest {
             viewModel.mainUiEffects.test {
                 viewModel.onEvent(MainUiEvents.LayersClicked)
 
-                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet
+                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet(show = true)
                 ensureAllEventsConsumed()
             }
         }
@@ -230,19 +251,57 @@ class MainViewModelTest {
         }
     }
 
-    private fun createViewModel(grantedPermission: Boolean, allowPermission: Boolean = true) =
-        MainViewModel(
-            permissionsController = createPermissionControllerMock(
-                allow = if (allowPermission) {
-                    setOf(Permission.LOCATION)
-                } else {
-                    emptySet()
-                },
-                granted = if (grantedPermission) {
-                    setOf(Permission.LOCATION)
-                } else {
-                    emptySet()
-                },
-            ),
-        )
+    @Test
+    fun `When GpxLayerSelected, Then mainUiEffects is ShowGpxFilePicker`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+
+                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet(show = false)
+                awaitItem() shouldBe MainUiEffects.ShowGpxFilePicker
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxFileSelected, Then uiState has switched hiking layer visibility`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.gpxDetails shouldBe null
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem().mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxFileSelected, Then mapUiEffect is UpdateCamera`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                skipItems(1)
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    bounds = TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
+                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                )
+                ensureAllEventsConsumed()
+            }
+        }
+    }
 }
