@@ -5,16 +5,24 @@
         <dark>#6BBA6F</dark>
     </color>
     <color name="primaryStrong">
-        <light>#125C12</light>
+        <light>#115711</light>
         <dark>#7ac17d</dark>
     </color>
     <color name="primaryLight">
         <light>#89dd72</light>
         <dark>#52ad56</dark>
     </color>
+    <color name="primaryExtraLight">
+        <light>#CFF5CC</light>
+        <dark>#4ba04f</dark>
+    </color>
     <color name="onPrimary">
         <light>#ffffff</light>
         <dark>#232323</dark>
+    </color>
+    <color name="mapStrokeColor">
+        <light>#1a1a1a</light>
+        <dark>#e0e0e0</dark>
     </color>
     <color name="icon">
         <light>#404040</light>

@@ -22,12 +22,20 @@
 - **Supported app languages**: English, Hungarian.
 
 ## Technology Stack
-- MapBox: Used for the map engine. Mapbox version: `11.17.X`
-  - MapBox Compose extensions
-  - MapBox SwiftUI extensions
+- **MapBox**: Used for the map engine. 
+  - Mapbox version for Android and iOS: `11.20.1`
+  - Android: MapBox is used with Jetpack Compose
+  - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
+  - iOS: MapBox is used with SwiftUI
+  - iOS API reference: https://docs.mapbox.com/ios/maps/api/latest/documentation/mapboxmaps/
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
+- Turbine: Unit test flows `Flow.test { awaitItem() }`.
+- Kotest: Unit test assertions, like `shouldBe`.
+- Maestro: E2E UI testing for Android + iOS.
+
+### KMP multiplatform libraries 
 - SKIE - Swift - Kotlin interop tools
   - SwiftUI Observing pattern to eliminate ViewModel wrappers.
   - Coroutine bridge from KMP suspend/Flow to Swift Async/AsyncSequence.
@@ -35,9 +43,15 @@
   - Global functions.
 - moko-resources: Share Strings, Colors, Images (SVG), Fonts.
 - Kermit: Logging.
-- Turbine: Unit test flows `Flow.test { awaitItem() }`.
-- Kotest: Unit test assertions, like `shouldBe`.
-- Maestro: E2E UI testing for Android + iOS.
+- filekit: File handling (used for reading/writing GPX files).
+- Spatial K
+  - `:gpx` GPX parsing 
+  - `:turf` Geo utilities: distance, bearing etc.
+  - `:units` Unit conversions, e.g. `5.kilometers`.
+
+###
+
+###
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
