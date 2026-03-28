@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.ImageHolder
-import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
@@ -42,27 +41,29 @@ import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
-import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
-import hu.mostoha.mobile.kmp.huki.model.domain.Layer
+import hu.mostoha.mobile.kmp.huki.features.main.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDuration
+import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
-import hu.mostoha.mobile.kmp.huki.ui.components.mokoString
 import hu.mostoha.mobile.kmp.huki.util.MapConfiguration
 import hu.mostoha.mobile.kmp.huki.util.MapConfiguration.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
-import hu.mostoha.mobile.kmp.huki.utils.navigateToAppSettings
+import hu.mostoha.mobile.kmp.huki.utils.mokoString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
-fun MapContent(
+fun MapComponent(
+    mapUiState: MapUiState,
+    mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
-    uiEffect: Flow<MainUiEffects>,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -74,10 +75,10 @@ fun MapContent(
         gesturesSettings = GesturesSettings { rotateEnabled = MapConfiguration.MAP_ROTATION_ENABLED }
     }
 
-    LaunchedEffect(uiEffect) {
-        uiEffect.collect { effect ->
+    LaunchedEffect(mapUiEffects) {
+        mapUiEffects.collect { effect ->
             when (effect) {
-                is MainUiEffects.UpdateCamera -> {
+                is MapUiEffects.UpdateCamera -> {
                     mapViewportState.flyTo(
                         cameraOptions = CameraOptions.Builder()
                             .apply {
@@ -92,7 +93,7 @@ fun MapContent(
                         },
                     )
                 }
-                is MainUiEffects.ShowMyLocation -> {
+                is MapUiEffects.ShowMyLocation -> {
                     when (effect.myLocationStatus) {
                         MyLocationStatus.Following -> {
                             mapViewportState.transitionToFollowPuckState(
@@ -125,7 +126,6 @@ fun MapContent(
                         MyLocationStatus.Default, MyLocationStatus.NotAvailable -> Unit
                     }
                 }
-                is MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
             }
         }
     }
@@ -134,14 +134,14 @@ fun MapContent(
         modifier = modifier
             .testTag(TestTags.MAP_MAPBOX)
             .fillMaxSize(),
-        style = { MapStyle(Style.OUTDOORS) },
+        style = { MapStyle(mapUiState.baseLayer.toMapStyle()) },
         mapViewportState = mapViewportState,
         mapState = mapState,
         scaleBar = {
             ScaleBar(
                 modifier = Modifier
                     .testTag(TestTags.MAIN_SCALE_BAR)
-                    .padding(Dimens.Default),
+                    .padding(Dimens.Large),
                 contentPadding = insetPadding,
                 height = 3.dp,
                 textSize = 10.sp,
@@ -149,7 +149,7 @@ fun MapContent(
         },
         compass = {
             Compass(
-                modifier = Modifier.padding(Dimens.Default),
+                modifier = Modifier.padding(Dimens.Large),
                 contentPadding = insetPadding,
             ) {
                 Image(
@@ -194,23 +194,26 @@ fun MapContent(
                 }
             }
         }
-        RasterLayer(
-            layerId = Layer.TURISTAUTAK.layerId,
-            sourceState = rememberRasterSourceState {
-                tileSize = LongValue(Layer.TURISTAUTAK.tileSize)
-                tiles = StringListValue(Layer.TURISTAUTAK.tiles)
-                minZoom = LongValue(Layer.TURISTAUTAK.minZoom)
-                maxZoom = LongValue(Layer.TURISTAUTAK.maxZoom)
-            },
-        )
+        if (mapUiState.hikingLayerVisible) {
+            RasterLayer(
+                layerId = OverlayLayer.TURISTAUTAK.layerId,
+                sourceState = rememberRasterSourceState {
+                    tileSize = LongValue(OverlayLayer.TURISTAUTAK.tileSize)
+                    tiles = StringListValue(OverlayLayer.TURISTAUTAK.tiles)
+                    minZoom = LongValue(OverlayLayer.TURISTAUTAK.minZoom)
+                    maxZoom = LongValue(OverlayLayer.TURISTAUTAK.maxZoom)
+                },
+            )
+        }
     }
 }
 
 @Preview
 @Composable
-private fun MapPreview() {
-    MapContent(
+private fun MapComponentPreview() {
+    MapComponent(
+        mapUiState = MapUiState(),
+        mapUiEffects = emptyFlow(),
         onEvent = {},
-        uiEffect = emptyFlow(),
     )
 }

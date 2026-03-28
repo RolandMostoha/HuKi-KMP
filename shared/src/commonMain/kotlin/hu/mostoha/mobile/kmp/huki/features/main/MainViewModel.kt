@@ -18,15 +18,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(val permissionsController: PermissionsController) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    private val _uiEffect = Channel<MainUiEffects>()
-    val uiEffect: Flow<MainUiEffects> = _uiEffect.receiveAsFlow()
+    private val _mainUiEffects = Channel<MainUiEffects>()
+    val mainUiEffects: Flow<MainUiEffects> = _mainUiEffects.receiveAsFlow()
+
+    private val _mapUiEffects = Channel<MapUiEffects>()
+    val mapUiEffects: Flow<MapUiEffects> = _mapUiEffects.receiveAsFlow()
 
     init {
         initLogging()
@@ -37,20 +39,29 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
         Logger.d { "MainEvent: $event" }
         when (event) {
             MainUiEvents.MyLocationClicked -> enableMyLocation()
-            MainUiEvents.FollowingDisabled -> _uiState.update { uiState ->
-                uiState.copy(
-                    myLocationState = uiState.myLocationState.copy(
-                        myLocationStatus = MyLocationStatus.Default,
-                    ),
-                )
+            MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState { uiState ->
+                uiState.copy(myLocationStatus = MyLocationStatus.Default)
+            }
+            MainUiEvents.LayersClicked -> sendEffect(MainUiEffects.ShowLayersBottomSheet)
+            is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState { uiState ->
+                uiState.copy(baseLayer = event.baseLayer)
+            }
+            MainUiEvents.HikingLayerSelected -> _uiState.updateMapUiState { uiState ->
+                uiState.copy(hikingLayerVisible = uiState.hikingLayerVisible.not())
+            }
+            MainUiEvents.GpxLayerSelected -> {
+                // TODO
             }
         }
     }
 
-    private fun sendEffect(effect: MainUiEffects) {
+    private fun sendEffect(uiEffect: UiEffect) {
         viewModelScope.launch {
-            Logger.d { "MainEffect: $effect" }
-            _uiEffect.send(effect)
+            Logger.d { "UiEffect: $uiEffect" }
+            when (uiEffect) {
+                is MainUiEffects -> _mainUiEffects.send(uiEffect)
+                is MapUiEffects -> _mapUiEffects.send(uiEffect)
+            }
         }
     }
 
@@ -65,15 +76,13 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
                         MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
                         MyLocationStatus.NotAvailable -> MyLocationStatus.Following
                     }
-                    _uiState.update { uiState ->
+                    _uiState.updateMyLocationState { uiState ->
                         uiState.copy(
-                            myLocationState = uiState.myLocationState.copy(
-                                permissionState = permissionState,
-                                myLocationStatus = newStatus,
-                            ),
+                            permissionState = permissionState,
+                            myLocationStatus = newStatus,
                         )
                     }
-                    sendEffect(MainUiEffects.ShowMyLocation(newStatus, animated = true))
+                    sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
                 }
                 else -> requestLocationPermission()
             }
@@ -87,15 +96,13 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
 
                 enableMyLocation()
             }.onFailure { exception ->
-                _uiState.update { uiState ->
+                _uiState.updateMyLocationState { uiState ->
                     uiState.copy(
-                        myLocationState = uiState.myLocationState.copy(
-                            permissionState = when (exception) {
-                                is DeniedAlwaysException -> PermissionState.DeniedAlways
-                                is DeniedException -> PermissionState.Denied
-                                else -> PermissionState.NotDetermined
-                            },
-                        ),
+                        permissionState = when (exception) {
+                            is DeniedAlwaysException -> PermissionState.DeniedAlways
+                            is DeniedException -> PermissionState.Denied
+                            else -> PermissionState.NotDetermined
+                        },
                     )
                 }
                 if (exception is DeniedAlwaysException) {
@@ -113,15 +120,13 @@ class MainViewModel(val permissionsController: PermissionsController) : ViewMode
             } else {
                 MyLocationStatus.NotAvailable
             }
-            _uiState.update { uiState ->
+            _uiState.updateMyLocationState { uiState ->
                 uiState.copy(
-                    myLocationState = uiState.myLocationState.copy(
-                        permissionState = permissionState,
-                        myLocationStatus = myLocationStatus,
-                    ),
+                    permissionState = permissionState,
+                    myLocationStatus = myLocationStatus,
                 )
             }
-            sendEffect(MainUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+            sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
         }
     }
 
