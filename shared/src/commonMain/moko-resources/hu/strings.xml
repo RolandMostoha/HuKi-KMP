@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="a11y_close">Bezárás</string>
+
     <string name="my_location_a11y">Saját pozíció</string>
     <string name="my_location_a11y_not_available">Saját pozíció - Nem elérhető</string>
     <string name="my_location_a11y_default">Saját pozíció - Látható</string>
     <string name="my_location_a11y_following">Saját pozíció - Követés</string>
     <string name="my_location_a11y_live_compass">Saját pozíció - Élő iránytű</string>
     <string name="my_location_a11y_compass">Saját pozíció - Iránytű</string>
+
+    <string name="layers_base_layers_title">Alap térkép</string>
+    <string name="layers_base_outdoors_title">Természet</string>
+    <string name="layers_base_streets_title">Városi</string>
+    <string name="layers_base_satellite_title">Műhold</string>
+    <string name="layers_overlay_layers_title">Fedő Rétegek</string>
+    <string name="layers_overlay_hiking_title">Túraútvonalak</string>
+    <string name="layers_overlay_gpx_title">GPX réteg</string>
+    <string name="layers_a11y_fab">Rétegek</string>
 </resources>

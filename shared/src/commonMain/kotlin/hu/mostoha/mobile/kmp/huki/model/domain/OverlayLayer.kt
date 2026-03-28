@@ -1,6 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.model.domain
 
-enum class Layer(
+enum class OverlayLayer(
     val layerId: String,
     val tiles: List<String>,
     val tileSize: Long,
