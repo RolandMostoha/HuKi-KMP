@@ -15,6 +15,6 @@
     <string name="layers_base_satellite_title">Műhold</string>
     <string name="layers_overlay_layers_title">Fedő Rétegek</string>
     <string name="layers_overlay_hiking_title">Túraútvonalak</string>
-    <string name="layers_overlay_gpx_title">GPX réteg</string>
+    <string name="layers_overlay_gpx_title">GPX Réteg</string>
     <string name="layers_a11y_fab">Rétegek</string>
 </resources>

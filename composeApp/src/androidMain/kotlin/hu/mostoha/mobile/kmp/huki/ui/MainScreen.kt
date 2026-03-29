@@ -1,5 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,9 +45,10 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
-import hu.mostoha.mobile.kmp.huki.ui.features.map.MapComponent
+import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.util.TestTags
-import hu.mostoha.mobile.kmp.huki.utils.mokoString
+import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -70,17 +75,32 @@ private fun MainContent(
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showLayersBottomSheet by remember { mutableStateOf(false) }
 
+    val gpxFilePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri: Uri? ->
+            uri?.let { onEvent(MainUiEvents.GpxFileSelected(it.toString())) }
+        },
+    )
+
     LaunchedEffect(mainUiEffects) {
         mainUiEffects.collect { effect ->
             when (effect) {
-                is MainUiEffects.ShowLayersBottomSheet -> {
-                    showLayersBottomSheet = true
-                }
-                else -> Unit
+                is MainUiEffects.ShowLayersBottomSheet ->
+                    scope.launch {
+                        if (effect.show) {
+                            showLayersBottomSheet = true
+                        } else {
+                            sheetState.hide()
+                            showLayersBottomSheet = false
+                        }
+                    }
+                MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
+                MainUiEffects.ShowGpxFilePicker -> gpxFilePickerLauncher.launch(arrayOf("*/*"))
             }
         }
     }
@@ -90,7 +110,7 @@ private fun MainContent(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .fillMaxSize(),
     ) {
-        MapComponent(
+        MapContent(
             mapUiState = uiState.mapUiState,
             mapUiEffects = mapUiEffects,
             onEvent = onEvent,
@@ -122,10 +142,7 @@ private fun MainContent(
                     onEvent(MainUiEvents.GpxLayerSelected)
                 },
                 onDismissRequest = {
-                    scope.launch {
-                        sheetState.hide()
-                        showLayersBottomSheet = false
-                    }
+                    onEvent(MainUiEvents.LayersDismissed)
                 },
             )
         }

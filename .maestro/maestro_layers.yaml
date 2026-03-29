@@ -10,13 +10,8 @@ appId: ${APP_ID}
     visible:
       id: MAP_MAPBOX
     timeout: 10000
-- tapOn:
-    text: "Layers"
-- assertVisible:
-    text: "Base Map"
-- tapOn:
-    text: "Satellite"
-- tapOn:
-    text: "Hiking trails"
-- tapOn:
-    text: "Close"
+- tapOn: "Layers"
+- assertVisible: "Base Map"
+- tapOn: "Satellite"
+- tapOn: "Hiking Trails"
+- tapOn: "Close"

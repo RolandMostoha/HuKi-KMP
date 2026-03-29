@@ -1,12 +1,15 @@
 import MapboxMaps
 import Shared
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MainView: View {
     @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
     @State private var showLayersBottomSheet = false
+    @State private var showFileImporter = false
 
     private let strings = Strings()
+    private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
 
     var body: some View {
         ZStack {
@@ -47,7 +50,7 @@ struct MainView: View {
                                 viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
                             },
                             onDismissRequest: {
-                                showLayersBottomSheet = false
+                                viewModel.onEvent(event: MainUiEventsLayersDismissed())
                             }
                         )
                         .presentationDetents([.height(360)])
@@ -61,6 +64,14 @@ struct MainView: View {
         .task {
             for await effect in viewModel.mainUiEffects {
                 handleMainEffects(effect)
+            }
+        }
+        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: filePickerTypes) { result in
+            switch result {
+            case .success(let url):
+                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString))
+            case .failure(let error):
+                print(error)
             }
         }
     }
@@ -139,8 +150,14 @@ struct MainView: View {
         switch onEnum(of: effect) {
         case .navigateToAppSettings:
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        case .showLayersBottomSheet:
-            showLayersBottomSheet.toggle()
+        case .showLayersBottomSheet(let effect):
+            if effect.show {
+                showLayersBottomSheet = true
+            } else {
+                showLayersBottomSheet = false
+            }
+        case .showGpxFilePicker:
+            showFileImporter = true
         }
     }
 }

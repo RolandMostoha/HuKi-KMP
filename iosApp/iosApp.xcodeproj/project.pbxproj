@@ -445,7 +445,7 @@
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
 				kind = exactVersion;
-				version = 11.17.1;
+				version = 11.20.1;
 			};
 		};
 		30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {

@@ -15,5 +15,9 @@
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
+    <key>UIFileSharingEnabled</key>
+    <true/>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
 </dict>
 </plist>

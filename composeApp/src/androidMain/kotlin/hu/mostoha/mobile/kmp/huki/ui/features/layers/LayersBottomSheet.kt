@@ -28,7 +28,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
-import hu.mostoha.mobile.kmp.huki.utils.mokoString
+import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 @Composable
 fun LayersBottomSheet(
@@ -82,7 +82,6 @@ fun LayersBottomSheet(
                     }
                 },
             )
-
             Row(
                 modifier = Modifier
                     .padding(horizontal = Dimens.ExtraLarge),
@@ -99,9 +98,7 @@ fun LayersBottomSheet(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(Dimens.Medium))
-
             Text(
                 text = mokoString(SharedRes.strings.layers_overlay_layers_title),
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -109,9 +106,7 @@ fun LayersBottomSheet(
                     fontWeight = FontWeight.Bold,
                 ),
             )
-
             Spacer(modifier = Modifier.height(Dimens.Medium))
-
             Row(
                 modifier = Modifier
                     .padding(horizontal = Dimens.ExtraLarge),

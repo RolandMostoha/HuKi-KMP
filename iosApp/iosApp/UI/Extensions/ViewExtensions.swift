@@ -72,12 +72,12 @@ struct FloatingButtonPadding: ViewModifier {
             content
                 .padding(.top, 16)
                 .padding(.bottom, 6)
-                .padding(.horizontal, 6)
+                .padding(.horizontal, 5)
         case .bottom:
             content
                 .padding(.top, 6)
                 .padding(.bottom, 16)
-                .padding(.horizontal, 6)
+                .padding(.horizontal, 5)
         }
     }
 }
