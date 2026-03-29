@@ -19,7 +19,7 @@ object MapConfiguration {
     )
 
     const val FOLLOW_LOCATION_ZOOM_LEVEL = 16.0
-    const val FOLLOW_LOCATION_PITCH = 45.0
+    const val FOLLOW_LOCATION_LIVE_COMPASS_PITCH = 45.0
     const val MAP_ROTATION_ENABLED = false
 
     val MAP_CAMERA_ANIM_DURATION: Duration = 800.milliseconds

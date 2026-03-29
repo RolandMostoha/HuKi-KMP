@@ -36,6 +36,28 @@ struct MapView: View {
                         .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
                     RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
                 }
+                if let gpxDetails = uiState.mapUiState.gpxDetails {
+                    let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
+
+                    GeoJSONSource(id: gpxDetails.layerId)
+                        .data(.feature(feature))
+
+                    LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
+                        .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
+                        .lineColor(SharedRes.colors().primary.getUIColor())
+                        .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
+                        .lineBorderColor(SharedRes.colors().mapStrokeColor.getUIColor())
+
+                    PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
+                        PointAnnotation(coordinate: waypoint.location.coordinate)
+                            .image(waypoint.type.icon.annotationImage)
+                            .iconSize(
+                                waypoint.type == .intermediate
+                                    ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
+                                    : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
+                            )
+                    }
+                }
             }
             .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
             .gestureOptions(GestureOptions(
@@ -84,11 +106,11 @@ struct MapView: View {
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
         withViewportAnimation(.default(maxDuration: MapConfiguration.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            viewport = .camera(
-                center: effect.location?.coordinate,
-                zoom: effect.zoom?.cgFloat,
-                bearing: effect.bearing?.doubleValue,
-                pitch: effect.pitch?.cgFloat
+            viewport = .overview(
+                geometry: effect.bounds.lineString,
+                bearing: effect.bearing?.cgFloat ?? 0,
+                pitch: effect.pitch?.cgFloat ?? 0,
+                geometryPadding: effect.contentPadding?.edgeInsets ?? .init()
             )
         }
     }
@@ -108,7 +130,7 @@ struct MapView: View {
                 viewport = .followPuck(
                     zoom: MapConfiguration.shared.FOLLOW_LOCATION_ZOOM_LEVEL,
                     bearing: .heading,
-                    pitch: MapConfiguration.shared.FOLLOW_LOCATION_PITCH
+                    pitch: MapConfiguration.shared.FOLLOW_LOCATION_LIVE_COMPASS_PITCH
                 )
             default:
                 break

@@ -30,6 +30,7 @@ struct LayersItemView: View {
                 .font(.system(size: 13))
                 .fontWeight(selected ? .semibold : .regular)
                 .multilineTextAlignment(.center)
+                .onTapGesture(perform: onClick)
         }
     }
 }

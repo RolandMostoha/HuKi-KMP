@@ -1,6 +1,6 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <!-- background circle -->
-    <circle cx="32" cy="32" r="28" fill="white" />
+    <circle cx="32" cy="32" r="28" fill="#fffff7" />
     <!-- top (red) - isosceles triangle -->
     <path d="M32 14 L40 32 L24 32 Z" fill="#E53935" />
     <!-- bottom (grey) - isosceles triangle -->
