@@ -8,6 +8,7 @@ import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
 import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
+import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
 import hu.mostoha.mobile.kmp.huki.util.isCloseWithThreshold
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
@@ -43,8 +44,10 @@ open class DefaultGpxRepository : GpxRepository {
         return GpxDetails(
             fileName = fileName,
             fileUri = uri,
+            title = GpxFormatter.formatTitle(gpx),
             locations = locations,
             waypoints = waypoints + edgeLocations,
+            bounds = locations + waypoints.map { it.location },
             totalDistance = locations.calculateTotalDistance(),
             travelTime = locations.calculateTravelTime(),
             altitudeRange = minAltitude.toInt() to maxAltitude.toInt(),

@@ -7,7 +7,6 @@ import kotlin.math.atan
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-@Suppress("MagicNumber")
 fun List<Location>.calculateTravelTime(): Duration {
     val locations = this.map { Location(it.latitude, it.longitude, it.altitude ?: 0.0) }
 
@@ -33,7 +32,6 @@ fun List<Location>.calculateTravelTime(): Duration {
  *
  * Source: https://medium.com/@sunside/naismith-aitken-langmuir-tranter-and-tobler-modeling-hiking-speed-4ff3937e6898
  */
-@Suppress("MagicNumber")
 fun naismith(distanceKm: Double, inclineKm: Double, baseSpeedKmH: Double = 4.0): Double {
     if (distanceKm == 0.0) return 0.0
 

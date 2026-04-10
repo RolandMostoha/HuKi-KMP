@@ -5,4 +5,5 @@ object TestTags {
     const val MAIN_SCALE_BAR = "MAIN_SCALE_BAR"
 
     const val MAP_MAPBOX = "MAP_MAPBOX"
+    const val GPX_DETAILS_TITLE = "GPX_DETAILS_TITLE"
 }

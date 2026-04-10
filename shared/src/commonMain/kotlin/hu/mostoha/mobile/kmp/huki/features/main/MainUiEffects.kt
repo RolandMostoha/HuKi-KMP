@@ -6,4 +6,5 @@ sealed interface MainUiEffects : UiEffect {
     data object NavigateToAppSettings : MainUiEffects
     data class ShowLayersBottomSheet(val show: Boolean) : MainUiEffects
     data object ShowGpxFilePicker : MainUiEffects
+    data class ShowDetailsBottomSheet(val show: Boolean) : MainUiEffects
 }

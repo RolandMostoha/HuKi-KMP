@@ -268,18 +268,29 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then uiState has switched hiking layer visibility`() {
+    fun `When GpxFileSelected, Then uiState has updated loading state and GPX details`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().mapUiState.gpxDetails shouldBe null
+                with(awaitItem()) {
+                    isLoading shouldBe false
+                    mapUiState.gpxDetails shouldBe null
+                }
 
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
 
-                awaitItem().mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+                with(awaitItem()) {
+                    isLoading shouldBe true
+                    mapUiState.gpxDetails shouldBe null
+                }
+
+                with(awaitItem()) {
+                    isLoading shouldBe false
+                    mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+                }
             }
         }
     }
@@ -301,6 +312,58 @@ class MainViewModelTest {
                     contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                 )
                 ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxFileSelected, Then mainUiEffects show gpx details`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxRouteClicked and gpx details available, Then mainUiEffects show gpx details`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+
+                viewModel.onEvent(MainUiEvents.GpxRouteClicked)
+
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxCloseClicked, Then gpx details is null`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+
+                awaitItem().mapUiState.gpxDetails shouldBe null
             }
         }
     }

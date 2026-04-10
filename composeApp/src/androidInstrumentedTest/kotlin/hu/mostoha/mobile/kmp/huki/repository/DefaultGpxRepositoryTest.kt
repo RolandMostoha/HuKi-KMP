@@ -50,6 +50,7 @@ class DefaultGpxRepositoryTest {
 
             val gpx = repository.readGpxFile(uri.toString())
 
+            gpx.title shouldBe "OKT-15 - Rozália téglagyár - Dobogókő"
             gpx.locations shouldNot beEmpty()
             gpx.waypoints.count { it.type == WaypointType.START } shouldBe 1
             gpx.waypoints.count { it.type == WaypointType.END } shouldBe 1

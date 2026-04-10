@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 data class MainUiState(
     val mapUiState: MapUiState = MapUiState.Default,
     val myLocationState: MyLocationState = MyLocationState.Default,
+    val isLoading: Boolean = false,
 ) {
     companion object {
         val Default = MainUiState()

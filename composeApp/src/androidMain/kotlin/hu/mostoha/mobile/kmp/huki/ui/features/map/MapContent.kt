@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
 import com.mapbox.maps.ImageHolder
+import com.mapbox.maps.MapboxDelicateApi
+import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
@@ -39,6 +41,7 @@ import com.mapbox.maps.extension.compose.style.layers.generated.LineCapValue
 import com.mapbox.maps.extension.compose.style.layers.generated.LineJoinValue
 import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
+import com.mapbox.maps.extension.compose.style.layers.rememberLayerInteractionsState
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
@@ -46,7 +49,6 @@ import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.location
-import com.mapbox.maps.plugin.viewport.ViewportStatus
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
@@ -60,6 +62,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
+import hu.mostoha.mobile.kmp.huki.model.mapper.isIdle
+import hu.mostoha.mobile.kmp.huki.model.mapper.isOverview
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDuration
 import hu.mostoha.mobile.kmp.huki.model.mapper.toEdgeInset
@@ -76,6 +80,7 @@ import hu.mostoha.mobile.kmp.huki.util.toComposeColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
+@OptIn(MapboxDelicateApi::class, MapboxExperimental::class)
 @Composable
 fun MapContent(
     mapUiState: MapUiState,
@@ -158,7 +163,7 @@ fun MapContent(
             }
             mapView.viewport.addStatusObserver { from, to, reason ->
                 Logger.d { "Mapbox: Viewport status: from=$from, to=$to, reason=$reason" }
-                if (from.isFollow() && to is ViewportStatus.Idle) {
+                if (from.isFollow() && (to.isIdle() || to.isOverview())) {
                     onEvent(MainUiEvents.FollowingDisabled)
                 }
             }
@@ -178,6 +183,12 @@ fun MapContent(
             val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
                 lineMetrics = BooleanValue(true)
             }
+            val lineInteractionsState = rememberLayerInteractionsState {
+                onClicked { _, _ ->
+                    onEvent(MainUiEvents.GpxRouteClicked)
+                    true
+                }
+            }
             LaunchedEffect(key1 = gpxDetails.layerId) {
                 geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
             }
@@ -185,6 +196,7 @@ fun MapContent(
                 sourceState = geoJsonSource,
                 layerId = gpxDetails.layerId,
             ) {
+                interactionsState = lineInteractionsState
                 lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
                 lineColor = ColorValue(primaryColor)
                 lineBorderColor = ColorValue(mapStrokeColor)

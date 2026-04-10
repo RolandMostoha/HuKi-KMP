@@ -34,6 +34,7 @@ subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         debug.set(true)
+        verbose.set(true)
         android.set(true)
         filter {
             exclude("**/generated/**")
