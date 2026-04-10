@@ -10,6 +10,8 @@ actual class Strings {
         if (args.isEmpty()) {
             StringDesc.Resource(id).localized()
         } else {
-            StringDesc.ResourceFormatted(id, args).localized()
+            StringDesc.ResourceFormatted(id, *args.toTypedArray()).localized()
         }
+
+    actual fun get(desc: StringDesc): String = desc.localized()
 }

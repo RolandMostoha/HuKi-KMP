@@ -22,8 +22,9 @@
 - **Supported app languages**: English, Hungarian.
 
 ## Technology Stack
-- **MapBox**: Used for the map engine. 
+- **MapBox**: Used for the map engine.
   - Mapbox version for Android and iOS: `11.20.1`
+  - Always make sure the Mapbox API / SDK functions exist and available
   - Android: MapBox is used with Jetpack Compose
   - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
   - iOS: MapBox is used with SwiftUI
@@ -49,9 +50,6 @@
   - `:turf` Geo utilities: distance, bearing etc.
   - `:units` Unit conversions, e.g. `5.kilometers`.
 
-###
-
-###
 
 ## Architecture
 - UDF (Unidirectional Data Flow), MVI
@@ -84,9 +82,18 @@ UI → UiEvent → ViewModel → UiState
 - Expect/Actual: Use `expect`/`actual` if you want to call the function from anywhere in your code, without having to inject an instance e.g. `log("message")`, `strings("id")`.
 - Use `kotlinx-datetime` for time.
 - Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for shared strings, colors, fonts.
+- SharedDimens: dimension values which shared as a 1-1 mapping with Android DP vs iOS Point
 
 ## Unit tests
 - Use `Given X, When Y, Then Z`
+- Use test functions like:
+```
+val [input] = X
+
+val [actual] = operation(X)
+
+[actual] shouldBe [expected]
+```
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
 
@@ -106,6 +113,8 @@ UI → UiEvent → ViewModel → UiState
 - Use @Preview whenever possible
 - Only pass ViewModel to the hosting Screen's Composable
 - UI Components: keep Composables stateless.
+- Avoid fully qualified symbols in code when a normal import can be used, e.g. prefer `Alignment.CenterVertically` over `androidx.compose.ui.Alignment.CenterVertically`.
+- Don't use unnecessary blank lines between UI components
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass
@@ -113,6 +122,7 @@ UI → UiEvent → ViewModel → UiState
 - If needed, add API wrappers for Liquid Glass styles, e.g. `if #available(iOS 26, *)`
 - Entry Point: `HukiApp` + `MainView`
 - UI Package for features: `/UI/Views/[feature]/`
+- Don't use unnecessary blank lines between UI components
 
 ### Code Quality & Linting
 ### Android

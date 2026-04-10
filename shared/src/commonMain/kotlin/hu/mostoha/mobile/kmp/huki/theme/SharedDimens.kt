@@ -10,8 +10,8 @@ object SharedDimens {
 
     val GPX_CONTENT_PADDING = ContentPadding(
         top = 150.0,
-        left = 80.0,
-        bottom = 150.0,
-        right = 80.0,
+        left = 60.0,
+        bottom = 300.0,
+        right = 60.0,
     )
 }

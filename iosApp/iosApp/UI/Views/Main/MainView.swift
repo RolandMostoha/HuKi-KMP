@@ -7,6 +7,7 @@ struct MainView: View {
     @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
     @State private var showLayersBottomSheet = false
     @State private var showFileImporter = false
+    @State private var showDetailsBottomSheet = false
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -18,6 +19,9 @@ struct MainView: View {
                     uiState: uiState,
                     onFollowingDisabled: {
                         viewModel.onEvent(event: MainUiEventsFollowingDisabled())
+                    },
+                    onGpxRouteClicked: {
+                        viewModel.onEvent(event: MainUiEventsGpxRouteClicked.shared)
                     },
                     mapUiEffects: viewModel.mapUiEffects
                 )
@@ -56,6 +60,23 @@ struct MainView: View {
                         .presentationDetents([.height(360)])
                         .presentationDragIndicator(.hidden)
                     }
+                    .sheet(isPresented: $showDetailsBottomSheet) {
+                        if let gpxDetails = uiState.mapUiState.gpxDetails {
+                            GpxDetailsSheetView(
+                                strings: strings,
+                                gpxDetails: gpxDetails,
+                                onStartClick: {
+                                    viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
+                                },
+                                onDismissRequest: {
+                                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                                }
+                            )
+                            .presentationDetents([.height(260)])
+                            .presentationDragIndicator(.hidden)
+                            .presentationBackgroundInteraction(.enabled)
+                        }
+                    }
                 }
             }
         }
@@ -86,26 +107,34 @@ struct MainView: View {
         @Namespace private var mainActionGlassNamespace
 
         var body: some View {
-            GlassContainer {
-                VStack {
-                    Button(
-                        action: {
+            ZStack(alignment: .bottomTrailing) {
+                if uiState.isLoading {
+                    Button(action: {}, label: {
+                        ProgressView()
+                            .scaleEffect(1.1)
+                            .padding(6)
+                    })
+                    .glassButtonStyle()
+                    .buttonBorderShape(.circle)
+                    .disabled(true)
+                    .padding(.top, 48)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                }
+                GlassContainer {
+                    VStack {
+                        Button(action: {
                             onLayersClicked()
-                        },
-                        label: {
+                        }, label: {
                             Image(systemName: "map.fill")
                                 .fontWeight(.bold)
                                 .floatingButtonPadding(.top)
-                        }
-                    )
-                    .glassButtonStyle()
-                    .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                    .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab, args: []))
-                    Button(
-                        action: {
+                        })
+                        .glassButtonStyle()
+                        .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
+                        .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab, args: []))
+                        Button(action: {
                             onMyLocationClicked()
-                        },
-                        label: {
+                        }, label: {
                             Image(systemName: {
                                 switch onEnum(of: uiState.myLocationState.myLocationStatus) {
                                 case .default, .notAvailable:
@@ -116,31 +145,31 @@ struct MainView: View {
                                     return "location.north.line.fill"
                                 }
                             }())
-                                .fontWeight(.bold)
-                                .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
-                                .floatingButtonPadding(.bottom)
-                        }
-                    )
-                    .glassButtonStyle()
-                    .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                    .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
-                    .accessibilityLabel(
-                        strings.get(
-                            id: {
-                                switch onEnum(of: uiState.myLocationState.myLocationStatus) {
-                                case .default:
-                                    return SharedRes.strings().my_location_a11y_default
-                                case .following:
-                                    return SharedRes.strings().my_location_a11y_following
-                                case .followingLiveCompass:
-                                    return SharedRes.strings().my_location_a11y_live_compass
-                                case .notAvailable:
-                                    return SharedRes.strings().my_location_a11y_not_available
-                                }
-                            }(),
-                            args: []
+                            .fontWeight(.bold)
+                            .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
+                            .floatingButtonPadding(.bottom)
+                        })
+                        .glassButtonStyle()
+                        .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
+                        .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
+                        .accessibilityLabel(
+                            strings.get(
+                                id: {
+                                    switch onEnum(of: uiState.myLocationState.myLocationStatus) {
+                                    case .default:
+                                        return SharedRes.strings().my_location_a11y_default
+                                    case .following:
+                                        return SharedRes.strings().my_location_a11y_following
+                                    case .followingLiveCompass:
+                                        return SharedRes.strings().my_location_a11y_live_compass
+                                    case .notAvailable:
+                                        return SharedRes.strings().my_location_a11y_not_available
+                                    }
+                                }(),
+                                args: []
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -158,6 +187,12 @@ struct MainView: View {
             }
         case .showGpxFilePicker:
             showFileImporter = true
+        case .showDetailsBottomSheet(let effect):
+            if effect.show {
+                showDetailsBottomSheet = true
+            } else {
+                showDetailsBottomSheet = false
+            }
         }
     }
 }

@@ -13,4 +13,6 @@ actual class Strings(val context: Context) {
         } else {
             StringDesc.ResourceFormatted(id, args).toString(context)
         }
+
+    actual fun get(desc: StringDesc): String = desc.toString(context)
 }

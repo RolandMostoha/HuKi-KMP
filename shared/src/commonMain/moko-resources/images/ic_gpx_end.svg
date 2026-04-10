@@ -10,7 +10,7 @@
         r="6.5"
         fill="#fffff7"
         stroke="#1a1a1a"
-        stroke-width="0.8" />
+        stroke-width="0.9" />
 
     <!-- Flag (scaled from 24 -> 14 and centered) -->
     <path

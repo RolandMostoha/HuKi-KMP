@@ -5,6 +5,7 @@ import SwiftUI
 struct MapView: View {
     let uiState: MainUiState
     let onFollowingDisabled: () -> Void
+    let onGpxRouteClicked: () -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
     private let viewportObserver = ViewportObserver()
@@ -57,6 +58,11 @@ struct MapView: View {
                                     : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                             )
                     }
+
+                    TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
+                        onGpxRouteClicked()
+                        return true
+                    }
                 }
             }
             .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
@@ -78,7 +84,7 @@ struct MapView: View {
                 )
             ))
             .onAppear {
-                viewportObserver.onFollowToIdle = {
+                viewportObserver.onFollowingDisabled = {
                     onFollowingDisabled()
                 }
                 proxy.viewport?.addStatusObserver(viewportObserver)

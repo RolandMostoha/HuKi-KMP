@@ -2,6 +2,10 @@
 <resources>
     <string name="a11y_close">Close</string>
 
+    <string name="travel_time_minutes_pattern">%s M</string>
+    <string name="travel_time_hours_pattern">%s H</string>
+    <string name="travel_time_hours_minutes_pattern">%sH %sM</string>
+
     <string name="my_location_a11y">My location</string>
     <string name="my_location_a11y_not_available">My location - Not available</string>
     <string name="my_location_a11y_default">My location - Visible</string>
@@ -17,4 +21,11 @@
     <string name="layers_overlay_hiking_title">Hiking Trails</string>
     <string name="layers_overlay_gpx_title">GPX Layer</string>
     <string name="layers_a11y_fab">Layers</string>
+
+    <string name="gpx_details_travel_time">Travel Time</string>
+    <string name="gpx_details_distance">Distance</string>
+    <string name="gpx_details_incline">Incline</string>
+    <string name="gpx_details_decline">Decline</string>
+    <string name="gpx_details_start">Start</string>
+
 </resources>
