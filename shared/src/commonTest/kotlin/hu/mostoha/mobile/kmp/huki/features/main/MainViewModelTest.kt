@@ -6,12 +6,15 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import io.kotest.matchers.shouldBe
@@ -399,6 +402,33 @@ class MainViewModelTest {
                     gpxDetails shouldBe null
                     gpxLayerVisible shouldBe false
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `Given GPX import error, When GpxImportErrorDismissed, Then import error is cleared`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } throws NonGpxFileException()
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().alert shouldBe null
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                // Loading state
+                awaitItem().alert shouldBe null
+
+                with(awaitItem()) {
+                    alert!!.title shouldBe SharedRes.strings.gpx_import_error_title
+                    alert.message shouldBe SharedRes.strings.gpx_import_error_non_gpx_message
+                }
+
+                viewModel.onEvent(MainUiEvents.AlertDismissed)
+
+                awaitItem().alert shouldBe null
             }
         }
     }

@@ -8,6 +8,7 @@ struct MainView: View {
     @State private var showLayersBottomSheet = false
     @State private var showFileImporter = false
     @State private var showDetailsBottomSheet = false
+    @State private var showAlert = false
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -78,6 +79,20 @@ struct MainView: View {
                         }
                     }
                 }
+                .alert(
+                    uiState.alert.map { strings.get(id: $0.title) } ?? "",
+                    isPresented: $showAlert,
+                    presenting: uiState.alert
+                ) { _ in
+                    Button(strings.get(id: SharedRes.strings().alert_ok)) {
+                        viewModel.onEvent(event: MainUiEventsAlertDismissed.shared)
+                    }
+                } message: { alert in
+                    Text(strings.get(id: alert.message))
+                }
+                .onChange(of: uiState.alert != nil) { _, newValue in
+                    showAlert = newValue
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -131,44 +146,27 @@ struct MainView: View {
                         })
                         .glassButtonStyle()
                         .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                        .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab, args: []))
+                        .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab))
                         Button(action: {
                             onMyLocationClicked()
                         }, label: {
-                            Image(systemName: {
-                                switch onEnum(of: uiState.myLocationState.myLocationStatus) {
-                                case .default, .notAvailable:
-                                    return "location.north"
-                                case .following:
-                                    return "location.fill"
-                                case .followingLiveCompass:
-                                    return "location.north.line.fill"
-                                }
-                            }())
-                            .fontWeight(.bold)
-                            .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
-                            .floatingButtonPadding(.bottom)
+                            let imageSystemName = switch onEnum(of: uiState.myLocationState.myLocationStatus) {
+                            case .default, .notAvailable:
+                                "location.north"
+                            case .following:
+                                "location.fill"
+                            case .followingLiveCompass:
+                                "location.north.line.fill"
+                            }
+                            Image(systemName: imageSystemName)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
+                                .floatingButtonPadding(.bottom)
                         })
                         .glassButtonStyle()
                         .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
                         .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
-                        .accessibilityLabel(
-                            strings.get(
-                                id: {
-                                    switch onEnum(of: uiState.myLocationState.myLocationStatus) {
-                                    case .default:
-                                        return SharedRes.strings().my_location_a11y_default
-                                    case .following:
-                                        return SharedRes.strings().my_location_a11y_following
-                                    case .followingLiveCompass:
-                                        return SharedRes.strings().my_location_a11y_live_compass
-                                    case .notAvailable:
-                                        return SharedRes.strings().my_location_a11y_not_available
-                                    }
-                                }(),
-                                args: []
-                            )
-                        )
+                        .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.accessibilityId))
                     }
                 }
             }

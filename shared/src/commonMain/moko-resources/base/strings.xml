@@ -2,6 +2,10 @@
 <resources>
     <string name="a11y_close">Close</string>
 
+    <string name="error_unknown">Unknown error occurred.</string>
+
+    <string name="alert_ok">Got it</string>
+
     <string name="travel_time_minutes_pattern">%s M</string>
     <string name="travel_time_hours_pattern">%s H</string>
     <string name="travel_time_hours_minutes_pattern">%sH %sM</string>
@@ -27,5 +31,11 @@
     <string name="gpx_details_incline">Incline</string>
     <string name="gpx_details_decline">Decline</string>
     <string name="gpx_details_start">Start</string>
+
+    <string name="gpx_import_error_title">GPX import failed</string>
+    <string name="gpx_import_error_empty_content_message">The selected GPX file does not contain a "route", "track", or "waypoint". Please select a non-empty GPX file.</string>
+    <string name="gpx_import_error_malformed_message">The selected GPX file is malformed and could not be parsed. Please select a valid GPX file.</string>
+    <string name="gpx_import_error_non_gpx_message">The selected file is not a GPX file. Please select a valid GPX file.</string>
+    <string name="gpx_import_error_unreadable_message">The selected file could not be read. Please select a valid GPX file.</string>
 
 </resources>

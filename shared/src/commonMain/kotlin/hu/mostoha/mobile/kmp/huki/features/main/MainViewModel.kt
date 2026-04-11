@@ -9,6 +9,9 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
+import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.Alert
+import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -62,6 +65,7 @@ class MainViewModel(
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
             MainUiEvents.GpxRouteClicked -> showDetailsBottomSheet()
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
+            MainUiEvents.AlertDismissed -> dismissAlert()
             MainUiEvents.GpxCloseClicked -> closeGpx()
         }
     }
@@ -156,26 +160,48 @@ class MainViewModel(
 
     private fun importGpx(uri: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-
-            val gpxDetails = gpxRepository.readGpxFile(uri)
-
-            _uiState.update { uiState ->
-                uiState.copy(
-                    mapUiState = uiState.mapUiState.copy(
-                        gpxDetails = gpxDetails,
-                        gpxLayerVisible = true,
-                    ),
-                    isLoading = false,
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    alert = null,
                 )
             }
-            sendEffect(
-                MapUiEffects.UpdateCamera(
-                    bounds = gpxDetails.bounds,
-                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
-                ),
-            )
-            sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = true))
+            runCatching { gpxRepository.readGpxFile(uri) }
+                .onSuccess { gpxDetails ->
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            mapUiState = uiState.mapUiState.copy(
+                                gpxDetails = gpxDetails,
+                                gpxLayerVisible = true,
+                            ),
+                            alert = null,
+                            isLoading = false,
+                        )
+                    }
+                    sendEffect(
+                        MapUiEffects.UpdateCamera(
+                            bounds = gpxDetails.bounds,
+                            contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                        ),
+                    )
+                    sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = true))
+                }
+                .onFailure { exception ->
+                    Logger.e(exception) { "Failed to import GPX file." }
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            alert = Alert(
+                                title = SharedRes.strings.gpx_import_error_title,
+                                message = if (exception is DomainException) {
+                                    exception.stringResource
+                                } else {
+                                    SharedRes.strings.error_unknown
+                                },
+                            ),
+                            isLoading = false,
+                        )
+                    }
+                }
         }
     }
 
@@ -204,6 +230,14 @@ class MainViewModel(
                     gpxDetails = null,
                     gpxLayerVisible = false,
                 )
+            }
+        }
+    }
+
+    private fun dismissAlert() {
+        viewModelScope.launch {
+            _uiState.update { uiState ->
+                uiState.copy(alert = null)
             }
         }
     }

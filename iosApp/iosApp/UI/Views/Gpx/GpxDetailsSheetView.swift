@@ -43,7 +43,7 @@ struct GpxDetailsSheetView: View {
                 }
                 .buttonStyle(.plain)
                 .contentShape(Circle())
-                .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close, args: []))
+                .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
             }
             GpxStatsRowView(
                 strings: strings,
@@ -51,7 +51,7 @@ struct GpxDetailsSheetView: View {
             )
             Button(action: onStartClick) {
                 Label {
-                    Text(strings.get(id: SharedRes.strings().gpx_details_start, args: []))
+                    Text(strings.get(id: SharedRes.strings().gpx_details_start))
                         .font(.headline)
                         .fontWeight(.semibold)
                 } icon: {
@@ -78,22 +78,22 @@ private struct GpxStatsRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_travel_time, args: []),
+                label: strings.get(id: SharedRes.strings().gpx_details_travel_time),
                 value: strings.get(desc: TravelTimeFormatter.shared.formatTravelTime(duration: gpxDetails.travelTime)),
                 systemImage: "clock.fill"
             )
             GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_distance, args: []),
+                label: strings.get(id: SharedRes.strings().gpx_details_distance),
                 value: DistanceFormatter.shared.formatDistance(distance: gpxDetails.totalDistance),
                 systemImage: "location.fill"
             )
             GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_incline, args: []),
+                label: strings.get(id: SharedRes.strings().gpx_details_incline),
                 value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.incline),
                 systemImage: "chart.line.uptrend.xyaxis"
             )
             GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_decline, args: []),
+                label: strings.get(id: SharedRes.strings().gpx_details_decline),
                 value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.decline),
                 systemImage: "chart.line.downtrend.xyaxis"
             )
