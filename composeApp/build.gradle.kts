@@ -89,4 +89,5 @@ dependencies {
     androidTestImplementation(libs.kotest.core)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(kotlin("test"))
 }

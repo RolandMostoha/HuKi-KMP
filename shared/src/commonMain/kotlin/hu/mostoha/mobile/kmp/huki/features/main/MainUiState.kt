@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -9,6 +10,7 @@ data class MainUiState(
     val mapUiState: MapUiState = MapUiState.Default,
     val myLocationState: MyLocationState = MyLocationState.Default,
     val isLoading: Boolean = false,
+    val alert: Alert? = null,
 ) {
     companion object {
         val Default = MainUiState()

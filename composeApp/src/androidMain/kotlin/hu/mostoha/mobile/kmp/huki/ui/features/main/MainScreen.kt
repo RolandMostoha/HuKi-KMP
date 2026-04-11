@@ -1,4 +1,4 @@
-package hu.mostoha.mobile.kmp.huki.ui
+package hu.mostoha.mobile.kmp.huki.ui.features.main
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,13 +16,17 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
@@ -42,8 +46,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import hu.mostoha.mobile.android.huki.R
@@ -90,7 +96,7 @@ private fun MainContent(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val layersSheetState = rememberModalBottomSheetState()
     val detailsBottomSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false,
@@ -113,7 +119,7 @@ private fun MainContent(
                         if (effect.show) {
                             showLayersBottomSheet = true
                         } else {
-                            sheetState.hide()
+                            layersSheetState.hide()
                             showLayersBottomSheet = false
                         }
                     }
@@ -179,7 +185,7 @@ private fun MainContent(
             )
             if (showLayersBottomSheet) {
                 LayersBottomSheet(
-                    sheetState = sheetState,
+                    sheetState = layersSheetState,
                     selectedBaseLayer = uiState.mapUiState.baseLayer,
                     isHikingLayerSelected = uiState.mapUiState.hikingLayerVisible,
                     isGpxLayerSelected = uiState.mapUiState.gpxLayerVisible,
@@ -194,6 +200,38 @@ private fun MainContent(
                     },
                     onDismissRequest = {
                         onEvent(MainUiEvents.LayersDismissed)
+                    },
+                )
+            }
+            uiState.alert?.let { alert ->
+                AlertDialog(
+                    onDismissRequest = {
+                        onEvent(MainUiEvents.AlertDismissed)
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                onEvent(MainUiEvents.AlertDismissed)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        ) {
+                            Text(text = mokoString(SharedRes.strings.alert_ok))
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = mokoString(alert.title),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                            ),
+                        )
+                    },
+                    text = {
+                        Text(text = mokoString(alert.message))
                     },
                 )
             }
@@ -267,14 +305,7 @@ private fun FloatingActionContainer(
                             MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
                         },
                     ),
-                    contentDescription = mokoString(
-                        when (mainUiState.myLocationState.myLocationStatus) {
-                            MyLocationStatus.NotAvailable -> SharedRes.strings.my_location_a11y_not_available
-                            MyLocationStatus.Default -> SharedRes.strings.my_location_a11y_default
-                            MyLocationStatus.Following -> SharedRes.strings.my_location_a11y_following
-                            MyLocationStatus.FollowingLiveCompass -> SharedRes.strings.my_location_a11y_live_compass
-                        },
-                    ),
+                    contentDescription = mokoString(mainUiState.myLocationState.myLocationStatus.accessibilityId),
                 )
             }
         }

@@ -2,6 +2,10 @@
 <resources>
     <string name="a11y_close">Bezárás</string>
 
+    <string name="error_unknown">Ismeretlen hiba történt.</string>
+
+    <string name="alert_ok">Rendben</string>
+
     <string name="travel_time_minutes_pattern">%s P</string>
     <string name="travel_time_hours_pattern">%s Ó</string>
     <string name="travel_time_hours_minutes_pattern">%sÓ %sP</string>
@@ -27,5 +31,11 @@
     <string name="gpx_details_incline">Emelkedés</string>
     <string name="gpx_details_decline">Lejtés</string>
     <string name="gpx_details_start">Indulás</string>
+
+    <string name="gpx_import_error_title">GPX import hiba</string>
+    <string name="gpx_import_error_empty_content_message">A kiválasztott GPX fájlnak nincs "route", "track", vagy "waypoint" paramétere. Kérlek válassz egy nem-üres GPX fájlt.</string>
+    <string name="gpx_import_error_malformed_message">A kiválasztott GPX fájl formátuma hibás, ezért nem lehet importálni. Kérlek válassz egy helyes GPX fájlt.</string>
+    <string name="gpx_import_error_non_gpx_message">A kiválasztott fájl nem egy GPX fájl. Kérlek válassz egy helyes GPX fájlt.</string>
+    <string name="gpx_import_error_unreadable_message">A kiválasztott fájlt nem lehet beolvasni. Kérlek válassz egy helyes GPX fájlt.</string>
 
 </resources>

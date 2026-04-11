@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
-import hu.mostoha.mobile.kmp.huki.ui.MainScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
