@@ -9,6 +9,7 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
+import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -154,7 +155,7 @@ class MainViewModel(
 
     private fun initLogging() {
         uiState
-            .onEach { Logger.d { "MainState: $it" } }
+            .onEach { Logger.d { "MainState: ${it.trimLongLists()}" } }
             .launchIn(viewModelScope)
     }
 }

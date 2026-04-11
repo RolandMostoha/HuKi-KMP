@@ -13,7 +13,7 @@ extension Shared.Location {
 
 extension Shared.Location {
     var id: String {
-        String(format: "%.6f,%.6f,%.2f", latitude, longitude, altitude ?? 0)
+        String(format: "%.6f,%.6f,%.2f", latitude, longitude, (altitude?.doubleValue ?? 0.0))
     }
 }
 
