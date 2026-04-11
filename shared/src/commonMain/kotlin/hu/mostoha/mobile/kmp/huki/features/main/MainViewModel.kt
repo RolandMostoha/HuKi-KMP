@@ -58,7 +58,7 @@ class MainViewModel(
             MainUiEvents.HikingLayerSelected -> _uiState.updateMapUiState {
                 it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
             }
-            MainUiEvents.GpxLayerSelected -> showGpxFilePicker()
+            MainUiEvents.GpxLayerSelected -> handleGpxLayerSelected()
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
             MainUiEvents.GpxRouteClicked -> showDetailsBottomSheet()
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
@@ -143,6 +143,17 @@ class MainViewModel(
         }
     }
 
+    private fun handleGpxLayerSelected() {
+        val gpxDetails = uiState.value.mapUiState.gpxDetails
+        if (gpxDetails == null) {
+            showGpxFilePicker()
+        } else {
+            _uiState.updateMapUiState {
+                it.copy(gpxLayerVisible = it.gpxLayerVisible.not())
+            }
+        }
+    }
+
     private fun importGpx(uri: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -151,7 +162,10 @@ class MainViewModel(
 
             _uiState.update { uiState ->
                 uiState.copy(
-                    mapUiState = uiState.mapUiState.copy(gpxDetails = gpxDetails),
+                    mapUiState = uiState.mapUiState.copy(
+                        gpxDetails = gpxDetails,
+                        gpxLayerVisible = true,
+                    ),
                     isLoading = false,
                 )
             }
@@ -186,7 +200,10 @@ class MainViewModel(
         viewModelScope.launch {
             sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = false))
             _uiState.updateMapUiState { uiState ->
-                uiState.copy(gpxDetails = null)
+                uiState.copy(
+                    gpxDetails = null,
+                    gpxLayerVisible = false,
+                )
             }
         }
     }

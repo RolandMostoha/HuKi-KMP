@@ -179,40 +179,42 @@ fun MapContent(
                 },
             )
         }
-        mapUiState.gpxDetails?.let { gpxDetails ->
-            val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
-                lineMetrics = BooleanValue(true)
-            }
-            val lineInteractionsState = rememberLayerInteractionsState {
-                onClicked { _, _ ->
-                    onEvent(MainUiEvents.GpxRouteClicked)
-                    true
+        if (mapUiState.gpxLayerVisible) {
+            mapUiState.gpxDetails?.let { gpxDetails ->
+                val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
+                    lineMetrics = BooleanValue(true)
                 }
-            }
-            LaunchedEffect(key1 = gpxDetails.layerId) {
-                geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
-            }
-            LineLayer(
-                sourceState = geoJsonSource,
-                layerId = gpxDetails.layerId,
-            ) {
-                interactionsState = lineInteractionsState
-                lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
-                lineColor = ColorValue(primaryColor)
-                lineBorderColor = ColorValue(mapStrokeColor)
-                lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
-                lineCap = LineCapValue.ROUND
-                lineJoin = LineJoinValue.ROUND
-            }
+                val lineInteractionsState = rememberLayerInteractionsState {
+                    onClicked { _, _ ->
+                        onEvent(MainUiEvents.GpxRouteClicked)
+                        true
+                    }
+                }
+                LaunchedEffect(key1 = gpxDetails.layerId) {
+                    geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
+                }
+                LineLayer(
+                    sourceState = geoJsonSource,
+                    layerId = gpxDetails.layerId,
+                ) {
+                    interactionsState = lineInteractionsState
+                    lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
+                    lineColor = ColorValue(primaryColor)
+                    lineBorderColor = ColorValue(mapStrokeColor)
+                    lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
+                    lineCap = LineCapValue.ROUND
+                    lineJoin = LineJoinValue.ROUND
+                }
 
-            gpxDetails.waypoints.forEach { waypoint ->
-                val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
-                PointAnnotation(waypoint.location.toPoint()) {
-                    iconImage = rememberIconImage
-                    iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
-                        SharedDimens.GPX_WAYPOINT_MARKER_SCALE
-                    } else {
-                        SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
+                gpxDetails.waypoints.forEach { waypoint ->
+                    val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
+                    PointAnnotation(waypoint.location.toPoint()) {
+                        iconImage = rememberIconImage
+                        iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
+                            SharedDimens.GPX_WAYPOINT_MARKER_SCALE
+                        } else {
+                            SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
+                        }
                     }
                 }
             }
