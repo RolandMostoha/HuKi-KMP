@@ -252,7 +252,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxLayerSelected, Then mainUiEffects is ShowGpxFilePicker`() {
+    fun `When GpxLayerSelected and no GPX imported, Then mainUiEffects is ShowGpxFilePicker`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -290,7 +290,34 @@ class MainViewModelTest {
                 with(awaitItem()) {
                     isLoading shouldBe false
                     mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+                    mapUiState.gpxLayerVisible shouldBe true
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxLayerSelected and GPX already imported, Then uiState toggles GPX layer visibility`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+                awaitItem().mapUiState.gpxLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe true
             }
         }
     }
@@ -359,11 +386,19 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
+                awaitItem()
+
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem()
+                awaitItem()
 
                 viewModel.onEvent(MainUiEvents.GpxCloseClicked)
 
-                awaitItem().mapUiState.gpxDetails shouldBe null
+                with(awaitItem().mapUiState) {
+                    gpxDetails shouldBe null
+                    gpxLayerVisible shouldBe false
+                }
             }
         }
     }

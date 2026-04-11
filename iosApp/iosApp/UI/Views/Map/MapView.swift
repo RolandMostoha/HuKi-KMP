@@ -37,31 +37,33 @@ struct MapView: View {
                         .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
                     RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
                 }
-                if let gpxDetails = uiState.mapUiState.gpxDetails {
-                    let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
+                if uiState.mapUiState.gpxLayerVisible {
+                    if let gpxDetails = uiState.mapUiState.gpxDetails {
+                        let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
 
-                    GeoJSONSource(id: gpxDetails.layerId)
-                        .data(.feature(feature))
+                        GeoJSONSource(id: gpxDetails.layerId)
+                            .data(.feature(feature))
 
-                    LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
-                        .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                        .lineColor(SharedRes.colors().primary.getUIColor())
-                        .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                        .lineBorderColor(SharedRes.colors().mapStrokeColor.getUIColor())
+                        LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
+                            .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
+                            .lineColor(SharedRes.colors().primary.getUIColor())
+                            .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
+                            .lineBorderColor(SharedRes.colors().mapStrokeColor.getUIColor())
 
-                    PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
-                        PointAnnotation(coordinate: waypoint.location.coordinate)
-                            .image(waypoint.type.icon.annotationImage)
-                            .iconSize(
-                                waypoint.type == .intermediate
-                                    ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
-                                    : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
-                            )
-                    }
+                        PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
+                            PointAnnotation(coordinate: waypoint.location.coordinate)
+                                .image(waypoint.type.icon.annotationImage)
+                                .iconSize(
+                                    waypoint.type == .intermediate
+                                        ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
+                                        : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
+                                )
+                        }
 
-                    TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
-                        onGpxRouteClicked()
-                        return true
+                        TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
+                            onGpxRouteClicked()
+                            return true
+                        }
                     }
                 }
             }
