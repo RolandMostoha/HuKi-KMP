@@ -10,9 +10,9 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
-import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -243,7 +243,7 @@ class MainViewModel(
     }
 
     private suspend fun sendEffect(uiEffect: UiEffect) {
-        Logger.d { "UiEffect: $uiEffect" }
+        Logger.d { "UiEffect: ${uiEffect.trimLongLists()}" }
         when (uiEffect) {
             is MainUiEffects -> _mainUiEffects.send(uiEffect)
             is MapUiEffects -> _mapUiEffects.send(uiEffect)
