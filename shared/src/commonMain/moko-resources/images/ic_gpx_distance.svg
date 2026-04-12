@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg1" height="400" viewBox="0 0 317.33334 400" width="317.33" xmlns="http://www.w3.org/2000/svg"
+    sodipodi:docname="location_pin_007.svg" inkscape:version="1.3-dev (781e29cd3, 2023-02-27)"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">
+    <sodipodi:namedview pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2"
+        inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="1.9175"
+        inkscape:cx="158.53977" inkscape:cy="199.73924" inkscape:window-width="1920" inkscape:window-height="1009"
+        inkscape:window-x="-8" inkscape:window-y="-8" inkscape:window-maximized="1" inkscape:current-layer="g1">
+        <inkscape:page inkscape:label="1" margin="0" bleed="0" />
+    </sodipodi:namedview>
+    <g id="g1" inkscape:groupmode="layer" inkscape:label="1" transform="translate(25.39 32) scale(0.84)">
+        <path id="path1"
+            d="m1190.02 724.773c-657.231 0-1190.02-162.246-1190.02-362.378 0-200.149 532.789-362.395 1190.02-362.395 657.23 0 1190.02 162.246 1190.02 362.395 0 200.144-532.79 362.378-1190.02 362.378zm595.21-466.082c-158.35-48.222-369.73-74.796-595.21-74.796-225.473 0-436.852 26.566-595.211 74.796-162.454 49.473-220.102 107.532-220.102 142.215 0 34.692 57.648 92.746 220.102 142.219 158.359 48.223 369.738 74.773 595.211 74.773h.09c225.43 0 436.8-26.55 595.14-74.773 162.44-49.473 220.07-107.527 220.07-142.219 0-34.683-57.64-92.742-220.09-142.215"
+            fill="#100f0d" transform="matrix(.1333333 0 0 -.1333333 0 400)" />
+        <path id="path2"
+            d="m1193.73 3000c-512.195 0-927.437-415.21-927.437-927.43 0-88.02 12.535-173.06 35.457-253.74 14.094-49.67 29.531-99.01 53.875-143.6 190.191-348.19 838.105-1347.601 838.105-1347.601s647.94 999.431 838.13 1347.621c24.33 44.59 39.75 93.92 53.87 143.58 22.9 80.68 35.44 165.72 35.44 253.74 0 512.22-415.22 927.43-927.44 927.43zm0-1335.79c-129.34 0-244.753 60.5-319.632 154.62-55.481 69.74-88.746 157.91-88.746 253.74 0 225.19 183.191 408.37 408.378 408.37 225.19 0 408.36-183.18 408.36-408.37 0-95.83-33.26-184-88.72-253.74-74.89-94.12-190.3-154.62-319.64-154.62"
+            fill="#100f0d" transform="matrix(.1333333 0 0 -.1333333 0 400)" />
+    </g>
+</svg>

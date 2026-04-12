@@ -14,7 +14,7 @@ struct LayersSheetView: View {
     var body: some View {
         VStack(alignment: .center) {
             ZStack {
-                Text(strings.get(id: SharedRes.strings().layers_base_layers_title, args: []))
+                Text(strings.get(id: SharedRes.strings().layers_base_layers_title))
                     .font(.title2)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -33,7 +33,7 @@ struct LayersSheetView: View {
                     .buttonStyle(.plain)
                     .contentShape(Circle())
                     .padding(.trailing, 8)
-                    .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close, args: []))
+                    .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
                 }
             }
             .padding(.top, 26)
@@ -42,7 +42,7 @@ struct LayersSheetView: View {
             HStack(spacing: 36) {
                 ForEach(BaseLayer.allCases, id: \.self) { baseLayer in
                     LayersItemView(
-                        title: strings.get(id: baseLayer.title, args: []),
+                        title: strings.get(id: baseLayer.title),
                         image: baseLayer.image.toUIImage()!,
                         selected: selectedBaseLayer == baseLayer,
                         onClick: { onBaseLayerSelected(baseLayer) }
@@ -52,20 +52,20 @@ struct LayersSheetView: View {
             .padding(.horizontal, 24)
             .padding(.top, 4)
 
-            Text(strings.get(id: SharedRes.strings().layers_overlay_layers_title, args: []))
+            Text(strings.get(id: SharedRes.strings().layers_overlay_layers_title))
                 .font(.title2)
                 .fontWeight(.bold)
                 .padding(.top, 12)
 
             HStack(spacing: 56) {
                 LayersItemView(
-                    title: strings.get(id: SharedRes.strings().layers_overlay_hiking_title, args: []),
+                    title: strings.get(id: SharedRes.strings().layers_overlay_hiking_title),
                     image: SharedRes.images().ic_layers_hiking.toUIImage()!,
                     selected: isHikingLayerSelected,
                     onClick: { onHikingLayerSelected() }
                 )
                 LayersItemView(
-                    title: strings.get(id: SharedRes.strings().layers_overlay_gpx_title, args: []),
+                    title: strings.get(id: SharedRes.strings().layers_overlay_gpx_title),
                     image: SharedRes.images().ic_layers_gpx.toUIImage()!,
                     selected: isGpxLayerSelected,
                     onClick: { onGpxLayerSelected() }

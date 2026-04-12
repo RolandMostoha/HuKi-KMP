@@ -4,6 +4,10 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 
 sealed interface MainUiEvents {
     data object MyLocationClicked : MainUiEvents
+    data object GpxStartNavigationClicked : MainUiEvents
+    data object GpxRouteClicked : MainUiEvents
+    data object GpxCloseClicked : MainUiEvents
+    data object AlertDismissed : MainUiEvents
     data object FollowingDisabled : MainUiEvents
     data object LayersClicked : MainUiEvents
     data object LayersDismissed : MainUiEvents
