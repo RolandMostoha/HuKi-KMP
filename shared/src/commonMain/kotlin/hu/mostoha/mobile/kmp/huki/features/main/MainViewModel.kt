@@ -243,7 +243,7 @@ class MainViewModel(
     }
 
     private suspend fun sendEffect(uiEffect: UiEffect) {
-        Logger.d { "UiEffect: ${uiEffect.trimLongLists()}" }
+        Logger.d { "UiEffect: ${uiEffect.toString().trimLongLists()}" }
         when (uiEffect) {
             is MainUiEffects -> _mainUiEffects.send(uiEffect)
             is MapUiEffects -> _mapUiEffects.send(uiEffect)
@@ -252,7 +252,7 @@ class MainViewModel(
 
     private fun initLogging() {
         uiState
-            .onEach { Logger.d { "MainState: ${it.trimLongLists()}" } }
+            .onEach { Logger.d { "MainState: ${it.toString().trimLongLists()}" } }
             .launchIn(viewModelScope)
     }
 }
