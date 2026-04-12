@@ -34,6 +34,41 @@ jobs:
       - name: Build Android
         run: ./gradlew assembleDebug
 
+  instrumentation_tests:
+    name: Instrumentation tests
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/android
+        with:
+          MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Android instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          arch: x86_64
+          target: google_apis_playstore
+          disable-spellchecker: true
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none
+          script: ./gradlew :composeApp:connectedDebugAndroidTest
+
+      - name: Upload Android Test Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: composeApp/build/reports/androidTests/connected/
+          retention-days: 7
+        if: always()
+
   e2e_tests:
     name: E2E tests
     runs-on: [ ubuntu-latest ]
