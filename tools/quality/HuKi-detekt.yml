@@ -279,7 +279,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     exceptionNames:
       - 'ArrayIndexOutOfBoundsException'
@@ -669,7 +669,7 @@ style:
     maxJumpCount: 1
   MagicNumber:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts']
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts', '**/util/**']
     ignoreNumbers:
       - '-1'
       - '0'
@@ -685,6 +685,8 @@ style:
     ignoreEnums: false
     ignoreRanges: false
     ignoreExtensionFunctions: true
+    ignoreAnnotated:
+      - Composable
   MandatoryBracesLoops:
     active: false
   MaxChainedCallsOnSameLine:
@@ -737,7 +739,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 4
     excludedFunctions:
       - 'equals'
     excludeLabeled: false

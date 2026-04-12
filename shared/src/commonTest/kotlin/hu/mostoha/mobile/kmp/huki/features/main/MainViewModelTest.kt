@@ -6,12 +6,15 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import io.kotest.matchers.shouldBe
@@ -252,7 +255,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxLayerSelected, Then mainUiEffects is ShowGpxFilePicker`() {
+    fun `When GpxLayerSelected and no GPX imported, Then mainUiEffects is ShowGpxFilePicker`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -268,18 +271,56 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then uiState has switched hiking layer visibility`() {
+    fun `When GpxFileSelected, Then uiState has updated loading state and GPX details`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().mapUiState.gpxDetails shouldBe null
+                with(awaitItem()) {
+                    isLoading shouldBe false
+                    mapUiState.gpxDetails shouldBe null
+                }
 
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
 
-                awaitItem().mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+                with(awaitItem()) {
+                    isLoading shouldBe true
+                    mapUiState.gpxDetails shouldBe null
+                }
+
+                with(awaitItem()) {
+                    isLoading shouldBe false
+                    mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+                    mapUiState.gpxLayerVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxLayerSelected and GPX already imported, Then uiState toggles GPX layer visibility`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+                awaitItem().mapUiState.gpxLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+
+                awaitItem().mapUiState.gpxLayerVisible shouldBe true
             }
         }
     }
@@ -301,6 +342,93 @@ class MainViewModelTest {
                     contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                 )
                 ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxFileSelected, Then mainUiEffects show gpx details`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxRouteClicked and gpx details available, Then mainUiEffects show gpx details`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+
+                viewModel.onEvent(MainUiEvents.GpxRouteClicked)
+
+                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxCloseClicked, Then gpx details is null`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem()
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem()
+                awaitItem()
+
+                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+
+                with(awaitItem().mapUiState) {
+                    gpxDetails shouldBe null
+                    gpxLayerVisible shouldBe false
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given GPX import error, When GpxImportErrorDismissed, Then import error is cleared`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } throws NonGpxFileException()
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().alert shouldBe null
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                // Loading state
+                awaitItem().alert shouldBe null
+
+                with(awaitItem()) {
+                    alert!!.title shouldBe SharedRes.strings.gpx_import_error_title
+                    alert.message shouldBe SharedRes.strings.gpx_import_error_non_gpx_message
+                }
+
+                viewModel.onEvent(MainUiEvents.AlertDismissed)
+
+                awaitItem().alert shouldBe null
             }
         }
     }

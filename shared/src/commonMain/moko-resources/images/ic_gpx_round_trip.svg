@@ -7,7 +7,7 @@
         r="240"
         fill="#fffff7"
         stroke="#1a1a1a"
-        stroke-width="36" />
+        stroke-width="40" />
 
     <!-- Icon (scaled + centered) -->
     <g transform="translate(270,260) scale(0.65) translate(-256,-256)">

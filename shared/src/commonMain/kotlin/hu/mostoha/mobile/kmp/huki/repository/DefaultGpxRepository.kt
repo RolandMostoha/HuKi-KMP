@@ -1,13 +1,18 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
+import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.UnreadableGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
 import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
+import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
 import hu.mostoha.mobile.kmp.huki.util.isCloseWithThreshold
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
@@ -25,13 +30,44 @@ open class DefaultGpxRepository : GpxRepository {
     override suspend fun readGpxFile(uri: String): GpxDetails {
         return withContext(Dispatchers.IO) {
             val file = PlatformFile(uri)
-            val xml = file.readString()
-            val gpx = Gpx.decodeFromString(xml)
+            val xml = readXml(file)
+            val gpx = decodeGpx(xml)
+
+            if (gpx.tracks.isEmpty() && gpx.routes.isEmpty() && gpx.waypoints.isEmpty()) {
+                throw EmptyGpxContentException()
+            }
+
             val gpxDetails = mapGpxDetails(file.name, uri, gpx)
 
             return@withContext gpxDetails
         }
     }
+
+    private suspend fun readXml(file: PlatformFile): String =
+        try {
+            val xml = file.readString()
+            if (xml.isBlank()) {
+                throw UnreadableGpxFileException()
+            }
+            return xml
+        } catch (exception: Throwable) {
+            throw UnreadableGpxFileException(exception)
+        }
+
+    private fun decodeGpx(xml: String): Document =
+        try {
+            if (!hasGpxXmlTag(xml)) {
+                throw NonGpxFileException()
+            }
+            Gpx.decodeFromString(xml)
+        } catch (exception: Throwable) {
+            if (hasGpxXmlTag(xml)) {
+                throw MalformedGpxException(exception)
+            }
+            throw NonGpxFileException(exception)
+        }
+
+    private fun hasGpxXmlTag(xml: String): Boolean = xml.trimStart().lowercase().contains("<gpx")
 
     private fun mapGpxDetails(fileName: String, uri: String, gpx: Document): GpxDetails {
         val locations = mapLocations(gpx)
@@ -43,8 +79,10 @@ open class DefaultGpxRepository : GpxRepository {
         return GpxDetails(
             fileName = fileName,
             fileUri = uri,
+            title = GpxFormatter.formatTitle(gpx),
             locations = locations,
             waypoints = waypoints + edgeLocations,
+            bounds = locations + waypoints.map { it.location },
             totalDistance = locations.calculateTotalDistance(),
             travelTime = locations.calculateTravelTime(),
             altitudeRange = minAltitude.toInt() to maxAltitude.toInt(),

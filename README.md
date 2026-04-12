@@ -87,7 +87,7 @@ Kotlin based Unit tests for the shared code, using `Kotest` for assertions and `
 
 Instrumentation tests are running on emulators/simulators but UI is not involved.
 
-E.g.: DB, networking, files etc.
+E.g.: Repository tests for DB, networking, files etc.
 
 **Android:**
 

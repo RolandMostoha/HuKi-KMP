@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.androidx.material3)
             implementation(libs.moko.permissions.compose)
             implementation(libs.kermit)
+            implementation(libs.maplibre.units)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -41,6 +42,9 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.kotest.core)
         }
     }
 }
@@ -85,4 +89,5 @@ dependencies {
     androidTestImplementation(libs.kotest.core)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(kotlin("test"))
 }

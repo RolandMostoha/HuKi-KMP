@@ -36,3 +36,7 @@ appId: ${APP_ID}
     visible:
       id: MAP_MAPBOX
     timeout: 2000
+- extendedWaitUntil:
+    visible: "gpx_test_with_comments.gpx"
+    timeout: 5000
+- assertVisible: "Travel Time"
