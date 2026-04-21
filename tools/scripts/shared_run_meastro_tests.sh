@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Arguments
 APP_ID=$1
 DEVICE_ID=$2

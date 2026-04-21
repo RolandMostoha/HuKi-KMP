@@ -1,6 +1,8 @@
 #!/bin/bash
 
-SOURCE_DIR="./tools/gpx/"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+SOURCE_DIR="$SCRIPT_DIR/../gpx"
 DEST_DIR="/sdcard/Download"
 
 # Check if adb is available

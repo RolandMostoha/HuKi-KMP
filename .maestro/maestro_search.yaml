@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- assertVisible: "Search..."
+- tapOn: "Search..."
+
+# Empty search results
+- inputText: "Dobogoko12345ASDFG"
+- assertVisible: "No results"
+- tapOn: Clear text
+
+# Successful search results
+- inputText: "Pilisszentker"
+- assertVisible: "Pilisszentkereszt"
+- tapOn:
+    id: SEARCH_RESULT_ITEM
+    index: 0
+- assertVisible:
+    id: MAP_MAPBOX

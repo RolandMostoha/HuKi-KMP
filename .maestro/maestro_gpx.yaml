@@ -12,6 +12,8 @@ appId: ${APP_ID}
     timeout: 10000
 - tapOn: "Layers"
 - tapOn: "Gpx Layer"
+
+# Open test GPX from File Picker
 - runFlow:
     when:
       platform: Android
@@ -25,13 +27,23 @@ appId: ${APP_ID}
     commands:
       - runFlow:
           when:
-            notVisible: "gpx_test_with_comments.gpx"
+            # New simulator -> Recents is open -> we need to go to Browse
+            notVisible:
+              id: "BackButton"
           commands:
             - tapOn: "Browse"
             - tapOn:
-                point: 72%,25%
-      - tapOn:
-          point: 72%,25%
+                id: gpx_test_with_comments.gpx, gpx
+      - runFlow:
+          when:
+            # Old simulator -> Browse is already open
+            visible:
+              id: "BackButton"
+          commands:
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+
+# GPX Details
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
@@ -39,4 +51,8 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: "gpx_test_with_comments.gpx"
     timeout: 5000
-- assertVisible: "Travel Time"
+- assertVisible: "7H 28M"
+- assertVisible: "22.6 KM"
+- assertVisible: "1088 M"
+- assertVisible: "516 M"
+- assertVisible: "Start"

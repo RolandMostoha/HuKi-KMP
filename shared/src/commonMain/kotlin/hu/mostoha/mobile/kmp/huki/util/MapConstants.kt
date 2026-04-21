@@ -6,7 +6,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 
-object MapConfiguration {
+object MapConstants {
     const val HUNGARY_ZOOM_LEVEL = 5.4
     const val HUNGARY_CENTER_LATITUDE = 47.162494
     const val HUNGARY_CENTER_LONGITUDE = 19.503304

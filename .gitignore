@@ -4,7 +4,6 @@
 **/build/
 xcuserdata
 !src/**/build/
-local.properties
 .idea
 .DS_Store
 captures
@@ -17,6 +16,10 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+
+# Secrets
+local.properties
+secrets.properties
 
 # Mapbox
 **/Secrets.xcconfig
