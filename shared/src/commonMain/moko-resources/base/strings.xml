@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="a11y_close">Close</string>
+    <string name="a11y_clear_text">Clear text</string>
+    <string name="a11y_menu">Menu</string>
 
     <string name="error_unknown">Unknown error occurred.</string>
+
+    <string name="network_error_title">Error occurred</string>
+    <string name="network_error_bad_request_title">Bad request</string>
+    <string name="network_error_bad_request_message">The service couldn't process the request. Please try again with a different input.</string>
+    <string name="network_error_internal_server_title">Internal Server error</string>
+    <string name="network_error_internal_server_message">The search service is having trouble right now. Please try again soon.</string>
+    <string name="network_error_no_internet_title">Internet error</string>
+    <string name="network_error_no_internet_message">Please check your internet connection and try again.</string>
+    <string name="network_error_not_found_title">No results</string>
+    <string name="network_error_not_found_message">We couldn't find any matching results. Please try again with a different input.</string>
+    <string name="network_error_rate_limited_title">Too many requests</string>
+    <string name="network_error_rate_limited_message">Too many attempts happened at once. Please wait a bit and retry.</string>
+    <string name="network_error_request_timeout_title">Timed out</string>
+    <string name="network_error_request_timeout_message">The search took too long to respond. Please retry.</string>
+    <string name="network_error_serialization_title">Serialization error</string>
+    <string name="network_error_serialization_message">We received an unprocessable response from the service. Please try again.</string>
+    <string name="network_error_unknown_title">Something went wrong</string>
+    <string name="network_error_unknown_message">Something went wrong while using the service. Please try again.</string>
 
     <string name="alert_ok">Got it</string>
 
@@ -16,6 +36,10 @@
     <string name="my_location_a11y_following">My location - Following</string>
     <string name="my_location_a11y_live_compass">My location - Live compass</string>
     <string name="my_location_a11y_compass">My location - Compass</string>
+
+    <string name="search_input_placeholder">Search...</string>
+    <string name="search_error_retry">Try again</string>
+    <string name="search_powered_by">Powered by</string>
 
     <string name="layers_base_layers_title">Base Map</string>
     <string name="layers_base_outdoors_title">Outdoors</string>

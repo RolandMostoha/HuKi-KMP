@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="a11y_close">Bezárás</string>
+    <string name="a11y_clear_text">Szöveg törlése</string>
+    <string name="a11y_menu">Menü</string>
 
     <string name="error_unknown">Ismeretlen hiba történt.</string>
+
+    <string name="network_error_title">Hiba történt</string>
+    <string name="network_error_bad_request_title">Helytelen kérés</string>
+    <string name="network_error_bad_request_message">A szolgálgatás nem tudta feldolgozni a kérést. Kérlek próbáld újra más bemenettel.</string>
+    <string name="network_error_internal_server_title">Szerverhiba</string>
+    <string name="network_error_internal_server_message">A szolgáltatás belső hibába ütközött. Kérlek próbáld újra később.</string>
+    <string name="network_error_no_internet_title">Internet hiba</string>
+    <string name="network_error_no_internet_message">Kérlek ellenőrizd az internetkapcsolatot, majd próbáld újra.</string>
+    <string name="network_error_not_found_title">Nincs találat</string>
+    <string name="network_error_not_found_message">A szolgáltatás nem tért vissza találattal. Próbáld újra más bemenettel.</string>
+    <string name="network_error_rate_limited_title">Túl sok kérés</string>
+    <string name="network_error_rate_limited_message">Túl sok kérés érkezett egyszerre. Kérlek várj egy kicsit, majd próbáld újra.</string>
+    <string name="network_error_request_timeout_title">Időtúllépés</string>
+    <string name="network_error_request_timeout_message">Keresőszolgáltatás időtúllépés. Kérlek próbáld újra.</string>
+    <string name="network_error_serialization_title">Serialization hiba</string>
+    <string name="network_error_serialization_message">A szolgáltatás válaszát nem tudtuk feldolgozni. Kérlek próbáld újra.</string>
+    <string name="network_error_unknown_title">Ismeretlen hiba történt</string>
+    <string name="network_error_unknown_message">Ismeretlen Hiba történt a szolgáltatás használata közben. Kérlek próbáld újra.</string>
 
     <string name="alert_ok">Rendben</string>
 
@@ -16,6 +36,10 @@
     <string name="my_location_a11y_following">Saját pozíció - Követés</string>
     <string name="my_location_a11y_live_compass">Saját pozíció - Élő iránytű</string>
     <string name="my_location_a11y_compass">Saját pozíció - Iránytű</string>
+
+    <string name="search_input_placeholder">Keresés...</string>
+    <string name="search_error_retry">Újrapróbálás</string>
+    <string name="search_powered_by">Powered by</string>
 
     <string name="layers_base_layers_title">Alap térkép</string>
     <string name="layers_base_outdoors_title">Természet</string>

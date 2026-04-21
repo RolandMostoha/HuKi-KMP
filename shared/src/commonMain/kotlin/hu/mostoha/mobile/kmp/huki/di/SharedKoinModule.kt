@@ -3,8 +3,13 @@ package hu.mostoha.mobile.kmp.huki.di
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
+import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
+import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
+import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.KoinAppDeclaration
@@ -16,6 +21,12 @@ val appModule = module {
 
 val viewModelModule = module {
     viewModelOf(::MainViewModel)
+    viewModelOf(::PlaceFinderViewModel)
+}
+
+val networkModule = module {
+    single<HttpClient> { createHttpClient(get()) }
+    single<GeocodingRepository> { LocationIqGeocodingRepository(get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
@@ -24,6 +35,6 @@ fun initKoin(config: KoinAppDeclaration? = null) {
 
     startKoin {
         config?.invoke(this)
-        modules(appModule, viewModelModule)
+        modules(appModule, viewModelModule, networkModule)
     }
 }

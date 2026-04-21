@@ -22,6 +22,7 @@ jobs:
         uses: ./.github/actions/checkout-with-secrets/android
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
       - name: Detekt
         run: ./gradlew detekt
@@ -41,12 +42,14 @@ jobs:
   instrumentation_tests:
     name: Instrumentation tests
     runs-on: [ ubuntu-latest ]
+    needs: [ verify ]
     steps:
       - uses: actions/checkout@v4
       - name: Checkout with secrets
         uses: ./.github/actions/checkout-with-secrets/android
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
       - name: Enable KVM for Android emulator
         run: |
@@ -76,12 +79,14 @@ jobs:
   e2e_tests:
     name: E2E tests
     runs-on: [ ubuntu-latest ]
+    needs: [ verify ]
     steps:
       - uses: actions/checkout@v4
       - name: Checkout with secrets
         uses: ./.github/actions/checkout-with-secrets/android
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
       - name: Install Maestro
         run: |

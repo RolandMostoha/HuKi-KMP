@@ -12,9 +12,11 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import io.kotest.matchers.shouldBe
@@ -33,6 +35,7 @@ import kotlin.test.Test
 class MainViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private val gpxRepository = mock<GpxRepository>()
 
     @BeforeTest
     fun setup() {
@@ -43,8 +46,6 @@ class MainViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    val gpxRepository = mock<GpxRepository>()
 
     private fun createViewModel(grantedPermission: Boolean, allowPermission: Boolean = true): MainViewModel {
         val allow = if (allowPermission) setOf(Permission.LOCATION) else emptySet()
@@ -204,16 +205,35 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When LayersClicked, Then uiEffect is ShowLayersBottomSheet`() {
+    fun `When LayersClicked, Then uiState sheet is Layers`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.mainUiEffects.test {
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe Sheet.SearchBar
+
                 viewModel.onEvent(MainUiEvents.LayersClicked)
 
-                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet(show = true)
-                ensureAllEventsConsumed()
+                awaitItem().sheet shouldBe Sheet.Layers
+            }
+        }
+    }
+
+    @Test
+    fun `Given Layers sheet, When ModalSheetDismissed, Then uiState sheet is SearchBar`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe Sheet.SearchBar
+
+                viewModel.onEvent(MainUiEvents.LayersClicked)
+                awaitItem().sheet shouldBe Sheet.Layers
+
+                viewModel.onEvent(MainUiEvents.SheetDismissed)
+                awaitItem().sheet shouldBe Sheet.SearchBar
             }
         }
     }
@@ -255,15 +275,20 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxLayerSelected and no GPX imported, Then mainUiEffects is ShowGpxFilePicker`() {
+    fun `When GpxLayerSelected and no GPX imported, Then sheet is hidden and mainUiEffect is ShowGpxFilePicker`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.mainUiEffects.test {
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe Sheet.SearchBar
+
                 viewModel.onEvent(MainUiEvents.GpxLayerSelected)
 
-                awaitItem() shouldBe MainUiEffects.ShowLayersBottomSheet(show = false)
+                awaitItem().sheet shouldBe null
+            }
+
+            viewModel.mainUiEffects.test {
                 awaitItem() shouldBe MainUiEffects.ShowGpxFilePicker
                 ensureAllEventsConsumed()
             }
@@ -347,42 +372,49 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then mainUiEffects show gpx details`() {
+    fun `When GpxFileSelected, Then uiState sheet is Gpx`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.mainUiEffects.test {
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe Sheet.SearchBar
+
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
 
-                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
-                ensureAllEventsConsumed()
+                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
             }
         }
     }
 
     @Test
-    fun `When GpxRouteClicked and gpx details available, Then mainUiEffects show gpx details`() {
+    fun `Given standard sheet dismissed after GPX import, When GpxRouteClicked, Then uiState sheet is Gpx`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.mainUiEffects.test {
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe Sheet.SearchBar
+
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
-                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
+                awaitItem() // Loading
+                awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
 
-                viewModel.onEvent(MainUiEvents.GpxRouteClicked)
+                viewModel.onEvent(MainUiEvents.SheetDismissed)
+                awaitItem().sheet shouldBe Sheet.SearchBar
 
-                awaitItem() shouldBe MainUiEffects.ShowDetailsBottomSheet(show = true)
-                ensureAllEventsConsumed()
+                viewModel.onEvent(MainUiEvents.GpxRouteClicked(TEST_GPX_DETAILS))
+
+                awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
             }
         }
     }
 
     @Test
-    fun `When GpxCloseClicked, Then gpx details is null`() {
+    fun `When GpxCloseClicked, Then gpx details is null and sheet is SearchBar`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -398,9 +430,10 @@ class MainViewModelTest {
 
                 viewModel.onEvent(MainUiEvents.GpxCloseClicked)
 
-                with(awaitItem().mapUiState) {
-                    gpxDetails shouldBe null
-                    gpxLayerVisible shouldBe false
+                with(awaitItem()) {
+                    mapUiState.gpxDetails shouldBe null
+                    mapUiState.gpxLayerVisible shouldBe false
+                    sheet shouldBe Sheet.SearchBar
                 }
             }
         }
