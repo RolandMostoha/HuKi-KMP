@@ -5,13 +5,21 @@ import UniformTypeIdentifiers
 
 struct MainView: View {
     @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
-    @State private var showLayersBottomSheet = false
     @State private var showFileImporter = false
-    @State private var showDetailsBottomSheet = false
     @State private var showAlert = false
+    @State private var searchDetent = PresentationDetent.height(80)
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
+    private let searchBarHeight: CGFloat = 80
+    private let mainActionGlassID: String = "main_action_glass_id"
+
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Namespace private var mainActionGlassNamespace
+
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
 
     var body: some View {
         ZStack {
@@ -21,11 +29,12 @@ struct MainView: View {
                     onFollowingDisabled: {
                         viewModel.onEvent(event: MainUiEventsFollowingDisabled())
                     },
-                    onGpxRouteClicked: {
-                        viewModel.onEvent(event: MainUiEventsGpxRouteClicked.shared)
+                    onGpxRouteClicked: { gpxDetails in
+                        viewModel.onEvent(event: MainUiEventsGpxRouteClicked(gpxDetails: gpxDetails))
                     },
                     mapUiEffects: viewModel.mapUiEffects
                 )
+                .ignoresSafeArea()
                 HStack {
                     Spacer()
                     VStack {
@@ -33,49 +42,89 @@ struct MainView: View {
                         FloatingActionContainer(
                             strings: strings,
                             uiState: uiState,
-                            onLayersClicked: { viewModel.onEvent(event: MainUiEventsLayersClicked.shared) },
-                            onMyLocationClicked: { viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared) }
-                        )
-                    }
-                    .safeAreaPadding()
-                    .padding(.bottom, 64)
-                    .sheet(isPresented: $showLayersBottomSheet) {
-                        LayersSheetView(
-                            strings: strings,
-                            selectedBaseLayer: uiState.mapUiState.baseLayer,
-                            isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
-                            isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
-                            onBaseLayerSelected: { baseLayer in
-                                viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
+                            mainActionGlassID: mainActionGlassID,
+                            mainActionGlassNamespace: mainActionGlassNamespace,
+                            onLayersClicked: {
+                                viewModel.onEvent(event: MainUiEventsLayersClicked.shared)
                             },
-                            onHikingLayerSelected: {
-                                viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
-                            },
-                            onGpxLayerSelected: {
-                                viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
-                            },
-                            onDismissRequest: {
-                                viewModel.onEvent(event: MainUiEventsLayersDismissed())
+                            onMyLocationClicked: {
+                                viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
                             }
                         )
-                        .presentationDetents([.height(360)])
-                        .presentationDragIndicator(.hidden)
+                        .padding(.bottom, isLandscape ? 12 : searchBarHeight + 35)
                     }
-                    .sheet(isPresented: $showDetailsBottomSheet) {
-                        if let gpxDetails = uiState.mapUiState.gpxDetails {
-                            GpxDetailsSheetView(
+                    .safeAreaPadding(.horizontal)
+                    .ignoresSafeArea(.container, edges: .bottom)
+                    .sheet(
+                        item: Binding(
+                            get: { uiState.sheet },
+                            set: { newValue in
+                                if newValue == nil {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                }
+                            }
+                        )
+                    ) { sheet in
+                        switch onEnum(of: sheet) {
+                        case .search, .searchBar:
+                            SearchSheetView(
                                 strings: strings,
-                                gpxDetails: gpxDetails,
-                                onStartClick: {
-                                    viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
+                                height: searchBarHeight,
+                                selectedDetent: $searchDetent,
+                                onMenuClick: {
+                                    // TODO: Feature:Menu
                                 },
-                                onDismissRequest: {
-                                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                                onPlaceSelected: { place in
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        searchDetent = .height(searchBarHeight)
+                                    }
+                                    viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
                                 }
                             )
-                            .presentationDetents([.height(260)])
+                            .presentationDetents([.height(searchBarHeight), .large], selection: $searchDetent)
+                            .presentationDragIndicator(.visible)
+                            .presentationBackgroundInteraction(.enabled(upThrough: .height(searchBarHeight)))
+                            .presentationCompactAdaptation(.sheet)
+                            .interactiveDismissDisabled()
+                        case .layers:
+                            LayersSheetView(
+                                strings: strings,
+                                selectedBaseLayer: uiState.mapUiState.baseLayer,
+                                isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
+                                isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
+                                onBaseLayerSelected: { baseLayer in
+                                    viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
+                                },
+                                onHikingLayerSelected: {
+                                    viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
+                                },
+                                onGpxLayerSelected: {
+                                    viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
+                                },
+                                onDismissRequest: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                }
+                            )
+                            .presentationDetents([.height(360)])
                             .presentationDragIndicator(.hidden)
-                            .presentationBackgroundInteraction(.enabled)
+                        case .gpx:
+                            if let gpxDetails = uiState.mapUiState.gpxDetails {
+                                GpxDetailsSheetView(
+                                    strings: strings,
+                                    gpxDetails: gpxDetails,
+                                    onStartClick: {
+                                        viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
+                                    },
+                                    onDismissRequest: {
+                                        viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                                    }
+                                )
+                                .presentationDetents([.height(260)])
+                                .presentationDragIndicator(.hidden)
+                                .presentationBackgroundInteraction(.enabled)
+                            } else {
+                                EmptyView()
+                            }
                         }
                     }
                 }
@@ -96,7 +145,6 @@ struct MainView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .ignoresSafeArea()
         .task {
             for await effect in viewModel.mainUiEffects {
                 handleMainEffects(effect)
@@ -112,85 +160,12 @@ struct MainView: View {
         }
     }
 
-    private struct FloatingActionContainer: View {
-        let strings: Strings
-        let uiState: MainUiState
-        let onLayersClicked: () -> Void
-        let onMyLocationClicked: () -> Void
-
-        private let mainActionGlassID: String = "main_action_glass_id"
-        @Namespace private var mainActionGlassNamespace
-
-        var body: some View {
-            ZStack(alignment: .bottomTrailing) {
-                if uiState.isLoading {
-                    Button(action: {}, label: {
-                        ProgressView()
-                            .scaleEffect(1.1)
-                            .padding(6)
-                    })
-                    .glassButtonStyle()
-                    .buttonBorderShape(.circle)
-                    .disabled(true)
-                    .padding(.top, 48)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                }
-                GlassContainer {
-                    VStack {
-                        Button(action: {
-                            onLayersClicked()
-                        }, label: {
-                            Image(systemName: "map.fill")
-                                .fontWeight(.bold)
-                                .floatingButtonPadding(.top)
-                        })
-                        .glassButtonStyle()
-                        .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                        .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab))
-                        Button(action: {
-                            onMyLocationClicked()
-                        }, label: {
-                            let imageSystemName = switch onEnum(of: uiState.myLocationState.myLocationStatus) {
-                            case .default, .notAvailable:
-                                "location.north"
-                            case .following:
-                                "location.fill"
-                            case .followingLiveCompass:
-                                "location.north.line.fill"
-                            }
-                            Image(systemName: imageSystemName)
-                                .fontWeight(.bold)
-                                .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
-                                .floatingButtonPadding(.bottom)
-                        })
-                        .glassButtonStyle()
-                        .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                        .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
-                        .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.accessibilityId))
-                    }
-                }
-            }
-        }
-    }
-
     private func handleMainEffects(_ effect: MainUiEffects) {
         switch onEnum(of: effect) {
         case .navigateToAppSettings:
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        case .showLayersBottomSheet(let effect):
-            if effect.show {
-                showLayersBottomSheet = true
-            } else {
-                showLayersBottomSheet = false
-            }
         case .showGpxFilePicker:
             showFileImporter = true
-        case .showDetailsBottomSheet(let effect):
-            if effect.show {
-                showDetailsBottomSheet = true
-            } else {
-                showDetailsBottomSheet = false
-            }
         }
     }
 }

@@ -10,10 +10,13 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import kotlinx.coroutines.channels.Channel
@@ -53,20 +56,34 @@ class MainViewModel(
             MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState {
                 it.copy(myLocationStatus = MyLocationStatus.Default)
             }
-            MainUiEvents.LayersClicked -> showLayersBottomSheet(true)
-            MainUiEvents.LayersDismissed -> showLayersBottomSheet(false)
+            MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState {
                 it.copy(baseLayer = event.baseLayer)
             }
             MainUiEvents.HikingLayerSelected -> _uiState.updateMapUiState {
                 it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
             }
-            MainUiEvents.GpxLayerSelected -> handleGpxLayerSelected()
+            MainUiEvents.GpxLayerSelected -> switchGpxLayer()
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
-            MainUiEvents.GpxRouteClicked -> showDetailsBottomSheet()
+            is MainUiEvents.GpxRouteClicked -> showSheet(Sheet.Gpx(event.gpxDetails))
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
             MainUiEvents.AlertDismissed -> dismissAlert()
             MainUiEvents.GpxCloseClicked -> closeGpx()
+            MainUiEvents.SheetDismissed -> showSheet(Sheet.SearchBar)
+            MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
+            is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
+        }
+    }
+
+    private fun showPlace(place: Place) {
+        viewModelScope.launch {
+            showSheet(Sheet.SearchBar)
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    bounds = listOf(place.location),
+                    zoom = 16.0,
+                ),
+            )
         }
     }
 
@@ -134,20 +151,22 @@ class MainViewModel(
         }
     }
 
-    private fun showLayersBottomSheet(show: Boolean) {
-        viewModelScope.launch {
-            sendEffect(MainUiEffects.ShowLayersBottomSheet(show))
-        }
+    private fun showSheet(sheet: Sheet) {
+        _uiState.update { it.copy(sheet = sheet) }
+    }
+
+    private fun hideSheet() {
+        _uiState.update { it.copy(sheet = null) }
     }
 
     private fun showGpxFilePicker() {
         viewModelScope.launch {
-            sendEffect(MainUiEffects.ShowLayersBottomSheet(show = false))
+            hideSheet()
             sendEffect(MainUiEffects.ShowGpxFilePicker)
         }
     }
 
-    private fun handleGpxLayerSelected() {
+    private fun switchGpxLayer() {
         val gpxDetails = uiState.value.mapUiState.gpxDetails
         if (gpxDetails == null) {
             showGpxFilePicker()
@@ -174,6 +193,7 @@ class MainViewModel(
                                 gpxDetails = gpxDetails,
                                 gpxLayerVisible = true,
                             ),
+                            sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
                             isLoading = false,
                         )
@@ -184,7 +204,6 @@ class MainViewModel(
                             contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                         ),
                     )
-                    sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = true))
                 }
                 .onFailure { exception ->
                     Logger.e(exception) { "Failed to import GPX file." }
@@ -208,27 +227,27 @@ class MainViewModel(
     private fun startGpxNavigation() {
         viewModelScope.launch {
             val targetStatus = MyLocationStatus.FollowingLiveCompass
-            _uiState.updateMyLocationState { uiState ->
-                uiState.copy(myLocationStatus = targetStatus)
+            _uiState.update {
+                it.copy(
+                    myLocationState = it.myLocationState.copy(
+                        myLocationStatus = targetStatus,
+                    ),
+                    sheet = null,
+                )
             }
             sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
-            sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = false))
-        }
-    }
-
-    private fun showDetailsBottomSheet() {
-        viewModelScope.launch {
-            sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = true))
         }
     }
 
     private fun closeGpx() {
         viewModelScope.launch {
-            sendEffect(MainUiEffects.ShowDetailsBottomSheet(show = false))
-            _uiState.updateMapUiState { uiState ->
+            _uiState.update { uiState ->
                 uiState.copy(
-                    gpxDetails = null,
-                    gpxLayerVisible = false,
+                    mapUiState = uiState.mapUiState.copy(
+                        gpxDetails = null,
+                        gpxLayerVisible = false,
+                    ),
+                    sheet = Sheet.SearchBar,
                 )
             }
         }

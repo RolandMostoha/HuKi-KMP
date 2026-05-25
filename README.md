@@ -36,7 +36,7 @@ The project was born for the following reasons:
         - `:shared:iosMain`: iOS specific shared code.
 - **Supported app languages**: English, Hungarian.
 
-### Tech stack & architecture
+## Tech stack & architecture
 
 Always refer to the [AGENTS.md](AGENTS.md) file for detailed technical documentation, architecture rules, and coding constraints.
 
@@ -72,6 +72,12 @@ swiftlint xcodebuild maestro test
 ## Testing
 
 I'm a big fan of testing so the aim is to be fairly covered with Unit, Instrumentation and UI tests.
+
+### Test types
+
+1. Unit tests
+2. Android Instrumentation tests - on-device tests without UI (e.g. Repository tests) 
+3. E2E tests with Maestro - on-device test with UI
 
 ### Unit tests
 
@@ -111,6 +117,20 @@ maestro test
 
 ## Security
 
+### Shared secrets
+
+Shared API keys live in `secrets.properties` at the repo root (gitignored). 
+
+The `GenerateSecretsTask` Gradle task pastes property into a generated `Secrets.kt` object as `const val` declarations.
+
+**Convention**: values in `secrets.properties` MUST be valid Kotlin string literals. E.g.:
+
+```
+LOCATION_IQ_API_KEY="pk.abc123"
+```
+
+Unquoted values will produce a `Secrets.kt` that fails to compile.
+
 ### MapBox
 
 Personal `MapBox` access token is required to test the app's map related features.  
@@ -122,6 +142,26 @@ The XML token is converted to GitHub secret with:
 ```shell
 cat composeApp/src/androidMain/res/values/mapbox_access_token.xml | base64
 ```
+
+### Location IQ
+
+Personal `LocationIQ` token is required to test the app's geocoding related features.
+
+To get a personal token visit: https://locationiq.com
+
+E.g.:
+
+```
+LOCATION_IQ_API_KEY="pk.abc123"
+```
+
+## Licence resources
+
+- OpenStreetMap - https://www.openstreetmap.org/copyright
+- Mapbox - Map engine - https://www.mapbox.com/
+- Hungarian Hiking Layer (turistautak.openstreetmap.hu) - https://data2.openstreetmap.hu/
+- Turistautak - https://turistautak.openstreetmap.hu/
+- Location IQ - Search engine -  https://locationiq.com/
 
 ## Project License
 

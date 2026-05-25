@@ -4,6 +4,10 @@
         <light>#136313</light>
         <dark>#6BBA6F</dark>
     </color>
+    <color name="primaryContainer">
+        <light>#E7EFE2</light>
+        <dark>#1D3A20</dark>
+    </color>
     <color name="primaryStrong">
         <light>#115711</light>
         <dark>#7ac17d</dark>
@@ -19,10 +23,6 @@
     <color name="onPrimary">
         <light>#ffffff</light>
         <dark>#232323</dark>
-    </color>
-    <color name="mapStrokeColor">
-        <light>#1a1a1a</light>
-        <dark>#e0e0e0</dark>
     </color>
     <color name="icon">
         <light>#404040</light>
@@ -40,8 +40,48 @@
         <light>#f1f3f5</light>
         <dark>#212121</dark>
     </color>
+    <color name="mapStroke">
+        <light>#1a1a1a</light>
+        <dark>#e0e0e0</dark>
+    </color>
+    <color name="inputBackground">
+        <light>#F2F2F7</light>
+        <dark>#1C1C1E</dark>
+    </color>
     <color name="accuracyRing">
         <light>#1363138A</light>
         <dark>#6BBA6F8A</dark>
+    </color>
+    <color name="error">
+        <light>#BE2E23</light>
+        <dark>#FFB4AB</dark>
+    </color>
+    <color name="errorContainer">
+        <light>#F6E3E0</light>
+        <dark>#66342E</dark>
+    </color>
+    <color name="info">
+        <light>#0F6CBD</light>
+        <dark>#9DCAFF</dark>
+    </color>
+    <color name="infoContainer">
+        <light>#E0F0FF</light>
+        <dark>#14324C</dark>
+    </color>
+    <color name="success">
+        <light>#1E7A35</light>
+        <dark>#98D89F</dark>
+    </color>
+    <color name="successContainer">
+        <light>#E2F3E3</light>
+        <dark>#1D3A24</dark>
+    </color>
+    <color name="warning">
+        <light>#9B6800</light>
+        <dark>#F1C56A</dark>
+    </color>
+    <color name="warningContainer">
+        <light>#F8EBCF</light>
+        <dark>#4B390A</dark>
     </color>
 </resources>

@@ -4,6 +4,10 @@ inputs:
   MAPBOX_ACCESS_TOKEN:
     description: "MapBox Access Token"
     required: true
+  LOCATION_IQ_API_KEY:
+    description: "LocationIQ API Key"
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -18,3 +22,7 @@ runs:
         cat > iosApp/Configuration/Secrets.xcconfig <<EOF
         MAPBOX_ACCESS_TOKEN = ${{ inputs.MAPBOX_ACCESS_TOKEN }}
         EOF
+
+    - name: Copy LOCATION_IQ_API_KEY to secrets.properties
+      shell: bash
+      run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties

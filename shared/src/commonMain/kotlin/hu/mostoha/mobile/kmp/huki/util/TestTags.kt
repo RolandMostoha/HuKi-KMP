@@ -6,4 +6,5 @@ object TestTags {
 
     const val MAP_MAPBOX = "MAP_MAPBOX"
     const val GPX_DETAILS_TITLE = "GPX_DETAILS_TITLE"
+    const val SEARCH_RESULT_ITEM = "SEARCH_RESULT_ITEM"
 }
