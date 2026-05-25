@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.ImageHolder
 import com.mapbox.maps.MapboxDelicateApi
 import com.mapbox.maps.MapboxExperimental
@@ -47,6 +49,7 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJson
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
@@ -56,7 +59,7 @@ import com.mapbox.maps.plugin.viewport.data.OverviewViewportStateOptions
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
-import hu.mostoha.mobile.kmp.huki.features.main.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
@@ -72,8 +75,8 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
-import hu.mostoha.mobile.kmp.huki.util.MapConfiguration
-import hu.mostoha.mobile.kmp.huki.util.MapConfiguration.MAP_FOLLOW_ANIM_DURATION
+import hu.mostoha.mobile.kmp.huki.util.MapConstants
+import hu.mostoha.mobile.kmp.huki.util.MapConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.toComposeColor
@@ -92,10 +95,10 @@ fun MapContent(
     val density = LocalDensity.current
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val mapViewportState = rememberMapViewportState {
-        setCameraOptions(MapConfiguration.HUNGARY_CAMERA_POSITION.toCameraOptions())
+        setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
     val mapState = rememberMapState {
-        gesturesSettings = GesturesSettings { rotateEnabled = MapConfiguration.MAP_ROTATION_ENABLED }
+        gesturesSettings = GesturesSettings { rotateEnabled = MapConstants.MAP_ROTATION_ENABLED }
     }
 
     LaunchedEffect(mapUiEffects) {
@@ -118,7 +121,7 @@ fun MapContent(
             ScaleBar(
                 modifier = Modifier
                     .testTag(TestTags.MAIN_SCALE_BAR)
-                    .padding(Dimens.Large),
+                    .padding(horizontal = Dimens.Large),
                 contentPadding = insetPadding,
                 height = 2.dp,
                 textSize = 10.sp,
@@ -126,7 +129,10 @@ fun MapContent(
         },
         compass = {
             Compass(
-                modifier = Modifier.padding(Dimens.Large),
+                modifier = Modifier.padding(
+                    top = 35.dp,
+                    end = Dimens.ExtraLarge,
+                ),
                 contentPadding = insetPadding,
             ) {
                 Image(
@@ -137,14 +143,28 @@ fun MapContent(
             }
         },
         attribution = {
-            Attribution(contentPadding = insetPadding)
+            Attribution(
+                modifier = Modifier.padding(
+                    top = Dimens.Medium,
+                    end = Dimens.Small,
+                ),
+                alignment = Alignment.TopEnd,
+                contentPadding = insetPadding,
+            )
         },
         logo = {
-            Logo(contentPadding = insetPadding)
+            Logo(
+                modifier = Modifier.padding(
+                    top = Dimens.Medium,
+                    end = Dimens.Huge,
+                ),
+                alignment = Alignment.TopEnd,
+                contentPadding = insetPadding,
+            )
         },
     ) {
         val primaryColor = MaterialTheme.colorScheme.primary
-        val mapStrokeColor = SharedRes.colors.mapStrokeColor.toComposeColor(context)
+        val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
 
         MapEffect(Unit) { mapView ->
             mapView.location.updateSettings {
@@ -186,7 +206,7 @@ fun MapContent(
                 }
                 val lineInteractionsState = rememberLayerInteractionsState {
                     onClicked { _, _ ->
-                        onEvent(MainUiEvents.GpxRouteClicked)
+                        onEvent(MainUiEvents.GpxRouteClicked(gpxDetails))
                         true
                     }
                 }
@@ -230,7 +250,7 @@ private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation)
         MyLocationStatus.Following -> {
             this.transitionToFollowPuckState(
                 followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(MapConfiguration.FOLLOW_LOCATION_ZOOM_LEVEL)
+                    .zoom(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL)
                     .pitch(0.0)
                     .bearing(FollowPuckViewportStateBearing.Constant(0.0))
                     .build(),
@@ -240,8 +260,8 @@ private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation)
         MyLocationStatus.FollowingLiveCompass -> {
             this.transitionToFollowPuckState(
                 followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(MapConfiguration.FOLLOW_LOCATION_ZOOM_LEVEL)
-                    .pitch(MapConfiguration.FOLLOW_LOCATION_LIVE_COMPASS_PITCH)
+                    .zoom(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL)
+                    .pitch(MapConstants.FOLLOW_LOCATION_LIVE_COMPASS_PITCH)
                     .bearing(FollowPuckViewportStateBearing.SyncWithLocationPuck)
                     .build(),
                 defaultTransitionOptions = transitionOptions,
@@ -252,20 +272,36 @@ private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation)
 }
 
 private fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera) {
-    val transitionOptions = DefaultViewportTransitionOptions.Builder()
-        .maxDurationMs(MapConfiguration.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
-        .build()
-    this.transitionToOverviewState(
-        overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
-            .geometry(effect.bounds.toLineString())
-            .apply {
-                effect.bearing?.let { bearing(it) }
-                effect.pitch?.let { pitch(it) }
-                effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
-            }
-            .build(),
-        defaultTransitionOptions = transitionOptions,
-    )
+    if (effect.bounds.size == 1) {
+        this.flyTo(
+            cameraOptions = CameraOptions.Builder()
+                .apply {
+                    center(effect.bounds.first().toPoint())
+                    effect.zoom?.let { zoom(it) }
+                    effect.bearing?.let { bearing(it) }
+                    effect.pitch?.let { pitch(it) }
+                }
+                .build(),
+            animationOptions = MapAnimationOptions.mapAnimationOptions {
+                duration(MapConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+            },
+        )
+    } else {
+        val transitionOptions = DefaultViewportTransitionOptions.Builder()
+            .maxDurationMs(MapConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+            .build()
+        this.transitionToOverviewState(
+            overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
+                .geometry(effect.bounds.toLineString())
+                .apply {
+                    effect.bearing?.let { bearing(it) }
+                    effect.pitch?.let { pitch(it) }
+                    effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
+                }
+                .build(),
+            defaultTransitionOptions = transitionOptions,
+        )
+    }
 }
 
 @Preview

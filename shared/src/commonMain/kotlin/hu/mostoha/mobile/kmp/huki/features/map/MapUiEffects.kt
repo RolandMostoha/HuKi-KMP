@@ -1,5 +1,6 @@
-package hu.mostoha.mobile.kmp.huki.features.main
+package hu.mostoha.mobile.kmp.huki.features.map
 
+import hu.mostoha.mobile.kmp.huki.features.main.UiEffect
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus

@@ -19,6 +19,9 @@ fun mokoString(id: StringResource, vararg args: Any): String = Strings(LocalCont
 fun mokoString(desc: StringDesc): String = Strings(LocalContext.current).get(desc)
 
 @Composable
+fun mokoColor(id: ColorResource): Color = id.toComposeColor(LocalContext.current)
+
+@Composable
 fun mokoImage(id: ImageResource): ImageVector = ImageVector.vectorResource(id.drawableResId)
 
 fun ColorResource.toComposeColor(context: Context): Color = Color(this.getColor(context))

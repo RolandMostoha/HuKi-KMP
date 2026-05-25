@@ -9,6 +9,11 @@ plugins {
     alias(libs.plugins.mokkery)
 }
 
+val generateSecrets = tasks.register<GenerateSecretsTask>("generateSecrets") {
+    secretsFile.set(rootProject.layout.projectDirectory.file("secrets.properties"))
+    outputDirectory.set(layout.buildDirectory.dir("generated/secrets"))
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -31,6 +36,9 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generateSecrets.flatMap { it.outputDirectory })
+        }
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
             api(libs.moko.resources)
@@ -40,6 +48,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.moko.permissions.location)
             implementation(libs.kermit)
+            implementation(libs.bundles.ktor)
             implementation(libs.filekit.core)
             implementation(libs.maplibre.gpx)
             implementation(libs.maplibre.turf)
@@ -52,11 +61,16 @@ kotlin {
             implementation(libs.kotest.core)
             implementation(libs.turbine)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
             implementation(libs.moko.permissions.test)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
@@ -89,4 +103,8 @@ skie {
     features {
         enableSwiftUIObservingPreview = true
     }
+}
+
+tasks.matching { it.name == "prepareKotlinIdeaImport" }.configureEach {
+    dependsOn(generateSecrets)
 }

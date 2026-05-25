@@ -22,6 +22,7 @@ jobs:
         uses: ./.github/actions/checkout-with-secrets/ios
         with:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -64,12 +65,14 @@ jobs:
     name: E2E tests
     timeout-minutes: 35
     runs-on: [ macos-latest ]
+    needs: [ verify ]
     steps:
       - uses: actions/checkout@v4
       - name: Checkout with secrets
         uses: ./.github/actions/checkout-with-secrets/ios
         with:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
       - name: Setup Java
         uses: actions/setup-java@v4

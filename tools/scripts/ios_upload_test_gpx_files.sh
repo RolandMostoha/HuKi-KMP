@@ -1,8 +1,10 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Use YOUR app's bundle ID from AGENTS.md
 APP_BUNDLE_ID="hu.mostoha.mobile.ios.huki"
-SOURCE_DIR="./tools/gpx/"
+SOURCE_DIR="$SCRIPT_DIR/../gpx"
 
 echo "Checking for booted simulator..."
 if ! xcrun simctl list devices | grep -q "Booted"; then

@@ -55,7 +55,7 @@ import kotlin.time.Duration.Companion.minutes
 fun GpxDetailsBottomSheet(
     gpxDetails: GpxDetails,
     onStartClick: () -> Unit,
-    onDismissRequest: () -> Unit,
+    onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -126,7 +126,7 @@ fun GpxDetailsBottomSheet(
                     )
                 }
                 IconButton(
-                    onClick = onDismissRequest,
+                    onClick = onCloseClick,
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
@@ -258,7 +258,7 @@ private fun GpxDetailsBottomSheetPreview() {
                 decline = 63,
             ),
             onStartClick = {},
-            onDismissRequest = {},
+            onCloseClick = {},
         )
     }
 }

@@ -5,16 +5,16 @@ import SwiftUI
 struct MapView: View {
     let uiState: MainUiState
     let onFollowingDisabled: () -> Void
-    let onGpxRouteClicked: () -> Void
+    let onGpxRouteClicked: (GpxDetails) -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
     private let viewportObserver = ViewportObserver()
 
     @State private var viewport = Viewport.camera(
-        center: MapConfiguration.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
-        zoom: MapConfiguration.shared.HUNGARY_CAMERA_POSITION.zoom,
-        bearing: MapConfiguration.shared.HUNGARY_CAMERA_POSITION.bearing,
-        pitch: MapConfiguration.shared.HUNGARY_CAMERA_POSITION.pitch
+        center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
+        zoom: MapConstants.shared.HUNGARY_CAMERA_POSITION.zoom,
+        bearing: MapConstants.shared.HUNGARY_CAMERA_POSITION.bearing,
+        pitch: MapConstants.shared.HUNGARY_CAMERA_POSITION.pitch
     )
 
     var body: some View {
@@ -48,7 +48,7 @@ struct MapView: View {
                             .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
                             .lineColor(SharedRes.colors().primary.getUIColor())
                             .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                            .lineBorderColor(SharedRes.colors().mapStrokeColor.getUIColor())
+                            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
 
                         PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
                             PointAnnotation(coordinate: waypoint.location.coordinate)
@@ -61,7 +61,7 @@ struct MapView: View {
                         }
 
                         TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
-                            onGpxRouteClicked()
+                            onGpxRouteClicked(gpxDetails)
                             return true
                         }
                     }
@@ -69,7 +69,7 @@ struct MapView: View {
             }
             .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
             .gestureOptions(GestureOptions(
-                rotateEnabled: MapConfiguration.shared.MAP_ROTATION_ENABLED
+                rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
             ))
             .ornamentOptions(OrnamentOptions(
                 scaleBar: ScaleBarViewOptions(
@@ -83,6 +83,14 @@ struct MapView: View {
                     image: SharedRes.images().ic_my_location_compass.toUIImage()!
                         .resized(to: CGSize(width: 48, height: 48)),
                     visibility: .adaptive
+                ),
+                logo: LogoViewOptions(
+                    position: .topRight,
+                    margins: .init(x: 40.0, y: 22.0)
+                ),
+                attributionButton: AttributionButtonOptions(
+                    position: .topRight,
+                    margins: .init(x: 0.0, y: 0.0)
                 )
             ))
             .onAppear {
@@ -113,32 +121,41 @@ struct MapView: View {
     }
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
-        withViewportAnimation(.default(maxDuration: MapConfiguration.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            viewport = .overview(
-                geometry: effect.bounds.lineString,
-                bearing: effect.bearing?.cgFloat ?? 0,
-                pitch: effect.pitch?.cgFloat ?? 0,
-                geometryPadding: effect.contentPadding?.edgeInsets ?? .init()
-            )
+        withViewportAnimation(.default(maxDuration: MapConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
+            if effect.bounds.count == 1, let center = effect.bounds.first?.coordinate {
+                viewport = .camera(
+                    center: center,
+                    zoom: effect.zoom?.cgFloat,
+                    bearing: effect.bearing?.cgFloat ?? 0,
+                    pitch: effect.pitch?.cgFloat ?? 0
+                )
+            } else {
+                viewport = .overview(
+                    geometry: effect.bounds.lineString,
+                    bearing: effect.bearing?.cgFloat ?? 0,
+                    pitch: effect.pitch?.cgFloat ?? 0,
+                    geometryPadding: effect.contentPadding?.edgeInsets ?? .init()
+                )
+            }
         }
     }
 
     private func showMyLocation(_ effect: MapUiEffectsShowMyLocation) {
-        let duration = effect.animated ? MapConfiguration.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
+        let duration = effect.animated ? MapConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
 
         withViewportAnimation(.default(maxDuration: duration)) {
             switch onEnum(of: effect.myLocationStatus) {
             case .following:
                 viewport = .followPuck(
-                    zoom: MapConfiguration.shared.FOLLOW_LOCATION_ZOOM_LEVEL,
+                    zoom: MapConstants.shared.FOLLOW_LOCATION_ZOOM_LEVEL,
                     bearing: .constant(0.0),
                     pitch: 0.0
                 )
             case .followingLiveCompass:
                 viewport = .followPuck(
-                    zoom: MapConfiguration.shared.FOLLOW_LOCATION_ZOOM_LEVEL,
+                    zoom: MapConstants.shared.FOLLOW_LOCATION_ZOOM_LEVEL,
                     bearing: .heading,
-                    pitch: MapConfiguration.shared.FOLLOW_LOCATION_LIVE_COMPASS_PITCH
+                    pitch: MapConstants.shared.FOLLOW_LOCATION_LIVE_COMPASS_PITCH
                 )
             default:
                 break

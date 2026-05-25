@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 
 import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.MediumTest
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
 import hu.mostoha.mobile.kmp.huki.TestContext.instrumentationContext
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
@@ -18,7 +19,16 @@ import org.junit.runner.RunWith
 import java.io.File
 import kotlin.test.assertFailsWith
 
+/**
+ * Real file-system integration test: parses GPXs from instrumentation assets.
+ *
+ * Acts as a safeguard for the GPX parser against malformed, edge-case, and round-trip
+ * GPX files we have encountered in the wild.
+ * Requires:
+ *  - Test GPX fixtures under `composeApp/src/androidInstrumentedTest/assets/`.
+ */
 @RunWith(AndroidJUnit4::class)
+@MediumTest
 class DefaultGpxRepositoryTest {
 
     val repository = DefaultGpxRepository()
