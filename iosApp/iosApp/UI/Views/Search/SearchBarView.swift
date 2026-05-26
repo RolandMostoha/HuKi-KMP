@@ -18,22 +18,24 @@ struct SearchBarView: View {
 
     @ViewBuilder
     private var searchField: some View {
-        Text(strings.get(id: SharedRes.strings().search_input_placeholder))
-            .font(.system(size: 16, weight: .regular))
-            .foregroundStyle(Color(.secondaryLabel))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 48)
-            .padding(.trailing, 16)
-            .padding(.vertical, 12)
-            .background(Color(.systemBackground).opacity(0.8), in: .capsule)
-            .overlay(alignment: .leading) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .padding(.leading, 18)
-            }
-            .contentShape(Capsule())
-            .onTapGesture(perform: onSearchTap)
+        Button(action: onSearchTap) {
+            Text(strings.get(id: SharedRes.strings().search_input_placeholder))
+                .font(.system(size: 16, weight: .regular))
+                .foregroundStyle(Color(.secondaryLabel))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 48)
+                .padding(.trailing, 16)
+                .padding(.vertical, 12)
+                .background(Color(.systemBackground).opacity(0.8), in: .capsule)
+                .overlay(alignment: .leading) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .padding(.leading, 18)
+                }
+                .contentShape(Capsule())
+        }
+        .buttonStyle(PressFeedbackButtonStyle())
     }
 
     @ViewBuilder
@@ -43,9 +45,9 @@ struct SearchBarView: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.primary)
                 .padding(.horizontal, 12)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .contentShape(Circle())
+        .buttonStyle(PressFeedbackButtonStyle())
         .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_settings))
     }
 }

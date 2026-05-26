@@ -125,7 +125,7 @@ jobs:
             chmod +x tools/scripts/*.sh
             
             # Run Maestro tests
-            ./tools/scripts/shared_run_meastro_tests.sh "$APP_ID" "$DEVICE_ID"
+            ./tools/scripts/shared_run_maestro_tests.sh "$APP_ID" "$DEVICE_ID"
 
       - name: Upload Maestro Test Reports
         uses: actions/upload-artifact@v4

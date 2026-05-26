@@ -47,6 +47,7 @@ fun FloatingActionContainer(
     onSearchClicked: () -> Unit,
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -139,7 +140,7 @@ fun FloatingActionContainer(
                         onSearchClicked()
                     },
                     onSettingsClick = {
-                        // TODO Feature:Settings
+                        onSettingsClicked()
                     },
                 )
             }
@@ -156,6 +157,7 @@ private fun MainContentPreview() {
             onSearchClicked = {},
             onLayersClicked = {},
             onMyLocationClicked = {},
+            onSettingsClicked = {},
         )
     }
 }

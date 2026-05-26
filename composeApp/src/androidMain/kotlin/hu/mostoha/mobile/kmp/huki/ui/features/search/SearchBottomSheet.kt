@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,14 +35,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +65,8 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.openUrl
+import hu.mostoha.mobile.kmp.huki.util.resolveMoko
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -88,6 +95,7 @@ private fun SearchBottomSheetContent(
     onPlaceSelected: (Place) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
     val errorInfo = uiState.error
@@ -201,18 +209,31 @@ private fun SearchBottomSheetContent(
                     )
                 }
                 Spacer(modifier = Modifier.width(Dimens.MediumLarge))
-                Text(
-                    text = mokoString(SharedRes.strings.search_powered_by),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.width(Dimens.Small))
-                Icon(
-                    painter = painterResource(id = SharedRes.images.ic_location_iq_logo.drawableResId),
-                    contentDescription = null,
-                    modifier = Modifier.height(18.dp),
-                    tint = Color.Unspecified,
-                )
+                Row(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable {
+                            context.openUrl(context.resolveMoko(SharedRes.strings.settings_location_iq_url))
+                        }
+                        .semantics(mergeDescendants = true) {
+                            contentDescription = context.resolveMoko(SharedRes.strings.settings_a11y_open_location_iq)
+                        }
+                        .padding(Dimens.ExtraSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = mokoString(SharedRes.strings.search_powered_by),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(modifier = Modifier.width(Dimens.Small))
+                    Icon(
+                        painter = painterResource(id = SharedRes.images.ic_location_iq_logo.drawableResId),
+                        contentDescription = null,
+                        modifier = Modifier.height(18.dp),
+                        tint = Color.Unspecified,
+                    )
+                }
             }
             if (uiState.places.isNotEmpty()) {
                 LazyColumn(

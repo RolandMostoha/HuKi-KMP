@@ -1,0 +1,41 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Settings
+- tapOn: "Settings"
+
+# Hero
+- assertVisible: "HuKi"
+- assertVisible: "Hungarian Hiking App"
+- assertVisible: "Version \\d+\\.\\d+\\.\\d+"
+
+# Contact section
+- assertVisible: "Contact"
+- assertVisible:
+    id: SETTINGS_ROW_EMAIL
+- assertVisible: "huki.app@gmail.com"
+- assertVisible:
+    id: SETTINGS_ROW_FACEBOOK
+- assertVisible: "Facebook"
+- assertVisible:
+    id: SETTINGS_ROW_GITHUB
+- assertVisible: "GitHub repository"
+
+# Supporters section
+- assertVisible: "Supporters"
+- assertVisible:
+    id: SETTINGS_ROW_LOCATION_IQ
+- assertVisible: "Location IQ"
+
+# Back navigation returns to the map
+- tapOn:
+    id: SETTINGS_BACK_BUTTON
+- assertVisible:
+    id: MAP_MAPBOX
