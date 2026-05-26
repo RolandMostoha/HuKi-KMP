@@ -70,21 +70,22 @@ Lint:
 
 ## Chores
 
-Chores is a checklist which should be checked for every new feature implementation.
-
-If the point is not involved in a feature implementation, it can be skipped.
+Chores is a checklist which should be checked for every new "feature complete" code review.
 
 - Unit tests
 - Instrumentation tests (e.g. Repository tests)
 - UI tests (Maestro E2E) - should work on both platforms
 - Lint passes — ktlint, Detekt, SwiftLint
-- Feature code review by AI
-- What happens in offline mode?
+- Compose Previews
+- Potential re-usable UI components
+- Independent UI styling - Material Design / SwiftUI guideline
 - Dark mode (Colors)
 - Device landscape mode
 - Translations
-- Permissions denied / not-granted paths
 - Accessibility labels (e.g. strings.a11y_close)
+- TestTag IDs for Maestro element targets
+- What happens in offline mode?
+- Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
 
 ## Technology Stack
@@ -110,9 +111,15 @@ If the point is not involved in a feature implementation, it can be skipped.
   - Swift style + Exhaustive switching enums.
   - Global functions.
 - moko-resources: Shared Strings, Colors, Images (SVG), Fonts.
-  - Strings location: `shared/src/commonMain/moko-resources/base/`
-  - Images location: `shared/src/commonMain/moko-resources/images/`
-  - Colors location: `shared/src/commonMain/moko-resources/colors/`
+  - Strings 
+    - Location: `shared/src/commonMain/moko-resources/base/`
+    - Usage: `SharedRes.strings().*`
+  - Images 
+    - Location: `shared/src/commonMain/moko-resources/images/`
+    - Usage: `SharedRes.images().*`
+  - Colors 
+    - Location: `shared/src/commonMain/moko-resources/colors/`
+    - Usage: `SharedRes.colors().*`
 - Kermit: Logging.
   - E.g. `Logger.e(exception) { "Network: Failed serialization." }`
   - E.g. `Logger.d { "Map: Camera moved to $latLng" }`
@@ -142,6 +149,11 @@ UI → UiEvent → ViewModel → UiState
 - UiState = StateFlow
 - UiEffect = Channel → Flow
 
+### Navigation
+- **Native per platform, shared ViewModel/state.** Each platform owns its own back stack using its native API.
+  - Android: Jetpack `androidx.navigation.compose` — single `NavHost` hosted by `RootNavHost`.
+  - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
+
 ## Coding Rules & Constraints
 
 ### General
@@ -154,6 +166,7 @@ UI → UiEvent → ViewModel → UiState
 - Prefer interface-based injection via Koin DI for platform-specific code.
 - Expect/Actual: Use `expect`/`actual` if you want to call the function from anywhere in your code, without having to inject an instance e.g. `log("message")`, `strings("id")`.
 - Use `kotlinx-datetime` for time.
+- Use `kotlin.time.Duration` for duration.
 - Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for shared strings, colors, fonts.
 - SharedDimens: dimension values which shared as a 1-1 mapping with Android DP vs iOS Point
 

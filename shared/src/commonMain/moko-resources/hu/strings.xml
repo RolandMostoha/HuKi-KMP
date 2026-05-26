@@ -62,4 +62,29 @@
     <string name="gpx_import_error_non_gpx_message">A kiválasztott fájl nem egy GPX fájl. Kérlek válassz egy helyes GPX fájlt.</string>
     <string name="gpx_import_error_unreadable_message">A kiválasztott fájlt nem lehet beolvasni. Kérlek válassz egy helyes GPX fájlt.</string>
 
+    <string name="settings_title">Beállítások</string>
+    <string name="settings_a11y_back">Vissza</string>
+    <string name="settings_app_name">HuKi</string>
+    <string name="settings_app_description">Hungarian Hiking App</string>
+    <string name="settings_version_pattern">Verzió %s</string>
+    <string name="settings_section_contact">Kapcsolat</string>
+    <string name="settings_section_supporters">Támogatók</string>
+    <string name="settings_item_email">Email</string>
+    <string name="settings_item_facebook">Facebook</string>
+    <string name="settings_item_facebook_description">Csatlakozz hírekért és tippekért</string>
+    <string name="settings_item_github">GitHub repó</string>
+    <string name="settings_item_github_description">A HuKi nyílt forráskódú szoftver</string>
+    <string name="settings_item_location_iq">Location IQ</string>
+    <string name="settings_item_location_iq_description">Geocoding szolgáltatások</string>
+    <string name="settings_a11y_app_icon">HuKi alkalmazás ikon</string>
+    <string name="settings_a11y_open_email">Email küldése</string>
+    <string name="settings_a11y_open_facebook">Facebook oldal megnyitása</string>
+    <string name="settings_a11y_open_github">GitHub repository megnyitása</string>
+    <string name="settings_a11y_open_location_iq">Location IQ weboldal megnyitása</string>
+    <string name="settings_contact_email">huki.app@gmail.com</string>
+    <string name="settings_email_subject">[HuKi]</string>
+    <string name="settings_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
+    <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
+    <string name="settings_location_iq_url">https://locationiq.com/</string>
+
 </resources>

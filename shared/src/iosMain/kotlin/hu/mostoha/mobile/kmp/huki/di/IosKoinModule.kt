@@ -4,6 +4,7 @@ import dev.icerock.moko.permissions.ios.PermissionsController
 import dev.icerock.moko.permissions.ios.PermissionsControllerProtocol
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
+import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import org.koin.core.component.KoinComponent
@@ -24,4 +25,5 @@ fun initKoin() {
 object KoinViewModelProvider : KoinComponent {
     fun getMainViewModel(): MainViewModel = get()
     fun getPlaceFinderViewModel(): PlaceFinderViewModel = get()
+    fun getSettingsViewModel(): SettingsViewModel = get()
 }

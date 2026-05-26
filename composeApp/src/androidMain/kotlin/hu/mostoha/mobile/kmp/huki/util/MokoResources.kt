@@ -25,3 +25,5 @@ fun mokoColor(id: ColorResource): Color = id.toComposeColor(LocalContext.current
 fun mokoImage(id: ImageResource): ImageVector = ImageVector.vectorResource(id.drawableResId)
 
 fun ColorResource.toComposeColor(context: Context): Color = Color(this.getColor(context))
+
+fun Context.resolveMoko(id: StringResource, vararg args: Any): String = Strings(this).get(id, args.toList())

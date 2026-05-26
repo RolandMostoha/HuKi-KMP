@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
+import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
@@ -22,6 +23,7 @@ val appModule = module {
 val viewModelModule = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::PlaceFinderViewModel)
+    viewModelOf(::SettingsViewModel)
 }
 
 val networkModule = module {

@@ -53,7 +53,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
+fun MainScreen(viewModel: MainViewModel = koinViewModel(), onSettingsClicked: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BindEffect(viewModel.permissionsController)
@@ -63,6 +63,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
         mainUiEffects = viewModel.mainUiEffects,
         mapUiEffects = viewModel.mapUiEffects,
         onEvent = viewModel::onEvent,
+        onSettingsClicked = onSettingsClicked,
     )
 }
 
@@ -72,6 +73,7 @@ private fun MainContent(
     mainUiEffects: Flow<MainUiEffects>,
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
+    onSettingsClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val modalSheetState = rememberModalBottomSheetState()
@@ -182,6 +184,7 @@ private fun MainContent(
                 onMyLocationClicked = {
                     onEvent(MainUiEvents.MyLocationClicked)
                 },
+                onSettingsClicked = onSettingsClicked,
             )
             if (showModalBottomSheet) {
                 LayersBottomSheet(
@@ -248,6 +251,7 @@ private fun MainContentPreview() {
             mainUiEffects = emptyFlow(),
             mapUiEffects = emptyFlow(),
             onEvent = {},
+            onSettingsClicked = {},
         )
     }
 }
@@ -261,6 +265,7 @@ private fun MainContentLoadingPreview() {
             mainUiEffects = emptyFlow(),
             mapUiEffects = emptyFlow(),
             onEvent = {},
+            onSettingsClicked = {},
         )
     }
 }

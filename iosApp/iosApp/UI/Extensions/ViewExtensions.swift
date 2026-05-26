@@ -1,6 +1,15 @@
 import Shared
 import SwiftUI
 
+struct PressFeedbackButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.55 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
 extension View {
     @ViewBuilder
     func glassButtonStyle() -> some View {
@@ -11,13 +20,6 @@ extension View {
                 .foregroundStyle(.primary)
                 .tint(.clear)
         }
-    }
-}
-
-extension Image {
-    init(resource: KeyPath<SharedRes.images, Shared.ImageResource>) {
-        let imageResource = SharedRes.images()[keyPath: resource]
-        self.init(imageResource.assetImageName, bundle: imageResource.bundle)
     }
 }
 

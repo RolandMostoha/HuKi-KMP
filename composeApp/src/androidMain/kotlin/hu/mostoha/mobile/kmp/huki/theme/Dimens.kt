@@ -11,5 +11,9 @@ object Dimens {
     val ExtraLarge = 24.dp
     val Huge = 30.dp
 
+    val IconSmall = 22.dp
+    val IconContainer = 40.dp
+    val IconHero = 96.dp
+
     val FloatingActionElevation = 1.dp
 }
