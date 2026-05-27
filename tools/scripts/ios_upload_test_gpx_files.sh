@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copies every tools/gpx/*.gpx file into the HuKi iOS app's Documents container on the booted simulator.
+# Used to seed test GPX fixtures before Maestro E2E runs or manual GPX import testing.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

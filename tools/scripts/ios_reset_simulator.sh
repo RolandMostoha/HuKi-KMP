@@ -1,4 +1,6 @@
 #!/bin/bash
+# Factory-resets the currently booted iOS simulator: shuts it down, erases all data and settings,
+# then reboots it and opens the Simulator app. Use to start from a clean slate.
 
 # 1. Get the ID of the currently booted simulator
 # This finds the line with "Booted" and extracts the UUID inside the parentheses

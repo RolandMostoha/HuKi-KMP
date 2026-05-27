@@ -1,4 +1,6 @@
 #!/bin/bash
+# Uninstalls the HuKi iOS app (hu.mostoha.mobile.ios.huki) from the booted simulator.
+# Use to force a clean install or wipe app-local data without resetting the whole simulator.
 
 # App bundle ID from AGENTS.md
 APP_BUNDLE_ID="hu.mostoha.mobile.ios.huki"

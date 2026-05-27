@@ -30,6 +30,22 @@ Lint:
 - Build: `./gradlew :shared:compileKotlinIosArm64`
 - Tests: `./gradlew :shared:testDebugUnitTest`
 
+## Utility Scripts
+
+### iOS
+- `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
+- `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
+- `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
+- `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Use for: "upload test gpx files (iOS)", or before running Maestro tests on iOS.
+
+### Android
+- `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
+- `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
+- `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
+
+### Cross-platform
+- `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — run all `.maestro/maestro_*.yaml` tests against the given app and device. Auto-uploads GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Use for: "run maestro tests", "run E2E tests".
+
 ## Project Overview
 - **Domain**: Hiking application for Hungarian landscapes, trails, destinations.
 - **Type**: Kotlin Multiplatform (KMP).
