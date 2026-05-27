@@ -54,6 +54,19 @@ struct GlassContainer<Content: View>: View {
 
 extension View {
     @ViewBuilder
+    func glassBackground() -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(in: Capsule())
+        } else {
+            background(.ultraThinMaterial, in: Capsule())
+                .overlay(Capsule().strokeBorder(.white.opacity(0.15), lineWidth: 1))
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
     func glassUnion(id: String, namespace: Namespace.ID) -> some View {
         if #available(iOS 26.0, *) {
             glassEffectUnion(id: id, namespace: namespace)

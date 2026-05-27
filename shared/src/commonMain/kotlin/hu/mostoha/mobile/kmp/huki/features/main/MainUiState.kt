@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.update
 data class MainUiState(
     val mapUiState: MapUiState = MapUiState.Default,
     val myLocationState: MyLocationState = MyLocationState.Default,
-    val sheet: Sheet? = Sheet.SearchBar,
-    val isLoading: Boolean = false,
+    val sheet: Sheet? = null,
+    val isSearchBarVisible: Boolean = true,
+    val isGpxLoading: Boolean = false,
     val alert: Alert? = null,
 ) {
     companion object {
