@@ -1,4 +1,6 @@
 #!/bin/bash
+# Pushes every tools/gpx/*.gpx file to /sdcard/Download on the connected Android device/emulator.
+# Used to seed test GPX fixtures before Maestro E2E runs or manual GPX import testing.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Toggles Wi-Fi and cellular data together on the connected Android device/emulator.
+# If either is on, disables both; otherwise enables both. Useful for testing offline mode.
 
 # Check Wi-Fi state
 WIFI_STATE=$(adb shell dumpsys wifi | grep "Wi-Fi is" | awk '{print $3}' | tr -d '\r')

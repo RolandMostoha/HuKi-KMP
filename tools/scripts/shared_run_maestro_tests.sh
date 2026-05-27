@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Runs every .maestro/maestro_*.yaml E2E test against the given app and device.
+# Auto-uploads GPX fixtures via the platform-specific upload script (iOS or Android, based on APP_ID).
+# Usage: ./tools/scripts/shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>
 
 # Arguments
 APP_ID=$1
