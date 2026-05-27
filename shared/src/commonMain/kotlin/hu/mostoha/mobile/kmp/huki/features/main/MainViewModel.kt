@@ -69,7 +69,7 @@ class MainViewModel(
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
             MainUiEvents.AlertDismissed -> dismissAlert()
             MainUiEvents.GpxCloseClicked -> closeGpx()
-            MainUiEvents.SheetDismissed -> showSheet(Sheet.SearchBar)
+            MainUiEvents.SheetDismissed -> hideSheet()
             MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
             is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
         }
@@ -77,7 +77,7 @@ class MainViewModel(
 
     private fun showPlace(place: Place) {
         viewModelScope.launch {
-            showSheet(Sheet.SearchBar)
+            hideSheet()
             sendEffect(
                 MapUiEffects.UpdateCamera(
                     bounds = listOf(place.location),
@@ -181,7 +181,7 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    isLoading = true,
+                    isGpxLoading = true,
                     alert = null,
                 )
             }
@@ -195,7 +195,7 @@ class MainViewModel(
                             ),
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
-                            isLoading = false,
+                            isGpxLoading = false,
                         )
                     }
                     sendEffect(
@@ -217,7 +217,7 @@ class MainViewModel(
                                     SharedRes.strings.error_unknown
                                 },
                             ),
-                            isLoading = false,
+                            isGpxLoading = false,
                         )
                     }
                 }
@@ -247,7 +247,7 @@ class MainViewModel(
                         gpxDetails = null,
                         gpxLayerVisible = false,
                     ),
-                    sheet = Sheet.SearchBar,
+                    sheet = null,
                 )
             }
         }

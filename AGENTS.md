@@ -172,6 +172,7 @@ val [actual] = operation(X)
 - UI Components: keep Composables stateless.
 - Avoid fully qualified symbols in code when a normal import can be used, e.g. prefer `Alignment.CenterVertically` over `androidx.compose.ui.Alignment.CenterVertically`.
 - Don't use unnecessary blank lines between UI components.
+- Always use animations for UI transitions, avoid flashing transitions.
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass
@@ -180,6 +181,7 @@ val [actual] = operation(X)
 - Entry Point: `HukiApp` + `MainView`
 - UI Package for features: `/UI/Views/[feature]/`
 - Don't use unnecessary blank lines between UI components.
+- Always use animations for UI transitions, avoid flashing transitions.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.

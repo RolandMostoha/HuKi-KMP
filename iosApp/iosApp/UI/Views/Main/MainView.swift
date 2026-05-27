@@ -7,7 +7,6 @@ struct MainView: View {
     @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
     @State private var showFileImporter = false
     @State private var showAlert = false
-    @State private var searchDetent = PresentationDetent.height(80)
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -35,26 +34,29 @@ struct MainView: View {
                     mapUiEffects: viewModel.mapUiEffects
                 )
                 .ignoresSafeArea()
-                HStack {
+                VStack {
                     Spacer()
-                    VStack {
-                        Spacer()
-                        FloatingActionContainer(
-                            strings: strings,
-                            uiState: uiState,
-                            mainActionGlassID: mainActionGlassID,
-                            mainActionGlassNamespace: mainActionGlassNamespace,
-                            onLayersClicked: {
-                                viewModel.onEvent(event: MainUiEventsLayersClicked.shared)
-                            },
-                            onMyLocationClicked: {
-                                viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
-                            }
-                        )
-                        .padding(.bottom, isLandscape ? 12 : searchBarHeight + 35)
-                    }
-                    .safeAreaPadding(.horizontal)
-                    .ignoresSafeArea(.container, edges: .bottom)
+                    FloatingActionContainer(
+                        strings: strings,
+                        uiState: uiState,
+                        mainActionGlassID: mainActionGlassID,
+                        mainActionGlassNamespace: mainActionGlassNamespace,
+                        onLayersClicked: {
+                            viewModel.onEvent(event: MainUiEventsLayersClicked.shared)
+                        },
+                        onMyLocationClicked: {
+                            viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
+                        },
+                        onSearchTap: {
+                            viewModel.onEvent(event: MainUiEventsSearchClicked.shared)
+                        },
+                        onSettingsClick: {
+                            // TODO: Feature:Settings
+                        }
+                    )
+                    .padding(.bottom, isLandscape ? 12 : 0)
+                }
+                .safeAreaPadding(.horizontal)
                     .sheet(
                         item: Binding(
                             get: { uiState.sheet },
@@ -66,26 +68,19 @@ struct MainView: View {
                         )
                     ) { sheet in
                         switch onEnum(of: sheet) {
-                        case .search, .searchBar:
+                        case .search:
                             SearchSheetView(
                                 strings: strings,
-                                height: searchBarHeight,
-                                selectedDetent: $searchDetent,
-                                onMenuClick: {
-                                    // TODO: Feature:Menu
+                                onDismiss: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
                                 },
                                 onPlaceSelected: { place in
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        searchDetent = .height(searchBarHeight)
-                                    }
                                     viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
                                 }
                             )
-                            .presentationDetents([.height(searchBarHeight), .large], selection: $searchDetent)
+                            .presentationDetents([.large])
                             .presentationDragIndicator(.visible)
-                            .presentationBackgroundInteraction(.enabled(upThrough: .height(searchBarHeight)))
                             .presentationCompactAdaptation(.sheet)
-                            .interactiveDismissDisabled()
                         case .layers:
                             LayersSheetView(
                                 strings: strings,
@@ -127,7 +122,6 @@ struct MainView: View {
                             }
                         }
                     }
-                }
                 .alert(
                     uiState.alert.map { strings.get(id: $0.title) } ?? "",
                     isPresented: $showAlert,

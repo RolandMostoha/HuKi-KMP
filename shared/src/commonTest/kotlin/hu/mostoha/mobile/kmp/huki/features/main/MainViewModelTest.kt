@@ -211,7 +211,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.LayersClicked)
 
@@ -227,13 +227,13 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.LayersClicked)
                 awaitItem().sheet shouldBe Sheet.Layers
 
                 viewModel.onEvent(MainUiEvents.SheetDismissed)
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
             }
         }
     }
@@ -281,11 +281,11 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.GpxLayerSelected)
 
-                awaitItem().sheet shouldBe null
+                expectNoEvents()
             }
 
             viewModel.mainUiEffects.test {
@@ -304,19 +304,19 @@ class MainViewModelTest {
 
             viewModel.uiState.test {
                 with(awaitItem()) {
-                    isLoading shouldBe false
+                    isGpxLoading shouldBe false
                     mapUiState.gpxDetails shouldBe null
                 }
 
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
 
                 with(awaitItem()) {
-                    isLoading shouldBe true
+                    isGpxLoading shouldBe true
                     mapUiState.gpxDetails shouldBe null
                 }
 
                 with(awaitItem()) {
-                    isLoading shouldBe false
+                    isGpxLoading shouldBe false
                     mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
                     mapUiState.gpxLayerVisible shouldBe true
                 }
@@ -379,11 +379,11 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
 
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
                 awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
             }
         }
@@ -397,14 +397,14 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.test {
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
                 awaitItem() // Loading
                 awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
 
                 viewModel.onEvent(MainUiEvents.SheetDismissed)
-                awaitItem().sheet shouldBe Sheet.SearchBar
+                awaitItem().sheet shouldBe null
 
                 viewModel.onEvent(MainUiEvents.GpxRouteClicked(TEST_GPX_DETAILS))
 
@@ -433,7 +433,7 @@ class MainViewModelTest {
                 with(awaitItem()) {
                     mapUiState.gpxDetails shouldBe null
                     mapUiState.gpxLayerVisible shouldBe false
-                    sheet shouldBe Sheet.SearchBar
+                    sheet shouldBe null
                 }
             }
         }

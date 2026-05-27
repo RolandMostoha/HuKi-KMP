@@ -102,7 +102,7 @@ private fun MainContent(
     LaunchedEffect(uiState.sheet) {
         val sheet = uiState.sheet
         when {
-            sheet == null || sheet == Sheet.SearchBar -> {
+            sheet == null -> {
                 modalSheetState.hide()
                 showModalBottomSheet = false
                 standardSheetState.hide()
@@ -257,7 +257,7 @@ private fun MainContentPreview() {
 private fun MainContentLoadingPreview() {
     HuKiTheme {
         MainContent(
-            uiState = MainUiState(isLoading = true),
+            uiState = MainUiState(isGpxLoading = true),
             mainUiEffects = emptyFlow(),
             mapUiEffects = emptyFlow(),
             onEvent = {},

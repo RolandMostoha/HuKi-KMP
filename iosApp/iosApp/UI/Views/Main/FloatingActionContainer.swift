@@ -8,32 +8,51 @@ struct FloatingActionContainer: View {
     let mainActionGlassNamespace: Namespace.ID
     let onLayersClicked: () -> Void
     let onMyLocationClicked: () -> Void
+    let onSearchTap: () -> Void
+    let onSettingsClick: () -> Void
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            if uiState.isLoading {
-                Button(action: {}, label: {
-                    ProgressView()
-                        .scaleEffect(1.1)
-                        .padding(6)
-                })
-                .glassButtonStyle()
-                .buttonBorderShape(.circle)
-                .disabled(true)
-                .padding(.top, 48)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+        VStack(spacing: 16) {
+            HStack {
+                Spacer()
+                if uiState.sheet == nil {
+                    fabColumn
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
             }
-            GlassContainer {
+            if uiState.sheet == nil && uiState.isSearchBarVisible {
+                SearchBarView(
+                    strings: strings,
+                    onSearchTap: onSearchTap,
+                    onSettingsClick: onSettingsClick
+                )
+                .padding(.horizontal, 11)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.smooth(duration: 0.3), value: uiState.sheet)
+    }
+
+    @ViewBuilder
+    private var fabColumn: some View {
+        GlassContainer {
                 VStack {
                     Button(action: {
                         onLayersClicked()
                     }, label: {
-                        Image(systemName: "map.fill")
-                            .fontWeight(.bold)
-                            .floatingButtonPadding(.top)
+                        Group {
+                            if uiState.isGpxLoading {
+                                ProgressView()
+                            } else {
+                                Image(systemName: "map.fill")
+                                    .fontWeight(.bold)
+                            }
+                        }
+                        .floatingButtonPadding(.top)
                     })
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
+                    .disabled(uiState.isGpxLoading)
                     .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab))
                     Button(action: {
                         onMyLocationClicked()
@@ -54,8 +73,7 @@ struct FloatingActionContainer: View {
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
                     .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
-                    .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.accessibilityId))
-                }
+                    .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.a11yId))
             }
         }
     }

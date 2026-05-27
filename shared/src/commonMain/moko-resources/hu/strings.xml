@@ -2,7 +2,7 @@
 <resources>
     <string name="a11y_close">Bezárás</string>
     <string name="a11y_clear_text">Szöveg törlése</string>
-    <string name="a11y_menu">Menü</string>
+    <string name="a11y_settings">Beállítások</string>
 
     <string name="error_unknown">Ismeretlen hiba történt.</string>
 

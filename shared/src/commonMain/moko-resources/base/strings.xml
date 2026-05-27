@@ -2,7 +2,7 @@
 <resources>
     <string name="a11y_close">Close</string>
     <string name="a11y_clear_text">Clear text</string>
-    <string name="a11y_menu">Menu</string>
+    <string name="a11y_settings">Settings</string>
 
     <string name="error_unknown">Unknown error occurred.</string>
 

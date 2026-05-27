@@ -3,7 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 import dev.icerock.moko.resources.StringResource
 import hu.mostoha.mobile.huki.shared.SharedRes
 
-sealed class MyLocationStatus(val accessibilityId: StringResource) {
+sealed class MyLocationStatus(val a11yId: StringResource) {
     /**
      * My location is not available.
      */

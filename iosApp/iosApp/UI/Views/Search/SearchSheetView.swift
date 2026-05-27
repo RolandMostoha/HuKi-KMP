@@ -3,59 +3,39 @@ import SwiftUI
 
 struct SearchSheetView: View {
     let strings: Strings
-    let height: CGFloat
-    @Binding var selectedDetent: PresentationDetent
-    let onMenuClick: () -> Void
+    let onDismiss: () -> Void
     let onPlaceSelected: (Place) -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
     @FocusState private var isSearchFieldFocused: Bool
 
-    private var collapsedDetent: PresentationDetent {
-        .height(height)
-    }
-
-    private var isExpanded: Bool {
-        selectedDetent == .large
-    }
-
     var body: some View {
         Observing(viewModel.uiState) { uiState in
             VStack(spacing: 0) {
                 searchBar(uiState: uiState)
-                if isExpanded {
-                    attributionRow(isLoading: uiState.isLoading)
-                    if !uiState.places.isEmpty {
-                        resultsList(places: uiState.places)
-                    } else if let error = uiState.error {
-                        InfoView(
-                            strings: strings,
-                            infoViewData: error,
-                            primaryActionText: strings.get(id: SharedRes.strings().search_error_retry),
-                            onPrimaryActionClick: {
-                                viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
-                            }
-                        )
-                        .padding(.top, 32)
-                        .padding(.horizontal, 16)
-                        Spacer(minLength: 0)
-                    } else {
-                        Spacer(minLength: 0)
-                    }
+                attributionRow(isLoading: uiState.isLoading)
+                if !uiState.places.isEmpty {
+                    resultsList(places: uiState.places)
+                } else if let error = uiState.error {
+                    InfoView(
+                        strings: strings,
+                        infoViewData: error,
+                        primaryActionText: strings.get(id: SharedRes.strings().search_error_retry),
+                        onPrimaryActionClick: {
+                            viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
+                        }
+                    )
+                    .padding(.top, 32)
+                    .padding(.horizontal, 16)
+                    Spacer(minLength: 0)
+                } else {
+                    Spacer(minLength: 0)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(isExpanded ? Color(.systemGray6) : Color.clear)
-            .animation(.interactiveSpring(duration: 0.3), value: isSearchFieldFocused)
-            .onChange(of: selectedDetent) { _, newValue in
-                if newValue != .large {
-                    clearSearch()
-                }
-            }
-            .onChange(of: isSearchFieldFocused) { _, newValue in
-                if newValue {
-                    expandSheet()
-                }
+            .background(Color(.systemGray6))
+            .onAppear {
+                isSearchFieldFocused = true
             }
         }
     }
@@ -64,7 +44,7 @@ struct SearchSheetView: View {
     private func searchBar(uiState: PlaceFinderUiState) -> some View {
         HStack {
             searchTextField(uiState: uiState)
-            trailingButton
+            closeButton
         }
         .padding(.top, 15)
         .padding(.horizontal, 18)
@@ -125,32 +105,21 @@ struct SearchSheetView: View {
     }
 
     @ViewBuilder
-    private var trailingButton: some View {
-        if isExpanded {
-            Button(action: {
-                clearSearch()
-                collapseSheet()
-            }, label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .padding(12)
-                    .background(
-                        Circle().fill(Color(.systemBackground))
-                    )
-            })
-            .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
-        } else {
-            Button(action: onMenuClick) {
-                Image(systemName: "line.3.horizontal")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 12)
-            }
-            .buttonStyle(.plain)
-            .contentShape(Circle())
-            .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_menu))
-        }
+    private var closeButton: some View {
+        Button(action: {
+            isSearchFieldFocused = false
+            viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: ""))
+            onDismiss()
+        }, label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundColor(.primary)
+                .padding(12)
+                .background(
+                    Circle().fill(Color(.systemBackground))
+                )
+        })
+        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
     }
 
     @ViewBuilder
@@ -196,22 +165,5 @@ struct SearchSheetView: View {
             .padding(.bottom, 24)
         }
         .scrollDismissesKeyboard(.interactively)
-    }
-
-    private func expandSheet() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            selectedDetent = .large
-        }
-    }
-
-    private func collapseSheet() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            selectedDetent = collapsedDetent
-        }
-    }
-
-    private func clearSearch() {
-        isSearchFieldFocused = false
-        viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: ""))
     }
 }
