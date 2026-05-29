@@ -79,7 +79,7 @@ struct MapView: View {
                 ),
                 compass: CompassViewOptions(
                     position: .topRight,
-                    margins: .init(x: 16.0, y: 16.0),
+                    margins: .init(x: 16.0, y: SharedDimens.shared.MAP_COMPASS_TOP_PADDING),
                     image: SharedRes.images().ic_my_location_compass.toUIImage()!
                         .resized(to: CGSize(width: 48, height: 48)),
                     visibility: .adaptive
@@ -121,7 +121,7 @@ struct MapView: View {
     }
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
-        withViewportAnimation(.default(maxDuration: MapConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
+        withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
             if effect.bounds.count == 1, let center = effect.bounds.first?.coordinate {
                 viewport = .camera(
                     center: center,
@@ -141,7 +141,7 @@ struct MapView: View {
     }
 
     private func showMyLocation(_ effect: MapUiEffectsShowMyLocation) {
-        let duration = effect.animated ? MapConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
+        let duration = effect.animated ? AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
 
         withViewportAnimation(.default(maxDuration: duration)) {
             switch onEnum(of: effect.myLocationStatus) {

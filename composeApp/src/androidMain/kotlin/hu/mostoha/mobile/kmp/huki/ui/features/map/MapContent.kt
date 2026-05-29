@@ -75,8 +75,10 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
+import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
-import hu.mostoha.mobile.kmp.huki.util.MapConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.toComposeColor
@@ -136,7 +138,7 @@ fun MapContent(
                 contentPadding = insetPadding,
             ) {
                 Image(
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(MAP_COMPASS_TOP_PADDING.dp),
                     painter = painterResource(id = SharedRes.images.ic_my_location_compass.drawableResId),
                     contentDescription = mokoString(SharedRes.strings.my_location_a11y_compass),
                 )
@@ -283,12 +285,12 @@ private fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.U
                 }
                 .build(),
             animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(MapConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+                duration(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
             },
         )
     } else {
         val transitionOptions = DefaultViewportTransitionOptions.Builder()
-            .maxDurationMs(MapConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+            .maxDurationMs(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
             .build()
         this.transitionToOverviewState(
             overviewViewportStateOptions = OverviewViewportStateOptions.Builder()

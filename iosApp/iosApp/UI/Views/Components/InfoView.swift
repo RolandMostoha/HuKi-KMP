@@ -56,7 +56,6 @@ private extension InfoViewType {
         case .warning: return SharedRes.colors().warning.getUIColor()
         case .success: return SharedRes.colors().success.getUIColor()
         case .info: return SharedRes.colors().info.getUIColor()
-        default: return SharedRes.colors().info.getUIColor()
         }
     }
 
@@ -66,7 +65,6 @@ private extension InfoViewType {
         case .warning: return SharedRes.colors().warningContainer.getUIColor()
         case .success: return SharedRes.colors().successContainer.getUIColor()
         case .info: return SharedRes.colors().infoContainer.getUIColor()
-        default: return SharedRes.colors().infoContainer.getUIColor()
         }
     }
 }

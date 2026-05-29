@@ -130,17 +130,29 @@ struct SearchSheetView: View {
                 ProgressView()
                     .scaleEffect(0.8)
             }
-            Text(strings.get(id: SharedRes.strings().search_powered_by))
-                .font(.caption)
-                .foregroundStyle(Color(.secondaryLabel))
-            Image(resource: \.ic_location_iq_logo)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 16)
+            Button(action: openLocationIqWebsite) {
+                HStack(spacing: 8) {
+                    Text(strings.get(id: SharedRes.strings().search_powered_by))
+                        .font(.caption)
+                        .foregroundStyle(Color(.secondaryLabel))
+                    Image(uiImage: SharedRes.images().ic_location_iq_logo.toUIImage()!)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 16)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(strings.get(id: SharedRes.strings().settings_a11y_open_location_iq))
         }
         .frame(height: 28)
         .padding(.horizontal, 24)
         .padding(.top, 10)
+    }
+
+    private func openLocationIqWebsite() {
+        if let url = URL(string: strings.get(id: SharedRes.strings().settings_location_iq_url)) {
+            UIApplication.shared.open(url)
+        }
     }
 
     @ViewBuilder

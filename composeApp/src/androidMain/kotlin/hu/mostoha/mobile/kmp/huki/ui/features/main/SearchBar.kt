@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,14 +31,14 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun SearchBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
-            .height(66.dp)
+            .height(65.dp)
             .fillMaxWidth(),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = Dimens.FloatingActionElevation,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 11.dp),
+            modifier = Modifier.padding(horizontal = 13.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
@@ -52,11 +53,12 @@ fun SearchBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit, modifier: 
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = Dimens.Large),
+                        .padding(horizontal = 18.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
                 ) {
                     Icon(
+                        modifier = Modifier.size(Dimens.IconSmall),
                         imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                         contentDescription = null,
                         tint = mokoColor(SharedRes.colors.iconStrong),

@@ -7,6 +7,7 @@ struct MainView: View {
     @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
     @State private var showFileImporter = false
     @State private var showAlert = false
+    @State private var navigationPath = NavigationPath()
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -21,6 +22,15 @@ struct MainView: View {
     }
 
     var body: some View {
+        NavigationStack(path: $navigationPath) {
+            mainContent
+                .navigationDestination(for: SettingsRoute.self) { _ in
+                    SettingsView()
+                }
+        }
+    }
+
+    private var mainContent: some View {
         ZStack {
             Observing(viewModel.uiState) { uiState in
                 MapView(
@@ -51,7 +61,7 @@ struct MainView: View {
                             viewModel.onEvent(event: MainUiEventsSearchClicked.shared)
                         },
                         onSettingsClick: {
-                            // TODO: Feature:Settings
+                            navigationPath.append(SettingsRoute.settings)
                         }
                     )
                     .padding(.bottom, isLandscape ? 12 : 0)
