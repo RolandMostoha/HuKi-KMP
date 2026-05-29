@@ -220,7 +220,7 @@ private fun GpxStatCard(
             imageVector = ImageVector.vectorResource(iconResId),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(22.dp),
+            modifier = Modifier.size(Dimens.IconSmall),
         )
         Text(
             text = UiFormatter.formatStatValue(

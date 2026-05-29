@@ -62,4 +62,29 @@
     <string name="gpx_import_error_non_gpx_message">The selected file is not a GPX file. Please select a valid GPX file.</string>
     <string name="gpx_import_error_unreadable_message">The selected file could not be read. Please select a valid GPX file.</string>
 
+    <string name="settings_title">Settings</string>
+    <string name="settings_a11y_back">Back</string>
+    <string name="settings_app_name">HuKi</string>
+    <string name="settings_app_description">Hungarian Hiking App</string>
+    <string name="settings_version_pattern">Version %s</string>
+    <string name="settings_section_contact">Contact</string>
+    <string name="settings_section_supporters">Supporters</string>
+    <string name="settings_item_email">Email</string>
+    <string name="settings_item_facebook">Facebook</string>
+    <string name="settings_item_facebook_description">Join for news and tips</string>
+    <string name="settings_item_github">GitHub repository</string>
+    <string name="settings_item_github_description">HuKi is an open-source software</string>
+    <string name="settings_item_location_iq">Location IQ</string>
+    <string name="settings_item_location_iq_description">Supports with Geocoding services</string>
+    <string name="settings_a11y_app_icon">HuKi app icon</string>
+    <string name="settings_a11y_open_email">Send email</string>
+    <string name="settings_a11y_open_facebook">Open Facebook page</string>
+    <string name="settings_a11y_open_github">Open GitHub repository</string>
+    <string name="settings_a11y_open_location_iq">Open Location IQ website</string>
+    <string name="settings_contact_email">huki.app@gmail.com</string>
+    <string name="settings_email_subject">[HuKi]</string>
+    <string name="settings_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
+    <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
+    <string name="settings_location_iq_url">https://locationiq.com/</string>
+
 </resources>

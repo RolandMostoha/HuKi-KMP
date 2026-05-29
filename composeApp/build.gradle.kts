@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.androidx.material3)
+            implementation(libs.androidx.navigation.compose)
             implementation(libs.moko.permissions.compose)
             implementation(libs.kermit)
             implementation(libs.maplibre.units)

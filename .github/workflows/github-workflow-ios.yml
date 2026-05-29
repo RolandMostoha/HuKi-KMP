@@ -134,7 +134,7 @@ jobs:
           chmod +x tools/scripts/*.sh
           
           # Run Maestro tests
-          ./tools/scripts/shared_run_meastro_tests.sh "$APP_ID" "$UDID"
+          ./tools/scripts/shared_run_maestro_tests.sh "$APP_ID" "$UDID"
 
       - name: Export Simulator Logs
         if: always()
