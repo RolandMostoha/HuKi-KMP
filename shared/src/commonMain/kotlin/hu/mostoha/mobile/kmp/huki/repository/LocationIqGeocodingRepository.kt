@@ -24,6 +24,7 @@ class LocationIqGeocodingRepository(private val httpClient: HttpClient) : Geocod
                 parameter("countrycodes", "hu")
                 parameter("accept-language", "hu")
                 parameter("normalizecity", 1)
+                parameter("dedupe", 1)
                 parameter("limit", AUTOCOMPLETE_ITEM_LIMIT)
                 parameter("key", Secrets.LOCATION_IQ_API_KEY)
             }
