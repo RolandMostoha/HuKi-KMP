@@ -18,23 +18,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import hu.mostoha.mobile.android.huki.R
+import dev.icerock.moko.resources.ImageResource
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.mokoColor
+import hu.mostoha.mobile.kmp.huki.util.mokoImage
 
 @Composable
 fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val subtitle = place.subtitle
+    val category = place.placeCategory
+    val backgroundColor = if (category != null) {
+        mokoColor(category.categoryColorRes)
+    } else {
+        mokoColor(SharedRes.colors.colorPlaceCategoryFallback)
+    }
+    val iconRes = category?.iconRes ?: osmIconRes(place.osmType)
 
     Surface(
         onClick = onClick,
@@ -51,16 +62,16 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(Dimens.IconContainer)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(backgroundColor),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    modifier = Modifier.size(28.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_place_type_node),
+                    modifier = Modifier.size(Dimens.IconMedium),
+                    imageVector = mokoImage(iconRes),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.White,
                 )
             }
             Column(
@@ -98,18 +109,85 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
     }
 }
 
+private fun osmIconRes(osmType: OsmType?): ImageResource =
+    when (osmType) {
+        OsmType.WAY -> SharedRes.images.ic_place_type_way
+        OsmType.RELATION -> SharedRes.images.ic_place_type_relation
+        OsmType.NODE, null -> SharedRes.images.ic_place_type_node
+    }
+
 @Preview
 @Composable
 private fun SearchResultItemPreview() {
     HuKiTheme {
-        SearchResultItem(
-            place = Place(
-                id = "1",
-                title = "Dobogoko Kilato",
-                subtitle = "Pilis Mountains, Hungary",
-                location = Location(47.7181, 18.8948),
-            ),
-            onClick = {},
-        )
+        Column {
+            previewPlaces.forEach { place ->
+                SearchResultItem(place = place, onClick = {})
+            }
+        }
     }
 }
+
+private val previewPlaces = listOf(
+    Place(
+        id = "1",
+        title = "Unknown Node",
+        subtitle = "Fallback icon - node",
+        location = Location(47.0, 19.0),
+        osmType = OsmType.NODE,
+    ),
+    Place(
+        id = "2",
+        title = "Unknown Way",
+        subtitle = "Fallback icon - way",
+        location = Location(47.0, 19.0),
+        osmType = OsmType.WAY,
+    ),
+    Place(
+        id = "3",
+        title = "Unknown Relation",
+        subtitle = "Fallback icon - relation",
+        location = Location(47.0, 19.0),
+        osmType = OsmType.RELATION,
+    ),
+    Place(
+        id = "4",
+        title = "Dobogókő",
+        subtitle = "Pilis Mountains, Hungary",
+        location = Location(47.7181, 18.8948),
+        placeCategory = PlaceCategory.PEAK,
+        osmType = OsmType.NODE,
+    ),
+    Place(
+        id = "5",
+        title = "Balaton",
+        subtitle = "Lake, Transdanubia, Hungary",
+        location = Location(46.83, 17.73),
+        placeCategory = PlaceCategory.LAKE,
+        osmType = OsmType.RELATION,
+    ),
+    Place(
+        id = "6",
+        title = "Dobogókői Kilátó",
+        subtitle = "Viewpoint, Pilis",
+        location = Location(47.72, 18.89),
+        placeCategory = PlaceCategory.VIEWPOINT,
+        osmType = OsmType.NODE,
+    ),
+    Place(
+        id = "7",
+        title = "Visegrádi vár",
+        subtitle = "Castle, Visegrád",
+        location = Location(47.79, 18.97),
+        placeCategory = PlaceCategory.CASTLE,
+        osmType = OsmType.WAY,
+    ),
+    Place(
+        id = "8",
+        title = "Gulyás Csárda",
+        subtitle = "Restaurant, Budapest",
+        location = Location(47.5, 19.05),
+        placeCategory = PlaceCategory.RESTAURANT,
+        osmType = OsmType.NODE,
+    ),
+)

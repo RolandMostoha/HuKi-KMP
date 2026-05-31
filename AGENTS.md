@@ -182,6 +182,7 @@ val [actual] = operation(X)
 ```
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
+- For pure input → output mappings with many cases (parsers, enum, error mappers, etc.), use parametrized tests, pattern: a single `@Test` that iterates a `testCases()` list of `TestCase(input, result)` from the companion object. See `NetworkErrorMapperTest` as reference.
 
 ### E2E UI testing
 - Test cases are written in Maestro `yaml` files under `./maestro/*.yaml`

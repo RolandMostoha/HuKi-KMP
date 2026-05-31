@@ -10,11 +10,14 @@ struct SearchResultItem: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color(SharedRes.colors().primaryContainer.getUIColor()))
+                        .fill(backgroundColor)
                         .frame(width: 40, height: 40)
-                    Image(systemName: "mappin")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(Color(SharedRes.colors().primary.getUIColor()))
+                    Image(uiImage: iconImage)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(.white)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(place.title)
@@ -39,5 +42,30 @@ struct SearchResultItem: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(TestTags.shared.SEARCH_RESULT_ITEM)
+    }
+
+    private var backgroundColor: SwiftUI.Color {
+        if let category = place.placeCategory {
+            return SwiftUI.Color(category.categoryColorRes.getUIColor())
+        }
+        return SwiftUI.Color(SharedRes.colors().colorPlaceCategoryFallback.getUIColor())
+    }
+
+    private var iconImage: UIImage {
+        if let category = place.placeCategory {
+            return category.iconRes.toUIImage()!
+        }
+        return osmIconImage(for: place.osmType)
+    }
+
+    private func osmIconImage(for osmType: OsmType?) -> UIImage {
+        switch osmType {
+        case .way:
+            return SharedRes.images().ic_place_type_way.toUIImage()!
+        case .relation:
+            return SharedRes.images().ic_place_type_relation.toUIImage()!
+        case .node, .none:
+            return SharedRes.images().ic_place_type_node.toUIImage()!
+        }
     }
 }
