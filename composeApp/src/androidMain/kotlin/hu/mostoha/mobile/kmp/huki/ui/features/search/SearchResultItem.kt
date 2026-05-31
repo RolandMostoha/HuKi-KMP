@@ -46,6 +46,7 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
         mokoColor(SharedRes.colors.colorPlaceCategoryFallback)
     }
     val iconRes = category?.iconRes ?: osmIconRes(place.osmType)
+    val distance = place.distance
 
     Surface(
         onClick = onClick,
@@ -95,16 +96,18 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
                     )
                 }
             }
-            Text(
-                text = "2 km",
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = Dimens.Small),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                ),
-                color = MaterialTheme.colorScheme.primary,
-            )
+            if (!distance.isNullOrBlank()) {
+                Text(
+                    text = distance,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = Dimens.Small),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }
@@ -135,6 +138,7 @@ private val previewPlaces = listOf(
         subtitle = "Fallback icon - node",
         location = Location(47.0, 19.0),
         osmType = OsmType.NODE,
+        distance = "2 km",
     ),
     Place(
         id = "2",
@@ -157,6 +161,7 @@ private val previewPlaces = listOf(
         location = Location(47.7181, 18.8948),
         placeCategory = PlaceCategory.PEAK,
         osmType = OsmType.NODE,
+        distance = "2 km",
     ),
     Place(
         id = "5",
@@ -173,6 +178,7 @@ private val previewPlaces = listOf(
         location = Location(47.72, 18.89),
         placeCategory = PlaceCategory.VIEWPOINT,
         osmType = OsmType.NODE,
+        distance = "2 km",
     ),
     Place(
         id = "7",

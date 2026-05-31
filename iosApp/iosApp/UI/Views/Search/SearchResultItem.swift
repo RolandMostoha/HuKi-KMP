@@ -32,9 +32,11 @@ struct SearchResultItem: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                Text("2 km")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(SharedRes.colors().primary.getUIColor()))
+                if let distance = place.distance, !distance.isEmpty {
+                    Text(distance)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color(SharedRes.colors().primary.getUIColor()))
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

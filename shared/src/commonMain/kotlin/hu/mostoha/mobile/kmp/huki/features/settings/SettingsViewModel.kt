@@ -42,7 +42,7 @@ class SettingsViewModel : ViewModel() {
             SettingsUiEvents.GithubClicked ->
                 sendEffect(SettingsUiEffects.OpenUrl(SharedRes.strings.settings_github_url))
             SettingsUiEvents.LocationIqClicked ->
-                sendEffect(SettingsUiEffects.OpenUrl(SharedRes.strings.settings_location_iq_url))
+                sendEffect(SettingsUiEffects.NavigateToLocationIq)
         }
     }
 

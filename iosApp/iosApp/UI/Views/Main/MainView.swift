@@ -25,7 +25,12 @@ struct MainView: View {
         NavigationStack(path: $navigationPath) {
             mainContent
                 .navigationDestination(for: SettingsRoute.self) { _ in
-                    SettingsView()
+                    SettingsView(
+                        onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+                    )
+                }
+                .navigationDestination(for: LocationIqRoute.self) { _ in
+                    LocationIqView()
                 }
         }
     }
@@ -86,6 +91,10 @@ struct MainView: View {
                                 },
                                 onPlaceSelected: { place in
                                     viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
+                                },
+                                onLocationIqClicked: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                    navigationPath.append(LocationIqRoute.locationIq)
                                 }
                             )
                             .presentationDetents([.large])

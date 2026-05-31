@@ -53,7 +53,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel(), onSettingsClicked: () -> Unit) {
+fun MainScreen(
+    onSettingsClicked: () -> Unit,
+    onLocationIqClicked: () -> Unit,
+    viewModel: MainViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BindEffect(viewModel.permissionsController)
@@ -64,6 +68,7 @@ fun MainScreen(viewModel: MainViewModel = koinViewModel(), onSettingsClicked: ()
         mapUiEffects = viewModel.mapUiEffects,
         onEvent = viewModel::onEvent,
         onSettingsClicked = onSettingsClicked,
+        onLocationIqClicked = onLocationIqClicked,
     )
 }
 
@@ -74,6 +79,7 @@ private fun MainContent(
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
     onSettingsClicked: () -> Unit,
+    onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val modalSheetState = rememberModalBottomSheetState()
@@ -156,6 +162,7 @@ private fun MainContent(
                         onPlaceSelected = { place ->
                             onEvent(MainUiEvents.SearchPlaceSelected(place))
                         },
+                        onLocationIqClicked = onLocationIqClicked,
                     )
                 }
                 else -> Unit
@@ -252,6 +259,7 @@ private fun MainContentPreview() {
             mapUiEffects = emptyFlow(),
             onEvent = {},
             onSettingsClicked = {},
+            onLocationIqClicked = {},
         )
     }
 }
@@ -266,6 +274,7 @@ private fun MainContentLoadingPreview() {
             mapUiEffects = emptyFlow(),
             onEvent = {},
             onSettingsClicked = {},
+            onLocationIqClicked = {},
         )
     }
 }

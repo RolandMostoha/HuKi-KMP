@@ -56,9 +56,10 @@ jobs:
             -scheme iosApp \
             -configuration Debug \
             -skipPackagePluginValidation \
-            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
             SYMROOT=$(pwd)/build \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
             clean build | xcbeautify
 
   e2e_tests:
@@ -101,9 +102,10 @@ jobs:
             -scheme iosApp \
             -configuration Debug \
             -skipPackagePluginValidation \
-            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
             SYMROOT=$(pwd)/build \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
             clean build | xcbeautify
 
       - name: Install Maestro
