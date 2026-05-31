@@ -87,4 +87,43 @@
     <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="settings_location_iq_url">https://locationiq.com/</string>
 
+    <string name="place_category_group_travel">Közlekedés</string>
+    <string name="place_category_group_nature">Természet</string>
+    <string name="place_category_group_attractions">Látnivalók</string>
+    <string name="place_category_group_shops">Üzletek</string>
+    <string name="place_category_group_useful">Hasznos</string>
+    <string name="place_category_peak">Hegycsúcs</string>
+    <string name="place_category_viewpoint">Kilátó</string>
+    <string name="place_category_historic">Emlékhely</string>
+    <string name="place_category_church">Templom</string>
+    <string name="place_category_museum">Múzeum</string>
+    <string name="place_category_castle">Vár,Kastély</string>
+    <string name="place_category_river">Folyó,Patak</string>
+    <string name="place_category_forest">Erdő</string>
+    <string name="place_category_waterfall">Vízesés</string>
+    <string name="place_category_lake">Tó</string>
+    <string name="place_category_spring">Forrás</string>
+    <string name="place_category_cave">Barlang</string>
+    <string name="place_category_rock">Szikla</string>
+    <string name="place_category_grocery">Bolt</string>
+    <string name="place_category_restaurant">Étterem,Kávézó</string>
+    <string name="place_category_pharmacy">Gyógyszertár</string>
+    <string name="place_category_parking">Parkolás</string>
+    <string name="place_category_public_transport">Tömegközlekedés</string>
+    <string name="place_category_settlement">Település</string>
+    <string name="place_category_drinking_water">Ivóvíz</string>
+    <string name="place_category_toilets">Nyilvános WC</string>
+    <string name="place_category_camp_site">Piknikező</string>
+    <string name="place_category_fireplace">Tűzrakóhely</string>
+    <string name="place_category_guidepost">Útjelző</string>
+    <string name="place_category_national_park">Nemzeti Park</string>
+    <string name="place_category_valley">Völgy</string>
+    <string name="place_category_plateau">Fennsík</string>
+    <string name="place_category_island">Sziget</string>
+    <string name="place_category_meadow">Rét</string>
+    <string name="place_category_garden">Kert</string>
+    <string name="place_category_wildlife_park">Vadaspark</string>
+    <string name="place_category_observatory">Csillagvizsgáló</string>
+    <string name="place_category_farm">Tanya</string>
+
 </resources>

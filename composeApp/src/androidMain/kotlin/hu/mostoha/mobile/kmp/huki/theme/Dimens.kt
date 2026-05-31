@@ -12,6 +12,7 @@ object Dimens {
     val Huge = 30.dp
 
     val IconSmall = 22.dp
+    val IconMedium = 24.dp
     val IconContainer = 40.dp
     val IconHero = 96.dp
 

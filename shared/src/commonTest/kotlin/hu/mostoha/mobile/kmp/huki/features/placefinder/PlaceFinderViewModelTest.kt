@@ -5,6 +5,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
@@ -90,6 +91,7 @@ class PlaceFinderViewModelTest {
                             title = "Budapest",
                             subtitle = "Hungary",
                             location = Location(47.4979, 19.0402),
+                            osmType = OsmType.RELATION,
                         ),
                     ),
                 )
@@ -159,6 +161,7 @@ class PlaceFinderViewModelTest {
                         title = "Matra, Hungary",
                         subtitle = "Hungary",
                         location = Location(47.8721, 20.0324),
+                        osmType = OsmType.RELATION,
                     ),
                 )
 
@@ -221,6 +224,7 @@ class PlaceFinderViewModelTest {
                             title = "Budapest, Hungary",
                             subtitle = null,
                             location = Location(47.4979, 19.0402),
+                            osmType = OsmType.RELATION,
                         ),
                     ),
                     error = null,
@@ -300,6 +304,7 @@ class PlaceFinderViewModelTest {
                             title = "Lake Balaton, Hungary",
                             subtitle = null,
                             location = Location(46.8797, 17.8864),
+                            osmType = OsmType.RELATION,
                         ),
                     ),
                     error = null,

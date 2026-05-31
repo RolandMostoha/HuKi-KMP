@@ -87,4 +87,43 @@
     <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="settings_location_iq_url">https://locationiq.com/</string>
 
+    <string name="place_category_group_travel">Travel</string>
+    <string name="place_category_group_nature">Nature</string>
+    <string name="place_category_group_attractions">Attractions</string>
+    <string name="place_category_group_shops">Shop</string>
+    <string name="place_category_group_useful">Useful</string>
+    <string name="place_category_peak">Peak</string>
+    <string name="place_category_viewpoint">Viewpoint</string>
+    <string name="place_category_historic">Historic</string>
+    <string name="place_category_church">Church</string>
+    <string name="place_category_museum">Museum</string>
+    <string name="place_category_castle">Castle</string>
+    <string name="place_category_river">River</string>
+    <string name="place_category_forest">Forest</string>
+    <string name="place_category_waterfall">Waterfall</string>
+    <string name="place_category_lake">Lake</string>
+    <string name="place_category_spring">Spring</string>
+    <string name="place_category_cave">Cave</string>
+    <string name="place_category_rock">Rock</string>
+    <string name="place_category_grocery">Grocery</string>
+    <string name="place_category_restaurant">Restaurant,Coffee</string>
+    <string name="place_category_pharmacy">Pharmacy</string>
+    <string name="place_category_parking">Parking</string>
+    <string name="place_category_public_transport">Public Transport</string>
+    <string name="place_category_settlement">Settlement</string>
+    <string name="place_category_drinking_water">Drinking Water</string>
+    <string name="place_category_toilets">Toilets</string>
+    <string name="place_category_camp_site">Camp Site</string>
+    <string name="place_category_fireplace">Fireplace</string>
+    <string name="place_category_guidepost">Guidepost</string>
+    <string name="place_category_national_park">National Park</string>
+    <string name="place_category_valley">Valley</string>
+    <string name="place_category_plateau">Plateau</string>
+    <string name="place_category_island">Island</string>
+    <string name="place_category_meadow">Meadow</string>
+    <string name="place_category_garden">Garden</string>
+    <string name="place_category_wildlife_park">Wildlife Park</string>
+    <string name="place_category_observatory">Observatory</string>
+    <string name="place_category_farm">Farm</string>
+
 </resources>
