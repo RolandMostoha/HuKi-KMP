@@ -34,6 +34,18 @@ appId: ${APP_ID}
     id: SETTINGS_ROW_LOCATION_IQ
 - assertVisible: "Location IQ"
 
+# Open LocationIQ supporter page and return
+- tapOn:
+    id: SETTINGS_ROW_LOCATION_IQ
+- assertVisible:
+    id: LOCATION_IQ_SCREEN_ROOT
+- assertVisible:
+    id: LOCATION_IQ_VISIT_WEBSITE
+- tapOn:
+    id: LOCATION_IQ_BACK_BUTTON
+- assertVisible:
+    id: SETTINGS_SCREEN_ROOT
+
 # Back navigation returns to the map
 - tapOn:
     id: SETTINGS_BACK_BUTTON

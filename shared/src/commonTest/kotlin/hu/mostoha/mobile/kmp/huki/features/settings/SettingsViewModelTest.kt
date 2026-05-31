@@ -96,14 +96,14 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given default state, When LocationIqClicked event, Then OpenUrl effect with Location IQ url is emitted`() {
+    fun `Given default state, When LocationIqClicked event, Then NavigateToLocationIq effect is emitted`() {
         runTest {
             settingsViewModel.settingsUiEffects.test {
                 settingsViewModel.onEvent(SettingsUiEvents.LocationIqClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.OpenUrl(SharedRes.strings.settings_location_iq_url)
+                actual shouldBe SettingsUiEffects.NavigateToLocationIq
             }
         }
     }

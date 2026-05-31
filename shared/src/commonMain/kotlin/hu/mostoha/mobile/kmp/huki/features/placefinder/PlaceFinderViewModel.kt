@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
@@ -23,6 +24,9 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
     private companion object {
         const val AUTOCOMPLETE_DEBOUNCE_MILLIS = 800L
         const val MIN_CHARACTERS = 3
+
+        // TODO Replace with the user's current location from location services.
+        val FAKE_USER_LOCATION = Location(latitude = 47.7168079, longitude = 18.8950729)
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -81,7 +85,7 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
             is NetworkResult.Success -> _uiState.update { uiState ->
                 uiState.copy(
                     isLoading = false,
-                    places = result.data.map { it.toPlaceSearchResult() },
+                    places = result.data.map { it.toPlaceSearchResult(FAKE_USER_LOCATION) },
                     error = null,
                 )
             }

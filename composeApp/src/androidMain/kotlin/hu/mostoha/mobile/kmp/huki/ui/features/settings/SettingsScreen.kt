@@ -59,13 +59,18 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel(), onBack: () -> Unit) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onLocationIqClicked: () -> Unit,
+    viewModel: SettingsViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     SettingsContent(
         uiState = uiState,
         settingsUiEffects = viewModel.settingsUiEffects,
         onEvent = viewModel::onEvent,
         onBack = onBack,
+        onLocationIqClicked = onLocationIqClicked,
     )
 }
 
@@ -75,12 +80,14 @@ private fun SettingsContent(
     settingsUiEffects: Flow<SettingsUiEffects>,
     onEvent: (SettingsUiEvents) -> Unit,
     onBack: () -> Unit,
+    onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(settingsUiEffects) {
         settingsUiEffects.collect { effect ->
             when (effect) {
                 SettingsUiEffects.NavigateBack -> onBack()
+                SettingsUiEffects.NavigateToLocationIq -> onLocationIqClicked()
                 is SettingsUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
                 is SettingsUiEffects.SendEmail -> context.sendEmail(
                     email = context.resolveMoko(effect.emailRes),
@@ -375,6 +382,7 @@ private fun SettingsContentPreview() {
             settingsUiEffects = emptyFlow(),
             onEvent = {},
             onBack = {},
+            onLocationIqClicked = {},
         )
     }
 }

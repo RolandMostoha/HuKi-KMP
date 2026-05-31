@@ -6,6 +6,8 @@ enum SettingsRoute: Hashable {
 }
 
 struct SettingsView: View {
+    let onLocationIqClicked: () -> Void
+
     @State private var viewModel = KoinViewModelProvider.shared.getSettingsViewModel()
     @Environment(\.dismiss) private var dismiss
 
@@ -168,6 +170,8 @@ struct SettingsView: View {
         switch onEnum(of: effect) {
         case .navigateBack:
             dismiss()
+        case .navigateToLocationIq:
+            onLocationIqClicked()
         case .openUrl(let openUrl):
             if let url = URL(string: strings.get(id: openUrl.urlRes)) {
                 UIApplication.shared.open(url)

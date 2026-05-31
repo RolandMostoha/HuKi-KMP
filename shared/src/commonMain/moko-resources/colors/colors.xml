@@ -230,4 +230,22 @@
         <light>#8D6E63</light>
         <dark>#8D6E63</dark>
     </color>
+
+    <!-- Location IQ -->
+    <color name="locationIqBackground">
+        <light>#FEF6F0</light>
+        <dark>#241E1C</dark>
+    </color>
+    <color name="locationIqCard">
+        <light>#FFFFFF</light>
+        <dark>#322A28</dark>
+    </color>
+    <color name="locationIqContainer">
+        <light>#F9DDD1</light>
+        <dark>#43302A</dark>
+    </color>
+    <color name="locationIqButton">
+        <light>#F93B3B</light>
+        <dark>#E5564B</dark>
+    </color>
 </resources>

@@ -5,6 +5,7 @@ struct SearchSheetView: View {
     let strings: Strings
     let onDismiss: () -> Void
     let onPlaceSelected: (Place) -> Void
+    let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
     @FocusState private var isSearchFieldFocused: Bool
@@ -130,7 +131,7 @@ struct SearchSheetView: View {
                 ProgressView()
                     .scaleEffect(0.8)
             }
-            Button(action: openLocationIqWebsite) {
+            Button(action: onLocationIqClicked) {
                 HStack(spacing: 8) {
                     Text(strings.get(id: SharedRes.strings().search_powered_by))
                         .font(.caption)
@@ -149,17 +150,11 @@ struct SearchSheetView: View {
         .padding(.top, 10)
     }
 
-    private func openLocationIqWebsite() {
-        if let url = URL(string: strings.get(id: SharedRes.strings().settings_location_iq_url)) {
-            UIApplication.shared.open(url)
-        }
-    }
-
     @ViewBuilder
     private func resultsList(places: [Place]) -> some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(Array(places.enumerated()), id: \.offset) { index, place in
+                ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
                     SearchResultItem(place: place, onClick: {
                         isSearchFieldFocused = false
                         onPlaceSelected(place)
@@ -170,6 +165,7 @@ struct SearchSheetView: View {
                     }
                 }
             }
+            .animation(.easeInOut(duration: 0.2), value: places.map(\.id))
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, 16)
