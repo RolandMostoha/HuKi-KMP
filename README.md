@@ -36,15 +36,19 @@ The project was born for the following reasons:
         - `:shared:iosMain`: iOS specific shared code.
 - **Supported app languages**: English, Hungarian.
 
-## Tech stack & architecture
+## Plan board
 
-Always refer to the [AGENTS.md](AGENTS.md) file for detailed technical documentation, architecture rules, and coding constraints.
+Refer to [PLANNING.md](PLANNING.md).
+
+## Tech stack & architecture & coding constraints
+
+Refer to [AGENTS.md](AGENTS.md). It's the best place for humans too.
 
 ## Supporters
 
 <img src="shared/src/commonMain/moko-resources/images/ic_location_iq_logo%403x.png" alt="LocationIQ" width="200"/>
 
-LocationIQ gives HuKi a very generous free tier to its Autocomplete and Geocoding APIs. 
+LocationIQ gives HuKi a very generous free plan to its Autocomplete and Geocoding APIs. 
 
 Huge thanks to the Location IQ team for the opportunity!
 
