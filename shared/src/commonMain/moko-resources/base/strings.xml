@@ -75,7 +75,7 @@
     <string name="settings_item_github">GitHub repository</string>
     <string name="settings_item_github_description">HuKi is an open-source software</string>
     <string name="settings_item_location_iq">Location IQ</string>
-    <string name="settings_item_location_iq_description">Supports with Geocoding services</string>
+    <string name="settings_item_location_iq_description">LocationIQ supports HuKi with a generous free plan for its geocoding services.</string>
     <string name="settings_a11y_app_icon">HuKi app icon</string>
     <string name="settings_a11y_open_email">Send email</string>
     <string name="settings_a11y_open_facebook">Open Facebook page</string>
@@ -125,5 +125,20 @@
     <string name="place_category_wildlife_park">Wildlife Park</string>
     <string name="place_category_observatory">Observatory</string>
     <string name="place_category_farm">Farm</string>
+
+    <string name="location_iq_a11y_back">Back</string>
+    <string name="location_iq_a11y_logo">LocationIQ logo</string>
+    <string name="location_iq_headline">HuKi is powered by</string>
+    <string name="location_iq_intro">LocationIQ gives HuKi a very generous free tier to its Search and Geocoding APIs — the engine that turns place names into points on your map, and vice versa.</string>
+    <string name="location_iq_section_how">How HuKi uses it</string>
+    <string name="location_iq_card_autocomplete_title">Autocomplete in search</string>
+    <string name="location_iq_card_autocomplete_description">As you search for a trail, peak, or village, LocationIQ Autocomplete provides the results of place details.</string>
+    <string name="location_iq_card_geocoding_title">Geocoding</string>
+    <string name="location_iq_card_geocoding_description">As you long-click on a map or plan a route, LocationIQ Geocoding feature turns the coordinates into addresses.</string>
+    <string name="location_iq_section_offers">What LocationIQ offers</string>
+    <string name="location_iq_offer_geocoding">Geocoding</string>
+    <string name="location_iq_offer_maps">Maps</string>
+    <string name="location_iq_offer_routing">Routing</string>
+    <string name="location_iq_visit_website">Visit LocationIQ website</string>
 
 </resources>

@@ -41,6 +41,7 @@ Lint:
 ### Android
 - `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
+- `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
 - `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
 
 ### Cross-platform
@@ -203,6 +204,7 @@ val [actual] = operation(X)
 - Avoid fully qualified symbols in code when a normal import can be used, e.g. prefer `Alignment.CenterVertically` over `androidx.compose.ui.Alignment.CenterVertically`.
 - Don't use unnecessary blank lines between UI components.
 - Always use animations for UI transitions, avoid flashing transitions.
+- Always respect edge-to-edge `windowInsets` for screens.
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass
@@ -212,6 +214,7 @@ val [actual] = operation(X)
 - UI Package for features: `/UI/Views/[feature]/`
 - Don't use unnecessary blank lines between UI components.
 - Always use animations for UI transitions, avoid flashing transitions.
+- Always respect edge-to-edge `.safeArea` for screens.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.
