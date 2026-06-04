@@ -82,7 +82,8 @@ class PlaceFinderViewModelTest {
                 testDispatcher.scheduler.advanceTimeBy(800)
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                awaitItem() shouldBe PlaceFinderUiState(
+                val state = awaitItem()
+                state shouldBe PlaceFinderUiState(
                     searchText = "  Budapest  ",
                     isLoading = false,
                     places = listOf(
@@ -92,6 +93,7 @@ class PlaceFinderViewModelTest {
                             subtitle = "Hungary",
                             location = Location(47.4979, 19.0402),
                             osmType = OsmType.RELATION,
+                            distance = state.places.single().distance,
                         ),
                     ),
                 )
@@ -155,13 +157,15 @@ class PlaceFinderViewModelTest {
                 testDispatcher.scheduler.advanceTimeBy(800)
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                awaitItem().places shouldBe listOf(
+                val places = awaitItem().places
+                places shouldBe listOf(
                     Place(
                         id = "matra-id",
                         title = "Matra, Hungary",
                         subtitle = "Hungary",
                         location = Location(47.8721, 20.0324),
                         osmType = OsmType.RELATION,
+                        distance = places.single().distance,
                     ),
                 )
 
@@ -215,7 +219,8 @@ class PlaceFinderViewModelTest {
                 testDispatcher.scheduler.advanceTimeBy(800)
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                awaitItem() shouldBe PlaceFinderUiState(
+                val state = awaitItem()
+                state shouldBe PlaceFinderUiState(
                     searchText = "Budapest",
                     isLoading = false,
                     places = listOf(
@@ -225,6 +230,7 @@ class PlaceFinderViewModelTest {
                             subtitle = null,
                             location = Location(47.4979, 19.0402),
                             osmType = OsmType.RELATION,
+                            distance = state.places.single().distance,
                         ),
                     ),
                     error = null,
@@ -295,7 +301,8 @@ class PlaceFinderViewModelTest {
                 testDispatcher.scheduler.advanceTimeBy(800)
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                awaitItem() shouldBe PlaceFinderUiState(
+                val state = awaitItem()
+                state shouldBe PlaceFinderUiState(
                     searchText = "Balaton",
                     isLoading = false,
                     places = listOf(
@@ -305,6 +312,7 @@ class PlaceFinderViewModelTest {
                             subtitle = null,
                             location = Location(46.8797, 17.8864),
                             osmType = OsmType.RELATION,
+                            distance = state.places.single().distance,
                         ),
                     ),
                     error = null,

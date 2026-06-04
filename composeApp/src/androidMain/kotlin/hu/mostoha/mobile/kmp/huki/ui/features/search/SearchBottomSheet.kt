@@ -65,7 +65,6 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.util.mokoString
-import hu.mostoha.mobile.kmp.huki.util.openUrl
 import hu.mostoha.mobile.kmp.huki.util.resolveMoko
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -73,6 +72,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SearchBottomSheet(
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlaceFinderViewModel = koinViewModel(),
 ) {
@@ -83,6 +83,7 @@ fun SearchBottomSheet(
         uiState = uiState,
         onCloseClick = onCloseClick,
         onPlaceSelected = onPlaceSelected,
+        onLocationIqClicked = onLocationIqClicked,
         onEvent = viewModel::onEvent,
     )
 }
@@ -93,6 +94,7 @@ private fun SearchBottomSheetContent(
     onEvent: (PlaceFinderUiEvents) -> Unit,
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -212,9 +214,7 @@ private fun SearchBottomSheetContent(
                 Row(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable {
-                            context.openUrl(context.resolveMoko(SharedRes.strings.settings_location_iq_url))
-                        }
+                        .clickable(onClick = onLocationIqClicked)
                         .semantics(mergeDescendants = true) {
                             contentDescription = context.resolveMoko(SharedRes.strings.settings_a11y_open_location_iq)
                         }
@@ -311,6 +311,7 @@ private fun SearchBottomSheetContentPreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onLocationIqClicked = {},
             onEvent = {},
         )
     }
@@ -327,6 +328,7 @@ private fun SearchBottomSheetErrorStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onLocationIqClicked = {},
             onEvent = {},
         )
     }
@@ -343,6 +345,7 @@ private fun SearchBottomSheetLoadingStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onLocationIqClicked = {},
             onEvent = {},
         )
     }

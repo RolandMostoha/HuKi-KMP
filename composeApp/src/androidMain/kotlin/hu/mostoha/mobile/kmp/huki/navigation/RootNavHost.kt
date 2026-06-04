@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import hu.mostoha.mobile.kmp.huki.ui.features.locationiq.LocationIqScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
@@ -14,6 +15,7 @@ import hu.mostoha.mobile.kmp.huki.util.millis
 private object Routes {
     const val MAIN = "main"
     const val SETTINGS = "settings"
+    const val LOCATION_IQ = "location_iq"
 }
 
 @Composable
@@ -50,10 +52,17 @@ fun RootNavHost() {
         composable(Routes.MAIN) {
             MainScreen(
                 onSettingsClicked = { navController.navigate(Routes.SETTINGS) },
+                onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
             )
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
+            )
+        }
+        composable(Routes.LOCATION_IQ) {
+            LocationIqScreen(
                 onBack = { navController.popBackStack() },
             )
         }

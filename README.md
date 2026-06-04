@@ -40,6 +40,21 @@ The project was born for the following reasons:
 
 Always refer to the [AGENTS.md](AGENTS.md) file for detailed technical documentation, architecture rules, and coding constraints.
 
+## Supporters
+
+<img src="shared/src/commonMain/moko-resources/images/ic_location_iq_logo%403x.png" alt="LocationIQ" width="200"/>
+
+LocationIQ gives HuKi a very generous free tier to its Autocomplete and Geocoding APIs. 
+
+Huge thanks to the Location IQ team for the opportunity!
+
+Services Used:
+- Autocomplete API – Powers place search suggestions throughout the application, helping users quickly find destinations and POIs.
+- Forward Geocoding API – Converts place names, addresses, and search queries into coordinates.
+- Reverse Geocoding API – Powers features where converting coordinates into place information is necessary.
+
+Website link: https://locationiq.com/
+
 ## Integration & Delivery
 
 The project uses `GitHub Actions` to ensure code quality.
