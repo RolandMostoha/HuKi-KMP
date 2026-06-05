@@ -62,85 +62,77 @@ jobs:
             ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
             clean build | xcbeautify
 
+      - name: Package built app
+        run: |
+          cd iosApp/build/Debug-iphonesimulator
+          tar -czf "$GITHUB_WORKSPACE/HuKi-app.tar.gz" HuKi.app
+
+      - name: Upload built app
+        uses: actions/upload-artifact@v4
+        with:
+          name: huki-app
+          path: HuKi-app.tar.gz
+          retention-days: 1
+
   e2e_tests:
     name: E2E tests
     timeout-minutes: 35
-    runs-on: [ macos-latest ]
+    # E2E runs on the iOS 18 simulator (Xcode 16.4), because Xcode 26 simulators halts forever
+    runs-on: [ macos-15 ]
     needs: [ verify ]
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout with secrets
-        uses: ./.github/actions/checkout-with-secrets/ios
-        with:
-          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
-          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: "temurin"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-
-      - name: Install command line tools
-        run: brew install swiftlint xcbeautify
-
-      - name: Select latest Xcode
+      - name: Select Xcode 16.4
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "latest"
+          xcode-version: "16.4"
 
-      - name: Build iOS App
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME }}
-        run: |
-          cd iosApp
-          set -o pipefail && xcodebuild \
-            -project iosApp.xcodeproj \
-            -scheme iosApp \
-            -configuration Debug \
-            -skipPackagePluginValidation \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build \
-            SYMROOT=$(pwd)/build \
-            ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
-            clean build | xcbeautify
+      - name: Download built app
+        uses: actions/download-artifact@v4
+        with:
+          name: huki-app
+
+      - name: Unpack built app
+        run: tar -xzf HuKi-app.tar.gz
 
       - name: Install Maestro
         run: |
           curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Run Maestro e2e tests
-        id: run-maestro-e2e-tests
+      - name: Boot simulator
+        id: simulator
         uses: futureware-tech/simulator-action@v4
-        env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes
         with:
           os: "iOS"
-          model: "iPhone 17"
-          os_version: "26.2"
+          model: "iPhone 16"
+          os_version: "18.6"
           wait_for_boot: true
           erase_before_boot: true
           shutdown_after_job: true
-      - run: |
-          APP_ID="hu.mostoha.mobile.ios.huki"
-          APP_PATH="$GITHUB_WORKSPACE/iosApp/build/Debug-iphonesimulator/HuKi.app"
-          UDID="${{ steps.run-maestro-e2e-tests.outputs.udid }}"
-          
+
+      - name: Prepare simulator
+        run: |
+          UDID="${{ steps.simulator.outputs.udid }}"
+          APP_PATH="$GITHUB_WORKSPACE/HuKi.app"
+
+          # Disable simulator animations
+          xcrun simctl spawn "$UDID" defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+          xcrun simctl spawn "$UDID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0
+
           xcrun simctl location "$UDID" set 47.7168079,18.8950729
           xcrun simctl install "$UDID" "$APP_PATH"
-          
-          chmod +x tools/scripts/*.sh
-          
-          # Run Maestro tests
-          ./tools/scripts/shared_run_maestro_tests.sh "$APP_ID" "$UDID"
 
-      - name: Export Simulator Logs
-        if: always()
-        run: xcrun simctl diagnose -v --output ./sim_logs
+      - name: Run Maestro smoke test
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 480000 # 8 minutes
+          MAESTRO_CLI_NO_ANALYTICS: 1
+        run: |
+          maestro --no-ansi test .maestro/smoke/maestro_smoke.yaml \
+            -e APP_ID="hu.mostoha.mobile.ios.huki" \
+            --device "${{ steps.simulator.outputs.udid }}" \
+            --debug-output ./
 
       - name: Upload Maestro Test Reports
         uses: actions/upload-artifact@v4

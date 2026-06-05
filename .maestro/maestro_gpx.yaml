@@ -31,6 +31,10 @@ appId: ${APP_ID}
             notVisible:
               id: "BackButton"
           commands:
+            # The Files picker is a separate process and can be slow
+            - extendedWaitUntil:
+                visible: "Browse"
+                timeout: 5000
             - tapOn: "Browse"
             - tapOn:
                 id: gpx_test_with_comments.gpx, gpx

@@ -1,0 +1,29 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 30000
+
+# Search bar entry point renders on the map
+- assertVisible: "Search..."
+
+# Layers sheet opens and closes
+- tapOn: "Layers"
+- assertVisible: "Base Map"
+- tapOn: "Close"
+- assertVisible:
+    id: MAP_MAPBOX
+
+# Settings screen opens and navigates back to the map
+- tapOn: "Settings"
+- assertVisible:
+    id: SETTINGS_SCREEN_ROOT
+- assertVisible: "HuKi"
+- tapOn:
+    id: SETTINGS_BACK_BUTTON
+- assertVisible:
+    id: MAP_MAPBOX
