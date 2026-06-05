@@ -48,9 +48,10 @@
 
 ### Bugs
 
-| Status | Scope | Bug                                                                             |
-|--------|-------|---------------------------------------------------------------------------------|
-| `[ ]`  | Map   | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead |
+| Status | Scope | Bug                                                                                       |
+|--------|-------|-------------------------------------------------------------------------------------------|
+| `[ ]`  | Map   | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead           |
+| `[ ]`  | CI    | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI |
 
 ### FEATURE: Map
 
@@ -124,7 +125,8 @@ Show a GPX Collection menu button in Settings.
 
 ### FEATURE: Support + Billing
 
-- Support + Billing is necessary to help me keep the app free for everyone and support the development.
+- Support + Billing is necessary to help me keep the app free for everyone and support the
+  development.
 - Google: Google Play Billing API
 - Apple: Apple App Store Connect, Apple Pay
 
