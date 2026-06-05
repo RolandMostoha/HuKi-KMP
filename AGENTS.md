@@ -105,6 +105,32 @@ Chores is a checklist which should be checked for every new "feature complete" c
 - Mokkery: The mocking library for KMP.
 - Maestro: E2E UI testing for Android + iOS.
 
+## Git Workflow
+
+### Branch Naming
+
+```
+feature/<short_description>
+```
+
+- Use lowercase snake_case for the description.
+- Examples: `feature/gpx`, `feature/gpx_details`, `feature/search`, `feature/settings`
+
+### Commit Messages
+
+```
+feat(Scope): short description in lowercase
+```
+
+- **Type**: always `feat` for feature work; use `fix`, `refactor`, `chore`, `ci`, `docs` where appropriate.
+- **Scope**: PascalCase, matching the feature or module name (e.g. `GPXDetails`, `Search`, `CI`, `Logger`).
+- **Description**: lowercase, imperative mood, no trailing period.
+- Examples:
+    - `feat(Search): add LocationIQ autocomplete with Ktor`
+    - `feat(GPX): add GPX Details bottom sheet`
+    - `fix(Logger): trim long lists from UiState logging`
+    - `ci(CI): cancel previous in-progress GitHub workflows`
+
 ### KMP multiplatform libraries 
 - SKIE - Swift - Kotlin interop tools
   - SwiftUI Observing pattern to eliminate ViewModel wrappers.
