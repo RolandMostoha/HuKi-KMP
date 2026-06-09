@@ -23,6 +23,8 @@
 7. Route planner
 8. Support / Billing
 9. Destinations - Locally stored POIs (Peaks, Waterfalls, Valleys etc.)
+10. OKT/AKT/RPDDK routes
+11. Landscapes
 
 ## Release plan
 
@@ -49,10 +51,12 @@
 
 ### Bugs
 
-| Status | Scope | Bug                                                                                       |
-|--------|-------|-------------------------------------------------------------------------------------------|
-| `[ ]`  | Map   | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead           |
-| `[ ]`  | CI    | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI |
+| Status | Scope  | Bug                                                                                                                                                                                                                                                                                                             |
+|--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Map    | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
+| `[ ]`  | CI     | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
+| `[ ]`  | CI     | Bug: Android. If open SearchBottomSheet and close it with swipe-to-dismiss all FABs and SearchBar are missing. Dead-end.                                                                                                                                                                                        |
+| `[ ]`  | Search | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 
 ### FEATURE: Map
 
@@ -87,33 +91,25 @@
 
 | Status | Scope | Task                                                                            |
 |--------|-------|---------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Save all imported GPX files in app's local sandbox, so GPX files can be reused  |
 | `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                  |
-| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode |
+| `[ ]`  | GPX   | Display (distance + time) in an InfoWindow on top Start / End / Waypoint points |
 | `[ ]`  | GPX   | Colored GPX                                                                     |
+| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu          |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                           |
+| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode |
 
 ### FEATURE: GPX Collection
 
-Show a GPX Collection menu button in Settings.
-
-| Status | Scope          | Task                                                                                      |
-|--------|----------------|-------------------------------------------------------------------------------------------|
-| `[ ]`  | GPX Collection | Show a GPX Collection menu button in Settings.                                            |
-| `[ ]`  | GPX Collection | Show a new screen "GPX Collection" on clicking it.                                        |
-| `[ ]`  | GPX Collection | Show all imported GPX file in a list view. (File Sandbox saving is pre-requisite)         |
-| `[ ]`  | GPX Collection | In the list view show the basic info for the GPX, what is already displayed in GPXDetails |
-
-### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
-
-| Status | Scope    | Task                                           |
-|--------|----------|------------------------------------------------|
-| `[ ]`  | GpxPanel | Use GPX panel on Start / GPX Details -> hidden |
-| `[ ]`  | GpxPanel | Elapsed time                                   |
-| `[ ]`  | GpxPanel | Distance from Start                            |
-| `[ ]`  | GpxPanel | Distance from End                              |
-| `[ ]`  | GpxPanel | AVG Speed                                      |
-| `[ ]`  | GpxPanel | Expected arrival based on dist/AVG speed       |
+| Status | Scope          | Task                                                                                              |
+|--------|----------------|---------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX Collection | Save all imported GPX files in app's local sandbox, so GPX files can be reused without re-import. |
+| `[ ]`  | GPX Collection | Copy file to internal storage if not exists (first time import).                                  |
+| `[ ]`  | GPX Collection | Create /APP_SANDBOX/gpx/external if not exist. This will be the directory for imported GPX files. |
+| `[ ]`  | GPX Collection | Rename SettingsScreen to MenuScreen                                                               |
+| `[ ]`  | GPX Collection | Show a GPX Collection menu button in Settings.                                                    |
+| `[ ]`  | GPX Collection | Show a new screen "GPX Collection" on clicking it.                                                |
+| `[ ]`  | GPX Collection | Show all imported GPX file in a list view. (File Sandbox saving is pre-requisite)                 |
+| `[ ]`  | GPX Collection | In the list view show the basic info for the GPX, what is already displayed in GPXDetails         |
 
 ### FEATURE: Place Details (from Search + Long Tap)
 
@@ -129,7 +125,6 @@ Show a GPX Collection menu button in Settings.
 
 | Status | Scope    | Task                                            |
 |--------|----------|-------------------------------------------------|
-| `[ ]`  | Settings | Rename SettingsScreen to MenuScreen             |
 | `[ ]`  | Settings | Add "Settings" to the top section of MenuScreen |
 | `[ ]`  | Settings | Create SettingsScreen                           |
 | `[ ]`  | Settings | Add Increase map font size in Settings          |
@@ -144,16 +139,25 @@ Show a GPX Collection menu button in Settings.
 
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                              |
-|--------|--------------|---------------------------------------------------|
-| `[ ]`  | Destinations | Move Destinations from legacy HuKI                |
-| `[ ]`  | Destinations | Show Destinations in Search                       |
-| `[ ]`  | Destinations | Add "popularity" flag so it can be an order param |
+| Status | Scope        | Task                                                              |
+|--------|--------------|-------------------------------------------------------------------|
+| `[ ]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations. |
 
 ### FEATURE: Route Planner
 
 - Graphhopper API
 - Most of the code can be reused from legacy HuKi
+
+### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
+
+| Status | Scope    | Task                                           |
+|--------|----------|------------------------------------------------|
+| `[ ]`  | GpxPanel | Use GPX panel on Start / GPX Details -> hidden |
+| `[ ]`  | GpxPanel | Elapsed time                                   |
+| `[ ]`  | GpxPanel | Distance from Start                            |
+| `[ ]`  | GpxPanel | Distance from End                              |
+| `[ ]`  | GpxPanel | AVG Speed                                      |
+| `[ ]`  | GpxPanel | Expected arrival based on dist/AVG speed       |
 
 ---
 
@@ -189,3 +193,20 @@ Show a GPX Collection menu button in Settings.
 | `[x]`  | GPXMenu | Eye -> shows/hide the GPX Line layer, but it keeps showing the Start/End/Waypoints markers   |
 | `[x]`  | GPXMenu | Maximize (A:ic_maximize iOS:rectangle.expand.diagonal) -> GPX.overview                       |
 | `[x]`  | GPXMenu | Clear -> Remove GPX layer                                                                    |
+
+### FEATURE: Destinations
+
+| Status | Scope        | Task                                                                                                                                                                                                                                                                                                                   |
+|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Destinations | Move Destinations from legacy HuKI                                                                                                                                                                                                                                                                                     |
+| `[x]`  | Destinations | Add popularity [1..10] for destinations                                                                                                                                                                                                                                                                                |
+| `[x]`  | Destinations | Add new Destinations                                                                                                                                                                                                                                                                                                   |
+| `[x]`  | Destinations | Show Destinations in Search in a section named Destinations/Kirándulóhelyek. Dont handle "See all" yet.                                                                                                                                                                                                                |
+| `[x]`  | Destinations | Show Destination items. Its a horizontally scrollable list. Show top 20 based on popularity.                                                                                                                                                                                                                           |
+| `[x]`  | Destinations | Use @DestinationType for icon/text. Use Destination.name, town, description. Initial state is description is line=1                                                                                                                                                                                                    |
+| `[x]`  | Destinations | Chevron button on top right corner. On click scroll up the text so the description is visible with multiple lines. Also hide the category to have more space te read.                                                                                                                                                  |
+| `[x]`  | Destinations | Card background color is @DestinationType.color. There is a black gradient from top to bottom so the White texts in the bottom are more visible.                                                                                                                                                                       |
+| `[x]`  | Destinations | When clicking inside the card, fire a new Event SearchDestiantionSelected and move camera to its location.                                                                                                                                                                                                             |
+| `[x]`  | Destinations | ATM "Powered by LocationIq" is always displayed. Remove it for search default (no search results) state. Only show when real LIQ search started with loading or results.                                                                                                                                               |
+| `[x]`  | Destinations | @DestinationRepository. Create an order logic for top 20 Search-Destinations: Weight by Distance(if my location is available)+Popularity+Type(prefer multiple types to avoid repetitive categories like 3 PEAKs next to each other). Also do some randomization not to show the same destinations over and over again. |
+

@@ -162,6 +162,9 @@ private fun MainContent(
                         onPlaceSelected = { place ->
                             onEvent(MainUiEvents.SearchPlaceSelected(place))
                         },
+                        onDestinationSelected = { destination ->
+                            onEvent(MainUiEvents.SearchDestinationSelected(destination))
+                        },
                         onLocationIqClicked = onLocationIqClicked,
                     )
                 }

@@ -13,6 +13,8 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -30,7 +32,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@Suppress("TooManyFunctions")
 class MainViewModel(
     val permissionsController: PermissionsController,
     val gpxRepository: GpxRepository,
@@ -52,39 +53,45 @@ class MainViewModel(
     fun onEvent(event: MainUiEvents) {
         Logger.d { "MainEvent: $event" }
         when (event) {
-            MainUiEvents.MyLocationClicked -> enableMyLocation()
-            MainUiEvents.MyLocationReceived -> _uiState.update {
-                it.copy(
-                    myLocationState = it.myLocationState.copy(hasLocationFix = true),
-                    isMyLocationLoading = false,
-                )
-            }
-            MainUiEvents.FollowingDisabled -> _uiState.update {
-                it.copy(
-                    myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
-                    isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
-                )
-            }
-            MainUiEvents.CompassClicked -> resetCameraToNorth()
-            MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
-            is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState {
-                it.copy(baseLayer = event.baseLayer)
-            }
-            MainUiEvents.HikingLayerSelected -> _uiState.updateMapUiState {
-                it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
-            }
-            MainUiEvents.GpxLayerSelected -> switchGpxLayer()
-            MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
-            is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
-            MainUiEvents.AlertDismissed -> dismissAlert()
-            MainUiEvents.GpxCloseClicked -> closeGpx()
-            MainUiEvents.GpxRouteVisibilityToggled -> _uiState.updateMapUiState {
-                it.copy(gpxRouteVisible = it.gpxRouteVisible.not())
-            }
-            MainUiEvents.GpxOverviewClicked -> showGpxOverview()
+            // General events
             MainUiEvents.SheetDismissed -> hideSheet()
+            MainUiEvents.AlertDismissed -> dismissAlert()
+            // Search events
             MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
             is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
+            is MainUiEvents.SearchDestinationSelected -> showDestination(event.destination)
+            // My location events
+            MainUiEvents.MyLocationClicked -> enableMyLocation()
+            MainUiEvents.MyLocationReceived -> updateMyLocation()
+            MainUiEvents.FollowingDisabled -> disableFollowing()
+            MainUiEvents.CompassClicked -> resetCameraToNorth()
+            // Layers events
+            MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
+            is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
+            MainUiEvents.HikingLayerSelected -> toggleHikingLayer()
+            // GPX events
+            MainUiEvents.GpxLayerSelected -> switchGpxLayer()
+            MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
+            MainUiEvents.GpxCloseClicked -> closeGpx()
+            is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
+            MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
+            MainUiEvents.GpxOverviewClicked -> showGpxOverview()
+        }
+    }
+
+    private fun showSheet(sheet: Sheet) {
+        _uiState.update { it.copy(sheet = sheet) }
+    }
+
+    private fun hideSheet() {
+        _uiState.update { it.copy(sheet = null) }
+    }
+
+    private fun dismissAlert() {
+        viewModelScope.launch {
+            _uiState.update { uiState ->
+                uiState.copy(alert = null)
+            }
         }
     }
 
@@ -94,6 +101,18 @@ class MainViewModel(
             sendEffect(
                 MapUiEffects.UpdateCamera(
                     bounds = listOf(place.location),
+                    zoom = 16.0,
+                ),
+            )
+        }
+    }
+
+    private fun showDestination(destination: Destination) {
+        viewModelScope.launch {
+            hideSheet()
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    bounds = listOf(destination.location),
                     zoom = 16.0,
                 ),
             )
@@ -124,6 +143,24 @@ class MainViewModel(
         }
     }
 
+    private fun updateMyLocation() {
+        _uiState.update {
+            it.copy(
+                myLocationState = it.myLocationState.copy(hasLocationFix = true),
+                isMyLocationLoading = false,
+            )
+        }
+    }
+
+    private fun disableFollowing() {
+        _uiState.update {
+            it.copy(
+                myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
+                isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
+            )
+        }
+    }
+
     private fun resetCameraToNorth() {
         viewModelScope.launch {
             val newStatus = MyLocationStatus.Following
@@ -134,6 +171,28 @@ class MainViewModel(
                 )
             }
             sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+        }
+    }
+
+    private fun initMyLocation() {
+        viewModelScope.launch {
+            val permissionState = permissionsController.getPermissionState(Permission.LOCATION)
+            val myLocationStatus = if (permissionState == PermissionState.Granted) {
+                MyLocationStatus.Following
+            } else {
+                MyLocationStatus.NotAvailable
+            }
+            _uiState.update { uiState ->
+                uiState.copy(
+                    myLocationState = uiState.myLocationState.copy(
+                        permissionState = permissionState,
+                        myLocationStatus = myLocationStatus,
+                    ),
+                    isMyLocationLoading = myLocationStatus != MyLocationStatus.NotAvailable &&
+                        !uiState.myLocationState.hasLocationFix,
+                )
+            }
+            sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
         }
     }
 
@@ -160,43 +219,18 @@ class MainViewModel(
             }
     }
 
-    private fun initMyLocation() {
-        viewModelScope.launch {
-            val permissionState = permissionsController.getPermissionState(Permission.LOCATION)
-            val myLocationStatus = if (permissionState == PermissionState.Granted) {
-                MyLocationStatus.Following
-            } else {
-                MyLocationStatus.NotAvailable
-            }
-            _uiState.update { uiState ->
-                uiState.copy(
-                    myLocationState = uiState.myLocationState.copy(
-                        permissionState = permissionState,
-                        myLocationStatus = myLocationStatus,
-                    ),
-                    isMyLocationLoading = myLocationStatus != MyLocationStatus.NotAvailable &&
-                        !uiState.myLocationState.hasLocationFix,
-                )
-            }
-            sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
-        }
-    }
-
     private fun shouldShowSearchBar(gpxLayerVisible: Boolean, myLocationStatus: MyLocationStatus): Boolean =
         !gpxLayerVisible && myLocationStatus != MyLocationStatus.FollowingLiveCompass
 
-    private fun showSheet(sheet: Sheet) {
-        _uiState.update { it.copy(sheet = sheet) }
+    private fun selectBaseLayer(baseLayer: BaseLayer) {
+        _uiState.updateMapUiState {
+            it.copy(baseLayer = baseLayer)
+        }
     }
 
-    private fun hideSheet() {
-        _uiState.update { it.copy(sheet = null) }
-    }
-
-    private fun showGpxFilePicker() {
-        viewModelScope.launch {
-            hideSheet()
-            sendEffect(MainUiEffects.ShowGpxFilePicker)
+    private fun toggleHikingLayer() {
+        _uiState.updateMapUiState {
+            it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
         }
     }
 
@@ -210,6 +244,45 @@ class MainViewModel(
                 it.copy(
                     mapUiState = it.mapUiState.copy(gpxLayerVisible = gpxLayerVisible),
                     isSearchBarVisible = shouldShowSearchBar(gpxLayerVisible, it.myLocationState.myLocationStatus),
+                )
+            }
+        }
+    }
+
+    private fun startGpxNavigation() {
+        viewModelScope.launch {
+            hideSheet()
+            withLocationPermission {
+                val targetStatus = MyLocationStatus.FollowingLiveCompass
+                _uiState.update {
+                    it.copy(
+                        myLocationState = it.myLocationState.copy(
+                            permissionState = PermissionState.Granted,
+                            myLocationStatus = targetStatus,
+                        ),
+                        isMyLocationLoading = !it.myLocationState.hasLocationFix,
+                        isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, targetStatus),
+                    )
+                }
+                sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
+            }
+        }
+    }
+
+    private fun closeGpx() {
+        viewModelScope.launch {
+            _uiState.update { uiState ->
+                uiState.copy(
+                    mapUiState = uiState.mapUiState.copy(
+                        gpxDetails = null,
+                        gpxLayerVisible = false,
+                        gpxRouteVisible = true,
+                    ),
+                    sheet = null,
+                    isSearchBarVisible = shouldShowSearchBar(
+                        gpxLayerVisible = false,
+                        myLocationStatus = uiState.myLocationState.myLocationStatus,
+                    ),
                 )
             }
         }
@@ -267,23 +340,9 @@ class MainViewModel(
         }
     }
 
-    private fun startGpxNavigation() {
-        viewModelScope.launch {
-            hideSheet()
-            withLocationPermission {
-                val targetStatus = MyLocationStatus.FollowingLiveCompass
-                _uiState.update {
-                    it.copy(
-                        myLocationState = it.myLocationState.copy(
-                            permissionState = PermissionState.Granted,
-                            myLocationStatus = targetStatus,
-                        ),
-                        isMyLocationLoading = !it.myLocationState.hasLocationFix,
-                        isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, targetStatus),
-                    )
-                }
-                sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
-            }
+    private fun toggleGpxRouteVisibility() {
+        _uiState.updateMapUiState {
+            it.copy(gpxRouteVisible = it.gpxRouteVisible.not())
         }
     }
 
@@ -299,30 +358,10 @@ class MainViewModel(
         }
     }
 
-    private fun closeGpx() {
+    private fun showGpxFilePicker() {
         viewModelScope.launch {
-            _uiState.update { uiState ->
-                uiState.copy(
-                    mapUiState = uiState.mapUiState.copy(
-                        gpxDetails = null,
-                        gpxLayerVisible = false,
-                        gpxRouteVisible = true,
-                    ),
-                    sheet = null,
-                    isSearchBarVisible = shouldShowSearchBar(
-                        gpxLayerVisible = false,
-                        myLocationStatus = uiState.myLocationState.myLocationStatus,
-                    ),
-                )
-            }
-        }
-    }
-
-    private fun dismissAlert() {
-        viewModelScope.launch {
-            _uiState.update { uiState ->
-                uiState.copy(alert = null)
-            }
+            hideSheet()
+            sendEffect(MainUiEffects.ShowGpxFilePicker)
         }
     }
 

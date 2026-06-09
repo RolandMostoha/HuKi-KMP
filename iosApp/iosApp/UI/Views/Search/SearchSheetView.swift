@@ -5,6 +5,7 @@ struct SearchSheetView: View {
     let strings: Strings
     let onDismiss: () -> Void
     let onPlaceSelected: (Place) -> Void
+    let onDestinationSelected: (Destination) -> Void
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
@@ -14,7 +15,9 @@ struct SearchSheetView: View {
         Observing(viewModel.uiState) { uiState in
             VStack(spacing: 0) {
                 searchBar(uiState: uiState)
-                attributionRow(isLoading: uiState.isLoading)
+                if uiState.isLoading || !uiState.places.isEmpty || uiState.error != nil {
+                    attributionRow(isLoading: uiState.isLoading)
+                }
                 if !uiState.places.isEmpty {
                     resultsList(places: uiState.places)
                 } else if let error = uiState.error {
@@ -29,6 +32,20 @@ struct SearchSheetView: View {
                     .padding(.top, 32)
                     .padding(.horizontal, 16)
                     Spacer(minLength: 0)
+                } else if uiState.searchText.isEmpty && !uiState.topDestinations.isEmpty {
+                    ScrollView {
+                        DestinationsSectionView(
+                            strings: strings,
+                            destinations: uiState.topDestinations,
+                            onDestinationSelected: { destination in
+                                isSearchFieldFocused = false
+                                onDestinationSelected(destination)
+                            }
+                        )
+                        .padding(.top, 38)
+                        .padding(.bottom, 24)
+                    }
+                    .scrollDismissesKeyboard(.interactively)
                 } else {
                     Spacer(minLength: 0)
                 }

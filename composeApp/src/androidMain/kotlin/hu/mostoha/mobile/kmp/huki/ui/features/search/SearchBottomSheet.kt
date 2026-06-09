@@ -57,6 +57,8 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderUiEvents
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderUiState
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
@@ -72,6 +74,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SearchBottomSheet(
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onDestinationSelected: (Destination) -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlaceFinderViewModel = koinViewModel(),
@@ -83,6 +86,7 @@ fun SearchBottomSheet(
         uiState = uiState,
         onCloseClick = onCloseClick,
         onPlaceSelected = onPlaceSelected,
+        onDestinationSelected = onDestinationSelected,
         onLocationIqClicked = onLocationIqClicked,
         onEvent = viewModel::onEvent,
     )
@@ -94,6 +98,7 @@ private fun SearchBottomSheetContent(
     onEvent: (PlaceFinderUiEvents) -> Unit,
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onDestinationSelected: (Destination) -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -192,46 +197,51 @@ private fun SearchBottomSheetContent(
                 )
             }
             Spacer(modifier = Modifier.width(Dimens.Small))
-            Row(
-                modifier = Modifier
-                    .height(30.dp)
-                    .fillMaxWidth()
-                    .padding(
-                        start = Dimens.Large,
-                        end = Dimens.Large,
-                        bottom = Dimens.Small,
-                    ),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (uiState.isLoading) {
-                    LoadingIndicator(
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(Dimens.MediumLarge))
+            val isSearchActive = uiState.isLoading || uiState.places.isNotEmpty() || errorInfo != null
+            if (isSearchActive) {
                 Row(
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable(onClick = onLocationIqClicked)
-                        .semantics(mergeDescendants = true) {
-                            contentDescription = context.resolveMoko(SharedRes.strings.settings_a11y_open_location_iq)
-                        }
-                        .padding(Dimens.ExtraSmall),
+                        .height(30.dp)
+                        .fillMaxWidth()
+                        .padding(
+                            start = Dimens.Large,
+                            end = Dimens.Large,
+                            bottom = Dimens.Small,
+                        ),
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = mokoString(SharedRes.strings.search_powered_by),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.width(Dimens.Small))
-                    Icon(
-                        painter = painterResource(id = SharedRes.images.ic_location_iq_logo.drawableResId),
-                        contentDescription = null,
-                        modifier = Modifier.height(18.dp),
-                        tint = Color.Unspecified,
-                    )
+                    if (uiState.isLoading) {
+                        LoadingIndicator(
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(Dimens.MediumLarge))
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable(onClick = onLocationIqClicked)
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = context.resolveMoko(
+                                    SharedRes.strings.settings_a11y_open_location_iq,
+                                )
+                            }
+                            .padding(Dimens.ExtraSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = mokoString(SharedRes.strings.search_powered_by),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(modifier = Modifier.width(Dimens.Small))
+                        Icon(
+                            painter = painterResource(id = SharedRes.images.ic_location_iq_logo.drawableResId),
+                            contentDescription = null,
+                            modifier = Modifier.height(18.dp),
+                            tint = Color.Unspecified,
+                        )
+                    }
                 }
             }
             if (uiState.places.isNotEmpty()) {
@@ -273,6 +283,18 @@ private fun SearchBottomSheetContent(
                             bottom = Dimens.ExtraLarge + navigationBarBottomPadding,
                         ),
                 )
+            } else if (uiState.searchText.isEmpty() && uiState.topDestinations.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    DestinationsSection(
+                        destinations = uiState.topDestinations,
+                        onDestinationSelected = onDestinationSelected,
+                    )
+                    Spacer(modifier = Modifier.height(Dimens.ExtraLarge + navigationBarBottomPadding))
+                }
             } else {
                 Spacer(modifier = Modifier.weight(1f, fill = true))
             }
@@ -310,6 +332,7 @@ private fun SearchBottomSheetContentPreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onDestinationSelected = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -327,6 +350,43 @@ private fun SearchBottomSheetErrorStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onDestinationSelected = {},
+            onLocationIqClicked = {},
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(name = "Destinations")
+@Composable
+private fun SearchBottomSheetDestinationsStatePreview() {
+    HuKiTheme {
+        SearchBottomSheetContent(
+            uiState = PlaceFinderUiState(
+                topDestinations = listOf(
+                    Destination(
+                        osmId = "1",
+                        name = "Dobogókő",
+                        town = "Pilisszentkereszt",
+                        type = DestinationType.PEAK,
+                        location = Location(47.7181, 18.8948),
+                        description = SharedRes.strings.destinations_section_title,
+                        popularity = 10,
+                    ),
+                    Destination(
+                        osmId = "2",
+                        name = "Balaton",
+                        town = "Siófok",
+                        type = DestinationType.LAKE,
+                        location = Location(46.83, 17.73),
+                        description = SharedRes.strings.destinations_section_title,
+                        popularity = 9,
+                    ),
+                ),
+            ),
+            onCloseClick = {},
+            onPlaceSelected = {},
+            onDestinationSelected = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -344,6 +404,7 @@ private fun SearchBottomSheetLoadingStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onDestinationSelected = {},
             onLocationIqClicked = {},
             onEvent = {},
         )

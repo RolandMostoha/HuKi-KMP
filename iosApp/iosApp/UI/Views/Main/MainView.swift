@@ -94,6 +94,10 @@ struct MainView: View {
                                 onPlaceSelected: { place in
                                     viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
                                 },
+                                onDestinationSelected: { destination in
+                                    let event = MainUiEventsSearchDestinationSelected(destination: destination)
+                                    viewModel.onEvent(event: event)
+                                },
                                 onLocationIqClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())
                                     navigationPath.append(LocationIqRoute.locationIq)
