@@ -43,6 +43,9 @@ struct MainView: View {
                     onFollowingDisabled: {
                         viewModel.onEvent(event: MainUiEventsFollowingDisabled())
                     },
+                    onMyLocationReceived: {
+                        viewModel.onEvent(event: MainUiEventsMyLocationReceived.shared)
+                    },
                     onGpxRouteClicked: { gpxDetails in
                         viewModel.onEvent(event: MainUiEventsGpxRouteClicked(gpxDetails: gpxDetails))
                     },

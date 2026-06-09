@@ -53,6 +53,12 @@ class MainViewModel(
         Logger.d { "MainEvent: $event" }
         when (event) {
             MainUiEvents.MyLocationClicked -> enableMyLocation()
+            MainUiEvents.MyLocationReceived -> _uiState.update {
+                it.copy(
+                    myLocationState = it.myLocationState.copy(hasLocationFix = true),
+                    isMyLocationLoading = false,
+                )
+            }
             MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState {
                 it.copy(myLocationStatus = MyLocationStatus.Default)
             }
@@ -98,10 +104,13 @@ class MainViewModel(
                         MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
                         MyLocationStatus.NotAvailable -> MyLocationStatus.Following
                     }
-                    _uiState.updateMyLocationState { uiState ->
+                    _uiState.update { uiState ->
                         uiState.copy(
-                            permissionState = permissionState,
-                            myLocationStatus = newStatus,
+                            myLocationState = uiState.myLocationState.copy(
+                                permissionState = permissionState,
+                                myLocationStatus = newStatus,
+                            ),
+                            isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
                         )
                     }
                     sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
@@ -141,10 +150,14 @@ class MainViewModel(
             } else {
                 MyLocationStatus.NotAvailable
             }
-            _uiState.updateMyLocationState { uiState ->
+            _uiState.update { uiState ->
                 uiState.copy(
-                    permissionState = permissionState,
-                    myLocationStatus = myLocationStatus,
+                    myLocationState = uiState.myLocationState.copy(
+                        permissionState = permissionState,
+                        myLocationStatus = myLocationStatus,
+                    ),
+                    isMyLocationLoading = myLocationStatus != MyLocationStatus.NotAvailable &&
+                        !uiState.myLocationState.hasLocationFix,
                 )
             }
             sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
@@ -232,6 +245,7 @@ class MainViewModel(
                     myLocationState = it.myLocationState.copy(
                         myLocationStatus = targetStatus,
                     ),
+                    isMyLocationLoading = !it.myLocationState.hasLocationFix,
                     sheet = null,
                 )
             }

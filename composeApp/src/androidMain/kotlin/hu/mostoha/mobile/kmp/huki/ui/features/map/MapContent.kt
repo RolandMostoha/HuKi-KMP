@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
+import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.ImageHolder
 import com.mapbox.maps.MapboxDelicateApi
@@ -51,6 +52,7 @@ import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
@@ -183,6 +185,13 @@ fun MapContent(
                 pulsingEnabled = true
                 pulsingColor = primaryColor.toArgb()
             }
+            val positionListener = object : OnIndicatorPositionChangedListener {
+                override fun onIndicatorPositionChanged(point: Point) {
+                    onEvent(MainUiEvents.MyLocationReceived)
+                    mapView.location.removeOnIndicatorPositionChangedListener(this)
+                }
+            }
+            mapView.location.addOnIndicatorPositionChangedListener(positionListener)
             mapView.viewport.addStatusObserver { from, to, reason ->
                 Logger.d { "Mapbox: Viewport status: from=$from, to=$to, reason=$reason" }
                 if (from.isFollow() && (to.isIdle() || to.isOverview())) {

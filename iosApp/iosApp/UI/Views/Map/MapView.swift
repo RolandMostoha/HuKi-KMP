@@ -5,6 +5,7 @@ import SwiftUI
 struct MapView: View {
     let uiState: MainUiState
     let onFollowingDisabled: () -> Void
+    let onMyLocationReceived: () -> Void
     let onGpxRouteClicked: (GpxDetails) -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
@@ -106,6 +107,14 @@ struct MapView: View {
             .task {
                 for await effect in mapUiEffects {
                     handleMapEffects(effect)
+                }
+            }
+            .task {
+                // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
+                guard let location = proxy.location else { return }
+                for await _ in location.onLocationChange.values {
+                    onMyLocationReceived()
+                    break
                 }
             }
         }

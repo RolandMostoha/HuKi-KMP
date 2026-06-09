@@ -112,19 +112,31 @@ fun FloatingActionContainer(
                             defaultElevation = Dimens.FloatingActionElevation,
                         ),
                         shape = CircleShape,
-                        onClick = { onMyLocationClicked() },
+                        onClick = {
+                            if (!mainUiState.isMyLocationLoading) {
+                                onMyLocationClicked()
+                            }
+                        },
                     ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(
-                                when (mainUiState.myLocationState.myLocationStatus) {
-                                    MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
-                                    MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
-                                    MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
-                                    MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
-                                },
-                            ),
-                            contentDescription = mokoString(mainUiState.myLocationState.myLocationStatus.a11yId),
-                        )
+                        val myLocationStatus = mainUiState.myLocationState.myLocationStatus
+                        val myLocationIconRes = when (myLocationStatus) {
+                            MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
+                            MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
+                            MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
+                            MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
+                        }
+                        if (mainUiState.isMyLocationLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.5.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(myLocationIconRes),
+                                contentDescription = mokoString(myLocationStatus.a11yId),
+                            )
+                        }
                     }
                 }
             }
