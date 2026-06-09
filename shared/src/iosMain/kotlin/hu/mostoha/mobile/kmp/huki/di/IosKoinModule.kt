@@ -5,8 +5,13 @@ import dev.icerock.moko.permissions.ios.PermissionsControllerProtocol
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.service.IosLocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.dsl.module
@@ -14,6 +19,11 @@ import org.koin.dsl.module
 val iosPlatformModule = module {
     single<HttpClientEngine> { Darwin.create() }
     single<PermissionsControllerProtocol> { PermissionsController() }
+    single<LocationMonitoringService> {
+        IosLocationMonitoringService(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        )
+    }
 }
 
 fun initKoin() {

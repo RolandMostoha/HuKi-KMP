@@ -38,6 +38,9 @@ struct SearchSheetView: View {
             .onAppear {
                 isSearchFieldFocused = true
             }
+            .onDisappear {
+                viewModel.clear()
+            }
         }
     }
 
