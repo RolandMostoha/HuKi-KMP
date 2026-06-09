@@ -205,6 +205,56 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given granted permission and no fix, When init, Then isMyLocationLoading is true`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given searching my location, When MyLocationReceived, Then isMyLocationLoading is false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationReceived)
+
+                awaitItem().isMyLocationLoading shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `Given location fix received, When MyLocationClicked, Then isMyLocationLoading stays false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationReceived)
+                awaitItem().isMyLocationLoading shouldBe false
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isMyLocationLoading shouldBe false
+                }
+            }
+        }
+    }
+
+    @Test
     fun `When LayersClicked, Then uiState sheet is Layers`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

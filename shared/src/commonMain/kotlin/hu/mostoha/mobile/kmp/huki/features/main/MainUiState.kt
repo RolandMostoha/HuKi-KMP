@@ -13,6 +13,7 @@ data class MainUiState(
     val sheet: Sheet? = null,
     val isSearchBarVisible: Boolean = true,
     val isGpxLoading: Boolean = false,
+    val isMyLocationLoading: Boolean = false,
     val alert: Alert? = null,
 ) {
     companion object {
