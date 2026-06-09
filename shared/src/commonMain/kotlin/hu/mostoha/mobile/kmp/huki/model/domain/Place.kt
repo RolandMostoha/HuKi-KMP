@@ -24,7 +24,7 @@ fun LocationIqPlace.toPlaceSearchResult(userLocation: Location? = null): Place {
         placeCategory = PlaceCategory.fromString(type),
         osmType = OsmType.fromString(osmType),
         distance = userLocation?.let {
-            DistanceFormatter.formatDistance(it.distanceBetween(location))
+            DistanceFormatter.formatRoundedDistance(it.distanceBetween(location))
         },
     )
 }
