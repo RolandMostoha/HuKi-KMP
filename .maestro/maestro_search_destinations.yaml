@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- assertVisible: "Search..."
+- tapOn: "Search..."
+
+# Destinations section is shown in the default (no query) state
+- assertVisible:
+    id: DESTINATIONS_SECTION
+- assertVisible:
+    id: DESTINATION_CARD
+    index: 0
+
+# Expanding a card keeps it visible (description switches to multiple lines)
+- tapOn:
+    id: DESTINATION_EXPAND_BUTTON
+    index: 0
+- assertVisible:
+    id: DESTINATION_CARD
+    index: 0
+
+# Selecting a destination dismisses the sheet and moves the map camera
+- tapOn:
+    id: DESTINATION_CARD
+    index: 0
+- assertVisible:
+    id: MAP_MAPBOX
+- assertNotVisible:
+    id: DESTINATIONS_SECTION
