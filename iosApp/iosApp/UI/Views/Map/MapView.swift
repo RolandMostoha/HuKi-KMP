@@ -109,9 +109,10 @@ struct MapView: View {
                     handleMapEffects(effect)
                 }
             }
-            .task {
+            .task(id: uiState.myLocationState.permissionState == PermissionState.granted) {
                 // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
-                guard let location = proxy.location else { return }
+                guard uiState.myLocationState.permissionState == PermissionState.granted,
+                      let location = proxy.location else { return }
                 for await _ in location.onLocationChange.values {
                     onMyLocationReceived()
                     break

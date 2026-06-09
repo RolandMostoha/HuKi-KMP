@@ -255,6 +255,66 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given granted permission, When GpxStartNavigationClicked, Then uiState has FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+            }
+        }
+    }
+
+    @Test
+    fun `Given not granted permission, When GpxStartNavigationClicked and allow, Then FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.NotDetermined
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.Granted
+                    myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given not granted permission, When GpxStartNavigationClicked and disallow, Then stays NotAvailable Denied`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.NotDetermined
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.Denied
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
+            }
+        }
+    }
+
+    @Test
     fun `When LayersClicked, Then uiState sheet is Layers`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
