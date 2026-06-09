@@ -95,37 +95,35 @@ class MainViewModel(
 
     private fun enableMyLocation() {
         viewModelScope.launch {
-            when (val permissionState = permissionsController.getPermissionState(Permission.LOCATION)) {
-                PermissionState.Granted -> {
-                    val lastStatus = uiState.value.myLocationState.myLocationStatus
-                    val newStatus = when (lastStatus) {
-                        MyLocationStatus.Default -> MyLocationStatus.Following
-                        MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
-                        MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
-                        MyLocationStatus.NotAvailable -> MyLocationStatus.Following
-                    }
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            myLocationState = uiState.myLocationState.copy(
-                                permissionState = permissionState,
-                                myLocationStatus = newStatus,
-                            ),
-                            isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
-                        )
-                    }
-                    sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+            withLocationPermission {
+                val newStatus = when (uiState.value.myLocationState.myLocationStatus) {
+                    MyLocationStatus.Default -> MyLocationStatus.Following
+                    MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
+                    MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
+                    MyLocationStatus.NotAvailable -> MyLocationStatus.Following
                 }
-                else -> requestLocationPermission()
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        myLocationState = uiState.myLocationState.copy(
+                            permissionState = PermissionState.Granted,
+                            myLocationStatus = newStatus,
+                        ),
+                        isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
+                    )
+                }
+                sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
             }
         }
     }
 
-    private fun requestLocationPermission() {
-        viewModelScope.launch {
-            runCatching {
-                permissionsController.providePermission(Permission.LOCATION)
-                enableMyLocation()
-            }.onFailure { exception ->
+    private suspend fun withLocationPermission(onGranted: suspend () -> Unit) {
+        if (permissionsController.getPermissionState(Permission.LOCATION) == PermissionState.Granted) {
+            onGranted()
+            return
+        }
+        runCatching { permissionsController.providePermission(Permission.LOCATION) }
+            .onSuccess { onGranted() }
+            .onFailure { exception ->
                 _uiState.updateMyLocationState { uiState ->
                     uiState.copy(
                         permissionState = when (exception) {
@@ -139,7 +137,6 @@ class MainViewModel(
                     sendEffect(MainUiEffects.NavigateToAppSettings)
                 }
             }
-        }
     }
 
     private fun initMyLocation() {
@@ -239,17 +236,20 @@ class MainViewModel(
 
     private fun startGpxNavigation() {
         viewModelScope.launch {
-            val targetStatus = MyLocationStatus.FollowingLiveCompass
-            _uiState.update {
-                it.copy(
-                    myLocationState = it.myLocationState.copy(
-                        myLocationStatus = targetStatus,
-                    ),
-                    isMyLocationLoading = !it.myLocationState.hasLocationFix,
-                    sheet = null,
-                )
+            hideSheet()
+            withLocationPermission {
+                val targetStatus = MyLocationStatus.FollowingLiveCompass
+                _uiState.update {
+                    it.copy(
+                        myLocationState = it.myLocationState.copy(
+                            permissionState = PermissionState.Granted,
+                            myLocationStatus = targetStatus,
+                        ),
+                        isMyLocationLoading = !it.myLocationState.hasLocationFix,
+                    )
+                }
+                sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
             }
-            sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
         }
     }
 
