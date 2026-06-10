@@ -113,7 +113,15 @@ struct MapView: View {
                 // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
                 guard uiState.myLocationState.permissionState == PermissionState.granted,
                       let location = proxy.location else { return }
-                for await _ in location.onLocationChange.values {
+                let locationChanges = AsyncStream<Void> { continuation in
+                    let cancelable = location.onLocationChange.observe { _ in
+                        continuation.yield(())
+                    }
+                    continuation.onTermination = { _ in
+                        cancelable.cancel()
+                    }
+                }
+                for await _ in locationChanges {
                     onMyLocationReceived()
                     break
                 }

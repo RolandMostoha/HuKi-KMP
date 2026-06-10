@@ -575,4 +575,86 @@ class MainViewModelTest {
             }
         }
     }
+
+    @Test
+    fun `Given granted permission, When init, Then isSearchBarVisible is true`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given Following, When my location becomes FollowingLiveCompass and back, Then SearchBar toggles`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                    isSearchBarVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxStartNavigationClicked, Then isSearchBarVisible is false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                awaitItem().isSearchBarVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `When GPX becomes visible, Then isSearchBarVisible is false, and true again when closed`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem().isSearchBarVisible shouldBe true // Loading
+                with(awaitItem()) {
+                    mapUiState.gpxLayerVisible shouldBe true
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+
+                with(awaitItem()) {
+                    mapUiState.gpxLayerVisible shouldBe false
+                    isSearchBarVisible shouldBe true
+                }
+            }
+        }
+    }
 }

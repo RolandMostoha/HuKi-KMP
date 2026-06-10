@@ -67,7 +67,7 @@
 | `[ ]`  | MyLocation | Use My Location for search result distance                                                                                                                                                    |
 | `[x]`  | MyLocation | Bug: Loading state. At the moment there is no loading state while the GPS is searching for location.                                                                                          |
 | `[x]`  | MyLocation | Bug: if location permission is not enabled, GPX->Start does nothing. If location permission is not granted, and there is any my location related request, first it has to ask for permission. |
-| `[ ]`  | MyLocation | Hide SearchBar if GPX is visible. Hide SearchBar if FollowingLiveCompass.                                                                                                                     |
+| `[x]`  | MyLocation | Hide SearchBar if GPX is visible. Hide SearchBar if FollowingLiveCompass.                                                                                                                     |
 | `[ ]`  | MyLocation | Reset pinch as well clicking on compass (Mapbox driven) icon                                                                                                                                  |
 
 ### FEATURE: Layers

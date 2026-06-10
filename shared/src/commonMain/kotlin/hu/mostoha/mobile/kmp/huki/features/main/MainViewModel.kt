@@ -59,8 +59,11 @@ class MainViewModel(
                     isMyLocationLoading = false,
                 )
             }
-            MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState {
-                it.copy(myLocationStatus = MyLocationStatus.Default)
+            MainUiEvents.FollowingDisabled -> _uiState.update {
+                it.copy(
+                    myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
+                    isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
+                )
             }
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState {
@@ -109,6 +112,7 @@ class MainViewModel(
                             myLocationStatus = newStatus,
                         ),
                         isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
+                        isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
                     )
                 }
                 sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
@@ -161,6 +165,9 @@ class MainViewModel(
         }
     }
 
+    private fun shouldShowSearchBar(gpxLayerVisible: Boolean, myLocationStatus: MyLocationStatus): Boolean =
+        !gpxLayerVisible && myLocationStatus != MyLocationStatus.FollowingLiveCompass
+
     private fun showSheet(sheet: Sheet) {
         _uiState.update { it.copy(sheet = sheet) }
     }
@@ -181,8 +188,12 @@ class MainViewModel(
         if (gpxDetails == null) {
             showGpxFilePicker()
         } else {
-            _uiState.updateMapUiState {
-                it.copy(gpxLayerVisible = it.gpxLayerVisible.not())
+            _uiState.update {
+                val gpxLayerVisible = it.mapUiState.gpxLayerVisible.not()
+                it.copy(
+                    mapUiState = it.mapUiState.copy(gpxLayerVisible = gpxLayerVisible),
+                    isSearchBarVisible = shouldShowSearchBar(gpxLayerVisible, it.myLocationState.myLocationStatus),
+                )
             }
         }
     }
@@ -206,6 +217,10 @@ class MainViewModel(
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
                             isGpxLoading = false,
+                            isSearchBarVisible = shouldShowSearchBar(
+                                gpxLayerVisible = true,
+                                myLocationStatus = uiState.myLocationState.myLocationStatus,
+                            ),
                         )
                     }
                     sendEffect(
@@ -246,6 +261,7 @@ class MainViewModel(
                             myLocationStatus = targetStatus,
                         ),
                         isMyLocationLoading = !it.myLocationState.hasLocationFix,
+                        isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, targetStatus),
                     )
                 }
                 sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
@@ -262,6 +278,10 @@ class MainViewModel(
                         gpxLayerVisible = false,
                     ),
                     sheet = null,
+                    isSearchBarVisible = shouldShowSearchBar(
+                        gpxLayerVisible = false,
+                        myLocationStatus = uiState.myLocationState.myLocationStatus,
+                    ),
                 )
             }
         }
