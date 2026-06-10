@@ -1,8 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -142,8 +144,8 @@ fun FloatingActionContainer(
             }
             AnimatedVisibility(
                 visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                enter = slideInVertically(initialOffsetY = { it }) + expandVertically() + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + shrinkVertically() + fadeOut(),
             ) {
                 SearchBar(
                     modifier = Modifier

@@ -31,6 +31,7 @@ struct FloatingActionContainer: View {
             }
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
+        .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
     }
 
     @ViewBuilder
