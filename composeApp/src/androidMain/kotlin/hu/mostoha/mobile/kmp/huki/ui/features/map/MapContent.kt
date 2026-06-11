@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -138,9 +139,12 @@ fun MapContent(
                     end = Dimens.ExtraLarge,
                 ),
                 contentPadding = insetPadding,
+                resetToNorthUponClick = false,
             ) {
                 Image(
-                    modifier = Modifier.size(MAP_COMPASS_TOP_PADDING.dp),
+                    modifier = Modifier
+                        .size(MAP_COMPASS_TOP_PADDING.dp)
+                        .clickable { onEvent(MainUiEvents.CompassClicked) },
                     painter = painterResource(id = SharedRes.images.ic_my_location_compass.drawableResId),
                     contentDescription = mokoString(SharedRes.strings.my_location_a11y_compass),
                 )
