@@ -153,6 +153,85 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given FollowingLiveCompass, When CompassClicked, Then uiState has Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                    isSearchBarVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given FollowingLiveCompass, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default, When CompassClicked, Then uiState has Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
     fun `Given Following my location, When MyLocationUpdated, Then uiState has Default MyLocationStatus`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -200,6 +279,116 @@ class MainViewModelTest {
                     animated = true,
                 )
                 ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given granted permission and no fix, When init, Then isMyLocationLoading is true`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given searching my location, When MyLocationReceived, Then isMyLocationLoading is false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationReceived)
+
+                awaitItem().isMyLocationLoading shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `Given location fix received, When MyLocationClicked, Then isMyLocationLoading stays false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isMyLocationLoading shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationReceived)
+                awaitItem().isMyLocationLoading shouldBe false
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isMyLocationLoading shouldBe false
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given granted permission, When GpxStartNavigationClicked, Then uiState has FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+            }
+        }
+    }
+
+    @Test
+    fun `Given not granted permission, When GpxStartNavigationClicked and allow, Then FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.NotDetermined
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.Granted
+                    myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given not granted permission, When GpxStartNavigationClicked and disallow, Then stays NotAvailable Denied`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.NotDetermined
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                with(awaitItem().myLocationState) {
+                    permissionState shouldBe PermissionState.Denied
+                    myLocationStatus shouldBe MyLocationStatus.NotAvailable
+                }
             }
         }
     }
@@ -462,6 +651,88 @@ class MainViewModelTest {
                 viewModel.onEvent(MainUiEvents.AlertDismissed)
 
                 awaitItem().alert shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `Given granted permission, When init, Then isSearchBarVisible is true`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given Following, When my location becomes FollowingLiveCompass and back, Then SearchBar toggles`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                    isSearchBarVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `When GpxStartNavigationClicked, Then isSearchBarVisible is false`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+
+                awaitItem().isSearchBarVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `When GPX becomes visible, Then isSearchBarVisible is false, and true again when closed`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().isSearchBarVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+
+                awaitItem().isSearchBarVisible shouldBe true // Loading
+                with(awaitItem()) {
+                    mapUiState.gpxLayerVisible shouldBe true
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+
+                with(awaitItem()) {
+                    mapUiState.gpxLayerVisible shouldBe false
+                    isSearchBarVisible shouldBe true
+                }
             }
         }
     }

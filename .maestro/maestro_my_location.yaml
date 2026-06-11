@@ -11,6 +11,10 @@ appId: ${APP_ID}
       id: MAP_MAPBOX
     timeout: 10000
 
+# Permission dialog must NOT appear at launch — only on an explicit My Location request
+- assertNotVisible: "Allow While Using App"
+- assertNotVisible: "While using the app"
+
 # Not available
 - assertVisible: "My location - Not available"
 

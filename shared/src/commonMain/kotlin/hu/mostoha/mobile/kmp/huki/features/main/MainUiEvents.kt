@@ -21,7 +21,9 @@ sealed interface MainUiEvents {
      * My location events
      */
     data object MyLocationClicked : MainUiEvents
+    data object MyLocationReceived : MainUiEvents
     data object FollowingDisabled : MainUiEvents
+    data object CompassClicked : MainUiEvents
 
     /**
      * Layers events

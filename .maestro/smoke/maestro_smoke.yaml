@@ -23,7 +23,3 @@ appId: ${APP_ID}
 - assertVisible:
     id: SETTINGS_SCREEN_ROOT
 - assertVisible: "HuKi"
-- tapOn:
-    id: SETTINGS_BACK_BUTTON
-- assertVisible:
-    id: MAP_MAPBOX

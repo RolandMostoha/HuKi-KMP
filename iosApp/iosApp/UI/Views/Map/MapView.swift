@@ -5,10 +5,20 @@ import SwiftUI
 struct MapView: View {
     let uiState: MainUiState
     let onFollowingDisabled: () -> Void
+    let onMyLocationReceived: () -> Void
     let onGpxRouteClicked: (GpxDetails) -> Void
+    let onCompassClicked: () -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
     private let viewportObserver = ViewportObserver()
+    private let strings = Strings()
+
+    private var isCompassVisible: Bool {
+        if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
+            return true
+        }
+        return false
+    }
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -19,95 +29,122 @@ struct MapView: View {
 
     var body: some View {
         MapReader { proxy in
-            Map(viewport: $viewport) {
-                if uiState.myLocationState.permissionState == PermissionState.granted {
-                    Puck2D(bearing: .heading)
-                        .showsAccuracyRing(true)
-                        .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
-                        .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
-                        .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
-                        .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
-                        .scale(1.2)
-                }
-                if uiState.mapUiState.hikingLayerVisible {
-                    RasterSource(id: OverlayLayer.turistautak.layerId)
-                        .tiles(OverlayLayer.turistautak.tiles)
-                        .tileSize(Double(OverlayLayer.turistautak.tileSize))
-                        .minzoom(Double(OverlayLayer.turistautak.minZoom))
-                        .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
-                    RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
-                }
-                if uiState.mapUiState.gpxLayerVisible {
-                    if let gpxDetails = uiState.mapUiState.gpxDetails {
-                        let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
+            ZStack(alignment: .topTrailing) {
+                Map(viewport: $viewport) {
+                    if uiState.myLocationState.permissionState == PermissionState.granted {
+                        Puck2D(bearing: .heading)
+                            .showsAccuracyRing(true)
+                            .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
+                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
+                            .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
+                            .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
+                            .scale(1.2)
+                    }
+                    if uiState.mapUiState.hikingLayerVisible {
+                        RasterSource(id: OverlayLayer.turistautak.layerId)
+                            .tiles(OverlayLayer.turistautak.tiles)
+                            .tileSize(Double(OverlayLayer.turistautak.tileSize))
+                            .minzoom(Double(OverlayLayer.turistautak.minZoom))
+                            .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
+                        RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
+                    }
+                    if uiState.mapUiState.gpxLayerVisible {
+                        if let gpxDetails = uiState.mapUiState.gpxDetails {
+                            let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
 
-                        GeoJSONSource(id: gpxDetails.layerId)
-                            .data(.feature(feature))
+                            GeoJSONSource(id: gpxDetails.layerId)
+                                .data(.feature(feature))
 
-                        LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
-                            .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                            .lineColor(SharedRes.colors().primary.getUIColor())
-                            .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                            LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
+                                .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
+                                .lineColor(SharedRes.colors().primary.getUIColor())
+                                .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
+                                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
 
-                        PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
-                            PointAnnotation(coordinate: waypoint.location.coordinate)
-                                .image(waypoint.type.icon.annotationImage)
-                                .iconSize(
-                                    waypoint.type == .intermediate
-                                        ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
-                                        : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
-                                )
-                        }
+                            PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
+                                PointAnnotation(coordinate: waypoint.location.coordinate)
+                                    .image(waypoint.type.icon.annotationImage)
+                                    .iconSize(
+                                        waypoint.type == .intermediate
+                                            ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
+                                            : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
+                                    )
+                            }
 
-                        TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
-                            onGpxRouteClicked(gpxDetails)
-                            return true
+                            TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
+                                onGpxRouteClicked(gpxDetails)
+                                return true
+                            }
                         }
                     }
                 }
-            }
-            .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
-            .gestureOptions(GestureOptions(
-                rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
-            ))
-            .ornamentOptions(OrnamentOptions(
-                scaleBar: ScaleBarViewOptions(
-                    position: .topLeft,
-                    margins: .init(x: 16.0, y: 16.0),
-                    visibility: .adaptive
-                ),
-                compass: CompassViewOptions(
-                    position: .topRight,
-                    margins: .init(x: 16.0, y: SharedDimens.shared.MAP_COMPASS_TOP_PADDING),
-                    image: SharedRes.images().ic_my_location_compass.toUIImage()!
-                        .resized(to: CGSize(width: 48, height: 48)),
-                    visibility: .adaptive
-                ),
-                logo: LogoViewOptions(
-                    position: .topRight,
-                    margins: .init(x: 40.0, y: 22.0)
-                ),
-                attributionButton: AttributionButtonOptions(
-                    position: .topRight,
-                    margins: .init(x: 0.0, y: 0.0)
-                )
-            ))
-            .onAppear {
-                viewportObserver.onFollowingDisabled = {
-                    onFollowingDisabled()
+                .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
+                .gestureOptions(GestureOptions(
+                    rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
+                ))
+                .ornamentOptions(OrnamentOptions(
+                    scaleBar: ScaleBarViewOptions(
+                        position: .topLeft,
+                        margins: .init(x: 16.0, y: 16.0),
+                        visibility: .adaptive
+                    ),
+                    // The built-in compass is hidden, we are using a custom one
+                    compass: CompassViewOptions(visibility: .hidden),
+                    logo: LogoViewOptions(
+                        position: .topRight,
+                        margins: .init(x: 40.0, y: 22.0)
+                    ),
+                    attributionButton: AttributionButtonOptions(
+                        position: .topRight,
+                        margins: .init(x: 0.0, y: 0.0)
+                    )
+                ))
+                .onAppear {
+                    viewportObserver.onFollowingDisabled = {
+                        onFollowingDisabled()
+                    }
+                    proxy.viewport?.addStatusObserver(viewportObserver)
                 }
-                proxy.viewport?.addStatusObserver(viewportObserver)
-            }
-            .onDisappear {
-                proxy.viewport?.removeStatusObserver(viewportObserver)
-            }
-            .accessibilityIdentifier(TestTags.shared.MAP_MAPBOX)
-            .task {
-                for await effect in mapUiEffects {
-                    handleMapEffects(effect)
+                .onDisappear {
+                    proxy.viewport?.removeStatusObserver(viewportObserver)
+                }
+                .accessibilityIdentifier(TestTags.shared.MAP_MAPBOX)
+                .task {
+                    for await effect in mapUiEffects {
+                        handleMapEffects(effect)
+                    }
+                }
+                .task(id: uiState.myLocationState.permissionState == PermissionState.granted) {
+                    // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
+                    guard uiState.myLocationState.permissionState == PermissionState.granted,
+                          let location = proxy.location else { return }
+                    let locationChanges = AsyncStream<Void> { continuation in
+                        let cancelable = location.onLocationChange.observe { _ in
+                            continuation.yield(())
+                        }
+                        continuation.onTermination = { _ in
+                            cancelable.cancel()
+                        }
+                    }
+                    for await _ in locationChanges {
+                        onMyLocationReceived()
+                        break
+                    }
+                }
+                .ignoresSafeArea()
+
+                if isCompassVisible {
+                    CompassOrnamentView(
+                        proxy: proxy,
+                        accessibilityLabel: strings.get(id: SharedRes.strings().my_location_a11y_compass),
+                        onTap: onCompassClicked
+                    )
+                    .padding(.top, CGFloat(SharedDimens.shared.MAP_COMPASS_TOP_PADDING))
+                    .padding(.trailing, 16)
+                    .transition(.opacity)
                 }
             }
+            .animation(.smooth(duration: 0.3), value: isCompassVisible)
         }
     }
 

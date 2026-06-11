@@ -1,0 +1,78 @@
+appId: ${APP_ID}
+---
+# Verifies that GPX -> Start Navigation requests location permission on demand
+# when it has not been granted yet (no permission dialog at launch).
+- launchApp:
+    clearState: true
+    permissions: { all: unset }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Permission dialog must NOT appear at launch
+- assertNotVisible: "Allow While Using App"
+- assertNotVisible: "While using the app"
+- assertVisible: "My location - Not available"
+
+# Import test GPX
+- tapOn: "Layers"
+- tapOn: "Gpx Layer"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "Search"
+      - inputText: "gpx_test_with_comments"
+      - tapOn: "gpx_test_with_comments.gpx"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          when:
+            notVisible:
+              id: "BackButton"
+          commands:
+            - extendedWaitUntil:
+                visible: "Browse"
+                timeout: 5000
+            - tapOn: "Browse"
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+      - runFlow:
+          when:
+            visible:
+              id: "BackButton"
+          commands:
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+
+# GPX Details sheet with Start action
+- extendedWaitUntil:
+    visible: "gpx_test_with_comments.gpx"
+    timeout: 5000
+- assertVisible: "Start"
+
+# Start Navigation must request permission on demand (not granted yet)
+- tapOn: "Start"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "While using the app"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+            visible: "Allow While Using App"
+            timeout: 10000
+            optional: false
+      - tapOn: "Allow While Using App"
+
+# After granting, navigation follows in live compass mode
+- assertVisible: "My location - Live compass"
