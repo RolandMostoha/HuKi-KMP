@@ -1,0 +1,94 @@
+appId: ${APP_ID}
+---
+# Verifies that the SearchBar is hidden to give more room for the map while
+# navigating with the live compass or while a GPX route is shown, and that it
+# returns once neither condition holds.
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Granted at launch -> Following, SearchBar visible
+- assertVisible: "My location - Following"
+- assertVisible:
+    id: MAIN_SEARCH_BAR
+
+# Following -> Live compass: SearchBar hidden
+- tapOn:
+    id: MAIN_FAB_MY_LOCATION_BUTTON
+- extendedWaitUntil:
+    visible: "My location - Live compass"
+    timeout: 5000
+- assertNotVisible:
+    id: MAIN_SEARCH_BAR
+
+# Live compass -> Following: SearchBar returns
+- tapOn:
+    id: MAIN_FAB_MY_LOCATION_BUTTON
+- extendedWaitUntil:
+    visible: "My location - Following"
+    timeout: 5000
+- assertVisible:
+    id: MAIN_SEARCH_BAR
+
+# Import test GPX (status is Following, so any hide below is GPX-driven)
+- tapOn: "Layers"
+- tapOn: "Gpx Layer"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "Search"
+      - inputText: "gpx_test_with_comments"
+      - tapOn: "gpx_test_with_comments.gpx"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          when:
+            notVisible:
+              id: "BackButton"
+          commands:
+            - extendedWaitUntil:
+                visible: "Browse"
+                timeout: 5000
+            - tapOn: "Browse"
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+      - runFlow:
+          when:
+            visible:
+              id: "BackButton"
+          commands:
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+
+# GPX Details sheet shown -> SearchBar hidden
+- extendedWaitUntil:
+    visible: "gpx_test_with_comments.gpx"
+    timeout: 5000
+- assertNotVisible:
+    id: MAIN_SEARCH_BAR
+
+# Dismiss the details sheet by swiping it down; the GPX route stays on the map
+- swipe:
+    start: "50%, 75%"
+    end: "50%, 98%"
+
+# Sheet dismissed but GPX still visible -> SearchBar still hidden
+- assertNotVisible:
+    id: MAIN_SEARCH_BAR
+
+# Hide the GPX layer -> SearchBar returns
+- tapOn: "Layers"
+- tapOn: "Gpx Layer"
+- tapOn: "Close"
+- assertVisible:
+    id: MAIN_SEARCH_BAR

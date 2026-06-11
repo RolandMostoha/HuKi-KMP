@@ -14,6 +14,7 @@ struct SearchBarView: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
         .glassBackground()
+        .accessibilityIdentifier(TestTags.shared.MAIN_SEARCH_BAR)
     }
 
     @ViewBuilder

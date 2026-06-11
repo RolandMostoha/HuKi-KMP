@@ -1,8 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -112,26 +114,38 @@ fun FloatingActionContainer(
                             defaultElevation = Dimens.FloatingActionElevation,
                         ),
                         shape = CircleShape,
-                        onClick = { onMyLocationClicked() },
+                        onClick = {
+                            if (!mainUiState.isMyLocationLoading) {
+                                onMyLocationClicked()
+                            }
+                        },
                     ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(
-                                when (mainUiState.myLocationState.myLocationStatus) {
-                                    MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
-                                    MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
-                                    MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
-                                    MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
-                                },
-                            ),
-                            contentDescription = mokoString(mainUiState.myLocationState.myLocationStatus.a11yId),
-                        )
+                        val myLocationStatus = mainUiState.myLocationState.myLocationStatus
+                        val myLocationIconRes = when (myLocationStatus) {
+                            MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
+                            MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
+                            MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
+                            MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
+                        }
+                        if (mainUiState.isMyLocationLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.5.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(myLocationIconRes),
+                                contentDescription = mokoString(myLocationStatus.a11yId),
+                            )
+                        }
                     }
                 }
             }
             AnimatedVisibility(
                 visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                enter = slideInVertically(initialOffsetY = { it }) + expandVertically() + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + shrinkVertically() + fadeOut(),
             ) {
                 SearchBar(
                     modifier = Modifier

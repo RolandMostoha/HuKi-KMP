@@ -5,6 +5,7 @@ import dev.icerock.moko.permissions.PermissionState
 data class MyLocationState(
     val permissionState: PermissionState = PermissionState.NotDetermined,
     val myLocationStatus: MyLocationStatus = MyLocationStatus.NotAvailable,
+    val hasLocationFix: Boolean = false,
 ) {
     companion object {
         val Default = MyLocationState()

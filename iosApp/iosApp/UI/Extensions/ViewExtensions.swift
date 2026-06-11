@@ -23,14 +23,6 @@ extension View {
     }
 }
 
-extension UIImage {
-    func resized(to newSize: CGSize) -> UIImage {
-        return UIGraphicsImageRenderer(size: newSize).image { _ in
-            self.draw(in: CGRect(origin: .zero, size: newSize))
-        }
-    }
-}
-
 struct GlassContainer<Content: View>: View {
     @ViewBuilder var content: () -> Content
 

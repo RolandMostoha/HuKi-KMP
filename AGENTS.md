@@ -111,10 +111,11 @@ Chores is a checklist which should be checked for every new "feature complete" c
 
 ```
 feature/<short_description>
+fix/<short_description>
 ```
 
 - Use lowercase snake_case for the description.
-- Examples: `feature/gpx`, `feature/gpx_details`, `feature/search`, `feature/settings`
+- Examples: `feature/gpx`, `feature/search`, `fix/my_location_permissions`
 
 ### Commit Messages
 

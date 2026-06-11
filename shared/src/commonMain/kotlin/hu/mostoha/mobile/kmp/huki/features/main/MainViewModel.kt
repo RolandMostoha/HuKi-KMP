@@ -53,9 +53,19 @@ class MainViewModel(
         Logger.d { "MainEvent: $event" }
         when (event) {
             MainUiEvents.MyLocationClicked -> enableMyLocation()
-            MainUiEvents.FollowingDisabled -> _uiState.updateMyLocationState {
-                it.copy(myLocationStatus = MyLocationStatus.Default)
+            MainUiEvents.MyLocationReceived -> _uiState.update {
+                it.copy(
+                    myLocationState = it.myLocationState.copy(hasLocationFix = true),
+                    isMyLocationLoading = false,
+                )
             }
+            MainUiEvents.FollowingDisabled -> _uiState.update {
+                it.copy(
+                    myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
+                    isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
+                )
+            }
+            MainUiEvents.CompassClicked -> resetCameraToNorth()
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState {
                 it.copy(baseLayer = event.baseLayer)
@@ -89,34 +99,49 @@ class MainViewModel(
 
     private fun enableMyLocation() {
         viewModelScope.launch {
-            when (val permissionState = permissionsController.getPermissionState(Permission.LOCATION)) {
-                PermissionState.Granted -> {
-                    val lastStatus = uiState.value.myLocationState.myLocationStatus
-                    val newStatus = when (lastStatus) {
-                        MyLocationStatus.Default -> MyLocationStatus.Following
-                        MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
-                        MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
-                        MyLocationStatus.NotAvailable -> MyLocationStatus.Following
-                    }
-                    _uiState.updateMyLocationState { uiState ->
-                        uiState.copy(
-                            permissionState = permissionState,
-                            myLocationStatus = newStatus,
-                        )
-                    }
-                    sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+            withLocationPermission {
+                val newStatus = when (uiState.value.myLocationState.myLocationStatus) {
+                    MyLocationStatus.Default -> MyLocationStatus.Following
+                    MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
+                    MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
+                    MyLocationStatus.NotAvailable -> MyLocationStatus.Following
                 }
-                else -> requestLocationPermission()
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        myLocationState = uiState.myLocationState.copy(
+                            permissionState = PermissionState.Granted,
+                            myLocationStatus = newStatus,
+                        ),
+                        isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
+                        isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
+                    )
+                }
+                sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
             }
         }
     }
 
-    private fun requestLocationPermission() {
+    private fun resetCameraToNorth() {
         viewModelScope.launch {
-            runCatching {
-                permissionsController.providePermission(Permission.LOCATION)
-                enableMyLocation()
-            }.onFailure { exception ->
+            val newStatus = MyLocationStatus.Following
+            _uiState.update { uiState ->
+                uiState.copy(
+                    myLocationState = uiState.myLocationState.copy(myLocationStatus = newStatus),
+                    isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
+                )
+            }
+            sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+        }
+    }
+
+    private suspend fun withLocationPermission(onGranted: suspend () -> Unit) {
+        if (permissionsController.getPermissionState(Permission.LOCATION) == PermissionState.Granted) {
+            onGranted()
+            return
+        }
+        runCatching { permissionsController.providePermission(Permission.LOCATION) }
+            .onSuccess { onGranted() }
+            .onFailure { exception ->
                 _uiState.updateMyLocationState { uiState ->
                     uiState.copy(
                         permissionState = when (exception) {
@@ -130,7 +155,6 @@ class MainViewModel(
                     sendEffect(MainUiEffects.NavigateToAppSettings)
                 }
             }
-        }
     }
 
     private fun initMyLocation() {
@@ -141,15 +165,22 @@ class MainViewModel(
             } else {
                 MyLocationStatus.NotAvailable
             }
-            _uiState.updateMyLocationState { uiState ->
+            _uiState.update { uiState ->
                 uiState.copy(
-                    permissionState = permissionState,
-                    myLocationStatus = myLocationStatus,
+                    myLocationState = uiState.myLocationState.copy(
+                        permissionState = permissionState,
+                        myLocationStatus = myLocationStatus,
+                    ),
+                    isMyLocationLoading = myLocationStatus != MyLocationStatus.NotAvailable &&
+                        !uiState.myLocationState.hasLocationFix,
                 )
             }
             sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
         }
     }
+
+    private fun shouldShowSearchBar(gpxLayerVisible: Boolean, myLocationStatus: MyLocationStatus): Boolean =
+        !gpxLayerVisible && myLocationStatus != MyLocationStatus.FollowingLiveCompass
 
     private fun showSheet(sheet: Sheet) {
         _uiState.update { it.copy(sheet = sheet) }
@@ -171,8 +202,12 @@ class MainViewModel(
         if (gpxDetails == null) {
             showGpxFilePicker()
         } else {
-            _uiState.updateMapUiState {
-                it.copy(gpxLayerVisible = it.gpxLayerVisible.not())
+            _uiState.update {
+                val gpxLayerVisible = it.mapUiState.gpxLayerVisible.not()
+                it.copy(
+                    mapUiState = it.mapUiState.copy(gpxLayerVisible = gpxLayerVisible),
+                    isSearchBarVisible = shouldShowSearchBar(gpxLayerVisible, it.myLocationState.myLocationStatus),
+                )
             }
         }
     }
@@ -196,6 +231,10 @@ class MainViewModel(
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
                             isGpxLoading = false,
+                            isSearchBarVisible = shouldShowSearchBar(
+                                gpxLayerVisible = true,
+                                myLocationStatus = uiState.myLocationState.myLocationStatus,
+                            ),
                         )
                     }
                     sendEffect(
@@ -226,16 +265,21 @@ class MainViewModel(
 
     private fun startGpxNavigation() {
         viewModelScope.launch {
-            val targetStatus = MyLocationStatus.FollowingLiveCompass
-            _uiState.update {
-                it.copy(
-                    myLocationState = it.myLocationState.copy(
-                        myLocationStatus = targetStatus,
-                    ),
-                    sheet = null,
-                )
+            hideSheet()
+            withLocationPermission {
+                val targetStatus = MyLocationStatus.FollowingLiveCompass
+                _uiState.update {
+                    it.copy(
+                        myLocationState = it.myLocationState.copy(
+                            permissionState = PermissionState.Granted,
+                            myLocationStatus = targetStatus,
+                        ),
+                        isMyLocationLoading = !it.myLocationState.hasLocationFix,
+                        isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, targetStatus),
+                    )
+                }
+                sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
             }
-            sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
         }
     }
 
@@ -248,6 +292,10 @@ class MainViewModel(
                         gpxLayerVisible = false,
                     ),
                     sheet = null,
+                    isSearchBarVisible = shouldShowSearchBar(
+                        gpxLayerVisible = false,
+                        myLocationStatus = uiState.myLocationState.myLocationStatus,
+                    ),
                 )
             }
         }

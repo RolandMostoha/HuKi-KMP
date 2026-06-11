@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.util
 object TestTags {
     const val MAIN_FAB_MY_LOCATION_BUTTON = "MAIN_FAB_MY_LOCATION_BUTTON"
     const val MAIN_SCALE_BAR = "MAIN_SCALE_BAR"
+    const val MAIN_SEARCH_BAR = "MAIN_SEARCH_BAR"
 
     const val SETTINGS_BACK_BUTTON = "SETTINGS_BACK_BUTTON"
     const val SETTINGS_SCREEN_ROOT = "SETTINGS_SCREEN_ROOT"

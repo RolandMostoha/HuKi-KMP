@@ -31,6 +31,7 @@ struct FloatingActionContainer: View {
             }
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
+        .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
     }
 
     @ViewBuilder
@@ -57,21 +58,29 @@ struct FloatingActionContainer: View {
                     Button(action: {
                         onMyLocationClicked()
                     }, label: {
-                        let imageSystemName = switch onEnum(of: uiState.myLocationState.myLocationStatus) {
-                        case .default, .notAvailable:
-                            "location.north"
-                        case .following:
-                            "location.fill"
-                        case .followingLiveCompass:
-                            "location.north.line.fill"
+                        Group {
+                            if uiState.isMyLocationLoading {
+                                ProgressView()
+                                    .tint(Color(SharedRes.colors().primary.getUIColor()))
+                            } else {
+                                let imageSystemName = switch onEnum(of: uiState.myLocationState.myLocationStatus) {
+                                case .default, .notAvailable:
+                                    "location.north"
+                                case .following:
+                                    "location.fill"
+                                case .followingLiveCompass:
+                                    "location.north.line.fill"
+                                }
+                                Image(systemName: imageSystemName)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
+                            }
                         }
-                        Image(systemName: imageSystemName)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color(SharedRes.colors().primary.getUIColor()))
-                            .floatingButtonPadding(.bottom)
+                        .floatingButtonPadding(.bottom)
                     })
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
+                    .disabled(uiState.isMyLocationLoading)
                     .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
                     .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.a11yId))
             }
