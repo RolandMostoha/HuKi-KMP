@@ -153,6 +153,85 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given FollowingLiveCompass, When CompassClicked, Then uiState has Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+                    isSearchBarVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                with(awaitItem()) {
+                    myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                    isSearchBarVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given FollowingLiveCompass, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default, When CompassClicked, Then uiState has Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+
+                viewModel.onEvent(MainUiEvents.CompassClicked)
+
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
     fun `Given Following my location, When MyLocationUpdated, Then uiState has Default MyLocationStatus`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

@@ -49,9 +49,11 @@ struct MainView: View {
                     onGpxRouteClicked: { gpxDetails in
                         viewModel.onEvent(event: MainUiEventsGpxRouteClicked(gpxDetails: gpxDetails))
                     },
+                    onCompassClicked: {
+                        viewModel.onEvent(event: MainUiEventsCompassClicked.shared)
+                    },
                     mapUiEffects: viewModel.mapUiEffects
                 )
-                .ignoresSafeArea()
                 VStack {
                     Spacer()
                     FloatingActionContainer(

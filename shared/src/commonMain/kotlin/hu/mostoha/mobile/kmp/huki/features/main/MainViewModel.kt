@@ -65,6 +65,7 @@ class MainViewModel(
                     isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
                 )
             }
+            MainUiEvents.CompassClicked -> resetCameraToNorth()
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> _uiState.updateMapUiState {
                 it.copy(baseLayer = event.baseLayer)
@@ -117,6 +118,19 @@ class MainViewModel(
                 }
                 sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
             }
+        }
+    }
+
+    private fun resetCameraToNorth() {
+        viewModelScope.launch {
+            val newStatus = MyLocationStatus.Following
+            _uiState.update { uiState ->
+                uiState.copy(
+                    myLocationState = uiState.myLocationState.copy(myLocationStatus = newStatus),
+                    isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
+                )
+            }
+            sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
         }
     }
 
