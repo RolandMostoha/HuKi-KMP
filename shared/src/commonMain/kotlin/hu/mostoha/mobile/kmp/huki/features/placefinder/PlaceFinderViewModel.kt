@@ -2,12 +2,13 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
+import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,15 +19,19 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository) : ViewModel() {
+class PlaceFinderViewModel(
+    private val geocodingRepository: GeocodingRepository,
+    private val locationMonitoringService: LocationMonitoringService,
+) : ViewModel() {
     private companion object {
-        const val AUTOCOMPLETE_DEBOUNCE_MILLIS = 800L
-        const val MIN_CHARACTERS = 3
-
-        // TODO Replace with the user's current location from location services.
-        val FAKE_USER_LOCATION = Location(latitude = 47.7168079, longitude = 18.8950729)
+        private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
+        private val AUTOCOMPLETE_LOCATION_TIMEOUT = 2.seconds
+        private const val AUTOCOMPLETE_MIN_CHARACTERS = 3
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -40,8 +45,8 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
     init {
         viewModelScope.launch {
             searchQueries
-                .debounce(AUTOCOMPLETE_DEBOUNCE_MILLIS)
-                .filter { it.length >= MIN_CHARACTERS }
+                .debounce(AUTOCOMPLETE_DEBOUNCE)
+                .filter { it.length >= AUTOCOMPLETE_MIN_CHARACTERS }
                 .collectLatest { query -> searchPlaces(query) }
         }
     }
@@ -53,9 +58,13 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
         }
     }
 
+    fun clear() {
+        viewModelScope.cancel()
+    }
+
     private fun onSearchTextChanged(searchText: String) {
         val trimmedSearchText = searchText.trim()
-        val isTooShort = trimmedSearchText.length < MIN_CHARACTERS
+        val isTooShort = trimmedSearchText.length < AUTOCOMPLETE_MIN_CHARACTERS
 
         _uiState.update { uiState ->
             uiState.copy(
@@ -71,7 +80,7 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
 
     private fun onRetryClicked() {
         val trimmedSearchText = _uiState.value.searchText.trim()
-        if (trimmedSearchText.length < MIN_CHARACTERS) return
+        if (trimmedSearchText.length < AUTOCOMPLETE_MIN_CHARACTERS) return
 
         _uiState.update { uiState ->
             uiState.copy(isLoading = true, error = null)
@@ -81,11 +90,15 @@ class PlaceFinderViewModel(private val geocodingRepository: GeocodingRepository)
     }
 
     private suspend fun searchPlaces(query: String) {
+        val currentLocation = withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
+            locationMonitoringService.lastKnownLocation()
+        }
+
         when (val result = geocodingRepository.autocomplete(query)) {
             is NetworkResult.Success -> _uiState.update { uiState ->
                 uiState.copy(
                     isLoading = false,
-                    places = result.data.map { it.toPlaceSearchResult(FAKE_USER_LOCATION) },
+                    places = result.data.map { it.toPlaceSearchResult(currentLocation) },
                     error = null,
                 )
             }

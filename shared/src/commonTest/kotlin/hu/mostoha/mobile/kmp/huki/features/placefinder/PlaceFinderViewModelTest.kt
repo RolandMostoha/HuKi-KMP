@@ -12,9 +12,15 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
+import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -28,6 +34,7 @@ class PlaceFinderViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val geocodingRepository = mock<GeocodingRepository>()
+    private val locationMonitoringService = noOpLocationMonitoringService()
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
 
@@ -37,6 +44,7 @@ class PlaceFinderViewModelTest {
 
         placeFinderViewModel = PlaceFinderViewModel(
             geocodingRepository = geocodingRepository,
+            locationMonitoringService = locationMonitoringService,
         )
         testDispatcher.scheduler.runCurrent()
     }
@@ -97,6 +105,119 @@ class PlaceFinderViewModelTest {
                         ),
                     ),
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `Given known last location, When autocomplete succeeds, Then places show distance from that location`() {
+        runTest {
+            val userLocation = Location(47.4979, 19.0402)
+            val placeLocation = Location(46.2530, 20.1414)
+            val expectedDistance = DistanceFormatter.formatRoundedDistance(
+                userLocation.distanceBetween(placeLocation),
+            )
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            everySuspend {
+                geocodingRepository.autocomplete("Szeged")
+            } returns NetworkResult.Success(
+                listOf(
+                    locationIqPlace(
+                        placeId = "szeged-id",
+                        lat = placeLocation.latitude,
+                        lon = placeLocation.longitude,
+                        displayName = "Szeged, Hungary",
+                        displayAddress = "Hungary",
+                    ),
+                ),
+            )
+
+            viewModel.uiState.test {
+                awaitItem()
+
+                viewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Szeged"))
+                awaitItem().isLoading shouldBe true
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem().places.single().distance shouldBe expectedDistance
+            }
+        }
+    }
+
+    @Test
+    fun `Given no last location, When autocomplete succeeds, Then places have no distance`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Szeged")
+            } returns NetworkResult.Success(
+                listOf(
+                    locationIqPlace(
+                        placeId = "szeged-id",
+                        lat = 46.2530,
+                        lon = 20.1414,
+                        displayName = "Szeged, Hungary",
+                        displayAddress = "Hungary",
+                    ),
+                ),
+            )
+
+            placeFinderViewModel.uiState.test {
+                awaitItem()
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Szeged"))
+                awaitItem().isLoading shouldBe true
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem().places.single().distance shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `Given last location never returns, When timeout elapses, Then search still completes without distance`() {
+        runTest {
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = hangingLocationMonitoringService(),
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            everySuspend {
+                geocodingRepository.autocomplete("Szeged")
+            } returns NetworkResult.Success(
+                listOf(
+                    locationIqPlace(
+                        placeId = "szeged-id",
+                        lat = 46.2530,
+                        lon = 20.1414,
+                        displayName = "Szeged, Hungary",
+                        displayAddress = "Hungary",
+                    ),
+                ),
+            )
+
+            viewModel.uiState.test {
+                awaitItem()
+
+                viewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Szeged"))
+                awaitItem().isLoading shouldBe true
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val state = awaitItem()
+                state.isLoading shouldBe false
+                state.places.single().distance shouldBe null
             }
         }
     }
@@ -267,6 +388,7 @@ class PlaceFinderViewModelTest {
                         error("Not used in this test")
                     }
                 },
+                locationMonitoringService = locationMonitoringService,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -338,6 +460,7 @@ class PlaceFinderViewModelTest {
                         error("Not used in this test")
                     }
                 },
+                locationMonitoringService = locationMonitoringService,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -364,6 +487,20 @@ class PlaceFinderViewModelTest {
             }
         }
     }
+
+    private fun noOpLocationMonitoringService() = locationMonitoringService(lastKnownLocation = null)
+
+    private fun hangingLocationMonitoringService() =
+        object : LocationMonitoringService {
+            override val locationUpdates: SharedFlow<Location> = MutableSharedFlow()
+            override suspend fun lastKnownLocation(): Location? = awaitCancellation()
+        }
+
+    private fun locationMonitoringService(lastKnownLocation: Location?) =
+        object : LocationMonitoringService {
+            override val locationUpdates: SharedFlow<Location> = MutableSharedFlow()
+            override suspend fun lastKnownLocation(): Location? = lastKnownLocation
+        }
 
     private fun locationIqPlace(
         placeId: String,

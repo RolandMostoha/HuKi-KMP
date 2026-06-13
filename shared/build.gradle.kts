@@ -65,9 +65,11 @@ kotlin {
             implementation(libs.moko.permissions.test)
         }
         androidMain.dependencies {
+            implementation(libs.google.play.services.location)
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.mapbox.android)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

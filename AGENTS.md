@@ -97,6 +97,9 @@ Chores is a checklist which should be checked for every new "feature complete" c
   - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
   - iOS: MapBox is used with SwiftUI
   - iOS API reference: https://docs.mapbox.com/ios/maps/api/latest/documentation/mapboxmaps/
+- **Location**: `LocationMonitoringService` (commonMain) is the shared location source — a `locationUpdates` stream plus a one-shot `lastKnownLocation()`.
+  - Android: backed by Mapbox's `LocationService`. It uses Google's Fused Location Provider automatically when `play-services-location` is on the classpath.
+  - iOS: backed by CoreLocation (`CLLocationManager`).
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Koin: Used for DI.
@@ -188,6 +191,7 @@ UI → UiEvent → ViewModel → UiState
 - Don't fight the framework → use the native side best practices
 - Common First: Business logic must reside in `commonMain` whenever possible.
 - Prefer official + community KMP libraries for wrapping platform-specific code
+- Use comments only if necessary, for complex logic or workaround.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
