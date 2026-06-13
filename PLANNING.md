@@ -5,6 +5,7 @@
 | Status | Meaning                   |
 |--------|---------------------------|
 | `[ ]`  | Not started               |
+| `[L]`  | Required for Go-Live      |
 | `[~]`  | In progress               |
 | `[x]`  | Done                      |
 | `[-]`  | Cancelled / deprioritized |
@@ -38,7 +39,7 @@
 | Status | Feature                                                                                          |
 |--------|--------------------------------------------------------------------------------------------------|
 | `[ ]`  | Launcher icon Android + iOS                                                                      |
-| `[ ]`  | Analytics - Google Analytics                                                                     |
+| `[ ]`  | Google Analytics                                                                                 |                                                 
 | `[ ]`  | LogLevel.ALL only in debug                                                                       |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Register Apple Developer Account                                                                 |
@@ -64,11 +65,7 @@
 
 | Status | Scope      | Task                                                                                                                                                                                          |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | MyLocation | Use My Location for search result distance                                                                                                                                                    |
-| `[x]`  | MyLocation | Bug: Loading state. At the moment there is no loading state while the GPS is searching for location.                                                                                          |
-| `[x]`  | MyLocation | Bug: if location permission is not enabled, GPX->Start does nothing. If location permission is not granted, and there is any my location related request, first it has to ask for permission. |
-| `[x]`  | MyLocation | Hide SearchBar if GPX is visible. Hide SearchBar if FollowingLiveCompass.                                                                                                                     |
-| `[x]`  | MyLocation | Reset pinch as well clicking on compass (Mapbox driven) icon                                                                                                                                  |
+| `[ ]`  | MyLocation | Show altitude somewhere                                                                                                                                                                       |
 
 ### FEATURE: Layers
 
@@ -88,23 +85,15 @@
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                            |
-|--------|-------|---------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Save all imported GPX files in app's local sandbox, so GPX files can be reused  |
-| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                  |
-| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode |
-| `[ ]`  | GPX   | Colored GPX                                                                     |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                           |
-
-### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
-
-| Status | Scope    | Task                                           |
-|--------|----------|------------------------------------------------|
-| `[ ]`  | GpxPanel | Use GPX panel on Start / GPX Details -> hidden |
-| `[ ]`  | GpxPanel | Elapsed time                                   |
-| `[ ]`  | GpxPanel | Distance from End                              |
-| `[ ]`  | GpxPanel | AVG Speed                                      |
-| `[ ]`  | GpxPanel | Expected arrival based on dist/AVG speed       |
+| Status | Scope | Task                                                                                                                                          |
+|--------|-------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX   | Show a FAB "eye" icon in the left side if GPX is opened. On click switch the GPX layer visibility.                                            |
+| `[ ]`  | GPX   | Show a GPX-Control FAB which triggers a panel with 3 actions: Eye(shows/hide the GPX layer), Maximize (GPX.overview), Clear(Remove GPX layer) |
+| `[ ]`  | GPX   | Save all imported GPX files in app's local sandbox, so GPX files can be reused                                                                |
+| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                                                                                |
+| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode                                                               |
+| `[ ]`  | GPX   | Colored GPX                                                                                                                                   |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                         |
 
 ### FEATURE: GPX Collection
 
@@ -117,10 +106,36 @@ Show a GPX Collection menu button in Settings.
 | `[ ]`  | GPX Collection | Show all imported GPX file in a list view. (File Sandbox saving is pre-requisite)         |
 | `[ ]`  | GPX Collection | In the list view show the basic info for the GPX, what is already displayed in GPXDetails |
 
+### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
+
+| Status | Scope    | Task                                           |
+|--------|----------|------------------------------------------------|
+| `[ ]`  | GpxPanel | Use GPX panel on Start / GPX Details -> hidden |
+| `[ ]`  | GpxPanel | Elapsed time                                   |
+| `[ ]`  | GpxPanel | Distance from Start                            |
+| `[ ]`  | GpxPanel | Distance from End                              |
+| `[ ]`  | GpxPanel | AVG Speed                                      |
+| `[ ]`  | GpxPanel | Expected arrival based on dist/AVG speed       |
+
 ### FEATURE: Place Details (from Search + Long Tap)
 
-- Show a bottom sheet when place details is invoked (from Search + Long Tap)
-- Register long tap action, do reverse geocode with LocationIQ and show the place details
+| Status | Scope        | Task                                                                      |
+|--------|--------------|---------------------------------------------------------------------------|
+| `[ ]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
+| `[ ]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
+| `[ ]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
+| `[ ]`  | PlaceDetails | Show what is already shown with autocomplete: @Place                      |
+| `[ ]`  | PlaceDetails | Search nearby button                                                      |
+
+### FEATURE: Settings
+
+| Status | Scope    | Task                                            |
+|--------|----------|-------------------------------------------------|
+| `[ ]`  | Settings | Rename SettingsScreen to MenuScreen             |
+| `[ ]`  | Settings | Add "Settings" to the top section of MenuScreen |
+| `[ ]`  | Settings | Create SettingsScreen                           |
+| `[ ]`  | Settings | Add Increase map font size in Settings          |
+| `[ ]`  | Settings | Add Show/Hide +- zooming in Settings            |
 
 ### FEATURE: Support + Billing
 

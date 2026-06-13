@@ -27,6 +27,24 @@ class DistanceFormatterTest {
     }
 
     @Test
+    fun `Given long distance with fraction, When formatting rounded, Then whole kilometers are shown`() {
+        val input = 220.1.kilometers
+
+        val actual = DistanceFormatter.formatRoundedDistance(input)
+
+        actual shouldBe "220 km"
+    }
+
+    @Test
+    fun `Given short distance, When formatting rounded, Then meters are shown`() {
+        val input = 850.meters
+
+        val actual = DistanceFormatter.formatRoundedDistance(input)
+
+        actual shouldBe "850 m"
+    }
+
+    @Test
     fun `Given elevation value, When formatting, Then meters are shown`() {
         val input = 500
 

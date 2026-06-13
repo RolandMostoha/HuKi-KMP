@@ -17,6 +17,16 @@ object DistanceFormatter {
         }
     }
 
+    fun formatRoundedDistance(distance: Length): String {
+        val meters = distance.inMeters
+
+        return if (meters < 1000) {
+            "${meters.roundToInt()} m"
+        } else {
+            "${(meters / 1000).roundToInt()} km"
+        }
+    }
+
     fun formatMeters(meters: Int): String = "$meters m"
 
     private fun formatKilometers(kilometers: Double): String {

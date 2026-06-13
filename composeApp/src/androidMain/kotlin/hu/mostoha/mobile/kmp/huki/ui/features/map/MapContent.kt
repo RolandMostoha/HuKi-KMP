@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -144,6 +146,7 @@ fun MapContent(
                 Image(
                     modifier = Modifier
                         .size(MAP_COMPASS_TOP_PADDING.dp)
+                        .clip(CircleShape)
                         .clickable { onEvent(MainUiEvents.CompassClicked) },
                     painter = painterResource(id = SharedRes.images.ic_my_location_compass.drawableResId),
                     contentDescription = mokoString(SharedRes.strings.my_location_a11y_compass),
