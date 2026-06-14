@@ -1,0 +1,86 @@
+appId: ${APP_ID}
+---
+# GPX Control Menu: reveal the control FAB, open the menu, and exercise its three
+# actions: toggle route line visibility, overview, and clear.
+# clearState is false so the uploaded GPX fixtures survive on iOS (they live in the app's
+# Documents container, which clearState would wipe); the in-memory UI state still resets on
+# cold launch, so determinism is preserved on both platforms.
+- launchApp:
+    clearState: false
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- runFlow: subflows/maestro_flow_import_gpx.yaml
+
+# Dismiss the GPX Details sheet (without closing the GPX) to reveal the control FAB.
+# The two platforms host the sheet differently, so each needs its own swipe gesture.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - swipe:
+          start: 50%, 80%
+          end: 50%, 97%
+          duration: 1200
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: 50%, 73%
+          end: 50%, 99%
+          duration: 400
+- extendedWaitUntil:
+    visible:
+      id: MAIN_FAB_GPX_CONTROL_BUTTON
+    timeout: 5000
+
+# Open the GPX control menu
+- tapOn:
+    id: MAIN_FAB_GPX_CONTROL_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_OVERVIEW_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_CLEAR_BUTTON
+
+# Route is visible initially -> the toggle offers to hide it
+- assertVisible: "Hide the route line"
+
+# Toggle the route line OFF -> the toggle now offers to show it
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Show the route line"
+
+# Toggle the route line back ON
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Hide the route line"
+
+# Overview zooms the camera to fit the whole route
+- tapOn:
+    id: MAIN_FAB_GPX_OVERVIEW_BUTTON
+# Android collapses the menu after Overview; reopen it to reach Clear.
+# iOS keeps the menu open, so Clear is already reachable.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: MAIN_FAB_GPX_CONTROL_BUTTON
+          timeout: 5000
+      - tapOn:
+          id: MAIN_FAB_GPX_CONTROL_BUTTON
+
+# Clear removes the GPX entirely -> the control FAB disappears and the SearchBar returns
+- tapOn:
+    id: MAIN_FAB_GPX_CLEAR_BUTTON
+- extendedWaitUntil:
+    notVisible:
+      id: MAIN_FAB_GPX_CONTROL_BUTTON
+    timeout: 5000
+- assertVisible:
+    id: MAIN_SEARCH_BAR

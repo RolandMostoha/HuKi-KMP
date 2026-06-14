@@ -37,6 +37,7 @@ Lint:
 - `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Use for: "upload test gpx files (iOS)", or before running Maestro tests on iOS.
+- `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
 
 ### Android
 - `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
@@ -191,7 +192,7 @@ UI → UiEvent → ViewModel → UiState
 - Don't fight the framework → use the native side best practices
 - Common First: Business logic must reside in `commonMain` whenever possible.
 - Prefer official + community KMP libraries for wrapping platform-specific code
-- Use comments only if necessary, for complex logic or workaround.
+- Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.

@@ -75,10 +75,13 @@ class MainViewModel(
             }
             MainUiEvents.GpxLayerSelected -> switchGpxLayer()
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
-            is MainUiEvents.GpxRouteClicked -> showSheet(Sheet.Gpx(event.gpxDetails))
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
             MainUiEvents.AlertDismissed -> dismissAlert()
             MainUiEvents.GpxCloseClicked -> closeGpx()
+            MainUiEvents.GpxRouteVisibilityToggled -> _uiState.updateMapUiState {
+                it.copy(gpxRouteVisible = it.gpxRouteVisible.not())
+            }
+            MainUiEvents.GpxOverviewClicked -> showGpxOverview()
             MainUiEvents.SheetDismissed -> hideSheet()
             MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
             is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
@@ -227,6 +230,7 @@ class MainViewModel(
                             mapUiState = uiState.mapUiState.copy(
                                 gpxDetails = gpxDetails,
                                 gpxLayerVisible = true,
+                                gpxRouteVisible = true,
                             ),
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
@@ -283,6 +287,18 @@ class MainViewModel(
         }
     }
 
+    private fun showGpxOverview() {
+        viewModelScope.launch {
+            val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    bounds = gpxDetails.bounds,
+                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                ),
+            )
+        }
+    }
+
     private fun closeGpx() {
         viewModelScope.launch {
             _uiState.update { uiState ->
@@ -290,6 +306,7 @@ class MainViewModel(
                     mapUiState = uiState.mapUiState.copy(
                         gpxDetails = null,
                         gpxLayerVisible = false,
+                        gpxRouteVisible = true,
                     ),
                     sheet = null,
                     isSearchBarVisible = shouldShowSearchBar(

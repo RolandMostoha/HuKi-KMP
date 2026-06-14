@@ -47,7 +47,6 @@ import com.mapbox.maps.extension.compose.style.layers.generated.LineCapValue
 import com.mapbox.maps.extension.compose.style.layers.generated.LineJoinValue
 import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
-import com.mapbox.maps.extension.compose.style.layers.rememberLayerInteractionsState
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
@@ -219,29 +218,24 @@ fun MapContent(
         }
         if (mapUiState.gpxLayerVisible) {
             mapUiState.gpxDetails?.let { gpxDetails ->
-                val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
-                    lineMetrics = BooleanValue(true)
-                }
-                val lineInteractionsState = rememberLayerInteractionsState {
-                    onClicked { _, _ ->
-                        onEvent(MainUiEvents.GpxRouteClicked(gpxDetails))
-                        true
+                if (mapUiState.gpxRouteVisible) {
+                    val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
+                        lineMetrics = BooleanValue(true)
                     }
-                }
-                LaunchedEffect(key1 = gpxDetails.layerId) {
-                    geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
-                }
-                LineLayer(
-                    sourceState = geoJsonSource,
-                    layerId = gpxDetails.layerId,
-                ) {
-                    interactionsState = lineInteractionsState
-                    lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
-                    lineColor = ColorValue(primaryColor)
-                    lineBorderColor = ColorValue(mapStrokeColor)
-                    lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
-                    lineCap = LineCapValue.ROUND
-                    lineJoin = LineJoinValue.ROUND
+                    LaunchedEffect(key1 = gpxDetails.layerId) {
+                        geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
+                    }
+                    LineLayer(
+                        sourceState = geoJsonSource,
+                        layerId = gpxDetails.layerId,
+                    ) {
+                        lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
+                        lineColor = ColorValue(primaryColor)
+                        lineBorderColor = ColorValue(mapStrokeColor)
+                        lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
+                        lineCap = LineCapValue.ROUND
+                        lineJoin = LineJoinValue.ROUND
+                    }
                 }
 
                 gpxDetails.waypoints.forEach { waypoint ->
