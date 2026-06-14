@@ -6,7 +6,6 @@ struct MapView: View {
     let uiState: MainUiState
     let onFollowingDisabled: () -> Void
     let onMyLocationReceived: () -> Void
-    let onGpxRouteClicked: (GpxDetails) -> Void
     let onCompassClicked: () -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
@@ -50,16 +49,18 @@ struct MapView: View {
                     }
                     if uiState.mapUiState.gpxLayerVisible {
                         if let gpxDetails = uiState.mapUiState.gpxDetails {
-                            let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
+                            if uiState.mapUiState.gpxRouteVisible {
+                                let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
 
-                            GeoJSONSource(id: gpxDetails.layerId)
-                                .data(.feature(feature))
+                                GeoJSONSource(id: gpxDetails.layerId)
+                                    .data(.feature(feature))
 
-                            LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
-                                .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                                .lineColor(SharedRes.colors().primary.getUIColor())
-                                .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                                LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
+                                    .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
+                                    .lineColor(SharedRes.colors().primary.getUIColor())
+                                    .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
+                                    .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                            }
 
                             PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
                                 PointAnnotation(coordinate: waypoint.location.coordinate)
@@ -69,11 +70,6 @@ struct MapView: View {
                                             ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
                                             : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                                     )
-                            }
-
-                            TapInteraction(.layer(gpxDetails.layerId)) { _, _ in
-                                onGpxRouteClicked(gpxDetails)
-                                return true
                             }
                         }
                     }
