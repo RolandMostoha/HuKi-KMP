@@ -63,9 +63,9 @@
 
 ### FEATURE: My Location
 
-| Status | Scope      | Task                                                                                                                                                                                          |
-|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | MyLocation | Show altitude somewhere                                                                                                                                                                       |
+| Status | Scope      | Task                    |
+|--------|------------|-------------------------|
+| `[ ]`  | MyLocation | Show altitude somewhere |
 
 ### FEATURE: Layers
 
@@ -85,15 +85,13 @@
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                                                                                          |
-|--------|-------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Show a FAB "eye" icon in the left side if GPX is opened. On click switch the GPX layer visibility.                                            |
-| `[ ]`  | GPX   | Show a GPX-Control FAB which triggers a panel with 3 actions: Eye(shows/hide the GPX layer), Maximize (GPX.overview), Clear(Remove GPX layer) |
-| `[ ]`  | GPX   | Save all imported GPX files in app's local sandbox, so GPX files can be reused                                                                |
-| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                                                                                |
-| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode                                                               |
-| `[ ]`  | GPX   | Colored GPX                                                                                                                                   |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                         |
+| Status | Scope | Task                                                                            |
+|--------|-------|---------------------------------------------------------------------------------|
+| `[ ]`  | GPX   | Save all imported GPX files in app's local sandbox, so GPX files can be reused  |
+| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                  |
+| `[ ]`  | GPX   | Display start and end location: "Around Bükk..." -> on import we can do geocode |
+| `[ ]`  | GPX   | Colored GPX                                                                     |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                           |
 
 ### FEATURE: GPX Collection
 
@@ -168,4 +166,26 @@ Show a GPX Collection menu button in Settings.
 | Layers      | Mapbox Outdoor, Street, Satellite, Hiking |
 | GPX         | GPX Import, added in Layers               |
 | GPX Details | GPX Details Sheet with basic info         |
+| GPX Menu    | GPX Visibility, Overview, Clear           |
 | Settings    | Contact, Supporters                       |
+
+### FEATURE: My Location
+
+| Status | Scope      | Task                                                                                                                                                                                          |
+|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | MyLocation | Use My Location for search result distance                                                                                                                                                    |
+| `[x]`  | MyLocation | Bug-Android: Compass icon has rectangular touch feedback but its a circle                                                                                                                     |
+| `[x]`  | MyLocation | Bug: Loading state. At the moment there is no loading state while the GPS is searching for location.                                                                                          |
+| `[x]`  | MyLocation | Bug: if location permission is not enabled, GPX->Start does nothing. If location permission is not granted, and there is any my location related request, first it has to ask for permission. |
+| `[x]`  | MyLocation | Hide SearchBar if GPX is visible. Hide SearchBar if FollowingLiveCompass.                                                                                                                     |
+| `[x]`  | MyLocation | Reset pinch as well clicking on compass (Mapbox driven) icon                                                                                                                                  |
+
+### FEATURE: GPX Menu
+
+| Status | Scope   | Task                                                                                         |
+|--------|---------|----------------------------------------------------------------------------------------------|
+| `[x]`  | GPXMenu | When GPX is open, show a GPX-Control FAB (A:ic_tune iOS:slider.horizontal.3) in bottom-left. |
+| `[x]`  | GPXMenu | It triggers a menu (A: FloatingActionButtonMenu iOS: Morphing Menu) with 3 actions.          |
+| `[x]`  | GPXMenu | Eye -> shows/hide the GPX Line layer, but it keeps showing the Start/End/Waypoints markers   |
+| `[x]`  | GPXMenu | Maximize (A:ic_maximize iOS:rectangle.expand.diagonal) -> GPX.overview                       |
+| `[x]`  | GPXMenu | Clear -> Remove GPX layer                                                                    |

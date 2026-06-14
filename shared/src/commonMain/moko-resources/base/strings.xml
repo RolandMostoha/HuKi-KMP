@@ -56,6 +56,15 @@
     <string name="gpx_details_decline">Decline</string>
     <string name="gpx_details_start">Start</string>
 
+    <string name="gpx_control_a11y_fab">GPX controls</string>
+    <string name="gpx_control_route_visibility_title">Route visibility</string>
+    <string name="gpx_control_route_visibility_show">Show the route line</string>
+    <string name="gpx_control_route_visibility_hide">Hide the route line</string>
+    <string name="gpx_control_overview_title">Overview</string>
+    <string name="gpx_control_overview_desc">Zoom to fit the whole route</string>
+    <string name="gpx_control_clear_title">Close</string>
+    <string name="gpx_control_clear_desc">Close the route</string>
+
     <string name="gpx_import_error_title">GPX import failed</string>
     <string name="gpx_import_error_empty_content_message">The selected GPX file does not contain a "route", "track", or "waypoint". Please select a non-empty GPX file.</string>
     <string name="gpx_import_error_malformed_message">The selected GPX file is malformed and could not be parsed. Please select a valid GPX file.</string>

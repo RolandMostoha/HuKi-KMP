@@ -101,7 +101,7 @@ private fun MainContent(
         snapshotFlow { standardSheetScaffoldState.bottomSheetState.currentValue }
             .distinctUntilChanged()
             .collect { value ->
-                if (value == SheetValue.PartiallyExpanded) {
+                if (value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden) {
                     onEvent(MainUiEvents.SheetDismissed)
                 }
             }
@@ -190,6 +190,15 @@ private fun MainContent(
                 },
                 onMyLocationClicked = {
                     onEvent(MainUiEvents.MyLocationClicked)
+                },
+                onGpxToggleLineClicked = {
+                    onEvent(MainUiEvents.GpxRouteVisibilityToggled)
+                },
+                onGpxOverviewClicked = {
+                    onEvent(MainUiEvents.GpxOverviewClicked)
+                },
+                onGpxClearClicked = {
+                    onEvent(MainUiEvents.GpxCloseClicked)
                 },
                 onSettingsClicked = onSettingsClicked,
             )

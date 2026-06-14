@@ -20,12 +20,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +48,9 @@ fun FloatingActionContainer(
     onSearchClicked: () -> Unit,
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
+    onGpxToggleLineClicked: () -> Unit,
+    onGpxOverviewClicked: () -> Unit,
+    onGpxClearClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,6 +60,19 @@ fun FloatingActionContainer(
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .padding(bottom = Dimens.Small),
     ) {
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomStart),
+            visible = mainUiState.sheet == null && mainUiState.mapUiState.gpxDetails != null,
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
+        ) {
+            GpxControlMenu(
+                isRouteVisible = mainUiState.mapUiState.gpxRouteVisible,
+                onToggleLineClicked = onGpxToggleLineClicked,
+                onOverviewClicked = onGpxOverviewClicked,
+                onClearClicked = onGpxClearClicked,
+            )
+        }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -82,7 +97,7 @@ fun FloatingActionContainer(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
                 ) {
-                    SmallFloatingActionButton(
+                    FloatingActionButton(
                         containerColor = MaterialTheme.colorScheme.surface,
                         elevation = FloatingActionButtonDefaults.elevation(
                             defaultElevation = Dimens.FloatingActionElevation,
@@ -95,9 +110,8 @@ fun FloatingActionContainer(
                         },
                     ) {
                         if (mainUiState.isGpxLoading) {
-                            CircularProgressIndicator(
+                            LoadingIndicator(
                                 modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.5.dp,
                             )
                         } else {
                             Icon(
@@ -128,9 +142,8 @@ fun FloatingActionContainer(
                             MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
                         }
                         if (mainUiState.isMyLocationLoading) {
-                            CircularProgressIndicator(
+                            LoadingIndicator(
                                 modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.5.dp,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         } else {
@@ -171,6 +184,9 @@ private fun MainContentPreview() {
             onSearchClicked = {},
             onLayersClicked = {},
             onMyLocationClicked = {},
+            onGpxToggleLineClicked = {},
+            onGpxOverviewClicked = {},
+            onGpxClearClicked = {},
             onSettingsClicked = {},
         )
     }

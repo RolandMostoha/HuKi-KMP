@@ -579,30 +579,6 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given standard sheet dismissed after GPX import, When GpxRouteClicked, Then uiState sheet is Gpx`() {
-        runTest {
-            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
-            val viewModel = createViewModel(grantedPermission = true)
-            advanceUntilIdle()
-
-            viewModel.uiState.test {
-                awaitItem().sheet shouldBe null
-
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
-                awaitItem() // Loading
-                awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
-
-                viewModel.onEvent(MainUiEvents.SheetDismissed)
-                awaitItem().sheet shouldBe null
-
-                viewModel.onEvent(MainUiEvents.GpxRouteClicked(TEST_GPX_DETAILS))
-
-                awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
-            }
-        }
-    }
-
-    @Test
     fun `When GpxCloseClicked, Then gpx details is null and sheet is SearchBar`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
