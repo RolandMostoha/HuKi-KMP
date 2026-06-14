@@ -46,9 +46,6 @@ struct MainView: View {
                     onMyLocationReceived: {
                         viewModel.onEvent(event: MainUiEventsMyLocationReceived.shared)
                     },
-                    onGpxRouteClicked: { gpxDetails in
-                        viewModel.onEvent(event: MainUiEventsGpxRouteClicked(gpxDetails: gpxDetails))
-                    },
                     onCompassClicked: {
                         viewModel.onEvent(event: MainUiEventsCompassClicked.shared)
                     },
@@ -160,6 +157,7 @@ struct MainView: View {
                 .onChange(of: uiState.alert != nil) { _, newValue in
                     showAlert = newValue
                 }
+                gpxControlMenu(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -175,6 +173,28 @@ struct MainView: View {
             case .failure(let error):
                 print(error)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func gpxControlMenu(uiState: MainUiState) -> some View {
+        if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil {
+            GpxControlMenu(
+                strings: strings,
+                isRouteVisible: uiState.mapUiState.gpxRouteVisible,
+                onToggleLine: {
+                    viewModel.onEvent(event: MainUiEventsGpxRouteVisibilityToggled())
+                },
+                onOverview: {
+                    viewModel.onEvent(event: MainUiEventsGpxOverviewClicked())
+                },
+                onClear: {
+                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                }
+            )
+            .safeAreaPadding(.horizontal)
+            .padding(.bottom, isLandscape ? 12 : 0)
+            .transition(.opacity)
         }
     }
 

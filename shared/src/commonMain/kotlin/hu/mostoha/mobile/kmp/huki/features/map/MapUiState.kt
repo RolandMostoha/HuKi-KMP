@@ -7,6 +7,7 @@ data class MapUiState(
     val baseLayer: BaseLayer = BaseLayer.OUTDOORS,
     val hikingLayerVisible: Boolean = true,
     val gpxLayerVisible: Boolean = false,
+    val gpxRouteVisible: Boolean = true,
     val gpxDetails: GpxDetails? = null,
 ) {
     companion object {

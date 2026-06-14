@@ -18,43 +18,10 @@ appId: ${APP_ID}
 - assertNotVisible: "While using the app"
 - assertVisible: "My location - Not available"
 
-# Import test GPX
-- tapOn: "Layers"
-- tapOn: "Gpx Layer"
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn: "Search"
-      - inputText: "gpx_test_with_comments"
-      - tapOn: "gpx_test_with_comments.gpx"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - runFlow:
-          when:
-            notVisible:
-              id: "BackButton"
-          commands:
-            - extendedWaitUntil:
-                visible: "Browse"
-                timeout: 5000
-            - tapOn: "Browse"
-            - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
-      - runFlow:
-          when:
-            visible:
-              id: "BackButton"
-          commands:
-            - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
+# Import test GPX (leaves the app on the GPX Details sheet)
+- runFlow: subflows/maestro_flow_import_gpx.yaml
 
 # GPX Details sheet with Start action
-- extendedWaitUntil:
-    visible: "gpx_test_with_comments.gpx"
-    timeout: 5000
 - assertVisible: "Start"
 
 # Start Navigation must request permission on demand (not granted yet)

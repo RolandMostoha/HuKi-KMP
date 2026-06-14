@@ -56,6 +56,15 @@
     <string name="gpx_details_decline">Lejtés</string>
     <string name="gpx_details_start">Indulás</string>
 
+    <string name="gpx_control_a11y_fab">GPX vezérlő</string>
+    <string name="gpx_control_route_visibility_title">Útvonal láthatósága</string>
+    <string name="gpx_control_route_visibility_show">Az útvonal megjelenítése</string>
+    <string name="gpx_control_route_visibility_hide">Az útvonal elrejtése</string>
+    <string name="gpx_control_overview_title">Teljes útvonal</string>
+    <string name="gpx_control_overview_desc">Zoom a teljes útvonalhoz</string>
+    <string name="gpx_control_clear_title">Bezárás</string>
+    <string name="gpx_control_clear_desc">Az útvonal bezárása</string>
+
     <string name="gpx_import_error_title">GPX import hiba</string>
     <string name="gpx_import_error_empty_content_message">A kiválasztott GPX fájlnak nincs "route", "track", vagy "waypoint" paramétere. Kérlek válassz egy nem-üres GPX fájlt.</string>
     <string name="gpx_import_error_malformed_message">A kiválasztott GPX fájl formátuma hibás, ezért nem lehet importálni. Kérlek válassz egy helyes GPX fájlt.</string>

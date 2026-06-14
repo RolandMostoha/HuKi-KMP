@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+---
+# Reusable subflow (NOT an e2e test): imports the test GPX file via the file picker.
+# The caller is responsible for launching the app first (so it can control clearState and
+# permissions); this subflow assumes the app is already on the map screen.
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- tapOn: "Layers"
+- tapOn: "Gpx Layer"
+
+# Open test GPX from File Picker
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "Search"
+      - inputText: "gpx_test_with_comments"
+      - tapOn: "gpx_test_with_comments.gpx"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          when:
+            # New simulator -> Recents is open -> we need to go to Browse
+            notVisible:
+              id: "BackButton"
+          commands:
+            # The Files picker is a separate process and can be slow
+            - extendedWaitUntil:
+                visible: "Browse"
+            - tapOn: "Browse"
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+      - runFlow:
+          when:
+            # Old simulator -> Browse is already open
+            visible:
+              id: "BackButton"
+          commands:
+            - tapOn:
+                id: gpx_test_with_comments.gpx, gpx
+
+# Wait until the GPX Details state is reached (file name shown in the sheet)
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+- extendedWaitUntil:
+    visible: "gpx_test_with_comments.gpx"
