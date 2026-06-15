@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -82,6 +84,7 @@ private fun MainContent(
     onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState()
     val standardSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
@@ -150,20 +153,29 @@ private fun MainContent(
                             onEvent(MainUiEvents.GpxStartNavigationClicked)
                         },
                         onCloseClick = {
-                            onEvent(MainUiEvents.GpxCloseClicked)
+                            coroutineScope.launch {
+                                standardSheetState.hide()
+                                onEvent(MainUiEvents.GpxCloseClicked)
+                            }
                         },
                     )
                 }
                 is Sheet.Search -> {
                     SearchBottomSheet(
                         onCloseClick = {
-                            onEvent(MainUiEvents.SheetDismissed)
+                            coroutineScope.launch { standardSheetState.hide() }
                         },
                         onPlaceSelected = { place ->
-                            onEvent(MainUiEvents.SearchPlaceSelected(place))
+                            coroutineScope.launch {
+                                standardSheetState.hide()
+                                onEvent(MainUiEvents.SearchPlaceSelected(place))
+                            }
                         },
                         onDestinationSelected = { destination ->
-                            onEvent(MainUiEvents.SearchDestinationSelected(destination))
+                            coroutineScope.launch {
+                                standardSheetState.hide()
+                                onEvent(MainUiEvents.SearchDestinationSelected(destination))
+                            }
                         },
                         onLocationIqClicked = onLocationIqClicked,
                     )
