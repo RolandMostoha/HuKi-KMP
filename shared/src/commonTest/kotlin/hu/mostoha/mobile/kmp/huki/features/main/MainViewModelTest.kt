@@ -14,6 +14,9 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -33,6 +36,18 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
+
+    private companion object {
+        private val TEST_DESTINATION = Destination(
+            osmId = "1",
+            name = "Kékestető",
+            town = "Mátraszentimre",
+            type = DestinationType.HIGHEST_PEAK,
+            location = Location(47.8721, 20.0102),
+            description = SharedRes.strings.destinations_type_peak,
+            popularity = 10,
+        )
+    }
 
     private val testDispatcher = StandardTestDispatcher()
     private val gpxRepository = mock<GpxRepository>()
@@ -681,6 +696,45 @@ class MainViewModelTest {
                 viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
 
                 awaitItem().isSearchBarVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `When SearchDestinationSelected, Then sheet is hidden`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.LayersClicked)
+                awaitItem().sheet shouldBe Sheet.Layers
+
+                viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+
+                awaitItem().sheet shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `When SearchDestinationSelected, Then mapUiEffect is UpdateCamera to destination location`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    bounds = listOf(TEST_DESTINATION.location),
+                    zoom = 16.0,
+                )
+                ensureAllEventsConsumed()
             }
         }
     }

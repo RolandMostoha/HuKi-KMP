@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import hu.mostoha.mobile.kmp.huki.model.domain.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
+import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import kotlinx.coroutines.FlowPreview
@@ -27,6 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class PlaceFinderViewModel(
     private val geocodingRepository: GeocodingRepository,
     private val locationMonitoringService: LocationMonitoringService,
+    private val destinationRepository: DestinationRepository,
 ) : ViewModel() {
     private companion object {
         private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
@@ -43,6 +45,8 @@ class PlaceFinderViewModel(
     )
 
     init {
+        loadTopDestinations()
+
         viewModelScope.launch {
             searchQueries
                 .debounce(AUTOCOMPLETE_DEBOUNCE)
@@ -60,6 +64,16 @@ class PlaceFinderViewModel(
 
     fun clear() {
         viewModelScope.cancel()
+    }
+
+    private fun loadTopDestinations() {
+        viewModelScope.launch {
+            val location = withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
+                locationMonitoringService.lastKnownLocation()
+            }
+            val destinations = destinationRepository.getTopDestinations(location)
+            _uiState.update { uiState -> uiState.copy(topDestinations = destinations) }
+        }
     }
 
     private fun onSearchTextChanged(searchText: String) {

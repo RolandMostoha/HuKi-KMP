@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.placefinder
 
+import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 
@@ -8,6 +9,7 @@ data class PlaceFinderUiState(
     val isLoading: Boolean = false,
     val places: List<Place> = emptyList(),
     val error: InfoViewData? = null,
+    val topDestinations: List<Destination> = emptyList(),
 ) {
     companion object {
         val Default = PlaceFinderUiState()

@@ -6,7 +6,6 @@ local.properties
 *.pem
 google-services.json
 GoogleService-Info.plist
-secrets.xml
 .env*
 **/Secrets.xcconfig
 **/mapbox_access_token.xml
@@ -24,19 +23,11 @@ iosApp/DerivedData/
 
 # GENERATED CODE
 **/build/generated/
-**/*_HiltModules.kt
-**/*_Factory.kt
 
 # PLATFORM SPECIFIC CONFIGS
 .idea/
 *.xcodeproj/project.xcworkspace/
 *.xcworkspace/
-.externalNativeBuild/ # If you use C++ via NDK
+# .externalNativeBuild/ is only relevant if you use C++ via NDK
+.externalNativeBuild/
 
-# ASSETS & MEDIA
-*.png
-*.jpg
-*.svg
-*.webp
-*.pdf
-*.ttf

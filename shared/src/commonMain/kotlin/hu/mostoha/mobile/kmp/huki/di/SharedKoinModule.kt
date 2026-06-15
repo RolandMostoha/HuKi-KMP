@@ -6,7 +6,9 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
+import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
@@ -18,6 +20,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     single<GpxRepository> { DefaultGpxRepository() }
+    single<DestinationRepository> { DefaultDestinationRepository() }
 }
 
 val viewModelModule = module {
