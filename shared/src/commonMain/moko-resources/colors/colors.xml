@@ -199,8 +199,8 @@
         <dark>#2E7D32</dark>
     </color>
     <color name="colorPlaceCategoryValley">
-        <light>#6D4C41</light>
-        <dark>#6D4C41</dark>
+        <light>#33691E</light>
+        <dark>#33691E</dark>
     </color>
     <color name="colorPlaceCategoryPlateau">
         <light>#795548</light>
@@ -230,6 +230,19 @@
         <light>#8D6E63</light>
         <dark>#8D6E63</dark>
     </color>
+
+    <!-- OKT -->
+    <color name="oktBlue">
+        <light>#015398</light>
+        <dark>#64b5f6</dark>
+    </color>
+
+    <!-- Hungarian Trail Symbols -->
+    <color name="colorSymbolBlue">#0000cc</color>
+    <color name="colorSymbolRed">#E60100</color>
+    <color name="colorSymbolGreen">#2A932C</color>
+    <color name="colorSymbolYellow">#F3D900</color>
+    <color name="colorSymbolPurple">#611a6a</color>
 
     <!-- Location IQ -->
     <color name="locationIqBackground">

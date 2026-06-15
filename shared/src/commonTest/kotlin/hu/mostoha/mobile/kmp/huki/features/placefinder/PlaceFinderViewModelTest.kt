@@ -2,8 +2,13 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import app.cash.turbine.test
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -11,6 +16,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
+import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
@@ -35,6 +41,9 @@ class PlaceFinderViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val geocodingRepository = mock<GeocodingRepository>()
     private val locationMonitoringService = noOpLocationMonitoringService()
+    private val destinationRepository = mock<DestinationRepository> {
+        every { getTopDestinations(any()) } returns emptyList()
+    }
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
 
@@ -45,6 +54,7 @@ class PlaceFinderViewModelTest {
         placeFinderViewModel = PlaceFinderViewModel(
             geocodingRepository = geocodingRepository,
             locationMonitoringService = locationMonitoringService,
+            destinationRepository = destinationRepository,
         )
         testDispatcher.scheduler.runCurrent()
     }
@@ -58,6 +68,33 @@ class PlaceFinderViewModelTest {
     fun `Given view model init, When observed, Then uiState is default`() {
         runTest {
             placeFinderViewModel.uiState.value shouldBe PlaceFinderUiState.Default
+        }
+    }
+
+    @Test
+    fun `Given top destinations from repository, When view model init, Then uiState exposes them`() {
+        runTest {
+            val topDestinations = listOf(
+                Destination(
+                    osmId = "1",
+                    name = "Kékestető",
+                    town = "Mátraszentimre",
+                    type = DestinationType.HIGHEST_PEAK,
+                    location = Location(47.8721, 20.0102),
+                    description = SharedRes.strings.destinations_type_peak,
+                    popularity = 10,
+                ),
+            )
+            every { destinationRepository.getTopDestinations(any()) } returns topDestinations
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.topDestinations shouldBe topDestinations
         }
     }
 
@@ -121,6 +158,7 @@ class PlaceFinderViewModelTest {
             val viewModel = PlaceFinderViewModel(
                 geocodingRepository = geocodingRepository,
                 locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+                destinationRepository = destinationRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -189,6 +227,7 @@ class PlaceFinderViewModelTest {
             val viewModel = PlaceFinderViewModel(
                 geocodingRepository = geocodingRepository,
                 locationMonitoringService = hangingLocationMonitoringService(),
+                destinationRepository = destinationRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -389,6 +428,7 @@ class PlaceFinderViewModelTest {
                     }
                 },
                 locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -461,6 +501,7 @@ class PlaceFinderViewModelTest {
                     }
                 },
                 locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
             )
             testDispatcher.scheduler.runCurrent()
 

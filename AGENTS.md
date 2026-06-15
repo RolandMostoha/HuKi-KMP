@@ -70,6 +70,9 @@ Lint:
 - **Supported app languages**: English, Hungarian.
 - **Supported device orientations**: Portrait and Landscape.
 
+## Large Data Files
+- `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
+
 ## Chores
 
 Chores is a checklist which should be checked for every new "feature complete" code review.
