@@ -389,6 +389,7 @@ enum class PlaceCategory(
         osmTags = listOf(
             "farm",
             "farmyard",
+            "farmland",
         ),
         categoryGroup = PlaceCategoryGroup.TRAVEL,
         title = SharedRes.strings.place_category_farm,

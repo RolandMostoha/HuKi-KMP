@@ -61,7 +61,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 private val CardWidth = 180.dp
-private val CardHeight = 190.dp
+private val CardHeight = 200.dp
 private val CategoryRowHeight = 32.dp
 
 @Composable
