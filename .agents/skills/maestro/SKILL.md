@@ -29,7 +29,7 @@ Auto-uploads GPX fixtures (iOS or Android, based on `APP_ID`) before running. De
 
 ```bash
 export MAESTRO_CLI_NO_ANALYTICS=1
-maestro --no-ansi test .maestro/maestro_settings.yaml \
+maestro --no-ansi test .maestro/maestro_menu.yaml \
   -e APP_ID=hu.mostoha.mobile.android.huki \
   --device <DEVICE_ID>
 ```
@@ -55,10 +55,10 @@ Strings vary by language (`android_toggle_language.sh` toggles EN/HU). Always se
 ```yaml
 # Good — survives language toggle
 - tapOn:
-    id: SETTINGS_BACK_BUTTON
+    id: MENU_BACK_BUTTON
 
 # Avoid for navigation-critical taps — breaks under HU locale
-- tapOn: "Settings"
+- tapOn: "Menu"
 ```
 
 Text assertions are fine for verifying user-visible copy (and when no tag exists), but anchor navigation on IDs.
@@ -95,7 +95,7 @@ appId: ${APP_ID}
 
 When writing a new flow, start by reading the closest existing one:
 
-- Settings + navigation: `.maestro/maestro_settings.yaml`
+- Menu + navigation: `.maestro/maestro_menu.yaml`
 - Search: `.maestro/maestro_search.yaml`
 - Layers: `.maestro/maestro_layers.yaml`
 - My location: `.maestro/maestro_my_location.yaml`

@@ -223,7 +223,7 @@ private fun SearchBottomSheetContent(
                             .clickable(onClick = onLocationIqClicked)
                             .semantics(mergeDescendants = true) {
                                 contentDescription = context.resolveMoko(
-                                    SharedRes.strings.settings_a11y_open_location_iq,
+                                    SharedRes.strings.menu_a11y_open_location_iq,
                                 )
                             }
                             .padding(Dimens.ExtraSmall),

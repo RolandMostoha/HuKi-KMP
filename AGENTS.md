@@ -73,6 +73,10 @@ Lint:
 ## Large Data Files
 - `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
 
+## GPX Storage
+- Imported GPX files are copied into the app sandbox at `FileKit.filesDir/gpx/external` on first import, so they can be reused without re-import and shared via stable paths.
+- `GpxStorage` (commonMain) owns the sandbox: copy-if-absent, list, delete.
+
 ## Chores
 
 Chores is a checklist which should be checked for every new "feature complete" code review.
@@ -240,6 +244,7 @@ val [actual] = operation(X)
 - Don't use unnecessary blank lines between UI components.
 - Always use animations for UI transitions, avoid flashing transitions.
 - Always respect edge-to-edge `windowInsets` for screens.
+- Prefer icons from the official Google Font icon set: https://fonts.google.com/icons.
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass
@@ -250,6 +255,7 @@ val [actual] = operation(X)
 - Don't use unnecessary blank lines between UI components.
 - Always use animations for UI transitions, avoid flashing transitions.
 - Always respect edge-to-edge `.safeArea` for screens.
+- Prefer icons from the official Apple SF Symbols icon set: https://developer.apple.com/sf-symbols/.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.

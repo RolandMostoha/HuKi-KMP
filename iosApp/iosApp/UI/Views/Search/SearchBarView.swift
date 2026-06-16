@@ -4,7 +4,7 @@ import SwiftUI
 struct SearchBarView: View {
     let strings: Strings
     let onSearchTap: () -> Void
-    let onSettingsClick: () -> Void
+    let onMenuClick: () -> Void
 
     var body: some View {
         HStack {
@@ -41,14 +41,15 @@ struct SearchBarView: View {
 
     @ViewBuilder
     private var menuButton: some View {
-        Button(action: onSettingsClick) {
+        Button(action: onMenuClick) {
             Image(systemName: "line.3.horizontal")
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.primary)
+                .padding(.vertical, 11)
                 .padding(.horizontal, 12)
                 .contentShape(Rectangle())
         }
         .buttonStyle(PressFeedbackButtonStyle())
-        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_settings))
+        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_menu))
     }
 }
