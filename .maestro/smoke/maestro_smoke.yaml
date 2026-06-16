@@ -18,8 +18,8 @@ appId: ${APP_ID}
 - assertVisible:
     id: MAP_MAPBOX
 
-# Settings screen opens and navigates back to the map
-- tapOn: "Settings"
+# Menu screen opens and navigates back to the map
+- tapOn: "Menu"
 - assertVisible:
-    id: SETTINGS_SCREEN_ROOT
+    id: MENU_SCREEN_ROOT
 - assertVisible: "HuKi"

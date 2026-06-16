@@ -9,7 +9,7 @@ struct FloatingActionContainer: View {
     let onLayersClicked: () -> Void
     let onMyLocationClicked: () -> Void
     let onSearchTap: () -> Void
-    let onSettingsClick: () -> Void
+    let onMenuClick: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
@@ -24,7 +24,7 @@ struct FloatingActionContainer: View {
                 SearchBarView(
                     strings: strings,
                     onSearchTap: onSearchTap,
-                    onSettingsClick: onSettingsClick
+                    onMenuClick: onMenuClick
                 )
                 .padding(.horizontal, 11)
                 .transition(.move(edge: .bottom).combined(with: .opacity))

@@ -50,6 +50,7 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.bundles.ktor)
             implementation(libs.filekit.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.maplibre.gpx)
             implementation(libs.maplibre.turf)
             implementation(libs.maplibre.units)

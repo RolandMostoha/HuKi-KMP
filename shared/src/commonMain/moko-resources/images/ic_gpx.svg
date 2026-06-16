@@ -1,0 +1,21 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <!-- Map Outline (Centered with 40px padding from all edges) -->
+    <path d="M40,110 L180,40 L320,110 L460,40 L460,390 L320,460 L180,390 L40,460 Z"
+          fill="none"
+          stroke="black"
+          stroke-width="35"
+          stroke-linejoin="round" />
+
+    <!-- Path Line (3 waypoints) -->
+    <polyline points="140,210 250,310 360,210"
+              fill="none"
+              stroke="black"
+              stroke-width="28"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+
+    <!-- Nodes/Points (Large r=40 for high visibility) -->
+    <circle cx="140" cy="210" r="40" fill="black" />
+    <circle cx="250" cy="310" r="40" fill="black" />
+    <circle cx="360" cy="210" r="40" fill="black" />
+</svg>

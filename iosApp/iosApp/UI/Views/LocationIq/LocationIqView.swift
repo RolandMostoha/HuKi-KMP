@@ -48,13 +48,16 @@ struct LocationIqView: View {
                 Button(
                     action: { dismiss() },
                     label: {
-                        Image(systemName: "chevron.backward")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.primary)
+                        Label(
+                            strings.get(id: SharedRes.strings().location_iq_a11y_back),
+                            systemImage: "chevron.backward"
+                        )
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
                     }
                 )
+                .labelStyle(.iconOnly)
                 .accessibilityIdentifier(TestTags.shared.LOCATION_IQ_BACK_BUTTON)
-                .accessibilityLabel(strings.get(id: SharedRes.strings().location_iq_a11y_back))
             }
         }
     }
@@ -168,7 +171,7 @@ struct LocationIqView: View {
     }
 
     private func openWebsite() {
-        if let url = URL(string: strings.get(id: SharedRes.strings().settings_location_iq_url)) {
+        if let url = URL(string: strings.get(id: SharedRes.strings().menu_location_iq_url)) {
             UIApplication.shared.open(url)
         }
     }
