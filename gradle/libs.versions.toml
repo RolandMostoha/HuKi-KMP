@@ -18,6 +18,7 @@ koin = "4.1.1"
 kotest = "6.0.7"
 kotlin = "2.3.0"
 kotlinx-coroutines-test = "1.10.2"
+kotlinx-datetime = "0.7.1"
 ktlint = "14.2.0"
 ktor = "3.4.3"
 mapbox-android = "11.20.1"
@@ -53,6 +54,7 @@ koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 kotest-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

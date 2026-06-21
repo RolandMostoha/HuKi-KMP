@@ -15,9 +15,12 @@
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
+#if DEBUG
+    <!-- Debug-only: expose to Files app for test GPX files. In Release builds sandbox is private -->
     <key>UIFileSharingEnabled</key>
     <true/>
     <key>LSSupportsOpeningDocumentsInPlace</key>
     <true/>
+#endif
 </dict>
 </plist>

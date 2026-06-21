@@ -1,4 +1,4 @@
-package hu.mostoha.mobile.kmp.huki.ui.features.settings
+package hu.mostoha.mobile.kmp.huki.ui.features.menu
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -42,10 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
-import hu.mostoha.mobile.kmp.huki.features.settings.SettingsUiEffects
-import hu.mostoha.mobile.kmp.huki.features.settings.SettingsUiEvents
-import hu.mostoha.mobile.kmp.huki.features.settings.SettingsUiState
-import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEffects
+import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEvents
+import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiState
+import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -59,37 +61,41 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SettingsScreen(
+fun MenuScreen(
     onBack: () -> Unit,
+    onGpxCollectionClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
-    viewModel: SettingsViewModel = koinViewModel(),
+    viewModel: MenuViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    SettingsContent(
+    MenuContent(
         uiState = uiState,
-        settingsUiEffects = viewModel.settingsUiEffects,
+        menuUiEffects = viewModel.menuUiEffects,
         onEvent = viewModel::onEvent,
         onBack = onBack,
+        onGpxCollectionClicked = onGpxCollectionClicked,
         onLocationIqClicked = onLocationIqClicked,
     )
 }
 
 @Composable
-private fun SettingsContent(
-    uiState: SettingsUiState,
-    settingsUiEffects: Flow<SettingsUiEffects>,
-    onEvent: (SettingsUiEvents) -> Unit,
+private fun MenuContent(
+    uiState: MenuUiState,
+    menuUiEffects: Flow<MenuUiEffects>,
+    onEvent: (MenuUiEvents) -> Unit,
     onBack: () -> Unit,
+    onGpxCollectionClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
-    LaunchedEffect(settingsUiEffects) {
-        settingsUiEffects.collect { effect ->
+    LaunchedEffect(menuUiEffects) {
+        menuUiEffects.collect { effect ->
             when (effect) {
-                SettingsUiEffects.NavigateBack -> onBack()
-                SettingsUiEffects.NavigateToLocationIq -> onLocationIqClicked()
-                is SettingsUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
-                is SettingsUiEffects.SendEmail -> context.sendEmail(
+                MenuUiEffects.NavigateBack -> onBack()
+                MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
+                MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
+                is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
+                is MenuUiEffects.SendEmail -> context.sendEmail(
                     email = context.resolveMoko(effect.emailRes),
                     subject = context.resolveMoko(effect.subjectRes),
                 )
@@ -100,7 +106,7 @@ private fun SettingsContent(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(TestTags.SETTINGS_SCREEN_ROOT),
+            .testTag(TestTags.MENU_SCREEN_ROOT),
         containerColor = backgroundColor,
     ) { innerPadding ->
         Column(
@@ -115,60 +121,75 @@ private fun SettingsContent(
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(start = Dimens.Small, top = Dimens.Small)
-                    .testTag(TestTags.SETTINGS_BACK_BUTTON),
-                onClick = { onEvent(SettingsUiEvents.BackClicked) },
+                    .testTag(TestTags.MENU_BACK_BUTTON),
+                onClick = { onEvent(MenuUiEvents.BackClicked) },
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_back),
-                    contentDescription = mokoString(SharedRes.strings.settings_a11y_back),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_back),
                 )
             }
-            SettingsHero(versionName = uiState.versionName)
-            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_contact))
-            SettingsCard {
-                SettingsRow(
-                    title = mokoString(SharedRes.strings.settings_item_email),
-                    valueText = mokoString(SharedRes.strings.settings_contact_email),
-                    contentDescription = mokoString(SharedRes.strings.settings_a11y_open_email),
-                    testTag = TestTags.SETTINGS_ROW_EMAIL,
-                    onClick = { onEvent(SettingsUiEvents.EmailClicked) },
+            MenuHero(versionName = uiState.versionName)
+            Spacer(modifier = Modifier.height(Dimens.Medium))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_gpx_collection),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_collection),
+                    testTag = TestTags.MENU_ROW_GPX_COLLECTION,
+                    onClick = { onEvent(MenuUiEvents.GpxCollectionClicked) },
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+            }
+            MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_contact))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_email),
+                    valueText = mokoString(SharedRes.strings.menu_contact_email),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_email),
+                    testTag = TestTags.MENU_ROW_EMAIL,
+                    onClick = { onEvent(MenuUiEvents.EmailClicked) },
                 ) {
                     TintedRowIcon(SharedRes.images.ic_email.drawableResId)
                 }
-                SettingsRowDivider()
-                SettingsRow(
-                    title = mokoString(SharedRes.strings.settings_item_facebook),
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_facebook),
                     valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.settings_a11y_open_facebook),
-                    testTag = TestTags.SETTINGS_ROW_FACEBOOK,
-                    onClick = { onEvent(SettingsUiEvents.FacebookClicked) },
-                    description = mokoString(SharedRes.strings.settings_item_facebook_description),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_facebook),
+                    testTag = TestTags.MENU_ROW_FACEBOOK,
+                    onClick = { onEvent(MenuUiEvents.FacebookClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_facebook_description),
                 ) {
                     TintedRowIcon(SharedRes.images.ic_facebook.drawableResId)
                 }
-                SettingsRowDivider()
-                SettingsRow(
-                    title = mokoString(SharedRes.strings.settings_item_github),
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_github),
                     valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.settings_a11y_open_github),
-                    testTag = TestTags.SETTINGS_ROW_GITHUB,
-                    onClick = { onEvent(SettingsUiEvents.GithubClicked) },
-                    description = mokoString(SharedRes.strings.settings_item_github_description),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_github),
+                    testTag = TestTags.MENU_ROW_GITHUB,
+                    onClick = { onEvent(MenuUiEvents.GithubClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_github_description),
                 ) {
                     TintedRowIcon(SharedRes.images.ic_github.drawableResId)
                 }
             }
-            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_supporters))
-            SettingsCard {
-                SettingsRow(
-                    title = mokoString(SharedRes.strings.settings_item_location_iq),
+            MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_supporters))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_location_iq),
                     valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.settings_a11y_open_location_iq),
-                    testTag = TestTags.SETTINGS_ROW_LOCATION_IQ,
-                    onClick = { onEvent(SettingsUiEvents.LocationIqClicked) },
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_location_iq),
+                    testTag = TestTags.MENU_ROW_LOCATION_IQ,
+                    onClick = { onEvent(MenuUiEvents.LocationIqClicked) },
                     showIconBackground = false,
-                    description = mokoString(SharedRes.strings.settings_item_location_iq_description),
-                    descriptionColor = mokoColor(SharedRes.colors.locationIqRed),
+                    description = mokoString(SharedRes.strings.menu_item_location_iq_description),
                 ) {
                     Image(
                         painter = painterResource(SharedRes.images.ic_location_iq_circle.drawableResId),
@@ -182,7 +203,7 @@ private fun SettingsContent(
 }
 
 @Composable
-private fun SettingsHero(versionName: String) {
+private fun MenuHero(versionName: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -191,7 +212,7 @@ private fun SettingsHero(versionName: String) {
     ) {
         Image(
             painter = painterResource(SharedRes.images.ic_app_icon.drawableResId),
-            contentDescription = mokoString(SharedRes.strings.settings_a11y_app_icon),
+            contentDescription = mokoString(SharedRes.strings.menu_a11y_app_icon),
             modifier = Modifier
                 .size(Dimens.IconHero)
                 .shadow(
@@ -199,27 +220,27 @@ private fun SettingsHero(versionName: String) {
                     shape = RoundedCornerShape(Dimens.ExtraLarge),
                     clip = true,
                 )
-                .testTag(TestTags.SETTINGS_APP_ICON),
+                .testTag(TestTags.MENU_APP_ICON),
         )
         Text(
-            text = mokoString(SharedRes.strings.settings_app_name),
+            text = mokoString(SharedRes.strings.menu_app_name),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Dimens.Large),
         )
         Text(
-            text = mokoString(SharedRes.strings.settings_app_description),
+            text = mokoString(SharedRes.strings.menu_app_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Dimens.ExtraSmall),
         )
         VersionPill(
-            text = mokoString(SharedRes.strings.settings_version_pattern, versionName),
+            text = mokoString(SharedRes.strings.menu_version_pattern, versionName),
             modifier = Modifier
                 .padding(top = Dimens.Medium)
-                .testTag(TestTags.SETTINGS_VERSION),
+                .testTag(TestTags.MENU_VERSION),
         )
     }
 }
@@ -254,7 +275,7 @@ private fun VersionPill(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SettingsSectionHeader(text: String) {
+private fun MenuSectionHeader(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelLarge,
@@ -272,7 +293,7 @@ private fun SettingsSectionHeader(text: String) {
 }
 
 @Composable
-private fun SettingsCard(content: @Composable () -> Unit) {
+private fun MenuCard(content: @Composable () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -286,15 +307,15 @@ private fun SettingsCard(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun SettingsRow(
+private fun MenuRow(
     title: String,
     valueText: String?,
     contentDescription: String,
     testTag: String,
     onClick: () -> Unit,
     showIconBackground: Boolean = true,
+    iconBackgroundColor: Color? = null,
     description: String? = null,
-    descriptionColor: Color? = null,
     icon: @Composable () -> Unit,
 ) {
     Row(
@@ -312,7 +333,7 @@ private fun SettingsRow(
                 .then(
                     if (showIconBackground) {
                         Modifier.background(
-                            color = mokoColor(SharedRes.colors.primaryContainer),
+                            color = iconBackgroundColor ?: mokoColor(SharedRes.colors.primaryContainer),
                             shape = CircleShape,
                         )
                     } else {
@@ -332,13 +353,14 @@ private fun SettingsRow(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Normal,
             )
             if (description != null) {
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Light,
-                    color = descriptionColor ?: mokoColor(SharedRes.colors.primary),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Dimens.ExtraSmall),
                 )
             }
@@ -346,8 +368,9 @@ private fun SettingsRow(
         if (valueText != null) {
             Text(
                 text = valueText,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Light,
                 modifier = Modifier.padding(start = Dimens.Small),
             )
         }
@@ -355,17 +378,17 @@ private fun SettingsRow(
 }
 
 @Composable
-private fun TintedRowIcon(drawableResId: Int) {
+private fun TintedRowIcon(drawableResId: Int, tint: Color = MaterialTheme.colorScheme.onSurface) {
     Icon(
         imageVector = ImageVector.vectorResource(drawableResId),
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface,
+        tint = tint,
         modifier = Modifier.size(Dimens.IconSmall),
     )
 }
 
 @Composable
-private fun SettingsRowDivider() {
+private fun MenuRowDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(start = Dimens.Large + Dimens.IconContainer + Dimens.Large),
         thickness = 1.dp,
@@ -375,13 +398,14 @@ private fun SettingsRowDivider() {
 
 @Preview
 @Composable
-private fun SettingsContentPreview() {
+private fun MenuContentPreview() {
     HuKiTheme {
-        SettingsContent(
-            uiState = SettingsUiState.Default,
-            settingsUiEffects = emptyFlow(),
+        MenuContent(
+            uiState = MenuUiState.Default,
+            menuUiEffects = emptyFlow(),
             onEvent = {},
             onBack = {},
+            onGpxCollectionClicked = {},
             onLocationIqClicked = {},
         )
     }

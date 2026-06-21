@@ -8,8 +8,8 @@ appId: ${APP_ID}
       id: MAP_MAPBOX
     timeout: 10000
 
-# Open Settings
-- tapOn: "Settings"
+# Open Menu
+- tapOn: "Menu"
 
 # Hero
 - assertVisible: "HuKi"
@@ -19,24 +19,24 @@ appId: ${APP_ID}
 # Contact section
 - assertVisible: "Contact"
 - assertVisible:
-    id: SETTINGS_ROW_EMAIL
+    id: MENU_ROW_EMAIL
 - assertVisible: "huki.app@gmail.com"
 - assertVisible:
-    id: SETTINGS_ROW_FACEBOOK
+    id: MENU_ROW_FACEBOOK
 - assertVisible: "Facebook"
 - assertVisible:
-    id: SETTINGS_ROW_GITHUB
+    id: MENU_ROW_GITHUB
 - assertVisible: "GitHub repository"
 
 # Supporters section
 - assertVisible: "Supporters"
 - assertVisible:
-    id: SETTINGS_ROW_LOCATION_IQ
+    id: MENU_ROW_LOCATION_IQ
 - assertVisible: "Location IQ"
 
 # Open LocationIQ supporter page and return
 - tapOn:
-    id: SETTINGS_ROW_LOCATION_IQ
+    id: MENU_ROW_LOCATION_IQ
 - assertVisible:
     id: LOCATION_IQ_SCREEN_ROOT
 - assertVisible:
@@ -44,10 +44,10 @@ appId: ${APP_ID}
 - tapOn:
     id: LOCATION_IQ_BACK_BUTTON
 - assertVisible:
-    id: SETTINGS_SCREEN_ROOT
+    id: MENU_SCREEN_ROOT
 
 # Back navigation returns to the map
 - tapOn:
-    id: SETTINGS_BACK_BUTTON
+    id: MENU_BACK_BUTTON
 - assertVisible:
     id: MAP_MAPBOX

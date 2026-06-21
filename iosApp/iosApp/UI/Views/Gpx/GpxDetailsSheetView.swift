@@ -77,58 +77,30 @@ private struct GpxStatsRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_travel_time),
+            StatChipView(
+                systemImage: "clock.fill",
                 value: strings.get(desc: TravelTimeFormatter.shared.formatTravelTime(duration: gpxDetails.travelTime)),
-                systemImage: "clock.fill"
+                label: strings.get(id: SharedRes.strings().gpx_details_travel_time),
+                style: .large
             )
-            GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_distance),
+            StatChipView(
+                systemImage: "location.fill",
                 value: DistanceFormatter.shared.formatDistance(distance: gpxDetails.totalDistance),
-                systemImage: "location.fill"
+                label: strings.get(id: SharedRes.strings().gpx_details_distance),
+                style: .large
             )
-            GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_incline),
+            StatChipView(
+                systemImage: "chart.line.uptrend.xyaxis",
                 value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.incline),
-                systemImage: "chart.line.uptrend.xyaxis"
+                label: strings.get(id: SharedRes.strings().gpx_details_incline),
+                style: .large
             )
-            GpxStatCardView(
-                label: strings.get(id: SharedRes.strings().gpx_details_decline),
+            StatChipView(
+                systemImage: "chart.line.downtrend.xyaxis",
                 value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.decline),
-                systemImage: "chart.line.downtrend.xyaxis"
+                label: strings.get(id: SharedRes.strings().gpx_details_decline),
+                style: .large
             )
         }
-    }
-}
-
-private struct GpxStatCardView: View {
-    let label: String
-    let value: String
-    let systemImage: String
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color(SharedRes.colors().primary.getUIColor()))
-            Text(
-                UiFormatter.formatStatValue(
-                    value,
-                    smallFont: .system(size: 12, weight: .medium)
-                )
-            )
-                .font(.system(size: 18, weight: .bold))
-                .multilineTextAlignment(.center)
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(.systemGray6))
-        )
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(label), \(value)")
     }
 }

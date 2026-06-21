@@ -87,6 +87,7 @@ dependencies {
     lintChecks(libs.compose.lint.checks)
 
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
+    androidTestImplementation(libs.filekit.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.kotest.core)
     androidTestImplementation(libs.androidx.test.runner)

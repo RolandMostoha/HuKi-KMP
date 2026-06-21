@@ -2,7 +2,7 @@
 <resources>
     <string name="a11y_close">Close</string>
     <string name="a11y_clear_text">Clear text</string>
-    <string name="a11y_settings">Settings</string>
+    <string name="a11y_menu">Menu</string>
 
     <string name="error_unknown">Unknown error occurred.</string>
 
@@ -54,7 +54,7 @@
     <string name="gpx_details_distance">Distance</string>
     <string name="gpx_details_incline">Incline</string>
     <string name="gpx_details_decline">Decline</string>
-    <string name="gpx_details_start">Start</string>
+    <string name="gpx_details_start">Start Route</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>
     <string name="gpx_control_route_visibility_title">Route visibility</string>
@@ -62,7 +62,7 @@
     <string name="gpx_control_route_visibility_hide">Hide the route line</string>
     <string name="gpx_control_overview_title">Overview</string>
     <string name="gpx_control_overview_desc">Zoom to fit the whole route</string>
-    <string name="gpx_control_clear_title">Close</string>
+    <string name="gpx_control_clear_title">Close GPX</string>
     <string name="gpx_control_clear_desc">Close the route</string>
 
     <string name="gpx_import_error_title">GPX import failed</string>
@@ -71,30 +71,74 @@
     <string name="gpx_import_error_non_gpx_message">The selected file is not a GPX file. Please select a valid GPX file.</string>
     <string name="gpx_import_error_unreadable_message">The selected file could not be read. Please select a valid GPX file.</string>
 
-    <string name="settings_title">Settings</string>
-    <string name="settings_a11y_back">Back</string>
-    <string name="settings_app_name">HuKi</string>
-    <string name="settings_app_description">Hungarian Hiking App</string>
-    <string name="settings_version_pattern">Version %s</string>
-    <string name="settings_section_contact">Contact</string>
-    <string name="settings_section_supporters">Supporters</string>
-    <string name="settings_item_email">Email</string>
-    <string name="settings_item_facebook">Facebook</string>
-    <string name="settings_item_facebook_description">Join for news and tips</string>
-    <string name="settings_item_github">GitHub repository</string>
-    <string name="settings_item_github_description">HuKi is an open-source software</string>
-    <string name="settings_item_location_iq">Location IQ</string>
-    <string name="settings_item_location_iq_description">LocationIQ supports HuKi with a generous free plan for its geocoding services.</string>
-    <string name="settings_a11y_app_icon">HuKi app icon</string>
-    <string name="settings_a11y_open_email">Send email</string>
-    <string name="settings_a11y_open_facebook">Open Facebook page</string>
-    <string name="settings_a11y_open_github">Open GitHub repository</string>
-    <string name="settings_a11y_open_location_iq">Open Location IQ website</string>
-    <string name="settings_contact_email">huki.app@gmail.com</string>
-    <string name="settings_email_subject">[HuKi]</string>
-    <string name="settings_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
-    <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
-    <string name="settings_location_iq_url">https://locationiq.com/</string>
+    <string name="menu_title">Menu</string>
+    <string name="menu_a11y_back">Back</string>
+    <string name="menu_app_name">HuKi</string>
+    <string name="menu_app_description">Hungarian Hiking App</string>
+    <string name="menu_version_pattern">Version %s</string>
+    <string name="menu_item_gpx_collection">GPX Collection</string>
+    <string name="menu_item_gpx_collection_description">Your imported routes in one place</string>
+    <string name="menu_a11y_open_gpx_collection">Open GPX Collection</string>
+    <string name="menu_section_contact">Contact</string>
+    <string name="menu_section_supporters">Supporters</string>
+    <string name="menu_item_email">Email</string>
+    <string name="menu_item_facebook">Facebook</string>
+    <string name="menu_item_facebook_description">Join for news and tips</string>
+    <string name="menu_item_github">GitHub repository</string>
+    <string name="menu_item_github_description">HuKi is an open-source software</string>
+    <string name="menu_item_location_iq">Location IQ</string>
+    <string name="menu_item_location_iq_description">LocationIQ supports HuKi with a generous free plan for its geocoding services.</string>
+    <string name="menu_a11y_app_icon">HuKi app icon</string>
+    <string name="menu_a11y_open_email">Send email</string>
+    <string name="menu_a11y_open_facebook">Open Facebook page</string>
+    <string name="menu_a11y_open_github">Open GitHub repository</string>
+    <string name="menu_a11y_open_location_iq">Open Location IQ website</string>
+    <string name="menu_contact_email">huki.app@gmail.com</string>
+    <string name="menu_email_subject">[HuKi]</string>
+    <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
+    <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
+    <string name="menu_location_iq_url">https://locationiq.com/</string>
+
+    <string name="gpx_collection_title">GPX Collection</string>
+    <string name="gpx_collection_subtitle_pattern">%d tracks</string>
+    <string name="gpx_collection_subtitle_single">%d track</string>
+    <string name="gpx_collection_subtitle_empty">No imported tracks or route plans yet</string>
+    <string name="gpx_collection_date_today">Today</string>
+    <string name="gpx_collection_date_yesterday">Yesterday</string>
+    <string name="gpx_collection_empty_title">Your GPX collection is empty</string>
+    <string name="gpx_collection_empty_message">Your imported GPX files and Route Plans will appear here. Import a track to get started.</string>
+    <string name="gpx_collection_empty_action">Show GPX Tutorial</string>
+    <string name="gpx_collection_a11y_back">Back</string>
+    <string name="gpx_collection_a11y_help">GPX guide</string>
+    <string name="gpx_collection_a11y_options">More options</string>
+    <string name="gpx_collection_action_rename">Rename</string>
+    <string name="gpx_collection_action_share">Share</string>
+    <string name="gpx_collection_action_delete">Delete</string>
+    <string name="gpx_collection_delete_dialog_title">Delete GPX file?</string>
+    <string name="gpx_collection_delete_dialog_message">“%s” will be permanently removed from your collection.</string>
+    <string name="gpx_collection_delete_dialog_cancel">Cancel</string>
+
+    <string name="gpx_tutorial_title">GPX Tutorial</string>
+    <string name="gpx_tutorial_a11y_back">Back</string>
+    <string name="gpx_tutorial_what_title">What is a GPX file?</string>
+    <string name="gpx_tutorial_what_message">A GPX file stores a route as a line. It’s a well-known, open format that hikers use to record their routes and follow trails.</string>
+    <string name="gpx_tutorial_steps_section">How to import GPX into HuKi</string>
+    <string name="gpx_tutorial_step_1_title">Browse a hike collection website</string>
+    <string name="gpx_tutorial_step_1_message">My favorites:</string>
+    <string name="gpx_tutorial_step_2_title">Look for GPX export/download option</string>
+    <string name="gpx_tutorial_step_2_message">It’s usually near the route map. Logging in may be required.</string>
+    <string name="gpx_tutorial_step_3_title">Download the GPX file to your phone</string>
+    <string name="gpx_tutorial_step_3_message">Save it from the website — it lands in Files or Downloads.</string>
+    <string name="gpx_tutorial_step_4_title">Open the file with HuKi</string>
+    <string name="gpx_tutorial_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.</string>
+    <string name="gpx_tutorial_recommended_aktivkalandor">Aktív Kalandor</string>
+    <string name="gpx_tutorial_recommended_termeszetjaro">Természetjáró</string>
+    <string name="gpx_tutorial_recommended_kirandulastippek">Kirándulástippek</string>
+    <string name="gpx_tutorial_recommended_aktivkalandor_url">https://aktivkalandor.hu/turak-a-terkepen/</string>
+    <string name="gpx_tutorial_recommended_termeszetjaro_url">https://www.termeszetjaro.hu</string>
+    <string name="gpx_tutorial_recommended_kirandulastippek_url">https://kirandulastippek.hu</string>
+    <string name="gpx_tutorial_terms">Terms &amp; Conditions</string>
+    <string name="gpx_tutorial_a11y_open_collection">Open %s</string>
 
     <string name="place_category_group_travel">Travel</string>
     <string name="place_category_group_nature">Nature</string>
