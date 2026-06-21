@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SettingsSectionHeaderView: View {
+struct MenuSectionHeaderView: View {
     let text: String
 
     var body: some View {

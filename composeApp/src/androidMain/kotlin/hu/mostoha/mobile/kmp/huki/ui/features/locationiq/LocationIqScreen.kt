@@ -52,7 +52,7 @@ fun LocationIqScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     LocationIqContent(
         onBack = onBack,
-        onVisitWebsite = { context.openUrl(context.resolveMoko(SharedRes.strings.settings_location_iq_url)) },
+        onVisitWebsite = { context.openUrl(context.resolveMoko(SharedRes.strings.menu_location_iq_url)) },
     )
 }
 

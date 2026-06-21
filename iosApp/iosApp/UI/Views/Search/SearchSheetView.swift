@@ -163,7 +163,7 @@ struct SearchSheetView: View {
                 }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(strings.get(id: SharedRes.strings().settings_a11y_open_location_iq))
+            .accessibilityLabel(strings.get(id: SharedRes.strings().menu_a11y_open_location_iq))
         }
         .frame(height: 28)
         .padding(.horizontal, 24)

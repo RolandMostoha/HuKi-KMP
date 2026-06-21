@@ -1,6 +1,5 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.gpx
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,21 +28,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.StatChip
+import hu.mostoha.mobile.kmp.huki.ui.components.StatChipStyle
 import hu.mostoha.mobile.kmp.huki.util.TestTags
-import hu.mostoha.mobile.kmp.huki.util.UiFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -145,28 +141,32 @@ fun GpxDetailsBottomSheet(
                     .padding(top = Dimens.ExtraSmall),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
             ) {
-                GpxStatCard(
+                StatChip(
                     iconResId = SharedRes.images.ic_gpx_travel_time.drawableResId,
-                    label = mokoString(SharedRes.strings.gpx_details_travel_time),
                     value = mokoString(TravelTimeFormatter.formatTravelTime(gpxDetails.travelTime)),
+                    label = mokoString(SharedRes.strings.gpx_details_travel_time),
+                    style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
-                GpxStatCard(
+                StatChip(
                     iconResId = SharedRes.images.ic_gpx_distance.drawableResId,
-                    label = mokoString(SharedRes.strings.gpx_details_distance),
                     value = DistanceFormatter.formatDistance(gpxDetails.totalDistance),
+                    label = mokoString(SharedRes.strings.gpx_details_distance),
+                    style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
-                GpxStatCard(
+                StatChip(
                     iconResId = SharedRes.images.ic_gpx_uphill.drawableResId,
-                    label = mokoString(SharedRes.strings.gpx_details_incline),
                     value = DistanceFormatter.formatMeters(gpxDetails.incline),
+                    label = mokoString(SharedRes.strings.gpx_details_incline),
+                    style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
-                GpxStatCard(
+                StatChip(
                     iconResId = SharedRes.images.ic_gpx_downhill.drawableResId,
-                    label = mokoString(SharedRes.strings.gpx_details_decline),
                     value = DistanceFormatter.formatMeters(gpxDetails.decline),
+                    label = mokoString(SharedRes.strings.gpx_details_decline),
+                    style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -195,47 +195,6 @@ fun GpxDetailsBottomSheet(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun GpxStatCard(
-    @DrawableRes iconResId: Int,
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .semantics(mergeDescendants = true) {
-                contentDescription = "$label, $value"
-            }
-            .padding(horizontal = Dimens.ExtraSmall, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(iconResId),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(Dimens.IconSmall),
-        )
-        Text(
-            text = UiFormatter.formatStatValue(
-                value = value,
-                smallSpanStyle = SpanStyle(
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Medium,
-                ),
-            ),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp),
-            fontWeight = FontWeight.ExtraBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 

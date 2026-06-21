@@ -6,7 +6,7 @@ enum UiFormatter {
     static func formatStatValue(
         _ value: String,
         smallFont: Font,
-        unitBaselineOffset: CGFloat = 1
+        unitBaselineOffset: CGFloat = 0
     ) -> AttributedString {
         var attributed = AttributedString(value)
 

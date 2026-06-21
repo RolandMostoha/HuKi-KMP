@@ -1,4 +1,4 @@
-package hu.mostoha.mobile.kmp.huki.features.settings
+package hu.mostoha.mobile.kmp.huki.features.menu
 
 import app.cash.turbine.test
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -14,17 +14,17 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SettingsViewModelTest {
+class MenuViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var settingsViewModel: SettingsViewModel
+    private lateinit var menuViewModel: MenuViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        settingsViewModel = SettingsViewModel()
+        menuViewModel = MenuViewModel()
         testDispatcher.scheduler.runCurrent()
     }
 
@@ -36,19 +36,19 @@ class SettingsViewModelTest {
     @Test
     fun `Given view model init, When observed, Then uiState is default`() {
         runTest {
-            settingsViewModel.uiState.value shouldBe SettingsUiState.Default
+            menuViewModel.uiState.value shouldBe MenuUiState.Default
         }
     }
 
     @Test
     fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
         runTest {
-            settingsViewModel.settingsUiEffects.test {
-                settingsViewModel.onEvent(SettingsUiEvents.BackClicked)
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.BackClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.NavigateBack
+                actual shouldBe MenuUiEffects.NavigateBack
             }
         }
     }
@@ -56,14 +56,14 @@ class SettingsViewModelTest {
     @Test
     fun `Given default state, When EmailClicked event, Then SendEmail effect with email and subject is emitted`() {
         runTest {
-            settingsViewModel.settingsUiEffects.test {
-                settingsViewModel.onEvent(SettingsUiEvents.EmailClicked)
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.EmailClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.SendEmail(
-                    emailRes = SharedRes.strings.settings_contact_email,
-                    subjectRes = SharedRes.strings.settings_email_subject,
+                actual shouldBe MenuUiEffects.SendEmail(
+                    emailRes = SharedRes.strings.menu_contact_email,
+                    subjectRes = SharedRes.strings.menu_email_subject,
                 )
             }
         }
@@ -72,12 +72,12 @@ class SettingsViewModelTest {
     @Test
     fun `Given default state, When FacebookClicked event, Then OpenUrl effect with Facebook url is emitted`() {
         runTest {
-            settingsViewModel.settingsUiEffects.test {
-                settingsViewModel.onEvent(SettingsUiEvents.FacebookClicked)
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.FacebookClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.OpenUrl(SharedRes.strings.settings_facebook_url)
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_facebook_url)
             }
         }
     }
@@ -85,12 +85,12 @@ class SettingsViewModelTest {
     @Test
     fun `Given default state, When GithubClicked event, Then OpenUrl effect with GitHub url is emitted`() {
         runTest {
-            settingsViewModel.settingsUiEffects.test {
-                settingsViewModel.onEvent(SettingsUiEvents.GithubClicked)
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.GithubClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.OpenUrl(SharedRes.strings.settings_github_url)
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url)
             }
         }
     }
@@ -98,12 +98,12 @@ class SettingsViewModelTest {
     @Test
     fun `Given default state, When LocationIqClicked event, Then NavigateToLocationIq effect is emitted`() {
         runTest {
-            settingsViewModel.settingsUiEffects.test {
-                settingsViewModel.onEvent(SettingsUiEvents.LocationIqClicked)
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.LocationIqClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe SettingsUiEffects.NavigateToLocationIq
+                actual shouldBe MenuUiEffects.NavigateToLocationIq
             }
         }
     }

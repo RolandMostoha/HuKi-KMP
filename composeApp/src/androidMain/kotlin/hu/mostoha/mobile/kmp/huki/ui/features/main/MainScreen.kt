@@ -56,20 +56,29 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MainScreen(
-    onSettingsClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
+    openGpxUri: String? = null,
+    onOpenGpxConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BindEffect(viewModel.permissionsController)
 
+    LaunchedEffect(openGpxUri) {
+        openGpxUri?.let {
+            viewModel.onEvent(MainUiEvents.GpxFileSelected(it))
+            onOpenGpxConsumed()
+        }
+    }
+
     MainContent(
         uiState = uiState,
         mainUiEffects = viewModel.mainUiEffects,
         mapUiEffects = viewModel.mapUiEffects,
         onEvent = viewModel::onEvent,
-        onSettingsClicked = onSettingsClicked,
+        onMenuClicked = onMenuClicked,
         onLocationIqClicked = onLocationIqClicked,
     )
 }
@@ -80,7 +89,7 @@ private fun MainContent(
     mainUiEffects: Flow<MainUiEffects>,
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
-    onSettingsClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -215,7 +224,7 @@ private fun MainContent(
                 onGpxClearClicked = {
                     onEvent(MainUiEvents.GpxCloseClicked)
                 },
-                onSettingsClicked = onSettingsClicked,
+                onMenuClicked = onMenuClicked,
             )
             if (showModalBottomSheet) {
                 LayersBottomSheet(
@@ -282,7 +291,7 @@ private fun MainContentPreview() {
             mainUiEffects = emptyFlow(),
             mapUiEffects = emptyFlow(),
             onEvent = {},
-            onSettingsClicked = {},
+            onMenuClicked = {},
             onLocationIqClicked = {},
         )
     }
@@ -297,7 +306,7 @@ private fun MainContentLoadingPreview() {
             mainUiEffects = emptyFlow(),
             mapUiEffects = emptyFlow(),
             onEvent = {},
-            onSettingsClicked = {},
+            onMenuClicked = {},
             onLocationIqClicked = {},
         )
     }

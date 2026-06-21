@@ -1,0 +1,10 @@
+package hu.mostoha.mobile.kmp.huki.features.menu
+
+sealed interface MenuUiEvents {
+    data object BackClicked : MenuUiEvents
+    data object GpxCollectionClicked : MenuUiEvents
+    data object EmailClicked : MenuUiEvents
+    data object FacebookClicked : MenuUiEvents
+    data object GithubClicked : MenuUiEvents
+    data object LocationIqClicked : MenuUiEvents
+}

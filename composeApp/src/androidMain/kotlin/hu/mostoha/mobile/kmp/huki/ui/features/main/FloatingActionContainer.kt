@@ -49,7 +49,7 @@ fun FloatingActionContainer(
     onGpxToggleLineClicked: () -> Unit,
     onGpxOverviewClicked: () -> Unit,
     onGpxClearClicked: () -> Unit,
-    onSettingsClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -164,8 +164,8 @@ fun FloatingActionContainer(
                     onSearchClick = {
                         onSearchClicked()
                     },
-                    onSettingsClick = {
-                        onSettingsClicked()
+                    onMenuClick = {
+                        onMenuClicked()
                     },
                 )
             }
@@ -185,7 +185,7 @@ private fun MainContentPreview() {
             onGpxToggleLineClicked = {},
             onGpxOverviewClicked = {},
             onGpxClearClicked = {},
-            onSettingsClicked = {},
+            onMenuClicked = {},
         )
     }
 }

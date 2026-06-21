@@ -10,6 +10,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import io.kotest.matchers.collections.beEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -31,7 +33,7 @@ import kotlin.test.assertFailsWith
 @MediumTest
 class DefaultGpxRepositoryTest {
 
-    val repository = DefaultGpxRepository()
+    val repository = DefaultGpxRepository(DefaultGpxStorage())
 
     @Test
     fun givenGpxWithRoutes_whenReadGpxFile_thenCorrectGpxReturns() {
@@ -117,6 +119,20 @@ class DefaultGpxRepositoryTest {
             assertFailsWith<NonGpxFileException> {
                 repository.readGpxFile(uri.toString())
             }
+        }
+    }
+
+    @Test
+    fun givenSavedGpx_whenDeleteGpxFile_thenFileIsRemovedFromCollection() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_routes.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            repository.getGpxFiles().map { it.fileName } shouldContain gpx.fileName
+
+            repository.deleteGpxFile(gpx.fileName)
+
+            repository.getGpxFiles().map { it.fileName } shouldNotContain gpx.fileName
         }
     }
 

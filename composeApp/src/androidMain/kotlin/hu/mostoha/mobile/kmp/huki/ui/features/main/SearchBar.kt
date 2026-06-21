@@ -30,7 +30,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 @Composable
-fun SearchBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SearchBar(onSearchClick: () -> Unit, onMenuClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .testTag(TestTags.MAIN_SEARCH_BAR)
@@ -75,12 +75,12 @@ fun SearchBar(onSearchClick: () -> Unit, onSettingsClick: () -> Unit, modifier: 
             }
             IconButton(
                 onClick = {
-                    onSettingsClick.invoke()
+                    onMenuClick.invoke()
                 },
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_menu),
-                    contentDescription = mokoString(SharedRes.strings.a11y_settings),
+                    contentDescription = mokoString(SharedRes.strings.a11y_menu),
                 )
             }
         }
@@ -93,7 +93,7 @@ private fun SearchBarPreview() {
     HuKiTheme {
         SearchBar(
             onSearchClick = {},
-            onSettingsClick = {},
+            onMenuClick = {},
             modifier = Modifier.padding(Dimens.Medium),
         )
     }

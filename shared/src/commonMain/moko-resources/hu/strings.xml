@@ -2,7 +2,7 @@
 <resources>
     <string name="a11y_close">Bezárás</string>
     <string name="a11y_clear_text">Szöveg törlése</string>
-    <string name="a11y_settings">Beállítások</string>
+    <string name="a11y_menu">Menü</string>
 
     <string name="error_unknown">Ismeretlen hiba történt.</string>
 
@@ -54,7 +54,7 @@
     <string name="gpx_details_distance">Távolság</string>
     <string name="gpx_details_incline">Emelkedés</string>
     <string name="gpx_details_decline">Lejtés</string>
-    <string name="gpx_details_start">Indulás</string>
+    <string name="gpx_details_start">Útvonal kezdése</string>
 
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>
     <string name="gpx_control_route_visibility_title">Útvonal láthatósága</string>
@@ -62,7 +62,7 @@
     <string name="gpx_control_route_visibility_hide">Az útvonal elrejtése</string>
     <string name="gpx_control_overview_title">Teljes útvonal</string>
     <string name="gpx_control_overview_desc">Zoom a teljes útvonalhoz</string>
-    <string name="gpx_control_clear_title">Bezárás</string>
+    <string name="gpx_control_clear_title">GPX Bezárása</string>
     <string name="gpx_control_clear_desc">Az útvonal bezárása</string>
 
     <string name="gpx_import_error_title">GPX import hiba</string>
@@ -71,30 +71,74 @@
     <string name="gpx_import_error_non_gpx_message">A kiválasztott fájl nem egy GPX fájl. Kérlek válassz egy helyes GPX fájlt.</string>
     <string name="gpx_import_error_unreadable_message">A kiválasztott fájlt nem lehet beolvasni. Kérlek válassz egy helyes GPX fájlt.</string>
 
-    <string name="settings_title">Beállítások</string>
-    <string name="settings_a11y_back">Vissza</string>
-    <string name="settings_app_name">HuKi</string>
-    <string name="settings_app_description">Hungarian Hiking App</string>
-    <string name="settings_version_pattern">Verzió %s</string>
-    <string name="settings_section_contact">Kapcsolat</string>
-    <string name="settings_section_supporters">Támogatók</string>
-    <string name="settings_item_email">Email</string>
-    <string name="settings_item_facebook">Facebook</string>
-    <string name="settings_item_facebook_description">Csatlakozz hírekért és tippekért</string>
-    <string name="settings_item_github">GitHub repository</string>
-    <string name="settings_item_github_description">A HuKi nyílt forráskódú szoftver</string>
-    <string name="settings_item_location_iq">Location IQ</string>
-    <string name="settings_item_location_iq_description">A LocationIQ egy kibővített ingyenes geocoding csomaggal támogatja az appot.</string>
-    <string name="settings_a11y_app_icon">HuKi alkalmazás ikon</string>
-    <string name="settings_a11y_open_email">Email küldése</string>
-    <string name="settings_a11y_open_facebook">Facebook oldal megnyitása</string>
-    <string name="settings_a11y_open_github">GitHub repository megnyitása</string>
-    <string name="settings_a11y_open_location_iq">Location IQ weboldal megnyitása</string>
-    <string name="settings_contact_email">huki.app@gmail.com</string>
-    <string name="settings_email_subject">[HuKi]</string>
-    <string name="settings_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
-    <string name="settings_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
-    <string name="settings_location_iq_url">https://locationiq.com/</string>
+    <string name="menu_title">Menü</string>
+    <string name="menu_a11y_back">Vissza</string>
+    <string name="menu_app_name">HuKi</string>
+    <string name="menu_app_description">Hungarian Hiking App</string>
+    <string name="menu_version_pattern">Verzió %s</string>
+    <string name="menu_item_gpx_collection">GPX gyűjtemény</string>
+    <string name="menu_item_gpx_collection_description">Importált útvonalaid egy helyen</string>
+    <string name="menu_a11y_open_gpx_collection">GPX gyűjtemény megnyitása</string>
+    <string name="menu_section_contact">Kapcsolat</string>
+    <string name="menu_section_supporters">Támogatók</string>
+    <string name="menu_item_email">Email</string>
+    <string name="menu_item_facebook">Facebook</string>
+    <string name="menu_item_facebook_description">Csatlakozz hírekért és tippekért</string>
+    <string name="menu_item_github">GitHub repository</string>
+    <string name="menu_item_github_description">A HuKi nyílt forráskódú szoftver</string>
+    <string name="menu_item_location_iq">Location IQ</string>
+    <string name="menu_item_location_iq_description">A LocationIQ egy kibővített ingyenes geocoding csomaggal támogatja az appot.</string>
+    <string name="menu_a11y_app_icon">HuKi alkalmazás ikon</string>
+    <string name="menu_a11y_open_email">Email küldése</string>
+    <string name="menu_a11y_open_facebook">Facebook oldal megnyitása</string>
+    <string name="menu_a11y_open_github">GitHub repository megnyitása</string>
+    <string name="menu_a11y_open_location_iq">Location IQ weboldal megnyitása</string>
+    <string name="menu_contact_email">huki.app@gmail.com</string>
+    <string name="menu_email_subject">[HuKi]</string>
+    <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
+    <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
+    <string name="menu_location_iq_url">https://locationiq.com/</string>
+
+    <string name="gpx_collection_title">GPX gyűjtemény</string>
+    <string name="gpx_collection_subtitle_pattern">%d útvonal</string>
+    <string name="gpx_collection_subtitle_single">%d útvonal</string>
+    <string name="gpx_collection_subtitle_empty">Még nincs importált útvonalad vagy útvonalterved</string>
+    <string name="gpx_collection_date_today">Ma</string>
+    <string name="gpx_collection_date_yesterday">Tegnap</string>
+    <string name="gpx_collection_empty_title">Üres a GPX gyűjteményed</string>
+    <string name="gpx_collection_empty_message">Az importált GPX fájljaid és útvonalterveid itt jelennek meg a jövőben. Importálj egy útvonalat a kezdéshez.</string>
+    <string name="gpx_collection_empty_action">GPX útmutató megnyitása</string>
+    <string name="gpx_collection_a11y_back">Vissza</string>
+    <string name="gpx_collection_a11y_help">GPX útmutató</string>
+    <string name="gpx_collection_a11y_options">További lehetőségek</string>
+    <string name="gpx_collection_action_rename">Átnevezés</string>
+    <string name="gpx_collection_action_share">Megosztás</string>
+    <string name="gpx_collection_action_delete">Törlés</string>
+    <string name="gpx_collection_delete_dialog_title">Törlöd a GPX fájlt?</string>
+    <string name="gpx_collection_delete_dialog_message">A(z) „%s” véglegesen törlődik a gyűjteményedből.</string>
+    <string name="gpx_collection_delete_dialog_cancel">Mégse</string>
+
+    <string name="gpx_tutorial_title">GPX Útmutató</string>
+    <string name="gpx_tutorial_a11y_back">Vissza</string>
+    <string name="gpx_tutorial_what_title">Mi az a GPX fájl?</string>
+    <string name="gpx_tutorial_what_message">A GPX fájl útvonalakat és pontokat tárol. Jól ismert, nyílt formátum, amelyet a túrázók használnak útvonalak rögzítésére és navigációra.</string>
+    <string name="gpx_tutorial_steps_section">Hogyan importálhatunk egy GPX fájlt</string>
+    <string name="gpx_tutorial_step_1_title">Böngéssz egy túragyűjtő weboldalt</string>
+    <string name="gpx_tutorial_step_1_message">A személyes kedvenceim:</string>
+    <string name="gpx_tutorial_step_2_title">Keresd a GPX export/letöltés gombot</string>
+    <string name="gpx_tutorial_step_2_message">Általában az útvonal térképe mellett található. Előfordulhat, hogy regisztrációhoz kötött.</string>
+    <string name="gpx_tutorial_step_3_title">Töltsd le a GPX fájlt a telefonodra</string>
+    <string name="gpx_tutorial_step_3_message">Mentsd el a weboldalról — a Fájlok vagy a Letöltések közé kerül.</string>
+    <string name="gpx_tutorial_step_4_title">Nyisd meg a fájlt a HuKi-val</string>
+    <string name="gpx_tutorial_step_4_message">Koppints a GPX fájlra, válaszd a Megosztást, majd a HuKi-t. Az útvonal ezután megjelenik a GPX gyűjteményedben.</string>
+    <string name="gpx_tutorial_recommended_aktivkalandor">Aktív Kalandor</string>
+    <string name="gpx_tutorial_recommended_termeszetjaro">Természetjáró</string>
+    <string name="gpx_tutorial_recommended_kirandulastippek">Kirándulástippek</string>
+    <string name="gpx_tutorial_recommended_aktivkalandor_url">https://aktivkalandor.hu/turak-a-terkepen/</string>
+    <string name="gpx_tutorial_recommended_termeszetjaro_url">https://www.termeszetjaro.hu</string>
+    <string name="gpx_tutorial_recommended_kirandulastippek_url">https://kirandulastippek.hu</string>
+    <string name="gpx_tutorial_terms">Felhasználási feltételek</string>
+    <string name="gpx_tutorial_a11y_open_collection">%s megnyitása</string>
 
     <string name="place_category_group_travel">Közlekedés</string>
     <string name="place_category_group_nature">Természet</string>

@@ -1,13 +1,16 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.UnreadableGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.domain.toGpxFileItem
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
 import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
@@ -15,7 +18,9 @@ import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
 import hu.mostoha.mobile.kmp.huki.util.isCloseWithThreshold
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.lastModified
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.readString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,22 +30,37 @@ import org.maplibre.spatialk.gpx.Gpx
 import org.maplibre.spatialk.gpx.Waypoint
 import org.maplibre.spatialk.units.extensions.meters
 
-open class DefaultGpxRepository : GpxRepository {
+open class DefaultGpxRepository(private val gpxStorage: GpxStorage) : GpxRepository {
 
-    override suspend fun readGpxFile(uri: String): GpxDetails {
-        return withContext(Dispatchers.IO) {
-            val file = PlatformFile(uri)
-            val xml = readXml(file)
-            val gpx = decodeGpx(xml)
-
-            if (gpx.tracks.isEmpty() && gpx.routes.isEmpty() && gpx.waypoints.isEmpty()) {
-                throw EmptyGpxContentException()
-            }
-
-            val gpxDetails = mapGpxDetails(file.name, uri, gpx)
-
-            return@withContext gpxDetails
+    override suspend fun readGpxFile(uri: String): GpxDetails =
+        withContext(Dispatchers.IO) {
+            val file = gpxStorage.saveToFileSystem(uri)
+            parseGpxDetails(file)
         }
+
+    override suspend fun getGpxFiles(): List<GpxFileItem> =
+        withContext(Dispatchers.IO) {
+            gpxStorage.listGpxFiles()
+                .mapNotNull { file ->
+                    runCatching { parseGpxDetails(file).toGpxFileItem(file.lastModified()) }
+                        .onFailure { Logger.e(it) { "GpxCollection: failed to parse ${file.name}" } }
+                        .getOrNull()
+                }
+        }
+
+    override suspend fun deleteGpxFile(fileName: String) {
+        gpxStorage.delete(fileName)
+    }
+
+    private suspend fun parseGpxDetails(file: PlatformFile): GpxDetails {
+        val xml = readXml(file)
+        val gpx = decodeGpx(xml)
+
+        if (gpx.tracks.isEmpty() && gpx.routes.isEmpty() && gpx.waypoints.isEmpty()) {
+            throw EmptyGpxContentException()
+        }
+
+        return mapGpxDetails(file.name, file.path, gpx)
     }
 
     private suspend fun readXml(file: PlatformFile): String =
@@ -69,7 +89,7 @@ open class DefaultGpxRepository : GpxRepository {
 
     private fun hasGpxXmlTag(xml: String): Boolean = xml.trimStart().lowercase().contains("<gpx")
 
-    private fun mapGpxDetails(fileName: String, uri: String, gpx: Document): GpxDetails {
+    private fun mapGpxDetails(fileName: String, filePath: String, gpx: Document): GpxDetails {
         val locations = mapLocations(gpx)
         val edgeLocations = mapEdgeLocations(locations)
         val waypoints = mapGpxWaypoints(gpx.waypoints)
@@ -78,7 +98,7 @@ open class DefaultGpxRepository : GpxRepository {
 
         return GpxDetails(
             fileName = fileName,
-            fileUri = uri,
+            fileUri = filePath,
             title = GpxFormatter.formatTitle(gpx),
             locations = locations,
             waypoints = waypoints + edgeLocations,

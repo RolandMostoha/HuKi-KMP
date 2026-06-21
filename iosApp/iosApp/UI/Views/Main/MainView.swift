@@ -24,13 +24,26 @@ struct MainView: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             mainContent
-                .navigationDestination(for: SettingsRoute.self) { _ in
-                    SettingsView(
+                .navigationDestination(for: MenuRoute.self) { _ in
+                    MenuView(
+                        onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
                         onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+                    )
+                }
+                .navigationDestination(for: GpxCollectionRoute.self) { _ in
+                    GpxCollectionView(
+                        onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
+                        onOpenGpx: { uri in
+                            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                            navigationPath = NavigationPath()
+                        }
                     )
                 }
                 .navigationDestination(for: LocationIqRoute.self) { _ in
                     LocationIqView()
+                }
+                .navigationDestination(for: GpxTutorialRoute.self) { _ in
+                    GpxTutorialView()
                 }
         }
     }
@@ -67,8 +80,8 @@ struct MainView: View {
                         onSearchTap: {
                             viewModel.onEvent(event: MainUiEventsSearchClicked.shared)
                         },
-                        onSettingsClick: {
-                            navigationPath.append(SettingsRoute.settings)
+                        onMenuClick: {
+                            navigationPath.append(MenuRoute.menu)
                         }
                     )
                     .padding(.bottom, isLandscape ? 12 : 0)
