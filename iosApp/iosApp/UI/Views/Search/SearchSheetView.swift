@@ -57,24 +57,48 @@ struct SearchSheetView: View {
                 attributionRow
             }
             .contentMargins(.top, headerHeight, for: .scrollContent)
-        } else if uiState.searchText.isEmpty && !uiState.topDestinations.isEmpty {
-            ScrollView {
-                DestinationsSectionView(
-                    strings: strings,
-                    destinations: uiState.topDestinations,
-                    onDestinationSelected: { destination in
-                        isSearchFieldFocused = false
-                        onDestinationSelected(destination)
-                    }
-                )
-                .padding(.top, 8)
-                .padding(.bottom, 24)
-            }
-            .contentMargins(.top, headerHeight, for: .scrollContent)
-            .scrollDismissesKeyboard(.interactively)
+        } else if uiState.searchText.isEmpty &&
+            (!uiState.topDestinations.isEmpty || !uiState.recentGpxFiles.isEmpty) {
+            discoveryList(uiState: uiState)
         } else {
             Color.clear
         }
+    }
+
+    @ViewBuilder
+    private func discoveryList(uiState: PlaceFinderUiState) -> some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                if !uiState.topDestinations.isEmpty {
+                    DestinationsSectionView(
+                        strings: strings,
+                        destinations: uiState.topDestinations,
+                        onDestinationSelected: { destination in
+                            isSearchFieldFocused = false
+                            onDestinationSelected(destination)
+                        }
+                    )
+                    .padding(.top, 8)
+                }
+                if !uiState.recentGpxFiles.isEmpty {
+                    RecentGpxSectionView(
+                        strings: strings,
+                        files: uiState.recentGpxFiles,
+                        onFileSelected: { file in
+                            isSearchFieldFocused = false
+                            onGpxFileSelected(file.fileUri)
+                        },
+                        onSeeAllClicked: {
+                            isSearchFieldFocused = false
+                            onSeeAllGpxClicked()
+                        }
+                    )
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .contentMargins(.top, headerHeight, for: .scrollContent)
+        .scrollDismissesKeyboard(.interactively)
     }
 
     @ViewBuilder
