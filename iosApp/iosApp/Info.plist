@@ -15,6 +15,43 @@
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>GPX Track</string>
+            <key>LSHandlerRank</key>
+            <string>Default</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.topografix.gpx</string>
+            </array>
+        </dict>
+    </array>
+    <key>UTImportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.topografix.gpx</string>
+            <key>UTTypeDescription</key>
+            <string>GPX Track</string>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.xml</string>
+            </array>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>gpx</string>
+                </array>
+                <key>public.mime-type</key>
+                <array>
+                    <string>application/gpx+xml</string>
+                </array>
+            </dict>
+        </dict>
+    </array>
 #if DEBUG
     <!-- Debug-only: expose to Files app for test GPX files. In Release builds sandbox is private -->
     <key>UIFileSharingEnabled</key>

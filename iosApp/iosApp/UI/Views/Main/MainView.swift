@@ -46,6 +46,9 @@ struct MainView: View {
                     GpxTutorialView()
                 }
         }
+        .onOpenURL { url in
+            handleIncomingGpx(url)
+        }
     }
 
     private var mainContent: some View {
@@ -221,6 +224,23 @@ struct MainView: View {
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         case .showGpxFilePicker:
             showFileImporter = true
+        }
+    }
+
+    private func handleIncomingGpx(_ url: URL) {
+        let needsAccess = url.startAccessingSecurityScopedResource()
+        defer { if needsAccess { url.stopAccessingSecurityScopedResource() } }
+        let tempDir = FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let destination = tempDir.appendingPathComponent(url.lastPathComponent)
+        do {
+            try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            try FileManager.default.copyItem(at: url, to: destination)
+            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString))
+            navigationPath = NavigationPath()
+        } catch {
+            print("Failed to copy incoming GPX file: \(error)")
         }
     }
 }
