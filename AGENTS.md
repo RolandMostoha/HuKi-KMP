@@ -11,6 +11,7 @@
 ./gradlew :composeApp:lint                    # Run Android Lint
 ./gradlew :composeApp:connectedAndroidTest    # Run instrumented tests (requires emulator/device)
 ```
+- Android Studio: **"All Instrumented Tests"** run config (`.idea/runConfigurations/All_Instrumented_Tests.xml`) runs every instrumented test in `composeApp` on a connected device/emulator with the native test UI.
 
 ### iOS
 Build on Booted device:
@@ -38,6 +39,7 @@ Lint:
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Use for: "upload test gpx files (iOS)", or before running Maestro tests on iOS.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
+- `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android
 - `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
@@ -46,7 +48,9 @@ Lint:
 - `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
 
 ### Cross-platform
-- `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — run all `.maestro/maestro_*.yaml` tests against the given app and device. Auto-uploads GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Use for: "run maestro tests", "run E2E tests".
+- `android_run_all_maestro_tests.sh [device-serial]` — run all `.maestro/maestro_*.yaml` tests against the Android app. Defaults to the first connected adb device. Use for: "run maestro tests (Android)", "run E2E tests (Android)".
+- `ios_run_all_maestro_tests.sh [simulator-udid]` — run all `.maestro/maestro_*.yaml` tests against the iOS app. Defaults to the currently booted simulator. Use for: "run maestro tests (iOS)", "run E2E tests (iOS)".
+- `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — engine that runs all `.maestro/maestro_*.yaml` tests against the given app and device, auto-uploading GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Prefer the platform wrappers above, which fill in the APP_ID and booted device for you.
 
 ## Project Overview
 - **Domain**: Hiking application for Hungarian landscapes, trails, destinations.

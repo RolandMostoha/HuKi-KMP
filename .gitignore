@@ -4,7 +4,10 @@
 **/build/
 xcuserdata
 !src/**/build/
-.idea
+.idea/*
+!.idea/runConfigurations/
+.idea/runConfigurations/*
+!.idea/runConfigurations/*.xml
 .DS_Store
 captures
 .externalNativeBuild
