@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
+import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -31,7 +32,7 @@ class DefaultGpxMetadataStoreTest {
     fun givenRecordedMark_whenReadByNewStore_thenMarkPersisted() {
         runTest {
             val openedAt = Instant.fromEpochSeconds(1_700_000_000)
-            DefaultGpxMetadataStore().recordOpened("track-1", openedAt)
+            DefaultGpxMetadataStore().recordOpened(entry("track-1", openedAt))
 
             val metadata = DefaultGpxMetadataStore().getMetadata()
 
@@ -61,17 +62,46 @@ class DefaultGpxMetadataStoreTest {
     }
 
     @Test
-    fun givenMultipleAttributes_whenClear_thenStaleAttributesRemoved() {
+    fun givenMultipleAttributes_whenRemove_thenStaleAttributesRemoved() {
         runTest {
             val store = DefaultGpxMetadataStore()
-            store.recordOpened("track-1", Instant.fromEpochSeconds(1_700_000_000))
-            store.recordOpened("track-2", Instant.fromEpochSeconds(1_700_000_100))
+            store.recordOpened(entry("track-1", Instant.fromEpochSeconds(1_700_000_000)))
+            store.recordOpened(entry("track-2", Instant.fromEpochSeconds(1_700_000_100)))
 
-            store.clear(setOf("track-1"))
+            store.remove(setOf("track-1"))
 
             val metadata = DefaultGpxMetadataStore().getMetadata()
             metadata.gpxFiles shouldHaveSize 1
             metadata.gpxFiles.first().trackId shouldBe "track-1"
         }
     }
+
+    @Test
+    fun givenMultipleAttributes_whenRemoveByFileName_thenOnlyMatchingRemoved() {
+        runTest {
+            val store = DefaultGpxMetadataStore()
+            store.recordOpened(entry("track-1", Instant.fromEpochSeconds(1_700_000_000)))
+            store.recordOpened(entry("track-2", Instant.fromEpochSeconds(1_700_000_100)))
+
+            store.remove("track-1.gpx")
+
+            val metadata = DefaultGpxMetadataStore().getMetadata()
+            metadata.gpxFiles shouldHaveSize 1
+            metadata.gpxFiles.first().trackId shouldBe "track-2"
+        }
+    }
+
+    private fun entry(trackId: String, openedAt: Instant): GpxMetadataEntry =
+        GpxMetadataEntry(
+            trackId = trackId,
+            lastOpened = openedAt.toIsoOffsetString(),
+            lastModified = openedAt.toIsoOffsetString(),
+            fileName = "$trackId.gpx",
+            fileUri = "uri/$trackId.gpx",
+            title = "Title of $trackId",
+            distanceMeters = 1000.0,
+            travelTimeSeconds = 3600,
+            incline = 100,
+            decline = 100,
+        )
 }

@@ -2,9 +2,9 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hu.mostoha.mobile.kmp.huki.model.domain.toPlaceSearchResult
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
-import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository

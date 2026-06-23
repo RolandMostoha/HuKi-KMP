@@ -3,7 +3,6 @@ package hu.mostoha.mobile.kmp.huki.repository
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
-import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.createDirectories
@@ -18,7 +17,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlin.time.Instant
 
 /**
  * JSON-backed [GpxMetadataStore] persisting to `FileKit.filesDir/gpx/metadata.json`.
@@ -29,13 +27,13 @@ class DefaultGpxMetadataStore : GpxMetadataStore {
     private val mutex = Mutex()
     private var cache: GpxMetadataModel? = null
 
-    override suspend fun recordOpened(trackId: String, openedAt: Instant) {
+    override suspend fun recordOpened(entry: GpxMetadataEntry) {
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 val model = loadLocked()
                 val gpxFiles = model.gpxFiles
-                    .filterNot { it.trackId == trackId }
-                    .plus(GpxMetadataEntry(trackId, openedAt.toIsoOffsetString()))
+                    .filterNot { it.trackId == entry.trackId }
+                    .plus(entry)
 
                 persistLocked(model.copy(gpxFiles = gpxFiles))
             }
@@ -49,11 +47,23 @@ class DefaultGpxMetadataStore : GpxMetadataStore {
             }
         }
 
-    override suspend fun clear(trackIds: Set<String>) {
+    override suspend fun remove(trackIds: Set<String>) {
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 val model = loadLocked()
                 val gpxFiles = model.gpxFiles.filter { it.trackId in trackIds }
+                if (gpxFiles.size != model.gpxFiles.size) {
+                    persistLocked(model.copy(gpxFiles = gpxFiles))
+                }
+            }
+        }
+    }
+
+    override suspend fun remove(fileName: String) {
+        withContext(Dispatchers.IO) {
+            mutex.withLock {
+                val model = loadLocked()
+                val gpxFiles = model.gpxFiles.filterNot { it.fileName == fileName }
                 if (gpxFiles.size != model.gpxFiles.size) {
                     persistLocked(model.copy(gpxFiles = gpxFiles))
                 }

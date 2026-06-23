@@ -79,8 +79,9 @@ Lint:
 
 ## GPX Storage
 - Imported GPX files are copied into the app sandbox at `FileKit.filesDir/gpx/external` on first import, so they can be reused without re-import and shared via stable paths.
+- Only valid GPXs live in the sandbox: `readGpxFile` validates the picked file (`GpxStorage.readSource`) before committing it (`GpxStorage.save`), so nothing is persisted when it can't be read or parsed; `getGpxFiles` deletes any sandbox file that later fails to parse (corruption). Callers therefore never have to render a broken file.
 - `GpxStorage` (commonMain) owns the sandbox: copy-if-absent, list, delete.
-- `GpxMetadataStore` (commonMain) persists lightweight per-GPX-file attributes to `FileKit.filesDir/gpx/metadata.json`, keyed by a content-derived `trackId` (FNV-1a hash via `ByteArray.toGpxTrackId()`, survives renames). It records `lastOpened` on every `readGpxFile` (import or re-open). Stats are never stored — they are regenerated from files — so a missing/corrupt store rebuilds as empty. Powers the "Recent GPX files" section in Search and the recency sort in GPX Collection.
+- `GpxMetadataStore` (commonMain) persists per-GPX-file attributes to `FileKit.filesDir/gpx/metadata.json`, keyed by a content-derived `trackId` (FNV-1a hash via `ByteArray.toGpxTrackId()`, survives renames). On every `readGpxFile` (import or re-open) it records `lastOpened` plus a cached snapshot of the display stats (fileName, fileUri, title, distance, travel time, incline, decline). A missing/corrupt store rebuilds as empty, repopulating as files are opened. `getRecentGpxFiles` is served entirely from this cache (no file I/O); `getGpxFiles` reads each file once (deriving both the XML and the `trackId` from one read) and prunes entries whose file is gone — including the invalid files it just deleted. Powers the "Recent GPX files" section in Search and the recency sort in GPX Collection.
 
 ## Chores
 
@@ -215,6 +216,12 @@ UI → UiEvent → ViewModel → UiState
 - Use `kotlin.time.Duration` for duration.
 - Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for shared strings, colors, fonts.
 - SharedDimens: dimension values which shared as a 1-1 mapping with Android DP vs iOS Point
+
+### Mappers
+- Type mappers between layers (data↔domain, domain↔domain, platform↔domain) are **top-level extension functions** named `to<Target>()`, grouped by the domain concept they map in `model/mapper/<Concept>Mapper.kt` (e.g. `GpxMapper.kt`, `MapboxMapper.kt`).
+- Do **not** place mappers on the model classes themselves: a `model/data` class must not import `model/domain` types (and vice versa), so co-locating a mapper in the model file leaks a cross-layer dependency.
+- Keep mappers out of repositories/ViewModels — they belong in `model/mapper` so they stay reusable and unit-testable.
+- Use an injectable Mapper **class** (Koin) only when the mapping needs a dependency (formatter, locale, clock, resource provider).
 
 ### Unit tests
 - Use `Given X, When Y, Then Z`

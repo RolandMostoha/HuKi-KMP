@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -34,11 +35,11 @@ class DefaultGpxStorageTest {
     }
 
     @Test
-    fun givenNewFile_whenSaveToFileSystem_thenFileCopiedAndPathReturned() {
+    fun givenNewFile_whenSave_ToSandbox_thenFileWrittenAndPathReturned() {
         runTest {
             val uri = writeSourceFile("track.gpx", "content-a")
 
-            val imported = storage.saveToFileSystem(uri.toString())
+            val imported = storage.saveToSandbox(storage.readGpx(uri.toString()))
 
             imported.name shouldBe "track.gpx"
             File(sandboxDir, "track.gpx").exists() shouldBe true
@@ -51,8 +52,8 @@ class DefaultGpxStorageTest {
         runTest {
             val uri = writeSourceFile("track.gpx", "content-a")
 
-            val first = storage.saveToFileSystem(uri.toString())
-            val second = storage.saveToFileSystem(uri.toString())
+            val first = importFile(uri)
+            val second = importFile(uri)
 
             second.name shouldBe first.name
             sandboxDir.listFiles().orEmpty() shouldHaveSize 1
@@ -62,11 +63,8 @@ class DefaultGpxStorageTest {
     @Test
     fun givenSameNameDifferentContent_whenImport_thenNameSuffixed() {
         runTest {
-            val firstUri = writeSourceFile("track.gpx", "content-a")
-            val first = storage.saveToFileSystem(firstUri.toString())
-
-            val secondUri = writeSourceFile("track.gpx", "content-b")
-            val second = storage.saveToFileSystem(secondUri.toString())
+            val first = importFile(writeSourceFile("track.gpx", "content-a"))
+            val second = importFile(writeSourceFile("track.gpx", "content-b"))
 
             first.name shouldBe "track.gpx"
             second.name shouldBe "track (2).gpx"
@@ -77,8 +75,8 @@ class DefaultGpxStorageTest {
     @Test
     fun givenImportedFiles_whenListGpxFiles_thenAllReturned() {
         runTest {
-            storage.saveToFileSystem(writeSourceFile("a.gpx", "a").toString())
-            storage.saveToFileSystem(writeSourceFile("b.gpx", "b").toString())
+            importFile(writeSourceFile("a.gpx", "a"))
+            importFile(writeSourceFile("b.gpx", "b"))
 
             val files = storage.listGpxFiles()
 
@@ -89,13 +87,15 @@ class DefaultGpxStorageTest {
     @Test
     fun givenImportedFile_whenDelete_thenFileRemoved() {
         runTest {
-            storage.saveToFileSystem(writeSourceFile("track.gpx", "content-a").toString())
+            importFile(writeSourceFile("track.gpx", "content-a"))
 
             storage.delete("track.gpx")
 
             File(sandboxDir, "track.gpx").exists() shouldBe false
         }
     }
+
+    private suspend fun importFile(uri: Uri): PlatformFile = storage.saveToSandbox(storage.readGpx(uri.toString()))
 
     private fun writeSourceFile(fileName: String, content: String): Uri {
         val file = File(appContext.cacheDir, fileName).apply { writeText(content) }

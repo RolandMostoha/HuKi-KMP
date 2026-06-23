@@ -17,6 +17,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import dev.icerock.moko.permissions.compose.BindEffect
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
@@ -48,6 +50,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
+import hu.mostoha.mobile.kmp.huki.util.rememberScopedViewModelStoreOwner
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -173,31 +176,35 @@ private fun MainContent(
                     )
                 }
                 is Sheet.Search -> {
-                    SearchBottomSheet(
-                        onCloseClick = {
-                            coroutineScope.launch { standardSheetState.hide() }
-                        },
-                        onPlaceSelected = { place ->
-                            coroutineScope.launch {
-                                standardSheetState.hide()
-                                onEvent(MainUiEvents.SearchPlaceSelected(place))
-                            }
-                        },
-                        onDestinationSelected = { destination ->
-                            coroutineScope.launch {
-                                standardSheetState.hide()
-                                onEvent(MainUiEvents.SearchDestinationSelected(destination))
-                            }
-                        },
-                        onGpxFileSelected = { fileUri ->
-                            coroutineScope.launch {
-                                standardSheetState.hide()
-                                onEvent(MainUiEvents.GpxFileSelected(fileUri))
-                            }
-                        },
-                        onSeeAllGpxClicked = onGpxCollectionClicked,
-                        onLocationIqClicked = onLocationIqClicked,
-                    )
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
+                    ) {
+                        SearchBottomSheet(
+                            onCloseClick = {
+                                coroutineScope.launch { standardSheetState.hide() }
+                            },
+                            onPlaceSelected = { place ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.SearchPlaceSelected(place))
+                                }
+                            },
+                            onDestinationSelected = { destination ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.SearchDestinationSelected(destination))
+                                }
+                            },
+                            onGpxFileSelected = { fileUri ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.GpxFileSelected(fileUri))
+                                }
+                            },
+                            onSeeAllGpxClicked = onGpxCollectionClicked,
+                            onLocationIqClicked = onLocationIqClicked,
+                        )
+                    }
                 }
                 else -> Unit
             }

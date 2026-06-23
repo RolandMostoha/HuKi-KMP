@@ -1,7 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
-import kotlin.time.Instant
 
 /**
  * Persists lightweight attributes for imported GPX files, keyed by a content-derived
@@ -10,9 +10,9 @@ import kotlin.time.Instant
 interface GpxMetadataStore {
 
     /**
-     * Records the moment a track was opened (first import or re-open). Overwrites any earlier value.
+     * Records a freshly opened track, overwriting any earlier entry with the same trackId.
      */
-    suspend fun recordOpened(trackId: String, openedAt: Instant)
+    suspend fun recordOpened(entry: GpxMetadataEntry)
 
     /**
      * @return the full [GpxMetadataModel] so callers can pick the attributes they need.
@@ -22,5 +22,10 @@ interface GpxMetadataStore {
     /**
      * Drops attributes whose trackId is not present in [trackIds] (files that no longer exist).
      */
-    suspend fun clear(trackIds: Set<String>)
+    suspend fun remove(trackIds: Set<String>)
+
+    /**
+     * Drops the attributes of a single deleted file, matched by its sandbox [fileName].
+     */
+    suspend fun remove(fileName: String)
 }

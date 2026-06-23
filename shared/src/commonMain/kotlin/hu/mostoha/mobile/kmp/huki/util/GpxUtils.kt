@@ -6,8 +6,7 @@ private const val HEX_RADIX = 16
 private const val TRACK_ID_LENGTH = 16
 
 /**
- * Stable content hash (FNV-1a, 64-bit) used as a GPX track identifier.
- * Derived purely from file bytes, so it survives file renames.
+ * Stable FNV-1a 64-bit content hash used as a GPX track id; survives file renames.
  */
 fun ByteArray.toGpxTrackId(): String {
     var hash = FNV_64_OFFSET_BASIS
