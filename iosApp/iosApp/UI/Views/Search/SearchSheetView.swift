@@ -9,46 +9,16 @@ struct SearchSheetView: View {
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
+    @State private var headerHeight: CGFloat = 80
     @FocusState private var isSearchFieldFocused: Bool
 
     var body: some View {
         Observing(viewModel.uiState) { uiState in
-            VStack(spacing: 0) {
-                searchBar(uiState: uiState)
-                if uiState.isLoading || !uiState.places.isEmpty || uiState.error != nil {
-                    attributionRow(isLoading: uiState.isLoading)
-                }
-                if !uiState.places.isEmpty {
-                    resultsList(places: uiState.places)
-                } else if let error = uiState.error {
-                    InfoView(
-                        strings: strings,
-                        infoViewData: error,
-                        primaryActionText: strings.get(id: SharedRes.strings().search_error_retry),
-                        onPrimaryActionClick: {
-                            viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
-                        }
-                    )
-                    .padding(.top, 32)
-                    .padding(.horizontal, 16)
-                    Spacer(minLength: 0)
-                } else if uiState.searchText.isEmpty && !uiState.topDestinations.isEmpty {
-                    ScrollView {
-                        DestinationsSectionView(
-                            strings: strings,
-                            destinations: uiState.topDestinations,
-                            onDestinationSelected: { destination in
-                                isSearchFieldFocused = false
-                                onDestinationSelected(destination)
-                            }
-                        )
-                        .padding(.top, 38)
-                        .padding(.bottom, 24)
-                    }
-                    .scrollDismissesKeyboard(.interactively)
-                } else {
-                    Spacer(minLength: 0)
-                }
+            ZStack(alignment: .top) {
+                content(uiState: uiState)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                header(uiState: uiState)
+                loadingIndicator(uiState: uiState)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color(.systemGray6))
@@ -58,6 +28,79 @@ struct SearchSheetView: View {
             .onDisappear {
                 viewModel.clear()
             }
+        }
+    }
+
+    @ViewBuilder
+    private func content(uiState: PlaceFinderUiState) -> some View {
+        if !uiState.places.isEmpty {
+            resultsList(places: uiState.places)
+        } else if let error = uiState.error {
+            ScrollView {
+                attributionRow
+                InfoView(
+                    strings: strings,
+                    infoViewData: error,
+                    primaryActionText: strings.get(id: SharedRes.strings().search_error_retry),
+                    onPrimaryActionClick: {
+                        viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
+                    }
+                )
+                .padding(.top, 32)
+                .padding(.horizontal, 16)
+            }
+            .contentMargins(.top, headerHeight, for: .scrollContent)
+        } else if uiState.isLoading {
+            ScrollView {
+                attributionRow
+            }
+            .contentMargins(.top, headerHeight, for: .scrollContent)
+        } else if uiState.searchText.isEmpty && !uiState.topDestinations.isEmpty {
+            ScrollView {
+                DestinationsSectionView(
+                    strings: strings,
+                    destinations: uiState.topDestinations,
+                    onDestinationSelected: { destination in
+                        isSearchFieldFocused = false
+                        onDestinationSelected(destination)
+                    }
+                )
+                .padding(.top, 8)
+                .padding(.bottom, 24)
+            }
+            .contentMargins(.top, headerHeight, for: .scrollContent)
+            .scrollDismissesKeyboard(.interactively)
+        } else {
+            Color.clear
+        }
+    }
+
+    @ViewBuilder
+    private func header(uiState: PlaceFinderUiState) -> some View {
+        searchBar(uiState: uiState)
+        .padding(.bottom, 8)
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .onAppear { headerHeight = geometry.size.height }
+                    .onChange(of: geometry.size.height) { _, newValue in
+                        headerHeight = newValue
+                    }
+            }
+        )
+    }
+
+    @ViewBuilder
+    private func loadingIndicator(uiState: PlaceFinderUiState) -> some View {
+        if uiState.isLoading || !uiState.places.isEmpty || uiState.error != nil {
+            ProgressView()
+                .controlSize(.regular)
+                .opacity(uiState.isLoading ? 1 : 0)
+                .frame(height: 28)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, headerHeight + 10)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .allowsHitTesting(false)
         }
     }
 
@@ -93,7 +136,7 @@ struct SearchSheetView: View {
         .padding(.leading, 48)
         .padding(.trailing, uiState.searchText.isEmpty ? 16 : 44)
         .padding(.vertical, 14)
-        .background(Color(.systemBackground), in: .capsule)
+        .glassBackground()
         .overlay(alignment: .leading) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 18, weight: .semibold))
@@ -136,21 +179,15 @@ struct SearchSheetView: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.primary)
                 .padding(12)
-                .background(
-                    Circle().fill(Color(.systemBackground))
-                )
+                .glassBackground()
         })
         .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
     }
 
     @ViewBuilder
-    private func attributionRow(isLoading: Bool) -> some View {
+    private var attributionRow: some View {
         HStack(spacing: 8) {
             Spacer()
-            if isLoading {
-                ProgressView()
-                    .scaleEffect(0.8)
-            }
             Button(action: onLocationIqClicked) {
                 HStack(spacing: 8) {
                     Text(strings.get(id: SharedRes.strings().search_powered_by))
@@ -173,6 +210,7 @@ struct SearchSheetView: View {
     @ViewBuilder
     private func resultsList(places: [Place]) -> some View {
         ScrollView {
+            attributionRow
             LazyVStack(spacing: 0) {
                 ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
                     SearchResultItem(place: place, onClick: {
@@ -192,6 +230,7 @@ struct SearchSheetView: View {
             .padding(.top, 4)
             .padding(.bottom, 24)
         }
+        .contentMargins(.top, headerHeight, for: .scrollContent)
         .scrollDismissesKeyboard(.interactively)
     }
 }
