@@ -34,6 +34,13 @@
 4. iOS Go-Live
 5. Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
+### Go-live remaining features
+
+1. Recent Places -> from LIQ Autocomplete / Destinations
+2. Place Details -> long tap on map AND destinations
+3. Display (distance + time) in an InfoWindow on top Start / End / Waypoint points
+4. While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons
+
 ## Backlog
 
 ### General / tech tasks
@@ -84,7 +91,7 @@
 | Status | Scope  | Task                                                                                                  |
 |--------|--------|-------------------------------------------------------------------------------------------------------|
 | `[L]`  | Search | Recent places - store searched places in local DB. Show them in Search Sheet.                         |
-| `[L]`  | Search | Recent GPX files, show them in Search Sheet. (pre-requisite: GPX files in sandbox)                    |
+| `[x]`  | Search | Recent GPX files, show them in Search Sheet. (pre-requisite: GPX files in sandbox)                    |
 | `[L]`  | Search | iOS: if search sheet is scrolled, the list should hide beneath the search bar in a "liquid glass" way |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                          |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                |
@@ -110,32 +117,35 @@
 
 ### FEATURE: GPX Collection
 
-| Status | Scope         | Task                                                                                                                                                             |
-|--------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | GPXMetadata   | Goal: Populate "Recent GPX files" section in Search                                                                                                              |                                                                                                                   |
-| `[L]`  | GPXMetadata   | Save "lastOpened" date-time when user opens (for the first time) or re-opens the GPX file. The current "lastModified" from File is only useful for "importDate". |                                                                                                                   |
-| `[ ]`  | GPXMetadata   | Create a JSON `GpxMetadataStore` (commonMain), in `/gpx/`.                                                                                                       |
-| `[ ]`  | GPXMetadata   | Add a new entry to metadata on GPX import                                                                                                                        |
-| `[ ]`  | GPXMetadata   | The metadata should contain a trackId (unique ID based on file content). File Rename-survival is important                                                       |
-| `[ ]`  | GPXMetadata   | The metadata should contain a lastOpened offset date time in human readable format                                                                               |
-| `[ ]`  | GPXMetadata   | Make the store rebuildable: regenerate stats from files on missing/corrupt; keep only completion marks                                                           |
-| `[L]`  | GPXTutorial   | T&C link                                                                                                                                                         |                                                                                                                   |
-| `[ ]`  | GPXCollection | Implement share                                                                                                                                                  |
-| `[ ]`  | GPXCollection | Implement rename                                                                                                                                                 |
-| `[ ]`  | GPXCollection | "Imported vs Route Planner" badges / chips OR icon to start                                                                                                      |
-| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                          |
-| `[ ]`  | GPXCollection | Filter by distance, open date                                                                                                                                    |
-| `[ ]`  | GPXCollection | "Mark Completed" GPX files                                                                                                                                       |
+| Status | Scope         | Task                                                                                                                                                               |
+|--------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | GPXMetadata   | Goal: Populate "Recent GPX files" section in Search.                                                                                                               |                                                                                                                   |
+| `[x]`  | GPXMetadata   | Save "lastOpened" date-time when user opens (for the first time) or re-opens the GPX file. The current "lastModified" from File is only useful for date of import. |                                                                                                                   |
+| `[x]`  | GPXMetadata   | Create a JSON `GpxMetadataStore` (commonMain), in `/gpx/`.                                                                                                         |
+| `[x]`  | GPXMetadata   | Add a new entry to metadata on GPX import                                                                                                                          |
+| `[x]`  | GPXMetadata   | The metadata should contain a trackId (unique ID based on file content). File Rename-survival is important                                                         |
+| `[x]`  | GPXMetadata   | The metadata should contain a lastOpened offset date time in human readable format                                                                                 |
+| `[x]`  | GPXMetadata   | Make the store rebuildable: regenerate stats from files on missing/corrupt; keep only completion marks                                                             |
+| `[x]`  | Search        | Implement "Recent GPX files" section in Search default state (no-user input state), based on "lastOpened"                                                          |
+| `[ ]`  | GPXMetadata   | Add GPX stats to GpxMetadataEntry as a cache -> no need to re-compute every time                                                                                   |
+| `[L]`  | GPXTutorial   | T&C link                                                                                                                                                           |                                                                                                                   |
+| `[ ]`  | GPXCollection | Implement share                                                                                                                                                    |
+| `[ ]`  | GPXCollection | Implement rename                                                                                                                                                   |
+| `[ ]`  | GPXCollection | "Imported vs Route Planner" badges / chips OR icon to start                                                                                                        |
+| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                            |
+| `[ ]`  | GPXCollection | Filter by distance, open date                                                                                                                                      |
+| `[ ]`  | GPXCollection | "Mark Completed" GPX files                                                                                                                                         |
 
 ### FEATURE: Place Details (from Search + Long Tap)
 
 | Status | Scope        | Task                                                                      |
 |--------|--------------|---------------------------------------------------------------------------|
-| `[ ]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
-| `[ ]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
-| `[ ]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
-| `[ ]`  | PlaceDetails | Show what is already shown with autocomplete: @Place                      |
-| `[ ]`  | PlaceDetails | Search nearby button                                                      |
+| `[L]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
+| `[L]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
+| `[L]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
+| `[L]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
+| `[L]`  | PlaceDetails | Search nearby button                                                      |
+| `[L]`  | PlaceDetails | Show Place Details for Destinations                                       |
 
 ### FEATURE: Settings
 
@@ -155,9 +165,10 @@
 
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                                              |
-|--------|--------------|-------------------------------------------------------------------|
-| `[ ]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations. |
+| Status | Scope        | Task                                                                      |
+|--------|--------------|---------------------------------------------------------------------------|
+| `[ ]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.         |
+| `[ ]`  | Destinations | Add filter options to destinations (popularity, landscape, distance etc.) |
 
 ### FEATURE: Route Planner
 
@@ -215,14 +226,15 @@ Accept plain `.zip` as a fallback. Import merge reuses existing dedup
 
 ## Completed
 
-| Feature        | Notes                                     |
-|----------------|-------------------------------------------|
-| Map            | Mapbox                                    |
-| My location    | Mapbox + Google Fused Location Provider   |
-| Layers         | Mapbox Outdoor, Street, Satellite, Hiking |
-| Search         | Place Autocomplete, Destinations          |
-| GPX            | GPX Import, added in Layers               |
-| GPX Details    | GPX Details Sheet with basic info         |
-| GPX Menu       | GPX Visibility, Overview, Clear           |
-| GPX Collection | GPX File list view, GPX Tutorial screen   |
-| Settings       | Contact, Supporters                       |
+| Feature        | Notes                                         |
+|----------------|-----------------------------------------------|
+| Map            | Mapbox                                        |
+| My location    | Mapbox + Google Fused Location Provider       |
+| Layers         | Mapbox Outdoor, Street, Satellite, Hiking     |
+| Search         | Place Autocomplete, Destinations, Recent GPXs |
+| GPX            | GPX Import, added in Layers                   |
+| GPX Details    | GPX Details Sheet with basic info             |
+| GPX Menu       | GPX Visibility, Overview, Clear               |
+| GPX Collection | GPX File list view, GPX Tutorial screen       |
+| GPX Metadata   | Store GPX Metadata in a JSON                  |
+| Settings       | Contact, Supporters                           |

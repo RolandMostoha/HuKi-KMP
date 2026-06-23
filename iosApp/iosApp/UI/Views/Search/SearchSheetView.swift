@@ -6,6 +6,8 @@ struct SearchSheetView: View {
     let onDismiss: () -> Void
     let onPlaceSelected: (Place) -> Void
     let onDestinationSelected: (Destination) -> Void
+    let onGpxFileSelected: (String) -> Void
+    let onSeeAllGpxClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()

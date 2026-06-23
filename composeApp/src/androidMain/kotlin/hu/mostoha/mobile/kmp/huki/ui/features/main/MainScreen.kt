@@ -58,6 +58,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MainScreen(
     onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
+    onGpxCollectionClicked: () -> Unit,
     openGpxUri: String? = null,
     onOpenGpxConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
@@ -80,6 +81,7 @@ fun MainScreen(
         onEvent = viewModel::onEvent,
         onMenuClicked = onMenuClicked,
         onLocationIqClicked = onLocationIqClicked,
+        onGpxCollectionClicked = onGpxCollectionClicked,
     )
 }
 
@@ -91,6 +93,7 @@ private fun MainContent(
     onEvent: (MainUiEvents) -> Unit,
     onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
+    onGpxCollectionClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -186,6 +189,13 @@ private fun MainContent(
                                 onEvent(MainUiEvents.SearchDestinationSelected(destination))
                             }
                         },
+                        onGpxFileSelected = { fileUri ->
+                            coroutineScope.launch {
+                                standardSheetState.hide()
+                                onEvent(MainUiEvents.GpxFileSelected(fileUri))
+                            }
+                        },
+                        onSeeAllGpxClicked = onGpxCollectionClicked,
                         onLocationIqClicked = onLocationIqClicked,
                     )
                 }
@@ -293,6 +303,7 @@ private fun MainContentPreview() {
             onEvent = {},
             onMenuClicked = {},
             onLocationIqClicked = {},
+            onGpxCollectionClicked = {},
         )
     }
 }
@@ -308,6 +319,7 @@ private fun MainContentLoadingPreview() {
             onEvent = {},
             onMenuClicked = {},
             onLocationIqClicked = {},
+            onGpxCollectionClicked = {},
         )
     }
 }

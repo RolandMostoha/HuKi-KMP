@@ -17,10 +17,13 @@ import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
 import hu.mostoha.mobile.kmp.huki.util.isCloseWithThreshold
+import hu.mostoha.mobile.kmp.huki.util.toGpxTrackId
+import hu.mostoha.mobile.kmp.huki.util.toInstantFromIsoOffset
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.lastModified
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
+import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.readString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -29,24 +32,51 @@ import org.maplibre.spatialk.gpx.Document
 import org.maplibre.spatialk.gpx.Gpx
 import org.maplibre.spatialk.gpx.Waypoint
 import org.maplibre.spatialk.units.extensions.meters
+import kotlin.time.Clock
 
-open class DefaultGpxRepository(private val gpxStorage: GpxStorage) : GpxRepository {
+open class DefaultGpxRepository(
+    private val gpxStorage: GpxStorage,
+    private val metadataStore: GpxMetadataStore,
+) : GpxRepository {
 
     override suspend fun readGpxFile(uri: String): GpxDetails =
         withContext(Dispatchers.IO) {
             val file = gpxStorage.saveToFileSystem(uri)
-            parseGpxDetails(file)
+            val details = parseGpxDetails(file)
+
+            metadataStore.recordOpened(file.readBytes().toGpxTrackId(), Clock.System.now())
+
+            details
         }
 
     override suspend fun getGpxFiles(): List<GpxFileItem> =
         withContext(Dispatchers.IO) {
-            gpxStorage.listGpxFiles()
+            val metadata = metadataStore.getMetadata()
+            val entriesByTrackId = metadata.gpxFiles.associateBy { it.trackId }
+            val items = gpxStorage.listGpxFiles()
                 .mapNotNull { file ->
-                    runCatching { parseGpxDetails(file).toGpxFileItem(file.lastModified()) }
+                    runCatching {
+                        val trackId = file.readBytes().toGpxTrackId()
+                        parseGpxDetails(file).toGpxFileItem(
+                            trackId = trackId,
+                            lastModified = file.lastModified(),
+                            lastOpened = entriesByTrackId[trackId]?.lastOpened?.toInstantFromIsoOffset(),
+                        )
+                    }
                         .onFailure { Logger.e(it) { "GpxCollection: failed to parse ${file.name}" } }
                         .getOrNull()
                 }
+
+            metadataStore.clear(items.map { it.trackId }.toSet())
+
+            items
         }
+
+    override suspend fun getRecentGpxFiles(limit: Int): List<GpxFileItem> =
+        getGpxFiles()
+            .filter { it.lastOpened != null }
+            .sortedByDescending { it.lastOpened }
+            .take(limit)
 
     override suspend fun deleteGpxFile(fileName: String) {
         gpxStorage.delete(fileName)

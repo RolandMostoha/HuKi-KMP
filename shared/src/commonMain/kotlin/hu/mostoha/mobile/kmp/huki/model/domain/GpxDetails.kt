@@ -22,14 +22,16 @@ data class GpxDetails(
     val decline: Int,
 )
 
-fun GpxDetails.toGpxFileItem(lastModified: Instant): GpxFileItem =
+fun GpxDetails.toGpxFileItem(trackId: String, lastModified: Instant, lastOpened: Instant?): GpxFileItem =
     GpxFileItem(
         fileName = fileName,
         fileUri = fileUri,
+        trackId = trackId,
         title = title,
         totalDistance = totalDistance,
         travelTime = travelTime,
         incline = incline,
         decline = decline,
         lastModified = lastModified,
+        lastOpened = lastOpened,
     )

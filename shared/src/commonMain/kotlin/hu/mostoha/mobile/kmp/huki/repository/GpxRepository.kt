@@ -8,5 +8,7 @@ interface GpxRepository {
 
     suspend fun getGpxFiles(): List<GpxFileItem>
 
+    suspend fun getRecentGpxFiles(limit: Int): List<GpxFileItem>
+
     suspend fun deleteGpxFile(fileName: String)
 }

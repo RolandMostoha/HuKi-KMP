@@ -80,6 +80,7 @@ Lint:
 ## GPX Storage
 - Imported GPX files are copied into the app sandbox at `FileKit.filesDir/gpx/external` on first import, so they can be reused without re-import and shared via stable paths.
 - `GpxStorage` (commonMain) owns the sandbox: copy-if-absent, list, delete.
+- `GpxMetadataStore` (commonMain) persists lightweight per-GPX-file attributes to `FileKit.filesDir/gpx/metadata.json`, keyed by a content-derived `trackId` (FNV-1a hash via `ByteArray.toGpxTrackId()`, survives renames). It records `lastOpened` on every `readGpxFile` (import or re-open). Stats are never stored — they are regenerated from files — so a missing/corrupt store rebuilds as empty. Powers the "Recent GPX files" section in Search and the recency sort in GPX Collection.
 
 ## Chores
 
@@ -204,6 +205,7 @@ UI → UiEvent → ViewModel → UiState
 - Common First: Business logic must reside in `commonMain` whenever possible.
 - Prefer official + community KMP libraries for wrapping platform-specific code
 - Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
+- Don't use comments for Composables/SwiftUI views. Previews are much better than comments.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.

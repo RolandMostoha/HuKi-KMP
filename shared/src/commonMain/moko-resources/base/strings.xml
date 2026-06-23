@@ -4,6 +4,9 @@
     <string name="a11y_clear_text">Clear text</string>
     <string name="a11y_menu">Menu</string>
 
+    <string name="see_all">See all</string>
+    <string name="alert_ok">Got it</string>
+
     <string name="error_unknown">Unknown error occurred.</string>
 
     <string name="network_error_title">Error occurred</string>
@@ -24,8 +27,6 @@
     <string name="network_error_unknown_title">Something went wrong</string>
     <string name="network_error_unknown_message">Something went wrong while using the service. Please try again.</string>
 
-    <string name="alert_ok">Got it</string>
-
     <string name="travel_time_minutes_pattern">%s M</string>
     <string name="travel_time_hours_pattern">%s H</string>
     <string name="travel_time_hours_minutes_pattern">%sH %sM</string>
@@ -40,6 +41,7 @@
     <string name="search_input_placeholder">Search...</string>
     <string name="search_error_retry">Try again</string>
     <string name="search_powered_by">Powered by</string>
+    <string name="search_recent_gpx_title">Recent GPX files</string>
 
     <string name="layers_base_layers_title">Base Map</string>
     <string name="layers_base_outdoors_title">Outdoors</string>
@@ -180,7 +182,6 @@
     <string name="place_category_farm">Farm</string>
 
     <string name="destinations_section_title">Destinations</string>
-    <string name="destinations_see_all">See all</string>
     <string name="destinations_a11y_info">Show description</string>
     <string name="destinations_type_highest_peak">Area Peak</string>
     <string name="destinations_type_peak">Peak</string>

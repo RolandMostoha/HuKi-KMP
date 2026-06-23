@@ -8,10 +8,12 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
+import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
@@ -23,7 +25,8 @@ import org.koin.dsl.module
 
 val appModule = module {
     single<GpxStorage> { DefaultGpxStorage() }
-    single<GpxRepository> { DefaultGpxRepository(get()) }
+    single<GpxMetadataStore> { DefaultGpxMetadataStore() }
+    single<GpxRepository> { DefaultGpxRepository(get(), get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
 }
 
