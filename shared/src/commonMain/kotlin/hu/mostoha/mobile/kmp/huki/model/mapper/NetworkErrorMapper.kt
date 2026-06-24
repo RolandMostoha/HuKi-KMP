@@ -1,4 +1,4 @@
-package hu.mostoha.mobile.kmp.huki.network
+package hu.mostoha.mobile.kmp.huki.model.mapper
 
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData

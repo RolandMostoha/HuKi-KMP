@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -61,8 +63,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
-import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
@@ -75,6 +77,8 @@ fun SearchBottomSheet(
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
     onDestinationSelected: (Destination) -> Unit,
+    onGpxFileSelected: (String) -> Unit,
+    onSeeAllGpxClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlaceFinderViewModel = koinViewModel(),
@@ -87,6 +91,8 @@ fun SearchBottomSheet(
         onCloseClick = onCloseClick,
         onPlaceSelected = onPlaceSelected,
         onDestinationSelected = onDestinationSelected,
+        onGpxFileSelected = onGpxFileSelected,
+        onSeeAllGpxClicked = onSeeAllGpxClicked,
         onLocationIqClicked = onLocationIqClicked,
         onEvent = viewModel::onEvent,
     )
@@ -99,6 +105,8 @@ private fun SearchBottomSheetContent(
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
     onDestinationSelected: (Destination) -> Unit,
+    onGpxFileSelected: (String) -> Unit,
+    onSeeAllGpxClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -283,16 +291,28 @@ private fun SearchBottomSheetContent(
                             bottom = Dimens.ExtraLarge + navigationBarBottomPadding,
                         ),
                 )
-            } else if (uiState.searchText.isEmpty() && uiState.topDestinations.isNotEmpty()) {
+            } else if (uiState.searchText.isEmpty() &&
+                (uiState.topDestinations.isNotEmpty() || uiState.recentGpxFiles.isNotEmpty())
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
                 ) {
-                    DestinationsSection(
-                        destinations = uiState.topDestinations,
-                        onDestinationSelected = onDestinationSelected,
-                    )
+                    if (uiState.topDestinations.isNotEmpty()) {
+                        DestinationsSection(
+                            destinations = uiState.topDestinations,
+                            onDestinationSelected = onDestinationSelected,
+                        )
+                    }
+                    if (uiState.recentGpxFiles.isNotEmpty()) {
+                        RecentGpxSection(
+                            files = uiState.recentGpxFiles,
+                            onFileSelected = { onGpxFileSelected(it.fileUri) },
+                            onSeeAllClicked = onSeeAllGpxClicked,
+                        )
+                    }
                     Spacer(modifier = Modifier.height(Dimens.ExtraLarge + navigationBarBottomPadding))
                 }
             } else {
@@ -333,6 +353,8 @@ private fun SearchBottomSheetContentPreview() {
             onCloseClick = {},
             onPlaceSelected = {},
             onDestinationSelected = {},
+            onGpxFileSelected = {},
+            onSeeAllGpxClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -351,6 +373,8 @@ private fun SearchBottomSheetErrorStatePreview() {
             onCloseClick = {},
             onPlaceSelected = {},
             onDestinationSelected = {},
+            onGpxFileSelected = {},
+            onSeeAllGpxClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -387,6 +411,8 @@ private fun SearchBottomSheetDestinationsStatePreview() {
             onCloseClick = {},
             onPlaceSelected = {},
             onDestinationSelected = {},
+            onGpxFileSelected = {},
+            onSeeAllGpxClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -405,6 +431,8 @@ private fun SearchBottomSheetLoadingStatePreview() {
             onCloseClick = {},
             onPlaceSelected = {},
             onDestinationSelected = {},
+            onGpxFileSelected = {},
+            onSeeAllGpxClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )

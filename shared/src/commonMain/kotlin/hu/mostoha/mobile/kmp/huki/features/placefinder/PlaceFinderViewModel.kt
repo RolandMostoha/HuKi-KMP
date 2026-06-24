@@ -2,11 +2,12 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hu.mostoha.mobile.kmp.huki.model.domain.toPlaceSearchResult
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
-import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
+import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
@@ -29,11 +30,13 @@ class PlaceFinderViewModel(
     private val geocodingRepository: GeocodingRepository,
     private val locationMonitoringService: LocationMonitoringService,
     private val destinationRepository: DestinationRepository,
+    private val gpxRepository: GpxRepository,
 ) : ViewModel() {
     private companion object {
         private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
         private val AUTOCOMPLETE_LOCATION_TIMEOUT = 2.seconds
         private const val AUTOCOMPLETE_MIN_CHARACTERS = 3
+        private const val RECENT_GPX_LIMIT = 3
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -46,6 +49,7 @@ class PlaceFinderViewModel(
 
     init {
         loadTopDestinations()
+        loadRecentGpxFiles()
 
         viewModelScope.launch {
             searchQueries
@@ -73,6 +77,13 @@ class PlaceFinderViewModel(
             }
             val destinations = destinationRepository.getTopDestinations(location)
             _uiState.update { uiState -> uiState.copy(topDestinations = destinations) }
+        }
+    }
+
+    private fun loadRecentGpxFiles() {
+        viewModelScope.launch {
+            val recentGpxFiles = gpxRepository.getRecentGpxFiles(RECENT_GPX_LIMIT)
+            _uiState.update { uiState -> uiState.copy(recentGpxFiles = recentGpxFiles) }
         }
     }
 

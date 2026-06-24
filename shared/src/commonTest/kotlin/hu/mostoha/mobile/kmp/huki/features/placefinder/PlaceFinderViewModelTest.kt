@@ -9,15 +9,17 @@ import dev.mokkery.mock
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
-import hu.mostoha.mobile.kmp.huki.network.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
+import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -31,9 +33,12 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.maplibre.spatialk.units.extensions.kilometers
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlaceFinderViewModelTest {
@@ -43,6 +48,9 @@ class PlaceFinderViewModelTest {
     private val locationMonitoringService = noOpLocationMonitoringService()
     private val destinationRepository = mock<DestinationRepository> {
         every { getTopDestinations(any()) } returns emptyList()
+    }
+    private val gpxRepository = mock<GpxRepository> {
+        everySuspend { getRecentGpxFiles(any()) } returns emptyList()
     }
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
@@ -55,6 +63,7 @@ class PlaceFinderViewModelTest {
             geocodingRepository = geocodingRepository,
             locationMonitoringService = locationMonitoringService,
             destinationRepository = destinationRepository,
+            gpxRepository = gpxRepository,
         )
         testDispatcher.scheduler.runCurrent()
     }
@@ -91,12 +100,45 @@ class PlaceFinderViewModelTest {
                 geocodingRepository = geocodingRepository,
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
             viewModel.uiState.value.topDestinations shouldBe topDestinations
         }
     }
+
+    @Test
+    fun `Given recent gpx files from repository, When view model init, Then uiState exposes them`() {
+        runTest {
+            val recentGpxFiles = listOf(gpxFileItem("okt15.gpx"), gpxFileItem("pilis.gpx"))
+            everySuspend { gpxRepository.getRecentGpxFiles(any()) } returns recentGpxFiles
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.recentGpxFiles shouldBe recentGpxFiles
+        }
+    }
+
+    private fun gpxFileItem(fileName: String): GpxFileItem =
+        GpxFileItem(
+            fileName = fileName,
+            fileUri = "uri/$fileName",
+            trackId = "track-$fileName",
+            title = "Title of $fileName",
+            totalDistance = 10.kilometers,
+            travelTime = 2.hours,
+            incline = 100,
+            decline = 100,
+            lastModified = Clock.System.now(),
+            lastOpened = Clock.System.now(),
+        )
 
     @Test
     fun `Given valid search text, When autocomplete succeeds, Then uiState shows loading then mapped places`() {
@@ -159,6 +201,7 @@ class PlaceFinderViewModelTest {
                 geocodingRepository = geocodingRepository,
                 locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
                 destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -228,6 +271,7 @@ class PlaceFinderViewModelTest {
                 geocodingRepository = geocodingRepository,
                 locationMonitoringService = hangingLocationMonitoringService(),
                 destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -429,6 +473,7 @@ class PlaceFinderViewModelTest {
                 },
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -502,6 +547,7 @@ class PlaceFinderViewModelTest {
                 },
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
             )
             testDispatcher.scheduler.runCurrent()
 

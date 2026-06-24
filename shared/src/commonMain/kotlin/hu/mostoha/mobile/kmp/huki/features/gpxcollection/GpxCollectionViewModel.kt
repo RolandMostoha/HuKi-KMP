@@ -80,8 +80,8 @@ class GpxCollectionViewModel(private val gpxRepository: GpxRepository) : ViewMod
         val yesterday = today.minus(DatePeriod(days = 1))
 
         return this
-            .sortedByDescending { it.lastModified }
-            .groupBy { it.lastModified.toLocalDateTime(timeZone).date }
+            .sortedByDescending { it.lastOpened ?: it.lastModified }
+            .groupBy { (it.lastOpened ?: it.lastModified).toLocalDateTime(timeZone).date }
             .map { (date, files) ->
                 val header = when (date) {
                     today -> GpxFileHeader.Today

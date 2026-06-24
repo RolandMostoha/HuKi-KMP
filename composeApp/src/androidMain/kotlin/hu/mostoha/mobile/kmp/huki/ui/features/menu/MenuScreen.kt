@@ -50,6 +50,7 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiState
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -392,7 +393,7 @@ private fun MenuRowDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(start = Dimens.Large + Dimens.IconContainer + Dimens.Large),
         thickness = 1.dp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f),
+        color = MaterialTheme.colorScheme.dividerColor,
     )
 }
 

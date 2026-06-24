@@ -45,6 +45,7 @@ import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -113,7 +114,7 @@ private fun WhatIsCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .padding(horizontal = Dimens.Large)
             .clip(RoundedCornerShape(Dimens.Large))
-            .background(mokoColor(SharedRes.colors.background))
+            .background(MaterialTheme.colorScheme.background)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
@@ -227,7 +228,7 @@ private fun StepDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(start = 50.dp),
         thickness = 1.dp,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+        color = MaterialTheme.colorScheme.dividerColor,
     )
 }
 

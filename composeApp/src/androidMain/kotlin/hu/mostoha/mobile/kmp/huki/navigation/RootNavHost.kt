@@ -63,6 +63,7 @@ fun RootNavHost() {
             MainScreen(
                 onMenuClicked = { navController.navigate(Routes.MENU) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
+                onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 openGpxUri = openGpxUri,
                 onOpenGpxConsumed = { entry.savedStateHandle[Routes.OPEN_GPX_URI_KEY] = null },
             )
