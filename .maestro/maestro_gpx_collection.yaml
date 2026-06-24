@@ -9,23 +9,9 @@ appId: ${APP_ID}
     longitude: 18.8950729
 - runFlow: subflows/maestro_flow_import_gpx.yaml
 
-# Dismiss the GPX Details sheet (without closing the GPX) to reveal the map and Menu entry.
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - swipe:
-          start: 50%, 80%
-          end: 50%, 97%
-          duration: 1200
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - swipe:
-          start: 50%, 73%
-          end: 50%, 99%
-          duration: 400
+# Closing the GPX to reveal the Menu entry.
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
 
 # Open the GPX Collection from the Menu
 - tapOn: "Menu"
@@ -84,5 +70,4 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     notVisible: "gpx_test_with_comments.gpx"
     timeout: 5000
-- assertVisible:
-    id: GPX_COLLECTION_EMPTY_VIEW
+- assertVisible: "Your GPX collection is empty"

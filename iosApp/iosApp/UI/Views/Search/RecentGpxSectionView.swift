@@ -34,6 +34,7 @@ struct RecentGpxSectionView: View {
             .padding(.horizontal, 16)
         }
         .padding(.top, 24)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.RECENT_GPX_SECTION)
     }
 }

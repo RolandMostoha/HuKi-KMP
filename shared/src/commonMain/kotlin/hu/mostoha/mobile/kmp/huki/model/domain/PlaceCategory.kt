@@ -396,6 +396,19 @@ enum class PlaceCategory(
         iconRes = SharedRes.images.ic_place_category_farm,
         categoryColorRes = SharedRes.colors.colorPlaceCategoryFarm,
     ),
+    TRAIL(
+        osmTags = listOf(
+            "path",
+            "footway",
+            "track",
+            "steps",
+            "hiking",
+        ),
+        categoryGroup = PlaceCategoryGroup.TRAVEL,
+        title = SharedRes.strings.place_category_trail,
+        iconRes = SharedRes.images.ic_place_category_trail,
+        categoryColorRes = SharedRes.colors.oktBlue,
+    ),
     ;
 
     companion object {

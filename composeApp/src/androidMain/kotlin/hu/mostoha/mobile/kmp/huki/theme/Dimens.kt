@@ -17,4 +17,7 @@ object Dimens {
     val IconHero = 96.dp
 
     val FloatingActionElevation = 1.dp
+
+    val SectionSpacing = 24.dp
+    val SectionHeaderSpacing = 8.dp
 }

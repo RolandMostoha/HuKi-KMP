@@ -1,0 +1,64 @@
+appId: ${APP_ID}
+---
+# Recent Places: select a search result, verify it appears in Search's Recent Places
+# section, re-opens on tap, and that "See all" navigates to the Place History screen.
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 5000
+
+# Search a place and select it -> records a visit in Place History.
+- assertVisible: "Search..."
+- tapOn: "Search..."
+- inputText: "Pilisszentker"
+- extendedWaitUntil:
+    visible: "Pilisszentkereszt"
+    timeout: 5000
+- tapOn:
+    id: SEARCH_RESULT_ITEM
+    index: 0
+- assertVisible:
+    id: MAP_MAPBOX
+
+# Re-open Search with an empty query: the Recent Places section is shown.
+- assertVisible: "Search..."
+- tapOn: "Search..."
+- extendedWaitUntil:
+    visible:
+      id: RECENT_PLACES_SECTION
+    timeout: 5000
+- assertVisible: "Recent places"
+- assertVisible:
+    id: RECENT_PLACES_ITEM
+
+# Tapping a recent place re-opens it on the map and dismisses the search sheet.
+- tapOn:
+    id: RECENT_PLACES_ITEM
+- assertVisible:
+    id: MAP_MAPBOX
+- assertNotVisible:
+    id: RECENT_PLACES_SECTION
+
+# "See all" navigates from Recent Places to the Place History screen.
+- assertVisible: "Search..."
+- tapOn: "Search..."
+- extendedWaitUntil:
+    visible:
+      id: RECENT_PLACES_SEE_ALL_BUTTON
+    timeout: 5000
+- tapOn:
+    id: RECENT_PLACES_SEE_ALL_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: PLACE_HISTORY_SCREEN_ROOT
+    timeout: 5000
+- assertVisible:
+    id: PLACE_HISTORY_LIST
+- assertVisible:
+    id: PLACE_HISTORY_ITEM

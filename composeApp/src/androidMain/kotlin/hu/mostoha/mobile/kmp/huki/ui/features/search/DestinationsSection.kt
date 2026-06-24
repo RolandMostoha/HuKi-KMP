@@ -28,9 +28,9 @@ fun DestinationsSection(
 ) {
     Column(
         modifier = modifier
-            .padding(top = Dimens.Medium)
+            .padding(top = Dimens.Small)
             .testTag(TestTags.DESTINATIONS_SECTION),
-        verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+        verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
     ) {
         // TODO Feature:DestinationsScreen - wire "See all" navigation in a later task.
         SectionHeader(

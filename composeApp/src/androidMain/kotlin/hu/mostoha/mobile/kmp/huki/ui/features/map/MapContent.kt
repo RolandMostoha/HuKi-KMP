@@ -65,6 +65,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
@@ -284,12 +285,12 @@ private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation)
 }
 
 private fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera) {
-    if (effect.bounds.size == 1) {
-        this.flyTo(
+    when (val target = effect.target) {
+        is CameraTarget.Center -> this.flyTo(
             cameraOptions = CameraOptions.Builder()
                 .apply {
-                    center(effect.bounds.first().toPoint())
-                    effect.zoom?.let { zoom(it) }
+                    center(target.location.toPoint())
+                    target.zoom?.let { zoom(it) }
                     effect.bearing?.let { bearing(it) }
                     effect.pitch?.let { pitch(it) }
                 }
@@ -298,21 +299,23 @@ private fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.U
                 duration(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
             },
         )
-    } else {
-        val transitionOptions = DefaultViewportTransitionOptions.Builder()
-            .maxDurationMs(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
-            .build()
-        this.transitionToOverviewState(
-            overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
-                .geometry(effect.bounds.toLineString())
-                .apply {
-                    effect.bearing?.let { bearing(it) }
-                    effect.pitch?.let { pitch(it) }
-                    effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
-                }
-                .build(),
-            defaultTransitionOptions = transitionOptions,
-        )
+        is CameraTarget.Bounds -> {
+            val transitionOptions = DefaultViewportTransitionOptions.Builder()
+                .maxDurationMs(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+                .build()
+            this.transitionToOverviewState(
+                overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
+                    .geometry(target.locations.toLineString())
+                    .apply {
+                        effect.bearing?.let { bearing(it) }
+                        effect.pitch?.let { pitch(it) }
+                        effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
+                        target.maxZoom?.let { maxZoom(it) }
+                    }
+                    .build(),
+                defaultTransitionOptions = transitionOptions,
+            )
+        }
     }
 }
 

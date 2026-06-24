@@ -5,22 +5,31 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.location.LOCATION
 import dev.icerock.moko.permissions.test.createPermissionControllerMock
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
@@ -47,10 +56,25 @@ class MainViewModelTest {
             description = SharedRes.strings.destinations_type_peak,
             popularity = 10,
         )
+        private val TEST_PLACE = Place(
+            osmId = "1",
+            location = Location(47.4979, 19.0402),
+            name = "Budapest",
+            placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        )
+        private val TEST_PLACE_WITH_BOUNDING_BOX = TEST_PLACE.copy(
+            boundingBox = BoundingBox(
+                north = 47.6131,
+                east = 19.3343,
+                south = 47.3496,
+                west = 18.9261,
+            ),
+        )
     }
 
     private val testDispatcher = StandardTestDispatcher()
     private val gpxRepository = mock<GpxRepository>()
+    private val placeHistoryRepository = mock<PlaceHistoryRepository>(MockMode.autoUnit)
 
     @BeforeTest
     fun setup() {
@@ -71,6 +95,7 @@ class MainViewModelTest {
                 granted = granted,
             ),
             gpxRepository = gpxRepository,
+            placeHistoryRepository = placeHistoryRepository,
         )
     }
 
@@ -567,7 +592,9 @@ class MainViewModelTest {
                 skipItems(1)
 
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
-                    bounds = TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
+                    target = CameraTarget.Bounds(
+                        TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
+                    ),
                     contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                 )
                 ensureAllEventsConsumed()
@@ -731,11 +758,79 @@ class MainViewModelTest {
                 viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
-                    bounds = listOf(TEST_DESTINATION.location),
-                    zoom = 16.0,
+                    target = CameraTarget.Center(TEST_DESTINATION.location, zoom = 16.0),
                 )
                 ensureAllEventsConsumed()
             }
+        }
+    }
+
+    @Test
+    fun `Given place without bounding box, When SearchPlaceSelected, Then UpdateCamera centers on location`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(TEST_PLACE.location, zoom = 16.0),
+                )
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given place with bounding box, When SearchPlaceSelected, Then UpdateCamera fits the bounding box`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE_WITH_BOUNDING_BOX))
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Bounds(
+                        locations = TEST_PLACE_WITH_BOUNDING_BOX.boundingBox!!.toLocations(),
+                        maxZoom = 16.0,
+                    ),
+                )
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given place from search, When SearchPlaceSelected, Then visit is recorded`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            verifySuspend { placeHistoryRepository.recordVisit(TEST_PLACE) }
+        }
+    }
+
+    @Test
+    fun `Given history place, When HistoryPlaceSelected, Then visit is re-recorded keeping its original source`() {
+        runTest {
+            val historyPlace = TEST_PLACE.copy(placeSource = PlaceSource.DESTINATIONS)
+            everySuspend { placeHistoryRepository.getPlace(any(), any()) } returns historyPlace
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.HistoryPlaceSelected(OsmType.NODE, historyPlace.osmId))
+            advanceUntilIdle()
+
+            verifySuspend { placeHistoryRepository.recordVisit(historyPlace) }
         }
     }
 

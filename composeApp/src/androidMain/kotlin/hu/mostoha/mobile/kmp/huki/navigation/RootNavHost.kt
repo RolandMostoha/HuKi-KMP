@@ -8,11 +8,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.ui.features.gpxcollection.GpxCollectionScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.gpxtutorial.GpxTutorialScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.locationiq.LocationIqScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.menu.MenuScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.placehistory.PlaceHistoryScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
 import hu.mostoha.mobile.kmp.huki.util.millis
 
@@ -21,8 +23,11 @@ private object Routes {
     const val MENU = "menu"
     const val GPX_COLLECTION = "gpx_collection"
     const val GPX_TUTORIAL = "gpx_tutorial"
+    const val PLACE_HISTORY = "place_history"
     const val LOCATION_IQ = "location_iq"
     const val OPEN_GPX_URI_KEY = "open_gpx_uri"
+    const val OPEN_PLACE_OSM_TYPE_KEY = "open_place_osm_type"
+    const val OPEN_PLACE_OSM_ID_KEY = "open_place_osm_id"
 }
 
 @Composable
@@ -60,18 +65,34 @@ fun RootNavHost() {
             val openGpxUri by entry.savedStateHandle
                 .getStateFlow<String?>(Routes.OPEN_GPX_URI_KEY, null)
                 .collectAsStateWithLifecycle()
+            val openPlaceOsmType by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.OPEN_PLACE_OSM_TYPE_KEY, null)
+                .collectAsStateWithLifecycle()
+            val openPlaceOsmId by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.OPEN_PLACE_OSM_ID_KEY, null)
+                .collectAsStateWithLifecycle()
+            val openPlace = openPlaceOsmType?.let { type ->
+                openPlaceOsmId?.let { id -> OsmType.valueOf(type) to id }
+            }
             MainScreen(
                 onMenuClicked = { navController.navigate(Routes.MENU) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
+                onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 openGpxUri = openGpxUri,
                 onOpenGpxConsumed = { entry.savedStateHandle[Routes.OPEN_GPX_URI_KEY] = null },
+                openPlace = openPlace,
+                onOpenPlaceConsumed = {
+                    entry.savedStateHandle[Routes.OPEN_PLACE_OSM_TYPE_KEY] = null
+                    entry.savedStateHandle[Routes.OPEN_PLACE_OSM_ID_KEY] = null
+                },
             )
         }
         composable(Routes.MENU) {
             MenuScreen(
                 onBack = { navController.popBackStack() },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
+                onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
             )
         }
@@ -81,6 +102,17 @@ fun RootNavHost() {
                 onOpenTutorial = { navController.navigate(Routes.GPX_TUTORIAL) },
                 onOpenGpx = { uri ->
                     navController.getBackStackEntry(Routes.MAIN).savedStateHandle[Routes.OPEN_GPX_URI_KEY] = uri
+                    navController.popBackStack(Routes.MAIN, inclusive = false)
+                },
+            )
+        }
+        composable(Routes.PLACE_HISTORY) {
+            PlaceHistoryScreen(
+                onBack = { navController.popBackStack() },
+                onOpenPlace = { osmType, osmId ->
+                    val mainStateHandle = navController.getBackStackEntry(Routes.MAIN).savedStateHandle
+                    mainStateHandle[Routes.OPEN_PLACE_OSM_TYPE_KEY] = osmType.name
+                    mainStateHandle[Routes.OPEN_PLACE_OSM_ID_KEY] = osmId
                     navController.popBackStack(Routes.MAIN, inclusive = false)
                 },
             )

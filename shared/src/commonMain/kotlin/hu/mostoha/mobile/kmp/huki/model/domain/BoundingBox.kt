@@ -16,6 +16,12 @@ data class BoundingBox(
 
 fun BoundingBox.toViewBox(): String = "$east,$north,$west,$south"
 
+fun BoundingBox.toLocations(): List<Location> =
+    listOf(
+        Location(north, west),
+        Location(south, east),
+    )
+
 fun BoundingBox.center(): Location {
     val centerLat = (south + north) / 2
     val centerLon = (west + east) / 2
