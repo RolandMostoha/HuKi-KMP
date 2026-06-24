@@ -155,19 +155,21 @@ struct MapView: View {
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            if effect.bounds.count == 1, let center = effect.bounds.first?.coordinate {
+            switch onEnum(of: effect.target) {
+            case .center(let target):
                 viewport = .camera(
-                    center: center,
-                    zoom: effect.zoom?.cgFloat,
+                    center: target.location.coordinate,
+                    zoom: target.zoom?.cgFloat,
                     bearing: effect.bearing?.cgFloat ?? 0,
                     pitch: effect.pitch?.cgFloat ?? 0
                 )
-            } else {
+            case .bounds(let target):
                 viewport = .overview(
-                    geometry: effect.bounds.lineString,
+                    geometry: target.locations.lineString,
                     bearing: effect.bearing?.cgFloat ?? 0,
                     pitch: effect.pitch?.cgFloat ?? 0,
-                    geometryPadding: effect.contentPadding?.edgeInsets ?? .init()
+                    geometryPadding: effect.contentPadding?.edgeInsets ?? .init(),
+                    maxZoom: target.maxZoom?.doubleValue
                 )
             }
         }

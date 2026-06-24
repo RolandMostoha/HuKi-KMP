@@ -20,11 +20,11 @@ struct SearchResultItem: View {
                         .foregroundStyle(.white)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(place.title)
+                    Text(place.name)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.primary)
                         .lineLimit(1)
-                    if let subtitle = place.subtitle, !subtitle.isEmpty {
+                    if let subtitle = place.address, !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.system(size: 14))
                             .foregroundStyle(Color(.secondaryLabel))
@@ -57,17 +57,6 @@ struct SearchResultItem: View {
         if let category = place.placeCategory {
             return category.iconRes.toUIImage()!
         }
-        return osmIconImage(for: place.osmType)
-    }
-
-    private func osmIconImage(for osmType: OsmType?) -> UIImage {
-        switch osmType {
-        case .way:
-            return SharedRes.images().ic_place_type_way.toUIImage()!
-        case .relation:
-            return SharedRes.images().ic_place_type_relation.toUIImage()!
-        case .node, .none:
-            return SharedRes.images().ic_place_type_node.toUIImage()!
-        }
+        return OsmTypeMapperKt.toPlaceIconRes(osmType: place.osmType).toUIImage()!
     }
 }

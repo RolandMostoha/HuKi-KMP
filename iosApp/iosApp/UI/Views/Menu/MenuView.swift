@@ -7,6 +7,7 @@ enum MenuRoute: Hashable {
 
 struct MenuView: View {
     let onGpxCollectionClicked: () -> Void
+    let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getMenuViewModel()
@@ -23,7 +24,7 @@ struct MenuView: View {
                 VStack(spacing: 0) {
                     hero(versionName: uiState.versionName)
                     Spacer().frame(height: 10)
-                    gpxCollectionSection
+                    mainFeaturesSection
                     contactSection
                     supportersSection
                 }
@@ -97,11 +98,22 @@ struct MenuView: View {
         .accessibilityIdentifier(TestTags.shared.MENU_VERSION)
     }
 
-    private var gpxCollectionSection: some View {
+    private var mainFeaturesSection: some View {
         VStack(spacing: 0) {
+            MenuItemView(
+                icon: tintedSymbol("mappin.and.ellipse", color: onPrimary),
+                title: strings.get(id: SharedRes.strings().menu_item_place_history),
+                description: strings.get(id: SharedRes.strings().menu_item_place_history_description),
+                iconBackgroundColor: primary,
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_place_history),
+                testTag: TestTags.shared.MENU_ROW_PLACE_HISTORY,
+                action: { viewModel.onEvent(event: MenuUiEventsPlaceHistoryClicked.shared) }
+            )
+            divider
             MenuItemView(
                 icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onPrimary),
                 title: strings.get(id: SharedRes.strings().menu_item_gpx_collection),
+                description: strings.get(id: SharedRes.strings().menu_item_gpx_collection_description),
                 iconBackgroundColor: primary,
                 accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_collection),
                 testTag: TestTags.shared.MENU_ROW_GPX_COLLECTION,
@@ -179,6 +191,14 @@ struct MenuView: View {
             .foregroundStyle(color)
     }
 
+    private func tintedSymbol(_ systemName: String, color: SwiftUI.Color = Color(.label)) -> some View {
+        Image(systemName: systemName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 22, height: 22)
+            .foregroundStyle(color)
+    }
+
     private var divider: some View {
         Divider()
             .padding(.leading, 16 + 40 + 16)
@@ -188,6 +208,8 @@ struct MenuView: View {
         switch onEnum(of: effect) {
         case .navigateBack:
             dismiss()
+        case .navigateToPlaceHistory:
+            onPlaceHistoryClicked()
         case .navigateToGpxCollection:
             onGpxCollectionClicked()
         case .navigateToLocationIq:

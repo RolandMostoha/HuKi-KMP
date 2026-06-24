@@ -14,13 +14,18 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
+import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +40,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     val permissionsController: PermissionsController,
     val gpxRepository: GpxRepository,
+    private val placeHistoryRepository: PlaceHistoryRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -60,6 +66,7 @@ class MainViewModel(
             MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
             is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
             is MainUiEvents.SearchDestinationSelected -> showDestination(event.destination)
+            is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationReceived -> updateMyLocation()
@@ -98,12 +105,31 @@ class MainViewModel(
     private fun showPlace(place: Place) {
         viewModelScope.launch {
             hideSheet()
+            val boundingBox = place.boundingBox
             sendEffect(
-                MapUiEffects.UpdateCamera(
-                    bounds = listOf(place.location),
-                    zoom = 16.0,
-                ),
+                if (boundingBox != null) {
+                    MapUiEffects.UpdateCamera(
+                        target = CameraTarget.Bounds(
+                            locations = boundingBox.toLocations(),
+                            maxZoom = PLACE_DEFAULT_CAMERA_ZOOM,
+                        ),
+                    )
+                } else {
+                    MapUiEffects.UpdateCamera(
+                        target = CameraTarget.Center(place.location, zoom = PLACE_DEFAULT_CAMERA_ZOOM),
+                    )
+                },
             )
+        }
+        viewModelScope.launch {
+            placeHistoryRepository.recordVisit(place)
+        }
+    }
+
+    private fun showHistoryPlace(osmType: OsmType, osmId: String) {
+        viewModelScope.launch {
+            val place = placeHistoryRepository.getPlace(osmType, osmId) ?: return@launch
+            showPlace(place)
         }
     }
 
@@ -112,10 +138,12 @@ class MainViewModel(
             hideSheet()
             sendEffect(
                 MapUiEffects.UpdateCamera(
-                    bounds = listOf(destination.location),
-                    zoom = 16.0,
+                    target = CameraTarget.Center(destination.location, zoom = PLACE_DEFAULT_CAMERA_ZOOM),
                 ),
             )
+        }
+        viewModelScope.launch {
+            placeHistoryRepository.recordVisit(destination)
         }
     }
 
@@ -316,7 +344,7 @@ class MainViewModel(
                     }
                     sendEffect(
                         MapUiEffects.UpdateCamera(
-                            bounds = gpxDetails.bounds,
+                            target = CameraTarget.Bounds(gpxDetails.bounds),
                             contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                         ),
                     )
@@ -351,7 +379,7 @@ class MainViewModel(
             val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
             sendEffect(
                 MapUiEffects.UpdateCamera(
-                    bounds = gpxDetails.bounds,
+                    target = CameraTarget.Bounds(gpxDetails.bounds),
                     contentPadding = SharedDimens.GPX_CONTENT_PADDING,
                 ),
             )

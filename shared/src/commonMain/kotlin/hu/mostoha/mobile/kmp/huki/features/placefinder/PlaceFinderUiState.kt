@@ -11,6 +11,7 @@ data class PlaceFinderUiState(
     val places: List<Place> = emptyList(),
     val error: InfoViewData? = null,
     val topDestinations: List<Destination> = emptyList(),
+    val recentPlaces: List<Place> = emptyList(),
     val recentGpxFiles: List<GpxFileItem> = emptyList(),
 ) {
     companion object {

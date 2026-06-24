@@ -6,7 +6,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 10000
+    timeout: 5000
 - assertVisible: "Search..."
 - tapOn: "Search..."
 

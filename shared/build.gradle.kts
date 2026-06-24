@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.mokoResources)
     alias(libs.plugins.skie)
     alias(libs.plugins.mokkery)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 val generateSecrets = tasks.register<GenerateSecretsTask>("generateSecrets") {
@@ -54,6 +56,8 @@ kotlin {
             implementation(libs.maplibre.gpx)
             implementation(libs.maplibre.turf)
             implementation(libs.maplibre.units)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -100,6 +104,16 @@ multiplatformResources {
     resourcesPackage.set("hu.mostoha.mobile.huki.shared")
     resourcesClassName.set("SharedRes")
     iosMinimalDeploymentTarget.set("18.0")
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
 
 skie {

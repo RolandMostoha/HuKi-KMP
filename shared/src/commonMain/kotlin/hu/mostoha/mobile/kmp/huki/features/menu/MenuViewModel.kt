@@ -30,6 +30,7 @@ class MenuViewModel : ViewModel() {
         Logger.d { "MenuEvent: $event" }
         when (event) {
             MenuUiEvents.BackClicked -> sendEffect(MenuUiEffects.NavigateBack)
+            MenuUiEvents.PlaceHistoryClicked -> sendEffect(MenuUiEffects.NavigateToPlaceHistory)
             MenuUiEvents.GpxCollectionClicked -> sendEffect(MenuUiEffects.NavigateToGpxCollection)
             MenuUiEvents.EmailClicked ->
                 sendEffect(

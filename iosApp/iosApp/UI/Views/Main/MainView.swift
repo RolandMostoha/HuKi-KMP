@@ -27,6 +27,7 @@ struct MainView: View {
                 .navigationDestination(for: MenuRoute.self) { _ in
                     MenuView(
                         onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
+                        onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
                         onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
                     )
                 }
@@ -35,6 +36,15 @@ struct MainView: View {
                         onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
                         onOpenGpx: { uri in
                             viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                            navigationPath = NavigationPath()
+                        }
+                    )
+                }
+                .navigationDestination(for: PlaceHistoryRoute.self) { _ in
+                    PlaceHistoryView(
+                        onOpenPlace: { osmType, osmId in
+                            let event = MainUiEventsHistoryPlaceSelected(osmType: osmType, osmId: osmId)
+                            viewModel.onEvent(event: event)
                             navigationPath = NavigationPath()
                         }
                     )
@@ -120,6 +130,10 @@ struct MainView: View {
                                 onSeeAllGpxClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())
                                     navigationPath.append(GpxCollectionRoute.gpxCollection)
+                                },
+                                onSeeAllPlacesClicked: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                    navigationPath.append(PlaceHistoryRoute.placeHistory)
                                 },
                                 onLocationIqClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())
@@ -225,7 +239,10 @@ struct MainView: View {
         }
     }
 
-    private func handleMainEffects(_ effect: MainUiEffects) {
+}
+
+private extension MainView {
+    func handleMainEffects(_ effect: MainUiEffects) {
         switch onEnum(of: effect) {
         case .navigateToAppSettings:
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
@@ -234,7 +251,7 @@ struct MainView: View {
         }
     }
 
-    private func handleIncomingGpx(_ url: URL) {
+    func handleIncomingGpx(_ url: URL) {
         let needsAccess = url.startAccessingSecurityScopedResource()
         defer { if needsAccess { url.stopAccessingSecurityScopedResource() } }
         let tempDir = FileManager.default

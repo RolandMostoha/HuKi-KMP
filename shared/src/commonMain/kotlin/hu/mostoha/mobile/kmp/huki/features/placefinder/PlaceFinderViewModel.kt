@@ -8,6 +8,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
@@ -31,12 +32,14 @@ class PlaceFinderViewModel(
     private val locationMonitoringService: LocationMonitoringService,
     private val destinationRepository: DestinationRepository,
     private val gpxRepository: GpxRepository,
+    private val placeHistoryRepository: PlaceHistoryRepository,
 ) : ViewModel() {
     private companion object {
         private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
         private val AUTOCOMPLETE_LOCATION_TIMEOUT = 2.seconds
         private const val AUTOCOMPLETE_MIN_CHARACTERS = 3
         private const val RECENT_GPX_LIMIT = 3
+        private const val RECENT_PLACES_LIMIT = 3
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -49,6 +52,7 @@ class PlaceFinderViewModel(
 
     init {
         loadTopDestinations()
+        loadRecentPlaces()
         loadRecentGpxFiles()
 
         viewModelScope.launch {
@@ -77,6 +81,13 @@ class PlaceFinderViewModel(
             }
             val destinations = destinationRepository.getTopDestinations(location)
             _uiState.update { uiState -> uiState.copy(topDestinations = destinations) }
+        }
+    }
+
+    private fun loadRecentPlaces() {
+        viewModelScope.launch {
+            val recentPlaces = placeHistoryRepository.getRecentPlaces(RECENT_PLACES_LIMIT)
+            _uiState.update { uiState -> uiState.copy(recentPlaces = recentPlaces) }
         }
     }
 

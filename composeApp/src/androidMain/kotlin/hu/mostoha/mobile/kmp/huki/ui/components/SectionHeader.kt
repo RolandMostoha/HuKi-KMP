@@ -18,10 +18,10 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 @Composable
 fun SectionHeader(
     title: String,
-    actionText: String,
-    onActionClick: () -> Unit,
     modifier: Modifier = Modifier,
     actionModifier: Modifier = Modifier,
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -35,15 +35,17 @@ fun SectionHeader(
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.weight(1f),
         )
-        TextButton(
-            onClick = onActionClick,
-            modifier = actionModifier,
-        ) {
-            Text(
-                text = actionText,
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.primary,
-            )
+        if (actionText != null && onActionClick != null) {
+            TextButton(
+                onClick = onActionClick,
+                modifier = actionModifier,
+            ) {
+                Text(
+                    text = actionText,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }

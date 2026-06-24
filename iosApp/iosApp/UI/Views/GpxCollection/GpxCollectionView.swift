@@ -25,8 +25,8 @@ struct GpxCollectionView: View {
                             }
                         }
                         .padding(.bottom, 24)
-                    }
                     .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_LIST)
+                    }
                 }
             }
             .background(Color(.systemGroupedBackground))

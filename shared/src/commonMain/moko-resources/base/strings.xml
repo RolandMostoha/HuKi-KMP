@@ -41,7 +41,8 @@
     <string name="search_input_placeholder">Search...</string>
     <string name="search_error_retry">Try again</string>
     <string name="search_powered_by">Powered by</string>
-    <string name="search_recent_gpx_title">Recent GPX files</string>
+    <string name="search_recent_gpx_title">Recent GPX tracks</string>
+    <string name="search_recent_places_title">Recent places</string>
 
     <string name="layers_base_layers_title">Base Map</string>
     <string name="layers_base_outdoors_title">Outdoors</string>
@@ -78,6 +79,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Version %s</string>
+    <string name="menu_item_place_history">Place History</string>
+    <string name="menu_item_place_history_description">Places you have recently opened</string>
+    <string name="menu_a11y_open_place_history">Open Place History</string>
     <string name="menu_item_gpx_collection">GPX Collection</string>
     <string name="menu_item_gpx_collection_description">Your imported routes in one place</string>
     <string name="menu_a11y_open_gpx_collection">Open GPX Collection</string>
@@ -119,6 +123,16 @@
     <string name="gpx_collection_delete_dialog_title">Delete GPX file?</string>
     <string name="gpx_collection_delete_dialog_message">“%s” will be permanently removed from your collection.</string>
     <string name="gpx_collection_delete_dialog_cancel">Cancel</string>
+
+    <string name="place_history_title">Place History</string>
+    <string name="place_history_subtitle_pattern">%d places</string>
+    <string name="place_history_subtitle_single">%d place</string>
+    <string name="place_history_subtitle_empty">No visited places yet</string>
+    <string name="place_history_date_today">Today</string>
+    <string name="place_history_date_yesterday">Yesterday</string>
+    <string name="place_history_empty_title">Your place history is empty</string>
+    <string name="place_history_empty_message">Places you open from search or destinations will appear here, so you can quickly find them again.</string>
+    <string name="place_history_a11y_back">Back</string>
 
     <string name="gpx_tutorial_title">GPX Tutorial</string>
     <string name="gpx_tutorial_a11y_back">Back</string>
@@ -166,6 +180,7 @@
     <string name="place_category_parking">Parking</string>
     <string name="place_category_public_transport">Public Transport</string>
     <string name="place_category_settlement">Settlement</string>
+    <string name="place_category_trail">Trail</string>
     <string name="place_category_drinking_water">Drinking Water</string>
     <string name="place_category_toilets">Toilets</string>
     <string name="place_category_camp_site">Camp Site</string>
@@ -185,33 +200,17 @@
     <string name="destinations_a11y_info">Show description</string>
     <string name="destinations_type_highest_peak">Area Peak</string>
     <string name="destinations_type_peak">Peak</string>
-    <string name="destinations_type_valley">Valley</string>
-    <string name="destinations_type_lake">Lake</string>
     <string name="destinations_type_national_park">National Park</string>
-    <string name="destinations_type_cave">Cave</string>
-    <string name="destinations_type_waterfall">Waterfall</string>
     <string name="destinations_type_castle">Castle</string>
-    <string name="destinations_type_rock">Rock</string>
     <string name="destinations_type_town">Town</string>
-    <string name="destinations_type_plateau">Plateau</string>
-    <string name="destinations_type_trail">Trail</string>
     <string name="destinations_type_river">River</string>
     <string name="destinations_type_lookout">Lookout</string>
     <string name="destinations_type_rock_with_lookout">Rock Lookout</string>
-    <string name="destinations_type_church">Church</string>
     <string name="destinations_type_statue">Statue</string>
-    <string name="destinations_type_wildlife_park">Wildlife Park</string>
     <string name="destinations_type_memorial_park">Memorial Park</string>
     <string name="destinations_type_arboretum">Arboretum</string>
-    <string name="destinations_type_museum">Museum</string>
-    <string name="destinations_type_meadow">Meadow</string>
     <string name="destinations_type_gorge">Gorge</string>
-    <string name="destinations_type_observatory">Observatory</string>
-    <string name="destinations_type_garden">Garden</string>
-    <string name="destinations_type_spring">Spring</string>
-    <string name="destinations_type_forest">Forest</string>
     <string name="destinations_type_camp">Camp</string>
-    <string name="destinations_type_island">Island</string>
 
     <string name="location_iq_a11y_back">Back</string>
     <string name="location_iq_a11y_logo">LocationIQ logo</string>

@@ -63,7 +63,7 @@ Strings vary by language (`android_toggle_language.sh` toggles EN/HU). Always se
 
 Text assertions are fine for verifying user-visible copy (and when no tag exists), but anchor navigation on IDs.
 
-If you need a tag that doesn't exist yet, add it to `TestTags.kt` first, wire it into the Composable/SwiftUI view, then write the flow.
+If you need a tag that doesn't exist yet, add it to `TestTags.kt` first, wire it into the Composable/SwiftUI view, then write the flow. To discover what's already on screen (and whether a tag exists), dump the live view hierarchy — see [Dumping the view hierarchy](#dumping-the-view-hierarchy).
 
 ### Standard flow skeleton
 
@@ -76,7 +76,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 10000
+    timeout: 5000
 
 # ...feature steps...
 ```
@@ -106,6 +106,22 @@ When writing a new flow, start by reading the closest existing one:
 - Add `- takeScreenshot: name` at suspect steps; screenshots land in `./debug-output-*/`.
 - Use `maestro studio` for an interactive REPL against the running app — fastest way to discover the correct selectors.
 - If `assertVisible` flakes, switch to `extendedWaitUntil` with an explicit `timeout`.
+
+### Dumping the view hierarchy
+
+`maestro studio` is interactive, so it's awkward for non-interactive (agent) use. For a one-shot, structured snapshot of what's currently on screen, use `maestro hierarchy` — it prints the live element tree of the connected device to stdout, so you can find the correct `id:` / selector or confirm a `TestTag` is actually wired up without guessing from a screenshot.
+
+```bash
+export MAESTRO_CLI_NO_ANALYTICS=1
+maestro --no-ansi --device <DEVICE_ID> hierarchy --compact > hierarchy.txt
+```
+
+- **`--device` is a global flag — it goes *before* `hierarchy`, not after** (the subcommand has no `--device` of its own and will exit 2 if you append it). Required whenever more than one device/simulator is connected.
+- **`--compact`** emits CSV (`element_num,depth,attributes,parent_num`) — far easier to grep than the default JSON tree. The `resource-id=` field holds the `TestTag` (Android) / accessibility identifier (iOS).
+- Drive the app to the target screen first (run a flow up to that point, or interact manually), then dump — `hierarchy` snapshots whatever is currently on screen.
+- Output is large — redirect to a file and grep for the label/tag you're after rather than reading it whole.
+- **Tags absent from the dump = that branch of UI isn't rendered**, not that the tag is broken. A `launchApp` with `clearState: true` wipes app data, so list/item tags (e.g. `PLACE_HISTORY_LIST`, `PLACE_HISTORY_ITEM`) won't appear on an empty screen — seed the data first if you need to target them.
+- Use this as the discovery step before writing or fixing a flow; pair it with `takeScreenshot` when you also need the visual.
 
 ## Command reference
 

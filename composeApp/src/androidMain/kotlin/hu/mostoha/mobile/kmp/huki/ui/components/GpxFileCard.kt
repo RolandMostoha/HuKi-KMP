@@ -102,7 +102,7 @@ private fun GpxFileStatsRow(file: GpxFileItem) {
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = R.drawable.ic_distance,
+            iconResId = R.drawable.ic_place_circle,
             value = DistanceFormatter.formatDistance(file.totalDistance),
             modifier = Modifier.weight(1f),
         )
