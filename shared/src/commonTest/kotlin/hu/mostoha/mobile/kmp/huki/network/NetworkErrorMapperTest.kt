@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.network
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test

@@ -4,6 +4,9 @@
     <string name="a11y_clear_text">Szöveg törlése</string>
     <string name="a11y_menu">Menü</string>
 
+    <string name="see_all">Összes</string>
+    <string name="alert_ok">Rendben</string>
+
     <string name="error_unknown">Ismeretlen hiba történt.</string>
 
     <string name="network_error_title">Hiba történt</string>
@@ -24,8 +27,6 @@
     <string name="network_error_unknown_title">Ismeretlen hiba történt</string>
     <string name="network_error_unknown_message">Ismeretlen Hiba történt a szolgáltatás használata közben. Kérlek próbáld újra.</string>
 
-    <string name="alert_ok">Rendben</string>
-
     <string name="travel_time_minutes_pattern">%s P</string>
     <string name="travel_time_hours_pattern">%s Ó</string>
     <string name="travel_time_hours_minutes_pattern">%sÓ %sP</string>
@@ -40,6 +41,7 @@
     <string name="search_input_placeholder">Keresés...</string>
     <string name="search_error_retry">Újrapróbálás</string>
     <string name="search_powered_by">Powered by</string>
+    <string name="search_recent_gpx_title">Legutóbbi GPX fájlok</string>
 
     <string name="layers_base_layers_title">Alap térkép</string>
     <string name="layers_base_outdoors_title">Természet</string>
@@ -180,7 +182,6 @@
     <string name="place_category_farm">Tanya</string>
 
     <string name="destinations_section_title">Kirándulóhelyek</string>
-    <string name="destinations_see_all">Összes</string>
     <string name="destinations_a11y_info">Leírás megjelenítése</string>
     <string name="destinations_type_highest_peak">Táj csúcsa</string>
     <string name="destinations_type_peak">Csúcs</string>

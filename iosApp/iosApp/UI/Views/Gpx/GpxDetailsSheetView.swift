@@ -44,6 +44,7 @@ struct GpxDetailsSheetView: View {
                 .buttonStyle(.plain)
                 .contentShape(Circle())
                 .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
+                .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_CLOSE_BUTTON)
             }
             GpxStatsRowView(
                 strings: strings,

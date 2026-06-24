@@ -1,21 +1,4 @@
-<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-    <!-- Map Outline (Centered with 40px padding from all edges) -->
-    <path d="M40,110 L180,40 L320,110 L460,40 L460,390 L320,460 L180,390 L40,460 Z"
-          fill="none"
-          stroke="black"
-          stroke-width="35"
-          stroke-linejoin="round" />
-
-    <!-- Path Line (3 waypoints) -->
-    <polyline points="140,210 250,310 360,210"
-              fill="none"
-              stroke="black"
-              stroke-width="28"
-              stroke-linecap="round"
-              stroke-linejoin="round" />
-
-    <!-- Nodes/Points (Large r=40 for high visibility) -->
-    <circle cx="140" cy="210" r="40" fill="black" />
-    <circle cx="250" cy="310" r="40" fill="black" />
-    <circle cx="360" cy="210" r="40" fill="black" />
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000000">
+    <path transform="translate(1.5148 18.6543) scale(0.009242 -0.009242)" d="M496 1120C496 920 621 780 859 714L1362 572C1527 525 1611 440 1611 320V272C1472 236 1369 110 1369 -41C1369 -218 1514 -362 1692 -362C1870 -362 2014 
+  -218 2014 -41C2014 110 1911 236 1772 272V320C1772 519 1648 659 1410 725L907 867C743 913 657 1000 657 1120V1167C797 1203 899 1329 899 1480C899 1657 755 1802 577 1802C399 1802 255 1657 255 1480C255 1329 358 1203 496 1167Z"/>
 </svg>

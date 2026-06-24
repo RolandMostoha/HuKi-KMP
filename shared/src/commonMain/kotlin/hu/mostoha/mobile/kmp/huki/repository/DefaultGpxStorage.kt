@@ -1,20 +1,19 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.copyTo
 import io.github.vinceglb.filekit.createDirectories
 import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.exists
-import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.filesDir
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.name
-import io.github.vinceglb.filekit.nameWithoutExtension
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.startAccessingSecurityScopedResource
 import io.github.vinceglb.filekit.stopAccessingSecurityScopedResource
+import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -28,21 +27,26 @@ class DefaultGpxStorage : GpxStorage {
             }
         }
 
-    override suspend fun saveToFileSystem(sourceUri: String): PlatformFile =
+    override suspend fun readGpx(sourceUri: String): GpxFileSource =
         withContext(Dispatchers.IO) {
             val source = PlatformFile(sourceUri)
             val accessing = source.startAccessingSecurityScopedResource()
             try {
-                val destination = resolveDestination(source)
-                if (!destination.exists()) {
-                    source.copyTo(destination)
-                }
-                destination
+                GpxFileSource(fileName = source.name, content = source.readBytes())
             } finally {
                 if (accessing) {
                     source.stopAccessingSecurityScopedResource()
                 }
             }
+        }
+
+    override suspend fun saveToSandbox(source: GpxFileSource): PlatformFile =
+        withContext(Dispatchers.IO) {
+            val destination = resolveDestination(source.fileName, source.content)
+            if (!destination.exists()) {
+                destination.write(source.content)
+            }
+            destination
         }
 
     override suspend fun listGpxFiles(): List<PlatformFile> = gpxDir().list()
@@ -57,18 +61,17 @@ class DefaultGpxStorage : GpxStorage {
      * Returns the sandbox file to write to: the existing file when its content is identical,
      * otherwise the next free name suffixed with " (n)".
      */
-    private suspend fun resolveDestination(source: PlatformFile): PlatformFile {
-        val sourceBytes = source.readBytes()
-        val candidate = gpxDir() / source.name
-        if (!candidate.exists() || candidate.readBytes().contentEquals(sourceBytes)) {
+    private suspend fun resolveDestination(fileName: String, content: ByteArray): PlatformFile {
+        val candidate = gpxDir() / fileName
+        if (!candidate.exists() || candidate.readBytes().contentEquals(content)) {
             return candidate
         }
-        val baseName = source.nameWithoutExtension
-        val extension = source.extension.ifEmpty { GPX_EXTENSION }
+        val baseName = fileName.substringBeforeLast('.', fileName)
+        val extension = fileName.substringAfterLast('.', "").ifEmpty { GPX_EXTENSION }
         var index = COLLISION_START_INDEX
         while (true) {
             val suffixed = gpxDir() / "$baseName ($index).$extension"
-            if (!suffixed.exists() || suffixed.readBytes().contentEquals(sourceBytes)) {
+            if (!suffixed.exists() || suffixed.readBytes().contentEquals(content)) {
                 return suffixed
             }
             index++

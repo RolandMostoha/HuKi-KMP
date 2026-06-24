@@ -46,6 +46,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.ui.components.GpxFileCard
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -256,7 +257,7 @@ private fun GpxFileSectionCard(
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = Dimens.Large),
                         thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f),
+                        color = MaterialTheme.colorScheme.dividerColor,
                     )
                 }
             }
@@ -271,12 +272,14 @@ private fun GpxCollectionContentPreview() {
     val sampleToday = GpxFileItem(
         fileName = "okt15.gpx",
         fileUri = "uri/okt15.gpx",
+        trackId = "okt15",
         title = "OKT-15 Rozália téglagyár – Dobogókő",
         totalDistance = 22.6.kilometers,
         travelTime = 7.hours.plus(28.minutes),
         incline = 1986,
         decline = 1642,
         lastModified = now,
+        lastOpened = now,
     )
     val sampleToday2 = sampleToday.copy(
         fileName = "pilis-korte.gpx",

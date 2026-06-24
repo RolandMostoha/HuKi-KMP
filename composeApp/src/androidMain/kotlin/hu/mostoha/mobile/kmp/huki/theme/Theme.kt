@@ -19,11 +19,11 @@ private fun lightColors(): ColorScheme {
     return lightColorScheme(
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
-        background = SharedRes.colors.background.toComposeColor(context),
+        background = LightBackground,
         primaryContainer = SharedRes.colors.primaryContainer.toComposeColor(context),
-        surface = SharedRes.colors.background.toComposeColor(context),
-        surfaceTint = SharedRes.colors.background.toComposeColor(context),
-        surfaceVariant = SharedRes.colors.backgroundLight.toComposeColor(context),
+        surface = LightBackground,
+        surfaceTint = LightBackground,
+        surfaceVariant = LightSurfaceVariant,
     )
 }
 
@@ -33,11 +33,11 @@ private fun darkColors(): ColorScheme {
     return darkColorScheme(
         primary = SharedRes.colors.primary.toComposeColor(context),
         onPrimary = SharedRes.colors.onPrimary.toComposeColor(context),
-        background = SharedRes.colors.background.toComposeColor(context),
+        background = DarkBackground,
         primaryContainer = SharedRes.colors.primaryContainer.toComposeColor(context),
-        surface = SharedRes.colors.background.toComposeColor(context),
-        surfaceTint = SharedRes.colors.background.toComposeColor(context),
-        surfaceVariant = SharedRes.colors.backgroundLight.toComposeColor(context),
+        surface = DarkBackground,
+        surfaceTint = DarkBackground,
+        surfaceVariant = DarkSurfaceVariant,
     )
 }
 

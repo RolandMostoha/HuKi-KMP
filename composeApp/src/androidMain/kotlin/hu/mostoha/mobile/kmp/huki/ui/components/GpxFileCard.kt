@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
@@ -97,22 +97,22 @@ private fun GpxFileStatsRow(file: GpxFileItem) {
         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
     ) {
         StatChip(
-            iconResId = SharedRes.images.ic_gpx_travel_time.drawableResId,
+            iconResId = R.drawable.ic_clock,
             value = mokoString(TravelTimeFormatter.formatTravelTime(file.travelTime)),
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = SharedRes.images.ic_gpx_distance.drawableResId,
+            iconResId = R.drawable.ic_distance,
             value = DistanceFormatter.formatDistance(file.totalDistance),
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = SharedRes.images.ic_gpx_uphill.drawableResId,
+            iconResId = R.drawable.ic_up_double,
             value = DistanceFormatter.formatMeters(file.incline),
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = SharedRes.images.ic_gpx_downhill.drawableResId,
+            iconResId = R.drawable.ic_down_double,
             value = DistanceFormatter.formatMeters(file.decline),
             modifier = Modifier.weight(1f),
         )
@@ -127,12 +127,14 @@ private fun GpxFileCardPreview() {
             file = GpxFileItem(
                 fileName = "okt15.gpx",
                 fileUri = "uri/okt15.gpx",
+                trackId = "okt15",
                 title = "OKT-15 Rozália téglagyár – Dobogókő",
                 totalDistance = 22.6.kilometers,
                 travelTime = 7.hours.plus(28.minutes),
                 incline = 1986,
                 decline = 1642,
                 lastModified = Clock.System.now(),
+                lastOpened = Clock.System.now(),
             ),
             onClick = {},
             onRenameClick = {},

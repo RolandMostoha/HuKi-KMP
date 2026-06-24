@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.UiFormatter
@@ -102,11 +102,11 @@ private fun StatChipPreview() {
     HuKiTheme {
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Small)) {
             StatChip(
-                iconResId = SharedRes.images.ic_gpx_distance.drawableResId,
+                iconResId = R.drawable.ic_distance,
                 value = "22.6 km",
             )
             StatChip(
-                iconResId = SharedRes.images.ic_gpx_uphill.drawableResId,
+                iconResId = R.drawable.ic_up_double,
                 value = "1986 m",
                 label = "Incline",
                 style = StatChipStyle.Large,

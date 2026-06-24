@@ -1,0 +1,74 @@
+appId: ${APP_ID}
+---
+# Recent GPX: import a GPX file, then verify it appears in Search's Recent section and opens.
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- runFlow: subflows/maestro_flow_import_gpx.yaml
+
+# Close the GPX Details sheet to reveal the map and the search bar.
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+
+# Open Search with an empty query: the Recent GPX section is shown.
+- assertVisible: "Search..."
+- tapOn: "Search..."
+- extendedWaitUntil:
+    visible:
+      id: RECENT_GPX_SECTION
+    timeout: 5000
+- assertVisible:
+    id: RECENT_GPX_ITEM
+
+# Tapping a recent file re-opens it on the map and dismisses the search sheet.
+- tapOn:
+    id: RECENT_GPX_ITEM
+- assertVisible:
+    id: MAP_MAPBOX
+- assertNotVisible:
+    id: RECENT_GPX_SECTION
+
+# Deleting the file from GPX Collection must drop it from Search's Recent section too.
+# Close the GPX Details sheet to reveal the map and the Menu entry.
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+
+# Open the GPX Collection from the Menu and delete the imported file.
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_GPX_COLLECTION
+- extendedWaitUntil:
+    visible:
+      id: GPX_COLLECTION_SCREEN_ROOT
+    timeout: 5000
+# The delete action and confirm dialog render in separate windows, so target them by text.
+- tapOn:
+    id: GPX_COLLECTION_ITEM_OPTIONS_BUTTON
+- tapOn:
+    text: "^Delete$"
+- assertVisible: "Delete GPX file?"
+- tapOn:
+    text: "^Delete$"
+- extendedWaitUntil:
+    visible:
+      id: GPX_COLLECTION_EMPTY_VIEW
+    timeout: 5000
+- tapOn:
+    id: GPX_COLLECTION_BACK_BUTTON
+- tapOn:
+    id: MENU_BACK_BUTTON
+
+# Re-opening Search shows no Recent GPX section: the scoped ViewModel reloads from cleaned metadata.
+- assertVisible:
+    id: MAP_MAPBOX
+- assertVisible: "Search..."
+- tapOn: "Search..."
+- extendedWaitUntil:
+    notVisible:
+      id: RECENT_GPX_SECTION
+    timeout: 5000
+- assertNotVisible:
+    id: RECENT_GPX_ITEM

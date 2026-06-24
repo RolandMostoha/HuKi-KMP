@@ -1,10 +1,12 @@
-package hu.mostoha.mobile.kmp.huki.model.domain
+package hu.mostoha.mobile.kmp.huki.model.mapper
 
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
-class PlaceTest {
+class PlaceMapperTest {
     @Test
     fun `Given LocationIqPlace with known type and osmType, when toPlaceSearchResult, then both resolved`() {
         val networkPlace = locationIqPlace(type = "peak", osmType = "N")

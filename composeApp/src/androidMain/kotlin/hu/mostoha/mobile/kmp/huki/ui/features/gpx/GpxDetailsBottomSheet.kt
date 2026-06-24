@@ -123,6 +123,7 @@ fun GpxDetailsBottomSheet(
                 }
                 IconButton(
                     onClick = onCloseClick,
+                    modifier = Modifier.testTag(TestTags.GPX_DETAILS_CLOSE_BUTTON),
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
@@ -142,28 +143,28 @@ fun GpxDetailsBottomSheet(
                 horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
             ) {
                 StatChip(
-                    iconResId = SharedRes.images.ic_gpx_travel_time.drawableResId,
+                    iconResId = R.drawable.ic_clock,
                     value = mokoString(TravelTimeFormatter.formatTravelTime(gpxDetails.travelTime)),
                     label = mokoString(SharedRes.strings.gpx_details_travel_time),
                     style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
                 StatChip(
-                    iconResId = SharedRes.images.ic_gpx_distance.drawableResId,
+                    iconResId = R.drawable.ic_distance,
                     value = DistanceFormatter.formatDistance(gpxDetails.totalDistance),
                     label = mokoString(SharedRes.strings.gpx_details_distance),
                     style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
                 StatChip(
-                    iconResId = SharedRes.images.ic_gpx_uphill.drawableResId,
+                    iconResId = R.drawable.ic_up_double,
                     value = DistanceFormatter.formatMeters(gpxDetails.incline),
                     label = mokoString(SharedRes.strings.gpx_details_incline),
                     style = StatChipStyle.Large,
                     modifier = Modifier.weight(1f),
                 )
                 StatChip(
-                    iconResId = SharedRes.images.ic_gpx_downhill.drawableResId,
+                    iconResId = R.drawable.ic_down_double,
                     value = DistanceFormatter.formatMeters(gpxDetails.decline),
                     label = mokoString(SharedRes.strings.gpx_details_decline),
                     style = StatChipStyle.Large,

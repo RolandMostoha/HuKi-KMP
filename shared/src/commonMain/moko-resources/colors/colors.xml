@@ -32,14 +32,6 @@
         <light>#363636</light>
         <dark>#DEffff</dark>
     </color>
-    <color name="background">
-        <light>#fffff7</light>
-        <dark>#2D2D2D</dark>
-    </color>
-    <color name="backgroundLight">
-        <light>#F6FBF4</light>
-        <dark>#121712</dark>
-    </color>
     <color name="mapStroke">
         <light>#1a1a1a</light>
         <dark>#e0e0e0</dark>

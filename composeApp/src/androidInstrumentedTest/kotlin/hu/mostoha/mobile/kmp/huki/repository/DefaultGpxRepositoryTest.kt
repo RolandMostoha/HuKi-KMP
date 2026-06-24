@@ -15,6 +15,7 @@ import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
+import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,7 +34,7 @@ import kotlin.test.assertFailsWith
 @MediumTest
 class DefaultGpxRepositoryTest {
 
-    val repository = DefaultGpxRepository(DefaultGpxStorage())
+    val repository = DefaultGpxRepository(DefaultGpxStorage(), DefaultGpxMetadataStore())
 
     @Test
     fun givenGpxWithRoutes_whenReadGpxFile_thenCorrectGpxReturns() {
@@ -112,6 +113,20 @@ class DefaultGpxRepositoryTest {
     }
 
     @Test
+    fun givenMalformedGpx_whenReadGpxFile_thenInvalidCopyNotKeptInSandbox() {
+        runTest {
+            val fileName = "gpx_test_malformed.gpx"
+            val uri = saveTestGpx(fileName)
+
+            assertFailsWith<MalformedGpxException> {
+                repository.readGpxFile(uri.toString())
+            }
+
+            File(appContext.filesDir, "gpx/external/$fileName").exists() shouldBe false
+        }
+    }
+
+    @Test
     fun givenNonGpxFile_whenReadGpxFile_thenNonGpxExceptionReturns() {
         runTest {
             val uri = saveTestGpx("gpx_test_non_gpx.txt")
@@ -133,6 +148,45 @@ class DefaultGpxRepositoryTest {
             repository.deleteGpxFile(gpx.fileName)
 
             repository.getGpxFiles().map { it.fileName } shouldNotContain gpx.fileName
+        }
+    }
+
+    @Test
+    fun givenSavedGpx_whenDeleteGpxFile_thenFileIsRemovedFromRecent() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_routes.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldContain gpx.fileName
+
+            repository.deleteGpxFile(gpx.fileName)
+
+            repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldNotContain gpx.fileName
+        }
+    }
+
+    @Test
+    fun givenReadGpxFile_whenGetGpxFiles_thenLastOpenedAndTrackIdRecorded() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_routes.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            val item = repository.getGpxFiles().single { it.fileName == gpx.fileName }
+
+            item.lastOpened shouldNotBe null
+            item.trackId.length shouldBe 16
+        }
+    }
+
+    @Test
+    fun givenRecentlyOpenedGpx_whenGetRecentGpxFiles_thenReturnedWithinLimit() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_routes.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            val recent = repository.getRecentGpxFiles(limit = 3)
+
+            recent.map { it.fileName } shouldContain gpx.fileName
         }
     }
 

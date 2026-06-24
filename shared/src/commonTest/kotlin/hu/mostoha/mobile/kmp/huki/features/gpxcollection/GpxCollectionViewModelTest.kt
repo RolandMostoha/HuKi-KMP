@@ -52,16 +52,18 @@ class GpxCollectionViewModelTest {
         return viewModel
     }
 
-    private fun gpxFileItem(fileName: String, lastModified: Instant): GpxFileItem =
+    private fun gpxFileItem(fileName: String, lastModified: Instant, lastOpened: Instant? = null): GpxFileItem =
         GpxFileItem(
             fileName = fileName,
             fileUri = "uri/$fileName",
+            trackId = "track-$fileName",
             title = "Title of $fileName",
             totalDistance = 10.kilometers,
             travelTime = 2.hours,
             incline = 100,
             decline = 100,
             lastModified = lastModified,
+            lastOpened = lastOpened,
         )
 
     @Test

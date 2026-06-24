@@ -114,6 +114,13 @@ struct MainView: View {
                                     let event = MainUiEventsSearchDestinationSelected(destination: destination)
                                     viewModel.onEvent(event: event)
                                 },
+                                onGpxFileSelected: { uri in
+                                    viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                                },
+                                onSeeAllGpxClicked: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                    navigationPath.append(GpxCollectionRoute.gpxCollection)
+                                },
                                 onLocationIqClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())
                                     navigationPath.append(LocationIqRoute.locationIq)

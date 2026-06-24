@@ -2,7 +2,6 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 
 import org.maplibre.spatialk.units.Length
 import kotlin.time.Duration
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -21,15 +20,3 @@ data class GpxDetails(
     val incline: Int,
     val decline: Int,
 )
-
-fun GpxDetails.toGpxFileItem(lastModified: Instant): GpxFileItem =
-    GpxFileItem(
-        fileName = fileName,
-        fileUri = fileUri,
-        title = title,
-        totalDistance = totalDistance,
-        travelTime = travelTime,
-        incline = incline,
-        decline = decline,
-        lastModified = lastModified,
-    )
