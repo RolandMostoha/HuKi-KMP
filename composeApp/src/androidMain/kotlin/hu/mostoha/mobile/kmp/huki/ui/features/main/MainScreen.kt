@@ -40,6 +40,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.isModal
 import hu.mostoha.mobile.kmp.huki.model.domain.isStandard
@@ -62,8 +63,11 @@ fun MainScreen(
     onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onPlaceHistoryClicked: () -> Unit,
     openGpxUri: String? = null,
     onOpenGpxConsumed: () -> Unit = {},
+    openPlace: Pair<OsmType, String>? = null,
+    onOpenPlaceConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -77,6 +81,13 @@ fun MainScreen(
         }
     }
 
+    LaunchedEffect(openPlace) {
+        openPlace?.let { (osmType, osmId) ->
+            viewModel.onEvent(MainUiEvents.HistoryPlaceSelected(osmType, osmId))
+            onOpenPlaceConsumed()
+        }
+    }
+
     MainContent(
         uiState = uiState,
         mainUiEffects = viewModel.mainUiEffects,
@@ -85,6 +96,7 @@ fun MainScreen(
         onMenuClicked = onMenuClicked,
         onLocationIqClicked = onLocationIqClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
+        onPlaceHistoryClicked = onPlaceHistoryClicked,
     )
 }
 
@@ -97,6 +109,7 @@ private fun MainContent(
     onMenuClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onPlaceHistoryClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -202,6 +215,7 @@ private fun MainContent(
                                 }
                             },
                             onSeeAllGpxClicked = onGpxCollectionClicked,
+                            onSeeAllPlacesClicked = onPlaceHistoryClicked,
                             onLocationIqClicked = onLocationIqClicked,
                         )
                     }
@@ -311,6 +325,7 @@ private fun MainContentPreview() {
             onMenuClicked = {},
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
+            onPlaceHistoryClicked = {},
         )
     }
 }
@@ -327,6 +342,7 @@ private fun MainContentLoadingPreview() {
             onMenuClicked = {},
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
+            onPlaceHistoryClicked = {},
         )
     }
 }

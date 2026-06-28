@@ -28,7 +28,15 @@ jobs:
         run: ./gradlew detekt
 
       - name: Ktlint
-        run: ./gradlew ktlintCheck
+        # iOS targets can't compile on Linux (moko-resources invokes macOS-only `xcrun`).
+        run: >
+          ./gradlew ktlintCheck
+          -x compileKotlinIosArm64
+          -x compileKotlinIosSimulatorArm64
+          -x kspKotlinIosArm64
+          -x kspKotlinIosSimulatorArm64
+          -x kspTestKotlinIosArm64
+          -x kspTestKotlinIosSimulatorArm64
 
       - name: Android Lint
         run: ./gradlew lint
@@ -63,6 +71,7 @@ jobs:
           api-level: 36
           arch: x86_64
           target: google_apis_playstore
+          profile: pixel_7_pro
           disable-spellchecker: true
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none
@@ -114,6 +123,7 @@ jobs:
           api-level: 36
           arch: x86_64
           target: google_apis_playstore
+          profile: pixel_7_pro
           disable-spellchecker: true
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none

@@ -3,9 +3,9 @@ import SwiftUI
 
 struct SectionHeaderView: View {
     let title: String
-    let actionText: String
-    let onActionClick: () -> Void
-    let actionAccessibilityId: String
+    var actionText: String?
+    var onActionClick: (() -> Void)?
+    var actionAccessibilityId: String?
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -13,13 +13,15 @@ struct SectionHeaderView: View {
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
-            Button(action: onActionClick) {
-                Text(actionText)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(SwiftUI.Color(SharedRes.colors().primary.getUIColor()))
+            if let actionText, let onActionClick {
+                Button(action: onActionClick) {
+                    Text(actionText)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(SwiftUI.Color(SharedRes.colors().primary.getUIColor()))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier(actionAccessibilityId ?? "")
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier(actionAccessibilityId)
         }
         .padding(.horizontal, 16)
     }

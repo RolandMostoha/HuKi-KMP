@@ -37,7 +37,7 @@ Lint:
 - `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
 - `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
-- `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Use for: "upload test gpx files (iOS)", or before running Maestro tests on iOS.
+- `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
@@ -99,7 +99,7 @@ Chores is a checklist which should be checked for every new "feature complete" c
 - Translations
 - Accessibility labels (e.g. strings.a11y_close)
 - TestTag IDs for Maestro element targets
-- What happens in offline mode?
+- Always ask: what happens with this feature in offline mode? -> for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
 
@@ -242,6 +242,7 @@ val [actual] = operation(X)
 - Global, reusable flows are under under `./maestro/subflows/*.yaml`
 - Wherever possible, write one test case `yaml` for both Android+iOS : "written-once, test both".
 - For shared test tags, use the `TestTags` object.
+- Important: the tests where GPX import is needed (e.g. maestro_gpx), use [platform]_upload_test_gpx_files.sh to pre-load GPX fixtures before running the tests.
 
 ### Jetpack Compose - Android
 - Look as native as possible - Material3

@@ -24,12 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.resources.ImageResource
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceIconRes
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -38,14 +39,14 @@ import hu.mostoha.mobile.kmp.huki.util.mokoImage
 
 @Composable
 fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val subtitle = place.subtitle
+    val subtitle = place.address
     val category = place.placeCategory
     val backgroundColor = if (category != null) {
         mokoColor(category.categoryColorRes)
     } else {
         mokoColor(SharedRes.colors.colorPlaceCategoryFallback)
     }
-    val iconRes = category?.iconRes ?: osmIconRes(place.osmType)
+    val iconRes = category?.iconRes ?: toPlaceIconRes(place.osmType)
     val distance = place.distance
 
     Surface(
@@ -79,7 +80,7 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = place.title,
+                    text = place.name,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -112,13 +113,6 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
     }
 }
 
-private fun osmIconRes(osmType: OsmType?): ImageResource =
-    when (osmType) {
-        OsmType.WAY -> SharedRes.images.ic_place_type_way
-        OsmType.RELATION -> SharedRes.images.ic_place_type_relation
-        OsmType.NODE, null -> SharedRes.images.ic_place_type_node
-    }
-
 @Preview
 @Composable
 private fun SearchResultItemPreview() {
@@ -133,65 +127,73 @@ private fun SearchResultItemPreview() {
 
 private val previewPlaces = listOf(
     Place(
-        id = "1",
-        title = "Unknown Node",
-        subtitle = "Fallback icon - node",
+        osmId = "1",
+        name = "Unknown Node",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Fallback icon - node",
         location = Location(47.0, 19.0),
         osmType = OsmType.NODE,
         distance = "2 km",
     ),
     Place(
-        id = "2",
-        title = "Unknown Way",
-        subtitle = "Fallback icon - way",
+        osmId = "2",
+        name = "Unknown Way",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Fallback icon - way",
         location = Location(47.0, 19.0),
         osmType = OsmType.WAY,
     ),
     Place(
-        id = "3",
-        title = "Unknown Relation",
-        subtitle = "Fallback icon - relation",
+        osmId = "3",
+        name = "Unknown Relation",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Fallback icon - relation",
         location = Location(47.0, 19.0),
         osmType = OsmType.RELATION,
     ),
     Place(
-        id = "4",
-        title = "Dobogókő",
-        subtitle = "Pilis Mountains, Hungary",
+        osmId = "4",
+        name = "Dobogókő",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Pilis Mountains, Hungary",
         location = Location(47.7181, 18.8948),
         placeCategory = PlaceCategory.PEAK,
         osmType = OsmType.NODE,
         distance = "2 km",
     ),
     Place(
-        id = "5",
-        title = "Balaton",
-        subtitle = "Lake, Transdanubia, Hungary",
+        osmId = "5",
+        name = "Balaton",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Lake, Transdanubia, Hungary",
         location = Location(46.83, 17.73),
         placeCategory = PlaceCategory.LAKE,
         osmType = OsmType.RELATION,
     ),
     Place(
-        id = "6",
-        title = "Dobogókői Kilátó",
-        subtitle = "Viewpoint, Pilis",
+        osmId = "6",
+        name = "Dobogókői Kilátó",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Viewpoint, Pilis",
         location = Location(47.72, 18.89),
         placeCategory = PlaceCategory.VIEWPOINT,
         osmType = OsmType.NODE,
         distance = "2 km",
     ),
     Place(
-        id = "7",
-        title = "Visegrádi vár",
-        subtitle = "Castle, Visegrád",
+        osmId = "7",
+        name = "Visegrádi vár",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Castle, Visegrád",
         location = Location(47.79, 18.97),
         placeCategory = PlaceCategory.CASTLE,
         osmType = OsmType.WAY,
     ),
     Place(
-        id = "8",
-        title = "Gulyás Csárda",
-        subtitle = "Restaurant, Budapest",
+        osmId = "8",
+        name = "Gulyás Csárda",
+        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+        address = "Restaurant, Budapest",
         location = Location(47.5, 19.05),
         placeCategory = PlaceCategory.RESTAURANT,
         osmType = OsmType.NODE,

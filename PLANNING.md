@@ -36,10 +36,12 @@
 
 ### Go-live remaining features
 
-1. Recent Places -> from LIQ Autocomplete / Destinations
-2. Place Details -> long tap on map AND destinations
-3. Display (distance + time) in an InfoWindow on top Start / End / Waypoint points
-4. While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons
+- Recent Places -> from LIQ Autocomplete / Destinations / Long tap place details
+- Place Details -> long tap on map AND destinations
+- Display (distance + time) in an InfoWindow on top Start / End / Waypoint points
+- While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons
+- Destinations screen with filtering
+- Versioning, WhatsNews
 
 ## Backlog
 
@@ -55,6 +57,7 @@
 | `[L]`  | Implement T&C on huki.hu                                                                         |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
+| `[ ]`  | Check project against Swift agent skills in XCode                                                |
 | `[ ]`  | GitHub smart labels, E.g.: https://github.com/balazsgerlei/ScreenLit/blob/main/README.md?plain=1 |
 
 ### Bugs
@@ -62,7 +65,6 @@
 | Status | Scope  | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[L]`  | Map    | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
-| `[L]`  | CI     | Bug: Android. If open SearchBottomSheet and close it with swipe-to-dismiss all FABs and SearchBar are missing. Dead-end.                                                                                                                                                                                        |
 | `[ ]`  | CI     | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
@@ -88,19 +90,82 @@
 
 ### FEATURE: Search
 
-| Status | Scope  | Task                                                                                                  |
-|--------|--------|-------------------------------------------------------------------------------------------------------|
-| `[L]`  | Search | Recent places - store searched places in local DB. Show them in Search Sheet.                         |
-| `[x]`  | Search | Recent GPX files, show them in Search Sheet. (pre-requisite: GPX files in sandbox)                    |
-| `[L]`  | Search | iOS: if search sheet is scrolled, the list should hide beneath the search bar in a "liquid glass" way |
-| `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                          |
-| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                |
+| Status | Scope  | Task                                                                                                                                                                          |
+|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
+| `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
+| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
+
+### FEATURE: Place History
+
+Place History is feature which stores the users "visited/viewed" places so it can be retrieved later
+from a cache / DB.
+This is good for UX + offline mode + reduce the token consumption on LocationIQ.
+
+- Source of Place History:
+    - Autocomplete select
+    - Destination select
+    - TBD: Long tap on map (reverse geocode)
+    - TBD: Route planner
+    - TBD: Map -> My location (reverse geocode)
+- Place history is used:
+    - Recent places in Search
+    - Search Autocomplete as an immediate result (offline)
+    - Dedicated Place History screen (from menu) as a list
+
+| Status | Scope        | Task                                                                                                             |
+|--------|--------------|------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | PlaceHistory | Use LocationIQ result -> bounding box for places to set camera bounds for the place                              |
+| `[x]`  | PlaceHistory | Setup Room KMP                                                                                                   |
+| `[x]`  | PlaceHistory | Design DB entities. These should store Place and Destination visits as well.                                     |
+| `[x]`  | PlaceHistory | If a place is picked from Search/Autocomplete, store it in PlaceHistory DB                                       |
+| `[x]`  | PlaceHistory | If a destination is picked from Search, store it in PlaceHistory DB                                              |
+| `[x]`  | PlaceHistory | Add Search/Recent Places -> a list view for 3 most recent PlaceHistory entity. On click: MainVM.showPlace()      |
+| `[ ]`  | PlaceHistory | Add a "Place History" button to menu as a main feature, above GPX Collection. A:ic_place, iOS:mappin.and.ellipse |
+| `[ ]`  | PlaceHistory | Add "Place History" screen, copy the style of GpxCollection                                                      |
+| `[ ]`  | PlaceHistory | Add empty view (example: GpxCollection-Empty View, we can use similar wordings)                                  |
+| `[ ]`  | PlaceHistory | Add list view for history places. Items should look like RecentPlaces, without distance, groupedBy lastVisited.  |
+| `[ ]`  | PlaceHistory | On item click place should be opened as MainVM.showPlace()                                                       |
+| `[ ]`  | PlaceHistory | Add "See all" to Search/Recent Places -> Navigates to PlaceHistoryScreen                                         |
+
+#### Add Place History items to Search -> Autocomplete
+
+- Local DB: fire on every keystroke, no debounce — it's an instant indexed read, that's the whole
+  point.
+- clock or pin icon), remote results below
+- LocationIQ: debounced (~300ms) — don't spam the API mid-typing.
+- Dedupe, so results from Place History is not shown again.
+
+### FEATURE: Destinations
+
+| Status | Scope        | Task                                                                                                                                                                               |
+|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.                                                                                                                  |
+| `[ ]`  | Destinations | Add a "Destinations" button to menu as a main feature, above GPX Collection. A:ic_backpack, iOS:backpack.fill                                                                      |
+| `[ ]`  | Destinations | Add "Destinations" screen, copy the style of GpxCollection                                                                                                                         |
+| `[ ]`  | Destinations | Empty view is not necessary, @Destinations are always there                                                                                                                        |
+| `[ ]`  | Destinations | Add title as en:"Destinations" hu:"Kirándulóhelyek", and "[Count] destinations"                                                                                                    |
+| `[ ]`  | Destinations | Top right "map" button is not needed for the moment.                                                                                                                               |
+| `[ ]`  | Destinations | Add a Segmented Control to the top with "Popular", "By area", "Nearby"                                                                                                             |
+| `[ ]`  | Destinations | Add list view for "Popular". Rows should be numbered. Distance is not needed.                                                                                                      |
+| `[ ]`  | Destinations | Add list view for "Nearby". Row numbers are not needed. Distance is needed. If Permission is not granted for location, show InfoView.Warning, with a link to location permissions. |
+| `[ ]`  | Destinations | Add list view for "By area". Section headers are coming from                                                                                                                       |
+| `[ ]`  | Destinations | Do not implement item click yet.                                                                                                                                                   |
+| `[ ]`  | Destinations | Add "See all" click handling to Search/Destinations -> Navigates to "Destinations"                                                                                                 |
+
+### FEATURE: WhatsNew
+
+| Status | Scope        | Task                                                                                          |
+|--------|--------------|-----------------------------------------------------------------------------------------------|
+| `[L]`  | Version      | Add proper versioning to app, which works for Android and iOS. Different versioning possible. |
+| `[L]`  | Destinations | Add filter options to destinations (popularity, landscape, distance etc.)                     |
+| `[L]`  | Destinations | See all on Map                                                                                |
 
 ### FEATURE: GPX
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[L]`  | GPX   | Display (distance + time) in an InfoWindow on top Start / End / Waypoint points   |
+| `[ ]`  | GPX   | Display (distance + time) in an InfoWindow on top Start / End / Waypoint points   |
 | `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
 | `[ ]`  | GPX   | Colored GPX                                                                       |
 | `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
@@ -117,35 +182,26 @@
 
 ### FEATURE: GPX Collection
 
-| Status | Scope         | Task                                                                                                                                                               |
-|--------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | GPXMetadata   | Goal: Populate "Recent GPX files" section in Search.                                                                                                               |                                                                                                                   |
-| `[x]`  | GPXMetadata   | Save "lastOpened" date-time when user opens (for the first time) or re-opens the GPX file. The current "lastModified" from File is only useful for date of import. |                                                                                                                   |
-| `[x]`  | GPXMetadata   | Create a JSON `GpxMetadataStore` (commonMain), in `/gpx/`.                                                                                                         |
-| `[x]`  | GPXMetadata   | Add a new entry to metadata on GPX import                                                                                                                          |
-| `[x]`  | GPXMetadata   | The metadata should contain a trackId (unique ID based on file content). File Rename-survival is important                                                         |
-| `[x]`  | GPXMetadata   | The metadata should contain a lastOpened offset date time in human readable format                                                                                 |
-| `[x]`  | GPXMetadata   | Make the store rebuildable: regenerate stats from files on missing/corrupt; keep only completion marks                                                             |
-| `[x]`  | Search        | Implement "Recent GPX files" section in Search default state (no-user input state), based on "lastOpened"                                                          |
-| `[ ]`  | GPXMetadata   | Add GPX stats to GpxMetadataEntry as a cache -> no need to re-compute every time                                                                                   |
-| `[L]`  | GPXTutorial   | T&C link                                                                                                                                                           |                                                                                                                   |
-| `[ ]`  | GPXCollection | Implement share                                                                                                                                                    |
-| `[ ]`  | GPXCollection | Implement rename                                                                                                                                                   |
-| `[ ]`  | GPXCollection | "Imported vs Route Planner" badges / chips OR icon to start                                                                                                        |
-| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                            |
-| `[ ]`  | GPXCollection | Filter by distance, open date                                                                                                                                      |
-| `[ ]`  | GPXCollection | "Mark Completed" GPX files                                                                                                                                         |
+| Status | Scope         | Task                                                        |
+|--------|---------------|-------------------------------------------------------------|
+| `[L]`  | GPXTutorial   | T&C link                                                    |                                                                                                                   |
+| `[ ]`  | GPXCollection | Implement share                                             |
+| `[ ]`  | GPXCollection | Implement rename                                            |
+| `[ ]`  | GPXCollection | "Imported vs Route Planner" badges / chips OR icon to start |
+| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                     |
+| `[ ]`  | GPXCollection | Filter by distance, open date                               |
+| `[ ]`  | GPXCollection | "Mark Completed" GPX files                                  |
 
 ### FEATURE: Place Details (from Search + Long Tap)
 
 | Status | Scope        | Task                                                                      |
 |--------|--------------|---------------------------------------------------------------------------|
-| `[L]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
-| `[L]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
-| `[L]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
-| `[L]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
-| `[L]`  | PlaceDetails | Search nearby button                                                      |
-| `[L]`  | PlaceDetails | Show Place Details for Destinations                                       |
+| `[ ]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
+| `[ ]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
+| `[ ]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
+| `[ ]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
+| `[ ]`  | PlaceDetails | Search nearby button                                                      |
+| `[ ]`  | PlaceDetails | Show Place Details for Destinations                                       |
 
 ### FEATURE: Settings
 
@@ -162,13 +218,6 @@
   development.
 - Google: Google Play Billing API
 - Apple: Apple App Store Connect, Apple Pay
-
-### FEATURE: Destinations
-
-| Status | Scope        | Task                                                                      |
-|--------|--------------|---------------------------------------------------------------------------|
-| `[ ]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.         |
-| `[ ]`  | Destinations | Add filter options to destinations (popularity, landscape, distance etc.) |
 
 ### FEATURE: Route Planner
 
@@ -200,11 +249,6 @@ Principle: separate **format** (a portable collection file) from **transport** �
 transport (AirDrop, Quick Share, Bluetooth, Files/USB, email, chat). A zipped bundle is plain data,
 so an Android export imports on iOS and vice-versa.
 
-Format: `huki-collection-<date>.hukigpx` (a zip) containing `manifest.json`
-(`schemaVersion`, app version, file list + optional cached stats) plus the `.gpx` files.
-Accept plain `.zip` as a fallback. Import merge reuses existing dedup
-(same name+bytes → reuse, same name+different bytes → suffix `name (2).gpx`).
-
 | Status | Scope      | Task                                                                                               |
 |--------|------------|----------------------------------------------------------------------------------------------------|
 | `[ ]`  | GPX Export | `GpxCollectionArchiver` (expect/actual): zip `gpx/external` + generated `manifest.json`            |
@@ -226,15 +270,16 @@ Accept plain `.zip` as a fallback. Import merge reuses existing dedup
 
 ## Completed
 
-| Feature        | Notes                                         |
-|----------------|-----------------------------------------------|
-| Map            | Mapbox                                        |
-| My location    | Mapbox + Google Fused Location Provider       |
-| Layers         | Mapbox Outdoor, Street, Satellite, Hiking     |
-| Search         | Place Autocomplete, Destinations, Recent GPXs |
-| GPX            | GPX Import, added in Layers                   |
-| GPX Details    | GPX Details Sheet with basic info             |
-| GPX Menu       | GPX Visibility, Overview, Clear               |
-| GPX Collection | GPX File list view, GPX Tutorial screen       |
-| GPX Metadata   | Store GPX Metadata in a JSON                  |
-| Settings       | Contact, Supporters                           |
+| Feature        | Notes                                                        |
+|----------------|--------------------------------------------------------------|
+| Map            | Mapbox                                                       |
+| My location    | Mapbox + Google Fused Location Provider                      |
+| Layers         | Mapbox Outdoor, Street, Satellite, Hiking                    |
+| Search         | Place Autocomplete, Destinations, Recent GPXs, Recent Places |
+| Menu           | Features, Contact, Supporters                                |
+| GPX            | GPX Import, added in Layers                                  |
+| GPX Details    | GPX Details Sheet with basic info                            |
+| GPX Menu       | GPX Visibility, Overview, Clear                              |
+| GPX Collection | GPX File list view, GPX Tutorial screen                      |
+| GPX Metadata   | Store GPX Metadata in a JSON                                 |
+| Place History  | Place History list view                                      |

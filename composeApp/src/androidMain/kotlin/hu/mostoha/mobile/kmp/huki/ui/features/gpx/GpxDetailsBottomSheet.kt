@@ -150,7 +150,7 @@ fun GpxDetailsBottomSheet(
                     modifier = Modifier.weight(1f),
                 )
                 StatChip(
-                    iconResId = R.drawable.ic_distance,
+                    iconResId = R.drawable.ic_place_circle,
                     value = DistanceFormatter.formatDistance(gpxDetails.totalDistance),
                     label = mokoString(SharedRes.strings.gpx_details_distance),
                     style = StatChipStyle.Large,
@@ -175,6 +175,7 @@ fun GpxDetailsBottomSheet(
                 onClick = onStartClick,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(TestTags.GPX_DETAILS_START_BUTTON)
                     .padding(
                         start = Dimens.ExtraLarge,
                         top = Dimens.Large,

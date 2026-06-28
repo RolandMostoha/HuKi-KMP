@@ -63,6 +63,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
@@ -79,6 +80,7 @@ fun SearchBottomSheet(
     onDestinationSelected: (Destination) -> Unit,
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
+    onSeeAllPlacesClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlaceFinderViewModel = koinViewModel(),
@@ -93,6 +95,7 @@ fun SearchBottomSheet(
         onDestinationSelected = onDestinationSelected,
         onGpxFileSelected = onGpxFileSelected,
         onSeeAllGpxClicked = onSeeAllGpxClicked,
+        onSeeAllPlacesClicked = onSeeAllPlacesClicked,
         onLocationIqClicked = onLocationIqClicked,
         onEvent = viewModel::onEvent,
     )
@@ -107,6 +110,7 @@ private fun SearchBottomSheetContent(
     onDestinationSelected: (Destination) -> Unit,
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
+    onSeeAllPlacesClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -114,6 +118,9 @@ private fun SearchBottomSheetContent(
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
     val errorInfo = uiState.error
+    val hasDiscoveryContent = uiState.topDestinations.isNotEmpty() ||
+        uiState.recentPlaces.isNotEmpty() ||
+        uiState.recentGpxFiles.isNotEmpty()
     val navigationBarBottomPadding = with(density) {
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
@@ -267,7 +274,7 @@ private fun SearchBottomSheetContent(
                 ) {
                     itemsIndexed(
                         items = uiState.places,
-                        key = { index, place -> "${place.id}-$index" },
+                        key = { index, place -> "${place.osmId}-$index" },
                     ) { _, place ->
                         SearchResultItem(
                             place = place,
@@ -291,9 +298,7 @@ private fun SearchBottomSheetContent(
                             bottom = Dimens.ExtraLarge + navigationBarBottomPadding,
                         ),
                 )
-            } else if (uiState.searchText.isEmpty() &&
-                (uiState.topDestinations.isNotEmpty() || uiState.recentGpxFiles.isNotEmpty())
-            ) {
+            } else if (uiState.searchText.isEmpty() && hasDiscoveryContent) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -304,6 +309,13 @@ private fun SearchBottomSheetContent(
                         DestinationsSection(
                             destinations = uiState.topDestinations,
                             onDestinationSelected = onDestinationSelected,
+                        )
+                    }
+                    if (uiState.recentPlaces.isNotEmpty()) {
+                        RecentPlacesSection(
+                            places = uiState.recentPlaces,
+                            onPlaceSelected = onPlaceSelected,
+                            onSeeAllClicked = onSeeAllPlacesClicked,
                         )
                     }
                     if (uiState.recentGpxFiles.isNotEmpty()) {
@@ -331,21 +343,24 @@ private fun SearchBottomSheetContentPreview() {
                 searchText = "Arden",
                 places = listOf(
                     Place(
-                        id = "1",
-                        title = "Mt. Arden Summit",
-                        subtitle = "Arden Valley, Bern, Switzerland",
+                        osmId = "1",
+                        name = "Mt. Arden Summit",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = "Arden Valley, Bern, Switzerland",
                         location = Location(47.3769, 8.5417),
                     ),
                     Place(
-                        id = "2",
-                        title = "Arden Ridge Viewpoint",
-                        subtitle = "2,104 m · Bernese Alps",
+                        osmId = "2",
+                        name = "Arden Ridge Viewpoint",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = "2,104 m · Bernese Alps",
                         location = Location(47.4979, 19.0402),
                     ),
                     Place(
-                        id = "3",
-                        title = "Ardennes Nat. Park",
-                        subtitle = null,
+                        osmId = "3",
+                        name = "Ardennes Nat. Park",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = null,
                         location = Location(48.2082, 16.3738),
                     ),
                 ),
@@ -355,6 +370,7 @@ private fun SearchBottomSheetContentPreview() {
             onDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
+            onSeeAllPlacesClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -375,6 +391,7 @@ private fun SearchBottomSheetErrorStatePreview() {
             onDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
+            onSeeAllPlacesClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -407,12 +424,22 @@ private fun SearchBottomSheetDestinationsStatePreview() {
                         popularity = 9,
                     ),
                 ),
+                recentPlaces = listOf(
+                    Place(
+                        osmId = "10",
+                        name = "Dobogókő",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = "Pilis Mountains, Hungary",
+                        location = Location(47.7181, 18.8948),
+                    ),
+                ),
             ),
             onCloseClick = {},
             onPlaceSelected = {},
             onDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
+            onSeeAllPlacesClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -433,6 +460,7 @@ private fun SearchBottomSheetLoadingStatePreview() {
             onDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
+            onSeeAllPlacesClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )

@@ -41,7 +41,8 @@
     <string name="search_input_placeholder">Keresés...</string>
     <string name="search_error_retry">Újrapróbálás</string>
     <string name="search_powered_by">Powered by</string>
-    <string name="search_recent_gpx_title">Legutóbbi GPX fájlok</string>
+    <string name="search_recent_gpx_title">Legutóbbi GPX útvonalak</string>
+    <string name="search_recent_places_title">Legutóbbi helyek</string>
 
     <string name="layers_base_layers_title">Alap térkép</string>
     <string name="layers_base_outdoors_title">Természet</string>
@@ -78,6 +79,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Verzió %s</string>
+    <string name="menu_item_place_history">Helyelőzmények</string>
+    <string name="menu_item_place_history_description">A nemrég megnyitott helyeid</string>
+    <string name="menu_a11y_open_place_history">Helyelőzmények megnyitása</string>
     <string name="menu_item_gpx_collection">GPX gyűjtemény</string>
     <string name="menu_item_gpx_collection_description">Importált útvonalaid egy helyen</string>
     <string name="menu_a11y_open_gpx_collection">GPX gyűjtemény megnyitása</string>
@@ -119,6 +123,16 @@
     <string name="gpx_collection_delete_dialog_title">Törlöd a GPX fájlt?</string>
     <string name="gpx_collection_delete_dialog_message">A(z) „%s” véglegesen törlődik a gyűjteményedből.</string>
     <string name="gpx_collection_delete_dialog_cancel">Mégse</string>
+
+    <string name="place_history_title">Helyelőzmények</string>
+    <string name="place_history_subtitle_pattern">%d hely</string>
+    <string name="place_history_subtitle_single">%d hely</string>
+    <string name="place_history_subtitle_empty">Még nincs megnyitott hely</string>
+    <string name="place_history_date_today">Ma</string>
+    <string name="place_history_date_yesterday">Tegnap</string>
+    <string name="place_history_empty_title">Üresek a helyelőzményeid</string>
+    <string name="place_history_empty_message">A keresésből vagy a kirándulóhelyek közül megnyitott helyek itt jelennek meg, hogy gyorsan megtalálhasd őket.</string>
+    <string name="place_history_a11y_back">Vissza</string>
 
     <string name="gpx_tutorial_title">GPX Útmutató</string>
     <string name="gpx_tutorial_a11y_back">Vissza</string>
@@ -166,6 +180,7 @@
     <string name="place_category_parking">Parkolás</string>
     <string name="place_category_public_transport">Tömegközlekedés</string>
     <string name="place_category_settlement">Település</string>
+    <string name="place_category_trail">Túraútvonal</string>
     <string name="place_category_drinking_water">Ivóvíz</string>
     <string name="place_category_toilets">Nyilvános WC</string>
     <string name="place_category_camp_site">Piknikező</string>
@@ -185,33 +200,17 @@
     <string name="destinations_a11y_info">Leírás megjelenítése</string>
     <string name="destinations_type_highest_peak">Táj csúcsa</string>
     <string name="destinations_type_peak">Csúcs</string>
-    <string name="destinations_type_valley">Völgy</string>
-    <string name="destinations_type_lake">Tó</string>
     <string name="destinations_type_national_park">Nemzeti park</string>
-    <string name="destinations_type_cave">Barlang</string>
-    <string name="destinations_type_waterfall">Vízesés</string>
     <string name="destinations_type_castle">Vár</string>
-    <string name="destinations_type_rock">Szikla</string>
     <string name="destinations_type_town">Település</string>
-    <string name="destinations_type_plateau">Fennsík</string>
-    <string name="destinations_type_trail">Túraútvonal</string>
     <string name="destinations_type_river">Folyó</string>
     <string name="destinations_type_lookout">Kilátó</string>
     <string name="destinations_type_rock_with_lookout">Sziklakilátó</string>
-    <string name="destinations_type_church">Templom</string>
     <string name="destinations_type_statue">Szobor</string>
-    <string name="destinations_type_wildlife_park">Vadaspark</string>
     <string name="destinations_type_memorial_park">Emlékpark</string>
     <string name="destinations_type_arboretum">Arborétum</string>
-    <string name="destinations_type_museum">Múzeum</string>
-    <string name="destinations_type_meadow">Rét</string>
     <string name="destinations_type_gorge">Szurdok</string>
-    <string name="destinations_type_observatory">Csillagvizsgáló</string>
-    <string name="destinations_type_garden">Kert</string>
-    <string name="destinations_type_spring">Forrás</string>
-    <string name="destinations_type_forest">Erdő</string>
     <string name="destinations_type_camp">Kemping</string>
-    <string name="destinations_type_island">Sziget</string>
 
     <string name="location_iq_a11y_back">Vissza</string>
     <string name="location_iq_a11y_logo">LocationIQ logó</string>

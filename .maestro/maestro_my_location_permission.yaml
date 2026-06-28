@@ -1,7 +1,7 @@
 appId: ${APP_ID}
 ---
-# Verifies that GPX -> Start Navigation requests location permission on demand
-# when it has not been granted yet (no permission dialog at launch).
+# Verifies that location permission is requested on demand (not at launch):
+# GPX -> Start Navigation triggers the permission prompt when not granted yet.
 - launchApp:
     clearState: true
     permissions: { all: unset }
@@ -21,11 +21,11 @@ appId: ${APP_ID}
 # Import test GPX (leaves the app on the GPX Details sheet)
 - runFlow: subflows/maestro_flow_import_gpx.yaml
 
-# GPX Details sheet with Start action
-- assertVisible: "Start"
+# GPX Details sheet is opened
+- assertVisible: "Start Route"
 
 # Start Navigation must request permission on demand (not granted yet)
-- tapOn: "Start"
+- tapOn: "Start Route"
 - runFlow:
     when:
       platform: Android
