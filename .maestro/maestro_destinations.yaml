@@ -1,0 +1,127 @@
+appId: ${APP_ID}
+---
+# Destinations: open from the Menu, switch between the Popular, Landscapes and Nearby
+# tabs (connected button group / segmented control) and verify each tab renders its
+# content, then return to the map. Works on both Android and iOS via shared test tags.
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 5000
+
+# Open Destinations from the Menu.
+- tapOn: "Menu"
+- assertVisible:
+    id: MENU_ROW_DESTINATIONS
+- tapOn:
+    id: MENU_ROW_DESTINATIONS
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+
+# The tab bar and the Popular list are shown by default.
+- assertVisible:
+    id: DESTINATIONS_TAB_BAR
+- assertVisible:
+    id: DESTINATIONS_LIST
+- assertVisible:
+    id: DESTINATIONS_ITEM
+    index: 0
+
+# Tapping a destination opens the preview with a "Show on map" action.
+- tapOn:
+    id: DESTINATIONS_ITEM
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: DESTINATION_PREVIEW
+    timeout: 5000
+- assertVisible:
+    id: DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON
+# Dismiss the preview by tapping above the sheet, landing back on the list.
+- tapOn:
+    point: 50%,8%
+- assertVisible:
+    id: DESTINATIONS_TAB_BAR
+
+# "Show on map" closes the Destinations screen and focuses the destination on the map.
+- tapOn:
+    id: DESTINATIONS_ITEM
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: DESTINATION_PREVIEW
+    timeout: 5000
+- tapOn:
+    id: DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 5000
+
+# Re-open Destinations from the Menu to continue verifying the remaining tabs.
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_DESTINATIONS
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+
+# Switch to Landscapes — grouped list per landscape.
+- tapOn: "Landscapes"
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_ITEM
+    timeout: 5000
+
+# Switch to Nearby — with location granted the closest destinations are listed.
+- tapOn: "Nearby"
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_ITEM
+    timeout: 5000
+
+# Back to the map via the screen back button and the menu back button.
+- tapOn:
+    id: DESTINATIONS_BACK_BUTTON
+- assertVisible:
+    id: MENU_SCREEN_ROOT
+- tapOn:
+    id: MENU_BACK_BUTTON
+- assertVisible:
+    id: MAP_MAPBOX
+
+# The Search sheet "See all" also opens the Destinations screen.
+- tapOn: "Search..."
+- assertVisible:
+    id: DESTINATIONS_SEE_ALL_BUTTON
+- tapOn:
+    id: DESTINATIONS_SEE_ALL_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+- tapOn:
+    id: DESTINATIONS_BACK_BUTTON
+# Android keeps the search sheet open behind the screen, so returning lands back on it
+# (matching the Recent Places / GPX "See all" behaviour). iOS dismisses the sheet on
+# navigation, so returning lands on the map.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: DESTINATIONS_SECTION
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: MAP_MAPBOX

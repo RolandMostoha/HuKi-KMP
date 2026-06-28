@@ -115,7 +115,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "332254600",
+        osmId = "2974756570",
         location = Location(47.9670, 20.3732),
         description = SharedRes.strings.bukk_szarvasko_var,
         name = "Szarvaskő vára",
@@ -384,7 +384,7 @@ val DESTINATIONS_HEVES = listOf(
         description = SharedRes.strings.heves_gyepes_volgy,
     ),
     Destination(
-        osmId = "1263920822",
+        osmId = "7727788",
         name = "Hangonyi-tó",
         town = "Hangony",
         type = DestinationType.LAKE,
@@ -762,7 +762,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "697522694",
+        osmId = "362078639",
         location = Location(46.6089500, 21.0838714),
         description = SharedRes.strings.alfold_wenckheim_kastely_szabadkigyos,
         name = "Wenckheim-kastély",
@@ -2531,18 +2531,6 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "2604330783",
-        location = Location(
-            46.7836248,
-            17.2916073,
-        ),
-        description = SharedRes.strings.keszthely_festetics_kilato,
-        name = "Festetics-kilátó",
-        town = "Gyenesdiás",
-        type = DestinationType.LOOKOUT,
-        popularity = 8,
-    ),
-    Destination(
         osmId = "287395162",
         name = "Büdöskúti pihenőház",
         town = "Vállus",
@@ -3207,15 +3195,6 @@ val DESTINATIONS_ZSELIC = listOf(
         description = SharedRes.strings.zselic_okopark,
     ),
     Destination(
-        osmId = "3106887",
-        name = "Katica Tanya",
-        town = "Patca",
-        type = DestinationType.CAMP,
-        popularity = 8,
-        location = Location(46.2793201, 17.7187107),
-        description = SharedRes.strings.zselic_katica_tanya,
-    ),
-    Destination(
         osmId = "361316060",
         name = "Zselici Csillagpark",
         town = "Zselickisfalud",
@@ -3223,24 +3202,6 @@ val DESTINATIONS_ZSELIC = listOf(
         popularity = 9,
         location = Location(46.2363960, 17.7651457),
         description = SharedRes.strings.zselic_csillagpark,
-    ),
-    Destination(
-        osmId = "223357335",
-        name = "Szigetvári vár",
-        town = "Szigetvár",
-        type = DestinationType.CASTLE,
-        popularity = 8,
-        location = Location(46.0507035, 17.7969816),
-        description = SharedRes.strings.zselic_szigetvari_var,
-    ),
-    Destination(
-        osmId = "331095992",
-        name = "Ökopark",
-        town = "Bükkösd",
-        type = DestinationType.WILDLIFE_PARK,
-        popularity = 4,
-        location = Location(46.1238506, 17.9893252),
-        description = SharedRes.strings.zselic_okopark,
     ),
     Destination(
         osmId = "3106887",

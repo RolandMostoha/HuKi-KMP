@@ -64,10 +64,13 @@ fun MainScreen(
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
+    onDestinationsClicked: () -> Unit,
     openGpxUri: String? = null,
     onOpenGpxConsumed: () -> Unit = {},
     openPlace: Pair<OsmType, String>? = null,
     onOpenPlaceConsumed: () -> Unit = {},
+    openDestinationOsmId: String? = null,
+    onOpenDestinationConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -88,6 +91,13 @@ fun MainScreen(
         }
     }
 
+    LaunchedEffect(openDestinationOsmId) {
+        openDestinationOsmId?.let { osmId ->
+            viewModel.onEvent(MainUiEvents.DestinationSelected(osmId))
+            onOpenDestinationConsumed()
+        }
+    }
+
     MainContent(
         uiState = uiState,
         mainUiEffects = viewModel.mainUiEffects,
@@ -97,6 +107,7 @@ fun MainScreen(
         onLocationIqClicked = onLocationIqClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
+        onDestinationsClicked = onDestinationsClicked,
     )
 }
 
@@ -110,6 +121,7 @@ private fun MainContent(
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
+    onDestinationsClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -216,6 +228,7 @@ private fun MainContent(
                             },
                             onSeeAllGpxClicked = onGpxCollectionClicked,
                             onSeeAllPlacesClicked = onPlaceHistoryClicked,
+                            onSeeAllDestinationsClicked = onDestinationsClicked,
                             onLocationIqClicked = onLocationIqClicked,
                         )
                     }
@@ -326,6 +339,7 @@ private fun MainContentPreview() {
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},
+            onDestinationsClicked = {},
         )
     }
 }
@@ -343,6 +357,7 @@ private fun MainContentLoadingPreview() {
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},
+            onDestinationsClicked = {},
         )
     }
 }

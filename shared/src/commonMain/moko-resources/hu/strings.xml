@@ -79,6 +79,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Verzió %s</string>
+    <string name="menu_item_destinations">Kirándulóhelyek</string>
+    <string name="menu_item_destinations_description">Népszerű kirándulóhelyek országszerte</string>
+    <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
     <string name="menu_item_place_history">Helyelőzmények</string>
     <string name="menu_item_place_history_description">A nemrég megnyitott helyeid</string>
     <string name="menu_a11y_open_place_history">Helyelőzmények megnyitása</string>
@@ -198,6 +201,21 @@
 
     <string name="destinations_section_title">Kirándulóhelyek</string>
     <string name="destinations_a11y_info">Leírás megjelenítése</string>
+    <string name="destinations_title">Kirándulóhelyek</string>
+    <string name="destinations_subtitle_pattern">%d kirándulóhely</string>
+    <string name="destinations_subtitle_single">%d kirándulóhely</string>
+    <string name="destinations_tab_popular">Népszerű</string>
+    <string name="destinations_tab_nearby">Közeli</string>
+    <string name="destinations_tab_landscapes">Tájegységek</string>
+    <string name="destinations_nearby_permission_title">Helymeghatározás szükséges</string>
+    <string name="destinations_nearby_permission_message">Engedélyezd a helyhozzáférést, hogy lásd a hozzád legközelebbi kirándulóhelyeket, távolság szerint rendezve.</string>
+    <string name="destinations_nearby_permission_action">Helyhozzáférés engedélyezése</string>
+    <string name="destinations_nearby_error_title">A hely nem érhető el</string>
+    <string name="destinations_nearby_error_message">Nem sikerült meghatározni a helyzetedet. Ellenőrizd, hogy a helymeghatározás be van-e kapcsolva, majd próbáld újra.</string>
+    <string name="destinations_nearby_error_action">Újrapróbálkozás</string>
+    <string name="destinations_a11y_back">Vissza</string>
+    <string name="destinations_action_show_on_map">Megtekintés a térképen</string>
+    <string name="destinations_a11y_preview_dismiss">Előnézet bezárása</string>
     <string name="destinations_type_highest_peak">Táj csúcsa</string>
     <string name="destinations_type_peak">Csúcs</string>
     <string name="destinations_type_national_park">Nemzeti park</string>
@@ -211,6 +229,10 @@
     <string name="destinations_type_arboretum">Arborétum</string>
     <string name="destinations_type_gorge">Szurdok</string>
     <string name="destinations_type_camp">Kemping</string>
+
+    <string name="hike_recommender_termeszetjaro">Természetjáró</string>
+    <string name="hike_recommender_kirandulastippek">Kirándulástippek</string>
+    <string name="hike_recommender_aktivkalandor">Aktív Kalandor</string>
 
     <string name="location_iq_a11y_back">Vissza</string>
     <string name="location_iq_a11y_logo">LocationIQ logó</string>

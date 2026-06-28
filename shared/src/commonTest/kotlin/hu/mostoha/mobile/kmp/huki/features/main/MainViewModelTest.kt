@@ -8,6 +8,7 @@ import dev.icerock.moko.permissions.test.createPermissionControllerMock
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -28,6 +29,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -75,6 +77,7 @@ class MainViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val gpxRepository = mock<GpxRepository>()
     private val placeHistoryRepository = mock<PlaceHistoryRepository>(MockMode.autoUnit)
+    private val destinationRepository = mock<DestinationRepository>(MockMode.autoUnit)
 
     @BeforeTest
     fun setup() {
@@ -96,6 +99,7 @@ class MainViewModelTest {
             ),
             gpxRepository = gpxRepository,
             placeHistoryRepository = placeHistoryRepository,
+            destinationRepository = destinationRepository,
         )
     }
 
@@ -762,6 +766,28 @@ class MainViewModelTest {
                 )
                 ensureAllEventsConsumed()
             }
+        }
+    }
+
+    @Test
+    fun `Given known osmId, When DestinationSelected, Then UpdateCamera to destination location and visit recorded`() {
+        runTest {
+            every { destinationRepository.requireDestination(TEST_DESTINATION.osmId) } returns TEST_DESTINATION
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.osmId))
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(TEST_DESTINATION.location, zoom = 16.0),
+                )
+                ensureAllEventsConsumed()
+            }
+            advanceUntilIdle()
+            verifySuspend { placeHistoryRepository.recordVisit(TEST_DESTINATION) }
         }
     }
 

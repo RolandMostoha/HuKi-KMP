@@ -40,9 +40,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.icerock.moko.resources.ImageResource
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
@@ -238,35 +238,19 @@ private fun RecommendationsRow(onOpenUrl: (String) -> Unit, modifier: Modifier =
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
     ) {
-        RecommendationCard(
-            name = mokoString(SharedRes.strings.gpx_tutorial_recommended_aktivkalandor),
-            image = SharedRes.images.ic_aktivkalandor,
-            url = mokoString(SharedRes.strings.gpx_tutorial_recommended_aktivkalandor_url),
-            onOpenUrl = onOpenUrl,
-            modifier = Modifier.weight(1f),
-        )
-        RecommendationCard(
-            name = mokoString(SharedRes.strings.gpx_tutorial_recommended_termeszetjaro),
-            image = SharedRes.images.ic_termeszetjaro,
-            url = mokoString(SharedRes.strings.gpx_tutorial_recommended_termeszetjaro_url),
-            onOpenUrl = onOpenUrl,
-            modifier = Modifier.weight(1f),
-        )
-        RecommendationCard(
-            name = mokoString(SharedRes.strings.gpx_tutorial_recommended_kirandulastippek),
-            image = SharedRes.images.ic_kirandulastippek,
-            url = mokoString(SharedRes.strings.gpx_tutorial_recommended_kirandulastippek_url),
-            onOpenUrl = onOpenUrl,
-            modifier = Modifier.weight(1f),
-        )
+        HikeRecommendation.entries.forEach { recommendation ->
+            RecommendationCard(
+                recommendation = recommendation,
+                onOpenUrl = onOpenUrl,
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
 @Composable
 private fun RecommendationCard(
-    name: String,
-    image: ImageResource,
-    url: String,
+    recommendation: HikeRecommendation,
     onOpenUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -274,20 +258,20 @@ private fun RecommendationCard(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable { onOpenUrl(url) }
+            .clickable { onOpenUrl(recommendation.baseUrl) }
             .padding(vertical = Dimens.MediumLarge, horizontal = Dimens.ExtraSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Dimens.Small),
     ) {
         Image(
-            painter = painterResource(image.drawableResId),
+            painter = painterResource(recommendation.iconRes.drawableResId),
             contentDescription = null,
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape),
         )
         Text(
-            text = name,
+            text = mokoString(recommendation.title),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
