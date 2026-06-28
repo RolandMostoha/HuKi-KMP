@@ -13,6 +13,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
@@ -20,6 +21,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -52,6 +54,9 @@ class PlaceFinderViewModelTest {
     private val gpxRepository = mock<GpxRepository> {
         everySuspend { getRecentGpxFiles(any()) } returns emptyList()
     }
+    private val placeHistoryRepository = mock<PlaceHistoryRepository> {
+        everySuspend { getRecentPlaces(any()) } returns emptyList()
+    }
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
 
@@ -64,6 +69,7 @@ class PlaceFinderViewModelTest {
             locationMonitoringService = locationMonitoringService,
             destinationRepository = destinationRepository,
             gpxRepository = gpxRepository,
+            placeHistoryRepository = placeHistoryRepository,
         )
         testDispatcher.scheduler.runCurrent()
     }
@@ -101,6 +107,7 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -119,10 +126,39 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
             viewModel.uiState.value.recentGpxFiles shouldBe recentGpxFiles
+        }
+    }
+
+    @Test
+    fun `Given recent places from repository, When view model init, Then uiState exposes them`() {
+        runTest {
+            val recentPlaces = listOf(
+                Place(
+                    osmId = "1",
+                    name = "Dobogókő",
+                    placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                    address = "Pilis Mountains, Hungary",
+                    location = Location(47.7181, 18.8948),
+                    osmType = OsmType.NODE,
+                ),
+            )
+            everySuspend { placeHistoryRepository.getRecentPlaces(any()) } returns recentPlaces
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.recentPlaces shouldBe recentPlaces
         }
     }
 
@@ -175,9 +211,10 @@ class PlaceFinderViewModelTest {
                     isLoading = false,
                     places = listOf(
                         Place(
-                            id = "budapest-id",
-                            title = "Budapest",
-                            subtitle = "Hungary",
+                            osmId = "osm-budapest-id",
+                            name = "Budapest",
+                            placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                            address = "Hungary",
                             location = Location(47.4979, 19.0402),
                             osmType = OsmType.RELATION,
                             distance = state.places.single().distance,
@@ -202,6 +239,7 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -272,6 +310,7 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = hangingLocationMonitoringService(),
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -364,9 +403,10 @@ class PlaceFinderViewModelTest {
                 val places = awaitItem().places
                 places shouldBe listOf(
                     Place(
-                        id = "matra-id",
-                        title = "Matra, Hungary",
-                        subtitle = "Hungary",
+                        osmId = "osm-matra-id",
+                        name = "Matra, Hungary",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = "Hungary",
                         location = Location(47.8721, 20.0324),
                         osmType = OsmType.RELATION,
                         distance = places.single().distance,
@@ -429,9 +469,10 @@ class PlaceFinderViewModelTest {
                     isLoading = false,
                     places = listOf(
                         Place(
-                            id = "budapest-id",
-                            title = "Budapest, Hungary",
-                            subtitle = null,
+                            osmId = "osm-budapest-id",
+                            name = "Budapest, Hungary",
+                            placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                            address = null,
                             location = Location(47.4979, 19.0402),
                             osmType = OsmType.RELATION,
                             distance = state.places.single().distance,
@@ -474,6 +515,7 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -514,9 +556,10 @@ class PlaceFinderViewModelTest {
                     isLoading = false,
                     places = listOf(
                         Place(
-                            id = "balaton-id",
-                            title = "Lake Balaton, Hungary",
-                            subtitle = null,
+                            osmId = "osm-balaton-id",
+                            name = "Lake Balaton, Hungary",
+                            placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                            address = null,
                             location = Location(46.8797, 17.8864),
                             osmType = OsmType.RELATION,
                             distance = state.places.single().distance,
@@ -548,6 +591,7 @@ class PlaceFinderViewModelTest {
                 locationMonitoringService = locationMonitoringService,
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
             )
             testDispatcher.scheduler.runCurrent()
 

@@ -102,7 +102,7 @@ private fun StatChipPreview() {
     HuKiTheme {
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Small)) {
             StatChip(
-                iconResId = R.drawable.ic_distance,
+                iconResId = R.drawable.ic_place_circle,
                 value = "22.6 km",
             )
             StatChip(

@@ -54,9 +54,9 @@ fun RecentGpxSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = Dimens.ExtraLarge)
+            .padding(top = Dimens.SectionSpacing)
             .testTag(TestTags.RECENT_GPX_SECTION),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+        verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
     ) {
         SectionHeader(
             title = mokoString(SharedRes.strings.search_recent_gpx_title),
@@ -131,7 +131,7 @@ private fun RecentGpxItem(file: GpxFileItem, onClick: () -> Unit) {
                     value = mokoString(TravelTimeFormatter.formatTravelTime(file.travelTime)),
                 )
                 GpxStat(
-                    iconResId = R.drawable.ic_distance,
+                    iconResId = R.drawable.ic_place_circle,
                     value = DistanceFormatter.formatDistance(file.totalDistance),
                 )
                 GpxStat(

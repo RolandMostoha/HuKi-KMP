@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 
 sealed interface MainUiEvents {
@@ -17,6 +18,10 @@ sealed interface MainUiEvents {
     data object SearchClicked : MainUiEvents
     data class SearchPlaceSelected(val place: Place) : MainUiEvents
     data class SearchDestinationSelected(val destination: Destination) : MainUiEvents
+    data class HistoryPlaceSelected(
+        val osmType: OsmType,
+        val osmId: String,
+    ) : MainUiEvents
 
     /**
      * My location events

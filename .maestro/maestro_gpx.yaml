@@ -9,7 +9,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 10000
+    timeout: 5000
 - tapOn: "Layers"
 - tapOn: "Gpx Layer"
 
@@ -37,7 +37,7 @@ appId: ${APP_ID}
                 timeout: 5000
             - tapOn: "Browse"
             - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
+                id: "gpx_test_with_comments, gpx"
       - runFlow:
           when:
             # Old simulator -> Browse is already open
@@ -45,7 +45,7 @@ appId: ${APP_ID}
               id: "BackButton"
           commands:
             - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
+                id: "gpx_test_with_comments, gpx"
 
 # GPX Details
 - extendedWaitUntil:
@@ -59,4 +59,5 @@ appId: ${APP_ID}
 - assertVisible: "22.6 KM"
 - assertVisible: "1088 M"
 - assertVisible: "516 M"
-- assertVisible: "Start"
+- assertVisible:
+    id: GPX_DETAILS_START_BUTTON

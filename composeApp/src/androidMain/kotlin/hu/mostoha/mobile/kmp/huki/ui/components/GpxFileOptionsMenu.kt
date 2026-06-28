@@ -27,6 +27,7 @@ import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
 @Composable
 fun GpxFileOptionsMenu(
@@ -97,7 +98,7 @@ fun GpxFileOptionsMenu(
                 )
             }
             DropdownMenuItem(
-                modifier = Modifier.testTag(TestTags.GPX_COLLECTION_ITEM_DELETE_BUTTON),
+                modifier = Modifier.testTagAsResourceId(TestTags.GPX_COLLECTION_ITEM_DELETE_BUTTON),
                 contentPadding = itemContentPadding,
                 text = {
                     Text(

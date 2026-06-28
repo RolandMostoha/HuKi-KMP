@@ -65,6 +65,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MenuScreen(
     onBack: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     viewModel: MenuViewModel = koinViewModel(),
 ) {
@@ -75,6 +76,7 @@ fun MenuScreen(
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onGpxCollectionClicked = onGpxCollectionClicked,
+        onPlaceHistoryClicked = onPlaceHistoryClicked,
         onLocationIqClicked = onLocationIqClicked,
     )
 }
@@ -86,6 +88,7 @@ private fun MenuContent(
     onEvent: (MenuUiEvents) -> Unit,
     onBack: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -93,6 +96,7 @@ private fun MenuContent(
         menuUiEffects.collect { effect ->
             when (effect) {
                 MenuUiEffects.NavigateBack -> onBack()
+                MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
                 MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
                 is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
@@ -134,11 +138,27 @@ private fun MenuContent(
             Spacer(modifier = Modifier.height(Dimens.Medium))
             MenuCard {
                 MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_place_history),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_place_history),
+                    testTag = TestTags.MENU_ROW_PLACE_HISTORY,
+                    onClick = { onEvent(MenuUiEvents.PlaceHistoryClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_place_history_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_place_circle,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_gpx_collection),
                     valueText = null,
                     contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_collection),
                     testTag = TestTags.MENU_ROW_GPX_COLLECTION,
                     onClick = { onEvent(MenuUiEvents.GpxCollectionClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_gpx_collection_description),
                     iconBackgroundColor = mokoColor(SharedRes.colors.primary),
                 ) {
                     TintedRowIcon(
@@ -407,6 +427,7 @@ private fun MenuContentPreview() {
             onEvent = {},
             onBack = {},
             onGpxCollectionClicked = {},
+            onPlaceHistoryClicked = {},
             onLocationIqClicked = {},
         )
     }

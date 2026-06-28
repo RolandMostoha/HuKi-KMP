@@ -65,6 +65,7 @@ struct GpxDetailsSheetView: View {
             .buttonStyle(.borderedProminent)
             .tint(Color(SharedRes.colors().primary.getUIColor()))
             .clipShape(Capsule())
+            .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_START_BUTTON)
         }
         .padding(.top, 10)
         .padding(.horizontal, 16)

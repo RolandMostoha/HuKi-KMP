@@ -8,6 +8,7 @@ struct SearchSheetView: View {
     let onDestinationSelected: (Destination) -> Void
     let onGpxFileSelected: (String) -> Void
     let onSeeAllGpxClicked: () -> Void
+    let onSeeAllPlacesClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
@@ -58,7 +59,7 @@ struct SearchSheetView: View {
             }
             .contentMargins(.top, headerHeight, for: .scrollContent)
         } else if uiState.searchText.isEmpty &&
-            (!uiState.topDestinations.isEmpty || !uiState.recentGpxFiles.isEmpty) {
+            (!uiState.topDestinations.isEmpty || !uiState.recentPlaces.isEmpty || !uiState.recentGpxFiles.isEmpty) {
             discoveryList(uiState: uiState)
         } else {
             Color.clear
@@ -79,6 +80,20 @@ struct SearchSheetView: View {
                         }
                     )
                     .padding(.top, 8)
+                }
+                if !uiState.recentPlaces.isEmpty {
+                    RecentPlacesSectionView(
+                        strings: strings,
+                        places: uiState.recentPlaces,
+                        onPlaceSelected: { place in
+                            isSearchFieldFocused = false
+                            onPlaceSelected(place)
+                        },
+                        onSeeAllClicked: {
+                            isSearchFieldFocused = false
+                            onSeeAllPlacesClicked()
+                        }
+                    )
                 }
                 if !uiState.recentGpxFiles.isEmpty {
                     RecentGpxSectionView(
@@ -129,9 +144,11 @@ struct SearchSheetView: View {
                 .allowsHitTesting(false)
         }
     }
+}
 
+private extension SearchSheetView {
     @ViewBuilder
-    private func searchBar(uiState: PlaceFinderUiState) -> some View {
+    func searchBar(uiState: PlaceFinderUiState) -> some View {
         HStack {
             searchTextField(uiState: uiState)
             closeButton
@@ -238,7 +255,7 @@ struct SearchSheetView: View {
         ScrollView {
             attributionRow
             LazyVStack(spacing: 0) {
-                ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
+                ForEach(Array(places.enumerated()), id: \.element.osmId) { index, place in
                     SearchResultItem(place: place, onClick: {
                         isSearchFieldFocused = false
                         onPlaceSelected(place)
@@ -249,7 +266,7 @@ struct SearchSheetView: View {
                     }
                 }
             }
-            .animation(.easeInOut(duration: 0.2), value: places.map(\.id))
+            .animation(.easeInOut(duration: 0.2), value: places.map(\.osmId))
             .background(Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, 16)

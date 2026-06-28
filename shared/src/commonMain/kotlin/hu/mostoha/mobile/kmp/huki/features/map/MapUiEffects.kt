@@ -1,14 +1,13 @@
 package hu.mostoha.mobile.kmp.huki.features.map
 
 import hu.mostoha.mobile.kmp.huki.features.main.UiEffect
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 
 sealed interface MapUiEffects : UiEffect {
     data class UpdateCamera(
-        val bounds: List<Location>,
-        val zoom: Double? = null,
+        val target: CameraTarget,
         val bearing: Double? = null,
         val pitch: Double? = null,
         val contentPadding: ContentPadding? = null,

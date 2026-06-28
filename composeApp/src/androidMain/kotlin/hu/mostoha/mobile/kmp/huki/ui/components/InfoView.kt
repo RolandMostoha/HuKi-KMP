@@ -34,9 +34,9 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 @Composable
 fun InfoView(
     infoViewData: InfoViewData,
-    primaryActionText: String,
-    onPrimaryActionClick: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryActionText: String? = null,
+    onPrimaryActionClick: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,
@@ -85,21 +85,23 @@ fun InfoView(
                     end = Dimens.Huge,
                 ),
         )
-        Button(
-            onClick = onPrimaryActionClick,
-            modifier = Modifier
-                .padding(top = Dimens.ExtraLarge),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = Dimens.Medium),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                text = primaryActionText,
-            )
+        if (primaryActionText != null && onPrimaryActionClick != null) {
+            Button(
+                onClick = onPrimaryActionClick,
+                modifier = Modifier
+                    .padding(top = Dimens.ExtraLarge),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = Dimens.Medium),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    text = primaryActionText,
+                )
+            }
         }
     }
 }

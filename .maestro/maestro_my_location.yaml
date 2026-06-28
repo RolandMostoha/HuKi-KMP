@@ -9,7 +9,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 10000
+    timeout: 5000
 
 # Permission dialog must NOT appear at launch — only on an explicit My Location request
 - assertNotVisible: "Allow While Using App"
@@ -32,7 +32,7 @@ appId: ${APP_ID}
     commands:
       - extendedWaitUntil:
             visible: "Allow While Using App"
-            timeout: 10000
+            timeout: 5000
             optional: false
       - tapOn: "Allow While Using App"
 

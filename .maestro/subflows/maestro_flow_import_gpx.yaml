@@ -6,7 +6,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 10000
+    timeout: 5000
 - tapOn: "Layers"
 - tapOn: "Gpx Layer"
 
@@ -33,7 +33,7 @@ appId: ${APP_ID}
                 visible: "Browse"
             - tapOn: "Browse"
             - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
+                id: "gpx_test_with_comments, gpx"
       - runFlow:
           when:
             # Old simulator -> Browse is already open
@@ -41,11 +41,11 @@ appId: ${APP_ID}
               id: "BackButton"
           commands:
             - tapOn:
-                id: gpx_test_with_comments.gpx, gpx
+                id: "gpx_test_with_comments, gpx"
 
 # Wait until the GPX Details state is reached (file name shown in the sheet)
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-- extendedWaitUntil:
-    visible: "gpx_test_with_comments.gpx"
+    timeout: 5000
+- assertVisible: "gpx_test_with_comments.gpx"

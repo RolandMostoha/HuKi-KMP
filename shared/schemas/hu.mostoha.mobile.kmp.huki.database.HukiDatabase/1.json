@@ -1,0 +1,104 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "366fa10307d9d4b5880b8570bb6b5108",
+    "entities": [
+      {
+        "tableName": "place_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`osmType` TEXT NOT NULL, `osmId` TEXT NOT NULL, `name` TEXT NOT NULL, `nameNormalized` TEXT NOT NULL, `address` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `placeCategory` TEXT, `placeSource` TEXT NOT NULL, `lastVisited` INTEGER NOT NULL, `bounding_box_north` REAL, `bounding_box_east` REAL, `bounding_box_south` REAL, `bounding_box_west` REAL, PRIMARY KEY(`osmType`, `osmId`))",
+        "fields": [
+          {
+            "fieldPath": "osmType",
+            "columnName": "osmType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "osmId",
+            "columnName": "osmId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameNormalized",
+            "columnName": "nameNormalized",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "placeCategory",
+            "columnName": "placeCategory",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "placeSource",
+            "columnName": "placeSource",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastVisited",
+            "columnName": "lastVisited",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "boundingBox.north",
+            "columnName": "bounding_box_north",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "boundingBox.east",
+            "columnName": "bounding_box_east",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "boundingBox.south",
+            "columnName": "bounding_box_south",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "boundingBox.west",
+            "columnName": "bounding_box_west",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "osmType",
+            "osmId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '366fa10307d9d4b5880b8570bb6b5108')"
+    ]
+  }
+}

@@ -54,6 +54,32 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state, When PlaceHistoryClicked event, Then NavigateToPlaceHistory effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.PlaceHistoryClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToPlaceHistory
+            }
+        }
+    }
+
+    @Test
+    fun `Given default state, When GpxCollectionClicked event, Then NavigateToGpxCollection effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.GpxCollectionClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToGpxCollection
+            }
+        }
+    }
+
+    @Test
     fun `Given default state, When EmailClicked event, Then SendEmail effect with email and subject is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
