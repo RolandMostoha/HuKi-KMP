@@ -190,6 +190,20 @@ class DefaultGpxRepositoryTest {
         }
     }
 
+    @Test
+    fun givenSandboxFileMissing_whenGetRecentGpxFiles_thenEntryOmittedAndPrunedFromMetadata() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_routes.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            // Delete the sandbox file directly, bypassing deleteGpxFile which would also prune metadata.
+            File(appContext.filesDir, "gpx/external/${gpx.fileName}").delete() shouldBe true
+
+            repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldNotContain gpx.fileName
+            DefaultGpxMetadataStore().getMetadata().gpxFiles.map { it.fileName } shouldNotContain gpx.fileName
+        }
+    }
+
     private fun saveTestGpx(fileName: String): Uri {
         val inputStream = instrumentationContext.assets.open(fileName)
         val file = File(appContext.cacheDir.path + "/$fileName").apply {

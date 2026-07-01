@@ -53,7 +53,6 @@ class GpxMapperTest {
         actual.lastOpened shouldBe openedAt.toIsoOffsetString()
         actual.lastModified shouldBe lastModified.toIsoOffsetString()
         actual.fileName shouldBe details.fileName
-        actual.fileUri shouldBe details.fileUri
         actual.title shouldBe details.title
         actual.distanceMeters shouldBe details.totalDistance.inMeters
         actual.travelTimeSeconds shouldBe details.travelTime.inWholeSeconds
@@ -70,11 +69,11 @@ class GpxMapperTest {
             lastModified = lastModified.toIsoOffsetString(),
         )
 
-        val actual = entry.toGpxFileItem()
+        val actual = entry.toGpxFileItem(fileUri = "gpx/external/dera_szurdok.gpx")
 
         requireNotNull(actual)
         actual.fileName shouldBe entry.fileName
-        actual.fileUri shouldBe entry.fileUri
+        actual.fileUri shouldBe "gpx/external/dera_szurdok.gpx"
         actual.trackId shouldBe entry.trackId
         actual.title shouldBe entry.title
         actual.totalDistance shouldBe entry.distanceMeters.meters
@@ -92,7 +91,7 @@ class GpxMapperTest {
             lastModified = Instant.fromEpochSeconds(1_700_000_000).toIsoOffsetString(),
         )
 
-        entry.toGpxFileItem().shouldBeNull()
+        entry.toGpxFileItem(fileUri = "gpx/external/dera_szurdok.gpx").shouldBeNull()
     }
 
     @Test
@@ -103,7 +102,7 @@ class GpxMapperTest {
             lastModified = "not-a-date",
         )
 
-        val actual = entry.toGpxFileItem()
+        val actual = entry.toGpxFileItem(fileUri = "gpx/external/dera_szurdok.gpx")
 
         requireNotNull(actual)
         actual.lastModified shouldBe lastOpened
@@ -116,7 +115,6 @@ class GpxMapperTest {
             lastOpened = lastOpened,
             lastModified = lastModified,
             fileName = "dera_szurdok.gpx",
-            fileUri = "file://dera_szurdok.gpx",
             title = "OKT 5 - Rozália téglagyár - Dobogókő",
             distanceMeters = 15_000.0,
             travelTimeSeconds = 7_200,
