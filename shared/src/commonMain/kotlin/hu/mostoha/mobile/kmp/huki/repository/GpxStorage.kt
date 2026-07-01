@@ -22,5 +22,10 @@ interface GpxStorage {
 
     suspend fun listGpxFiles(): List<PlatformFile>
 
+    /**
+     * Resolves a sandbox GPX by [fileName] to its current path, or `null` when it no longer exists.
+     */
+    suspend fun resolveGpxFile(fileName: String): PlatformFile?
+
     suspend fun delete(fileName: String)
 }

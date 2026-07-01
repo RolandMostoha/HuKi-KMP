@@ -51,6 +51,11 @@ class DefaultGpxStorage : GpxStorage {
 
     override suspend fun listGpxFiles(): List<PlatformFile> = gpxDir().list()
 
+    override suspend fun resolveGpxFile(fileName: String): PlatformFile? =
+        withContext(Dispatchers.IO) {
+            (gpxDir() / fileName).takeIf { it.exists() }
+        }
+
     override suspend fun delete(fileName: String) {
         withContext(Dispatchers.IO) {
             (gpxDir() / fileName).delete(mustExist = false)
