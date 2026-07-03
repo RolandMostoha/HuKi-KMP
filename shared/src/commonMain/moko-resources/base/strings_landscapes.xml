@@ -1,0 +1,30 @@
+<resources>
+
+    <string name="landscape_budai_hegyseg">Buda Hills</string>
+    <string name="landscape_bukk">Bükk</string>
+    <string name="landscape_balaton_felvidek">Balaton Uplands</string>
+    <string name="landscape_aggteleki_karszt">Aggtelek Karst</string>
+    <string name="landscape_mecsek">Mecsek</string>
+    <string name="landscape_matra">Mátra</string>
+    <string name="landscape_heves_borsodi_dombsag">Heves-Borsod Mountains</string>
+    <string name="landscape_borzsony">Börzsöny, Dunakanyar</string>
+    <string name="landscape_pilis_hegyseg">Pilis Mountains</string>
+    <string name="landscape_visegradi_hegyseg">Visegrád Mountains</string>
+    <string name="landscape_bakony">Bakony</string>
+    <string name="landscape_gerecse_hegyseg">Gerecse Mountains</string>
+    <string name="landscape_keszthelyi_hegyseg">Keszthely Mountains</string>
+    <string name="landscape_cserhat">Cserhát, Palócföld</string>
+    <string name="landscape_zempleni_hegyseg">Zemplén Mountains</string>
+    <string name="landscape_vertes">Vértes</string>
+    <string name="landscape_velencei_hegyseg">Velence Mountains</string>
+    <string name="landscape_zselic">Zselic</string>
+    <string name="landscape_villanyi_hegyseg">Villány Mountains</string>
+    <string name="landscape_koszegi_hegyseg">Kőszeg Mountains</string>
+    <string name="landscape_soproni_hegyseg">Sopron Mountains</string>
+    <string name="landscape_hortobagy">Hortobágy, Lake Tisza</string>
+    <string name="landscape_orseg">Őrség</string>
+    <string name="landscape_alfold">Alföld, Great Plain</string>
+    <string name="landscape_zalai_dombsag">Zala mountains</string>
+    <string name="landscape_szigetkoz">Szigetköz</string>
+
+</resources>

@@ -57,6 +57,35 @@ extension View {
                 .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
         }
     }
+
+    @ViewBuilder
+    func glassBackground(_ style: GlassStyle = .clear, in shape: some Shape) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(style.glass, in: shape)
+        } else {
+            background(style.fallbackMaterial, in: shape)
+        }
+    }
+}
+
+enum GlassStyle {
+    case clear
+    case regular
+
+    @available(iOS 26.0, *)
+    var glass: Glass {
+        switch self {
+        case .clear: return .clear
+        case .regular: return .regular
+        }
+    }
+
+    var fallbackMaterial: Material {
+        switch self {
+        case .clear: return .ultraThinMaterial
+        case .regular: return .regularMaterial
+        }
+    }
 }
 
 extension View {

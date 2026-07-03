@@ -6,6 +6,7 @@ import dev.icerock.moko.permissions.ios.PermissionsController
 import dev.icerock.moko.permissions.ios.PermissionsControllerProtocol
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.db.documentDirectoryPath
+import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
@@ -47,4 +48,5 @@ object KoinViewModelProvider : KoinComponent {
     fun getMenuViewModel(): MenuViewModel = get()
     fun getGpxCollectionViewModel(): GpxCollectionViewModel = get()
     fun getPlaceHistoryViewModel(): PlaceHistoryViewModel = get()
+    fun getDestinationsViewModel(): DestinationsViewModel = get()
 }

@@ -1,4 +1,4 @@
-import MapboxMaps
+@preconcurrency import MapboxMaps
 import Shared
 import SwiftUI
 

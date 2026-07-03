@@ -62,12 +62,13 @@
 
 ### Bugs
 
-| Status | Scope  | Bug                                                                                                                                                                                                                                                                                                             |
-|--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Map    | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
-| `[ ]`  | CI     | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
-| `[ ]`  | Search | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
-| `[ ]`  | Search | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
+| Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
+|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | Map        | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
+| `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
+| `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
+| `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
+| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 
 ### FEATURE: Map
 
@@ -86,7 +87,7 @@
 
 | Status | Scope  | Task                                                                   |
 |--------|--------|------------------------------------------------------------------------|
-| `[L]`  | Layers | Save picked layer state permanently for users (multiplatform-settings) |
+| `[ ]`  | Layers | Save picked layer state permanently for users (multiplatform-settings) |
 
 ### FEATURE: Search
 
@@ -95,38 +96,6 @@
 | `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
-
-### FEATURE: Place History
-
-Place History is feature which stores the users "visited/viewed" places so it can be retrieved later
-from a cache / DB.
-This is good for UX + offline mode + reduce the token consumption on LocationIQ.
-
-- Source of Place History:
-    - Autocomplete select
-    - Destination select
-    - TBD: Long tap on map (reverse geocode)
-    - TBD: Route planner
-    - TBD: Map -> My location (reverse geocode)
-- Place history is used:
-    - Recent places in Search
-    - Search Autocomplete as an immediate result (offline)
-    - Dedicated Place History screen (from menu) as a list
-
-| Status | Scope        | Task                                                                                                             |
-|--------|--------------|------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | PlaceHistory | Use LocationIQ result -> bounding box for places to set camera bounds for the place                              |
-| `[x]`  | PlaceHistory | Setup Room KMP                                                                                                   |
-| `[x]`  | PlaceHistory | Design DB entities. These should store Place and Destination visits as well.                                     |
-| `[x]`  | PlaceHistory | If a place is picked from Search/Autocomplete, store it in PlaceHistory DB                                       |
-| `[x]`  | PlaceHistory | If a destination is picked from Search, store it in PlaceHistory DB                                              |
-| `[x]`  | PlaceHistory | Add Search/Recent Places -> a list view for 3 most recent PlaceHistory entity. On click: MainVM.showPlace()      |
-| `[ ]`  | PlaceHistory | Add a "Place History" button to menu as a main feature, above GPX Collection. A:ic_place, iOS:mappin.and.ellipse |
-| `[ ]`  | PlaceHistory | Add "Place History" screen, copy the style of GpxCollection                                                      |
-| `[ ]`  | PlaceHistory | Add empty view (example: GpxCollection-Empty View, we can use similar wordings)                                  |
-| `[ ]`  | PlaceHistory | Add list view for history places. Items should look like RecentPlaces, without distance, groupedBy lastVisited.  |
-| `[ ]`  | PlaceHistory | On item click place should be opened as MainVM.showPlace()                                                       |
-| `[ ]`  | PlaceHistory | Add "See all" to Search/Recent Places -> Navigates to PlaceHistoryScreen                                         |
 
 #### Add Place History items to Search -> Autocomplete
 
@@ -140,26 +109,26 @@ This is good for UX + offline mode + reduce the token consumption on LocationIQ.
 
 | Status | Scope        | Task                                                                                                                                                                               |
 |--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.                                                                                                                  |
-| `[ ]`  | Destinations | Add a "Destinations" button to menu as a main feature, above GPX Collection. A:ic_backpack, iOS:backpack.fill                                                                      |
-| `[ ]`  | Destinations | Add "Destinations" screen, copy the style of GpxCollection                                                                                                                         |
-| `[ ]`  | Destinations | Empty view is not necessary, @Destinations are always there                                                                                                                        |
-| `[ ]`  | Destinations | Add title as en:"Destinations" hu:"Kirándulóhelyek", and "[Count] destinations"                                                                                                    |
-| `[ ]`  | Destinations | Top right "map" button is not needed for the moment.                                                                                                                               |
-| `[ ]`  | Destinations | Add a Segmented Control to the top with "Popular", "By area", "Nearby"                                                                                                             |
-| `[ ]`  | Destinations | Add list view for "Popular". Rows should be numbered. Distance is not needed.                                                                                                      |
-| `[ ]`  | Destinations | Add list view for "Nearby". Row numbers are not needed. Distance is needed. If Permission is not granted for location, show InfoView.Warning, with a link to location permissions. |
-| `[ ]`  | Destinations | Add list view for "By area". Section headers are coming from                                                                                                                       |
-| `[ ]`  | Destinations | Do not implement item click yet.                                                                                                                                                   |
-| `[ ]`  | Destinations | Add "See all" click handling to Search/Destinations -> Navigates to "Destinations"                                                                                                 |
+| `[x]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.                                                                                                                  |
+| `[x]`  | Destinations | Add a "Destinations" button to menu as a main feature, above GPX Collection. A:ic_backpack, iOS:backpack.fill                                                                      |
+| `[x]`  | Destinations | Add "Destinations" screen, copy the style of GpxCollection                                                                                                                         |
+| `[x]`  | Destinations | Empty view is not necessary, @Destinations are always there                                                                                                                        |
+| `[x]`  | Destinations | Add title as en:"Destinations" hu:"Kirándulóhelyek", and "[Count] destinations"                                                                                                    |
+| `[x]`  | Destinations | Top right "map" button is not needed for the moment.                                                                                                                               |
+| `[x]`  | Destinations | Add a Segmented Control to the top with "Popular", "By area", "Nearby"                                                                                                             |
+| `[x]`  | Destinations | Add list view for "Popular". Rows should be numbered. Distance is not needed.                                                                                                      |
+| `[x]`  | Destinations | Add list view for "Nearby". Row numbers are not needed. Distance is needed. If Permission is not granted for location, show InfoView.Warning, with a link to location permissions. |
+| `[x]`  | Destinations | Do not implement "By area" yet, just have a "blank" state when the segmented control is clicked.                                                                                   |
+| `[x]`  | Destinations | Do not implement item click yet.                                                                                                                                                   |
+| `[x]`  | Destinations | Add "See all" click handling to Search/Destinations -> Navigates to "Destinations"                                                                                                 |
+| `[~]`  | Destinations | Add Preview destination card before navigating to maps                                                                                                                             |
+| `[ ]`  | Destinations | Add Map based destinations with Landscapes                                                                                                                                         |
 
 ### FEATURE: WhatsNew
 
-| Status | Scope        | Task                                                                                          |
-|--------|--------------|-----------------------------------------------------------------------------------------------|
-| `[L]`  | Version      | Add proper versioning to app, which works for Android and iOS. Different versioning possible. |
-| `[L]`  | Destinations | Add filter options to destinations (popularity, landscape, distance etc.)                     |
-| `[L]`  | Destinations | See all on Map                                                                                |
+| Status | Scope   | Task                                                           |
+|--------|---------|----------------------------------------------------------------|
+| `[L]`  | Version | Add proper versioning to app, which works for Android and iOS. |
 
 ### FEATURE: GPX
 
@@ -174,11 +143,12 @@ This is good for UX + offline mode + reduce the token consumption on LocationIQ.
 
 ### FEATURE: GPX Details
 
-| Status | Scope      | Task                                                       |
-|--------|------------|------------------------------------------------------------|
-| `[L]`  | GPXDetails | Show as secondary button "Google Maps navigation to Start" |
-| `[L]`  | GPXDetails | Show as secondary button "Google Maps navigation to End"   |
-| `[ ]`  | GPXDetails | Show as secondary button "Share GPX file"                  |
+| Status | Scope        | Task                                                |
+|--------|--------------|-----------------------------------------------------|
+| `[L]`  | GPXDetails   | Show as secondary button "Maps Navigation to Start" |
+| `[L]`  | GPXDetails   | Show as secondary button "Maps Navigation to End"   |
+| `[ ]`  | GPXDetails   | Show as secondary button "Share GPX file"           |
+| `[ ]`  | Destinations | Show context menu "Navigate with Maps" in preview   |
 
 ### FEATURE: GPX Collection
 

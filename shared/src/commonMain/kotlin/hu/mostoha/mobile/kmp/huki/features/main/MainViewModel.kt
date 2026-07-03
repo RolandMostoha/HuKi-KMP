@@ -22,6 +22,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -41,6 +42,7 @@ class MainViewModel(
     val permissionsController: PermissionsController,
     val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
+    private val destinationRepository: DestinationRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -66,6 +68,7 @@ class MainViewModel(
             MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
             is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
             is MainUiEvents.SearchDestinationSelected -> showDestination(event.destination)
+            is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
@@ -145,6 +148,10 @@ class MainViewModel(
         viewModelScope.launch {
             placeHistoryRepository.recordVisit(destination)
         }
+    }
+
+    private fun showDestinationById(osmId: String) {
+        showDestination(destinationRepository.requireDestination(osmId))
     }
 
     private fun enableMyLocation() {

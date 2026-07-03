@@ -10,6 +10,7 @@ import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -33,6 +35,7 @@ class PlaceFinderViewModel(
     private val destinationRepository: DestinationRepository,
     private val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private companion object {
         private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
@@ -79,7 +82,9 @@ class PlaceFinderViewModel(
             val location = withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
                 locationMonitoringService.lastKnownLocation()
             }
-            val destinations = destinationRepository.getTopDestinations(location)
+            val destinations = withContext(defaultDispatcher) {
+                destinationRepository.getTopDestinations(location)
+            }
             _uiState.update { uiState -> uiState.copy(topDestinations = destinations) }
         }
     }

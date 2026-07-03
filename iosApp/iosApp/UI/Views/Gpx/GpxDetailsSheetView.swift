@@ -50,21 +50,11 @@ struct GpxDetailsSheetView: View {
                 strings: strings,
                 gpxDetails: gpxDetails
             )
-            Button(action: onStartClick) {
-                Label {
-                    Text(strings.get(id: SharedRes.strings().gpx_details_start))
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                } icon: {
-                    Image(systemName: "location.north.fill")
-                        .font(.system(size: 15, weight: .semibold))
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Color(SharedRes.colors().primary.getUIColor()))
-            .clipShape(Capsule())
+            PrimaryButton(
+                systemImage: "location.north.fill",
+                title: strings.get(id: SharedRes.strings().gpx_details_start),
+                action: onStartClick
+            )
             .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_START_BUTTON)
         }
         .padding(.top, 10)

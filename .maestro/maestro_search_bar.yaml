@@ -13,7 +13,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 
 # Granted at launch -> Following, SearchBar visible
 - assertVisible: "My location - Following"

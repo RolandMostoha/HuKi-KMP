@@ -4,7 +4,7 @@ import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
 import io.github.vinceglb.filekit.PlatformFile
 
 /**
- * Persists imported GPX files in the app sandbox so they can be reused without re-import.
+ * Persists imported GPX files in the app sandbox at `FileKit.filesDir/gpx/` so they can be reused without re-import.
  */
 interface GpxStorage {
 

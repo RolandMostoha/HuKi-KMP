@@ -9,6 +9,7 @@ struct SearchSheetView: View {
     let onGpxFileSelected: (String) -> Void
     let onSeeAllGpxClicked: () -> Void
     let onSeeAllPlacesClicked: () -> Void
+    let onSeeAllDestinationsClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
     @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
@@ -77,6 +78,10 @@ struct SearchSheetView: View {
                         onDestinationSelected: { destination in
                             isSearchFieldFocused = false
                             onDestinationSelected(destination)
+                        },
+                        onSeeAllClicked: {
+                            isSearchFieldFocused = false
+                            onSeeAllDestinationsClicked()
                         }
                     )
                     .padding(.top, 8)
@@ -113,7 +118,7 @@ struct SearchSheetView: View {
             .padding(.bottom, 24)
         }
         .contentMargins(.top, headerHeight, for: .scrollContent)
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     @ViewBuilder
@@ -274,6 +279,6 @@ private extension SearchSheetView {
             .padding(.bottom, 24)
         }
         .contentMargins(.top, headerHeight, for: .scrollContent)
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.immediately)
     }
 }

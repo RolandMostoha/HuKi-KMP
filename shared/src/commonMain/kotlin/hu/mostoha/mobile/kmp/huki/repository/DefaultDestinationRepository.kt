@@ -1,8 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.data.ALL_DESTINATIONS
+import hu.mostoha.mobile.kmp.huki.data.Landscapes
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
+import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import org.maplibre.spatialk.units.extensions.inMeters
@@ -33,8 +35,6 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
         const val MAX_PENALTY_STEPS = 3
     }
 
-    // Ranking is frozen once for the session, but only after a location was available, so a cold
-    // start without a fix doesn't permanently cache a distance-less order.
     private var rankedDestinations: List<Destination>? = null
 
     override fun getTopDestinations(location: Location?, limit: Int): List<Destination> {
@@ -47,6 +47,16 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
 
         return ranked.take(limit)
     }
+
+    override fun getPopularDestinations(): List<Destination> =
+        ALL_DESTINATIONS.sortedWith(compareByDescending<Destination> { it.popularity }.thenBy { it.name })
+
+    override fun getNearbyDestinations(location: Location): List<Destination> =
+        ALL_DESTINATIONS.sortedBy { it.location.distanceBetween(location).inMeters }
+
+    override fun requireDestination(osmId: String): Destination = ALL_DESTINATIONS.first { it.osmId == osmId }
+
+    override fun getLandscapes(): List<Landscape> = Landscapes
 
     private fun rankDestinations(location: Location?): List<Destination> {
         val baseScores = ALL_DESTINATIONS.associateWith { baseScore(it, location) }

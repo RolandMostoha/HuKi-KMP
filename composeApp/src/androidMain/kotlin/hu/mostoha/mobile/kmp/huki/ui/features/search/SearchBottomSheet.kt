@@ -81,6 +81,7 @@ fun SearchBottomSheet(
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
     onSeeAllPlacesClicked: () -> Unit,
+    onSeeAllDestinationsClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlaceFinderViewModel = koinViewModel(),
@@ -96,6 +97,7 @@ fun SearchBottomSheet(
         onGpxFileSelected = onGpxFileSelected,
         onSeeAllGpxClicked = onSeeAllGpxClicked,
         onSeeAllPlacesClicked = onSeeAllPlacesClicked,
+        onSeeAllDestinationsClicked = onSeeAllDestinationsClicked,
         onLocationIqClicked = onLocationIqClicked,
         onEvent = viewModel::onEvent,
     )
@@ -111,6 +113,7 @@ private fun SearchBottomSheetContent(
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
     onSeeAllPlacesClicked: () -> Unit,
+    onSeeAllDestinationsClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -309,6 +312,7 @@ private fun SearchBottomSheetContent(
                         DestinationsSection(
                             destinations = uiState.topDestinations,
                             onDestinationSelected = onDestinationSelected,
+                            onSeeAllClick = onSeeAllDestinationsClicked,
                         )
                     }
                     if (uiState.recentPlaces.isNotEmpty()) {
@@ -371,6 +375,7 @@ private fun SearchBottomSheetContentPreview() {
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
+            onSeeAllDestinationsClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -392,6 +397,7 @@ private fun SearchBottomSheetErrorStatePreview() {
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
+            onSeeAllDestinationsClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -440,6 +446,7 @@ private fun SearchBottomSheetDestinationsStatePreview() {
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
+            onSeeAllDestinationsClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )
@@ -461,6 +468,7 @@ private fun SearchBottomSheetLoadingStatePreview() {
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
+            onSeeAllDestinationsClicked = {},
             onLocationIqClicked = {},
             onEvent = {},
         )

@@ -1,19 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.gpx
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,19 +19,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
+import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
 import hu.mostoha.mobile.kmp.huki.ui.components.StatChip
 import hu.mostoha.mobile.kmp.huki.ui.components.StatChipStyle
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -77,20 +72,15 @@ fun GpxDetailsBottomSheet(
                     bottom = Dimens.Small,
                 ),
         ) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = Dimens.ExtraSmall, bottom = Dimens.Small)
-                    .size(width = 36.dp, height = 4.dp)
-                    .clip(RoundedCornerShape(percent = 50))
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)),
+            DragHandle(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                verticalPadding = Dimens.SmallMedium,
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         start = Dimens.ExtraLarge,
-                        top = Dimens.ExtraSmall,
                         end = Dimens.Large,
                         bottom = Dimens.Medium,
                     ),
@@ -171,7 +161,9 @@ fun GpxDetailsBottomSheet(
                     modifier = Modifier.weight(1f),
                 )
             }
-            Button(
+            PrimaryButton(
+                iconResId = R.drawable.ic_fab_my_location_live_compass,
+                text = mokoString(SharedRes.strings.gpx_details_start),
                 onClick = onStartClick,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -181,21 +173,7 @@ fun GpxDetailsBottomSheet(
                         top = Dimens.Large,
                         end = Dimens.ExtraLarge,
                     ),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_fab_my_location_live_compass),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
-                Text(
-                    text = mokoString(SharedRes.strings.gpx_details_start),
-                    modifier = Modifier.padding(start = Dimens.Small),
-                )
-            }
+            )
         }
     }
 }
