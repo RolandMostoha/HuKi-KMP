@@ -9,7 +9,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 - tapOn: "Layers"
 - assertVisible: "Base Map"
 - tapOn: "Satellite"

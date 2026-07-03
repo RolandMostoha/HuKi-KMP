@@ -79,6 +79,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Version %s</string>
+    <string name="menu_item_destinations">Destinations</string>
+    <string name="menu_item_destinations_description">Popular hiking spots across Hungary</string>
+    <string name="menu_a11y_open_destinations">Open Destinations</string>
     <string name="menu_item_place_history">Place History</string>
     <string name="menu_item_place_history_description">Places you have recently opened</string>
     <string name="menu_a11y_open_place_history">Open Place History</string>
@@ -198,6 +201,21 @@
 
     <string name="destinations_section_title">Destinations</string>
     <string name="destinations_a11y_info">Show description</string>
+    <string name="destinations_title">Destinations</string>
+    <string name="destinations_subtitle_pattern">%d destinations</string>
+    <string name="destinations_subtitle_single">%d destination</string>
+    <string name="destinations_tab_popular">Popular</string>
+    <string name="destinations_tab_nearby">Nearby</string>
+    <string name="destinations_tab_landscapes">Landscapes</string>
+    <string name="destinations_nearby_permission_title">Location access needed</string>
+    <string name="destinations_nearby_permission_message">Allow location access to see the destinations closest to you, sorted by distance.</string>
+    <string name="destinations_nearby_permission_action">Allow location access</string>
+    <string name="destinations_nearby_error_title">Location unavailable</string>
+    <string name="destinations_nearby_error_message">We couldn\'t determine your location. Make sure location services are on and try again.</string>
+    <string name="destinations_nearby_error_action">Try again</string>
+    <string name="destinations_a11y_back">Back</string>
+    <string name="destinations_action_show_on_map">Show on map</string>
+    <string name="destinations_a11y_preview_dismiss">Close preview</string>
     <string name="destinations_type_highest_peak">Area Peak</string>
     <string name="destinations_type_peak">Peak</string>
     <string name="destinations_type_national_park">National Park</string>
@@ -211,6 +229,10 @@
     <string name="destinations_type_arboretum">Arboretum</string>
     <string name="destinations_type_gorge">Gorge</string>
     <string name="destinations_type_camp">Camp</string>
+
+    <string name="hike_recommender_termeszetjaro">Természetjáró</string>
+    <string name="hike_recommender_kirandulastippek">Kirándulástippek</string>
+    <string name="hike_recommender_aktivkalandor">Aktív Kalandor</string>
 
     <string name="location_iq_a11y_back">Back</string>
     <string name="location_iq_a11y_logo">LocationIQ logo</string>

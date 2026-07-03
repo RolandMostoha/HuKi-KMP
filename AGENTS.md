@@ -36,6 +36,7 @@ Lint:
 ### iOS
 - `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
 - `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
+- `ios_fix_location.sh [lat,lon]` — fix a wedged location (defaults to Dobogókő). Use when the simulator loses GPS signal.
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
@@ -74,18 +75,9 @@ Lint:
 - **Supported app languages**: English, Hungarian.
 - **Supported device orientations**: Portrait and Landscape.
 
-## Large Data Files
-- `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
-
-## GPX Storage
-- Imported GPX files are copied into the app sandbox at `FileKit.filesDir/gpx/external` on first import, so they can be reused without re-import and shared via stable paths.
-- Only valid GPXs live in the sandbox: `readGpxFile` validates the picked file (`GpxStorage.readSource`) before committing it (`GpxStorage.save`), so nothing is persisted when it can't be read or parsed; `getGpxFiles` deletes any sandbox file that later fails to parse (corruption). Callers therefore never have to render a broken file.
-- `GpxStorage` (commonMain) owns the sandbox: copy-if-absent, list, delete.
-- `GpxMetadataStore` (commonMain) persists per-GPX-file attributes to `FileKit.filesDir/gpx/metadata.json`, keyed by a content-derived `trackId` (FNV-1a hash via `ByteArray.toGpxTrackId()`, survives renames). On every `readGpxFile` (import or re-open) it records `lastOpened` plus a cached snapshot of the display stats (fileName, fileUri, title, distance, travel time, incline, decline). A missing/corrupt store rebuilds as empty, repopulating as files are opened. `getRecentGpxFiles` is served entirely from this cache (no file I/O); `getGpxFiles` reads each file once (deriving both the XML and the `trackId` from one read) and prunes entries whose file is gone — including the invalid files it just deleted. Powers the "Recent GPX files" section in Search and the recency sort in GPX Collection.
-
 ## Chores
 
-Chores is a checklist which should be checked for every new "feature complete" code review.
+Chores is a checklist which should be checked for every "feature complete" code review.
 
 - Unit tests
 - Instrumentation tests (e.g. Repository tests)
@@ -202,7 +194,7 @@ UI → UiEvent → ViewModel → UiState
 ## Coding Rules & Constraints
 
 ### General
-- Don't fight the framework → use the native side best practices
+- Don't fight the framework → use the native side best practices, avoid platform anti-patterns
 - Common First: Business logic must reside in `commonMain` whenever possible.
 - Prefer official + community KMP libraries for wrapping platform-specific code
 - Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
@@ -259,6 +251,8 @@ val [actual] = operation(X)
 - Always use animations for UI transitions, avoid flashing transitions.
 - Always respect edge-to-edge `windowInsets` for screens.
 - Prefer icons from the official Google Font icon set: https://fonts.google.com/icons.
+- Prefer official Material3 components instead of custom views
+- Whenever makes sense, extract UI components to separate classes -> `@Composable` functions.
 
 ### SwiftUI - iOS
 - Look as native as possible - Liquid Glass
@@ -270,9 +264,14 @@ val [actual] = operation(X)
 - Always use animations for UI transitions, avoid flashing transitions.
 - Always respect edge-to-edge `.safeArea` for screens.
 - Prefer icons from the official Apple SF Symbols icon set: https://developer.apple.com/sf-symbols/.
+- Prefer official SwiftUi components instead of custom views
+- Whenever makes sense, extract UI components to separate classes → E.g. `struct DestinationPreviewCard: View`
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.
+
+### Good to know
+- `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
 
 ## Code Quality & Linting
 ### Android

@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
+import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
@@ -24,10 +25,13 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import kotlin.time.Clock
@@ -47,14 +51,22 @@ val appModule = module {
     single { get<HukiDatabase>().placeHistoryDao() }
     single<PlaceHistoryRepository> { DefaultPlaceHistoryRepository(get(), get()) }
     single<Clock> { Clock.System }
+    single<CoroutineDispatcher>(named(Dispatcher.Default)) { Dispatchers.Default }
+    single<CoroutineDispatcher>(named(Dispatcher.IO)) { Dispatchers.IO }
+    single<CoroutineDispatcher>(named(Dispatcher.Main)) { Dispatchers.Main }
 }
 
 val viewModelModule = module {
     viewModelOf(::MainViewModel)
-    viewModelOf(::PlaceFinderViewModel)
+    viewModel {
+        PlaceFinderViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+    }
     viewModelOf(::MenuViewModel)
     viewModelOf(::GpxCollectionViewModel)
     viewModelOf(::PlaceHistoryViewModel)
+    viewModel {
+        DestinationsViewModel(get(), get(), get(), get(named(Dispatcher.Default)))
+    }
 }
 
 val networkModule = module {

@@ -70,6 +70,7 @@ class PlaceFinderViewModelTest {
             destinationRepository = destinationRepository,
             gpxRepository = gpxRepository,
             placeHistoryRepository = placeHistoryRepository,
+            defaultDispatcher = testDispatcher,
         )
         testDispatcher.scheduler.runCurrent()
     }
@@ -108,6 +109,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -127,6 +129,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -155,6 +158,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -240,6 +244,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -311,6 +316,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -516,6 +522,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 
@@ -592,6 +599,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
 

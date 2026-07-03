@@ -4,7 +4,9 @@ import hu.mostoha.mobile.kmp.huki.data.ALL_DESTINATIONS
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
@@ -88,6 +90,50 @@ class DefaultDestinationRepositoryTest {
         val second = secondRepository.getTopDestinations()
 
         second shouldNotBe first
+    }
+
+    @Test
+    fun `When getPopularDestinations, Then all destinations are returned sorted by popularity descending`() {
+        val actual = repository.getPopularDestinations()
+
+        actual.size shouldBe ALL_DESTINATIONS.size
+        actual shouldContainAll ALL_DESTINATIONS
+        actual.map { it.popularity } shouldBe actual.map { it.popularity }.sortedDescending()
+    }
+
+    @Test
+    fun `Given a location, When getNearbyDestinations, Then all destinations returned sorted by distance ascending`() {
+        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
+
+        val actual = repository.getNearbyDestinations(location)
+
+        actual.size shouldBe ALL_DESTINATIONS.size
+        val distances = actual.map { location.distanceBetween(it.location).inMeters }
+        distances shouldBe distances.sorted()
+    }
+
+    @Test
+    fun `Given an existing osmId, When requireDestination, Then the matching destination is returned`() {
+        val expected = ALL_DESTINATIONS.first()
+
+        val actual = repository.requireDestination(expected.osmId)
+
+        actual shouldBe expected
+    }
+
+    @Test
+    fun `Given an unknown osmId, When requireDestination, Then NoSuchElementException is thrown`() {
+        shouldThrow<NoSuchElementException> {
+            repository.requireDestination("unknown_osm_id")
+        }
+    }
+
+    @Test
+    fun `When getLandscapes, Then all landscapes are returned and each has destinations`() {
+        val actual = repository.getLandscapes()
+
+        actual.shouldNotBeEmpty()
+        actual.forEach { it.destinations.shouldNotBeEmpty() }
     }
 
     private fun List<Destination>.averageDistanceKm(location: Location): Double =

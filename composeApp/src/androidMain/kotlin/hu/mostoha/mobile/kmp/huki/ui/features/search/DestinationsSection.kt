@@ -24,6 +24,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun DestinationsSection(
     destinations: List<Destination>,
     onDestinationSelected: (Destination) -> Unit,
+    onSeeAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -32,11 +33,10 @@ fun DestinationsSection(
             .testTag(TestTags.DESTINATIONS_SECTION),
         verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
     ) {
-        // TODO Feature:DestinationsScreen - wire "See all" navigation in a later task.
         SectionHeader(
             title = mokoString(SharedRes.strings.destinations_section_title),
             actionText = mokoString(SharedRes.strings.see_all),
-            onActionClick = {},
+            onActionClick = onSeeAllClick,
             actionModifier = Modifier.testTag(TestTags.DESTINATIONS_SEE_ALL_BUTTON),
         )
         LazyRow(
@@ -64,6 +64,7 @@ private fun DestinationsSectionPreview() {
         DestinationsSection(
             destinations = previewDestinations,
             onDestinationSelected = {},
+            onSeeAllClick = {},
         )
     }
 }

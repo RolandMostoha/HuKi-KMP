@@ -1,0 +1,30 @@
+<resources>
+
+    <string name="landscape_budai_hegyseg">Budai-hegység</string>
+    <string name="landscape_bukk">Bükk</string>
+    <string name="landscape_balaton_felvidek">Balaton-felvidék</string>
+    <string name="landscape_aggteleki_karszt">Aggteleki-karszt</string>
+    <string name="landscape_mecsek">Mecsek</string>
+    <string name="landscape_matra">Mátra</string>
+    <string name="landscape_heves_borsodi_dombsag">Heves-Borsodi-dombság</string>
+    <string name="landscape_borzsony">Börzsöny, Dunakanyar</string>
+    <string name="landscape_pilis_hegyseg">Pilis-hegység</string>
+    <string name="landscape_visegradi_hegyseg">Visegrádi-hegység</string>
+    <string name="landscape_bakony">Bakony</string>
+    <string name="landscape_gerecse_hegyseg">Gerecse-hegység</string>
+    <string name="landscape_keszthelyi_hegyseg">Keszthelyi-hegység</string>
+    <string name="landscape_cserhat">Cserhát, Palócföld</string>
+    <string name="landscape_zempleni_hegyseg">Zempléni-hegység</string>
+    <string name="landscape_vertes">Vértes</string>
+    <string name="landscape_velencei_hegyseg">Velencei-hegység</string>
+    <string name="landscape_zselic">Zselic</string>
+    <string name="landscape_villanyi_hegyseg">Villányi-hegység</string>
+    <string name="landscape_koszegi_hegyseg">Kőszegi-hegység</string>
+    <string name="landscape_soproni_hegyseg">Soproni-Hegység</string>
+    <string name="landscape_hortobagy">Hortobágy, Tisza Tó</string>
+    <string name="landscape_orseg">Őrség</string>
+    <string name="landscape_alfold">Alföld</string>
+    <string name="landscape_zalai_dombsag">Zalai Dombság</string>
+    <string name="landscape_szigetkoz">Szigetköz</string>
+
+</resources>

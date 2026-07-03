@@ -26,9 +26,18 @@ struct MainView: View {
             mainContent
                 .navigationDestination(for: MenuRoute.self) { _ in
                     MenuView(
+                        onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
                         onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
                         onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
                         onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+                    )
+                }
+                .navigationDestination(for: DestinationsRoute.self) { _ in
+                    DestinationsView(
+                        onShowOnMap: { destination in
+                            viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
+                            navigationPath = NavigationPath()
+                        }
                     )
                 }
                 .navigationDestination(for: GpxCollectionRoute.self) { _ in
@@ -134,6 +143,10 @@ struct MainView: View {
                                 onSeeAllPlacesClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())
                                     navigationPath.append(PlaceHistoryRoute.placeHistory)
+                                },
+                                onSeeAllDestinationsClicked: {
+                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                    navigationPath.append(DestinationsRoute.destinations)
                                 },
                                 onLocationIqClicked: {
                                     viewModel.onEvent(event: MainUiEventsSheetDismissed())

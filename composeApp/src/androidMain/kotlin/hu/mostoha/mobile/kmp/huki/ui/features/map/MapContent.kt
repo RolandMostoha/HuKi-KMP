@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -87,6 +88,7 @@ import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.toComposeColor
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -107,8 +109,11 @@ fun MapContent(
     val mapState = rememberMapState {
         gesturesSettings = GesturesSettings { rotateEnabled = MapConstants.MAP_ROTATION_ENABLED }
     }
+    val mapLoaded = remember { CompletableDeferred<Unit>() }
 
     LaunchedEffect(mapUiEffects) {
+        // suspend until map is ready
+        mapLoaded.await()
         mapUiEffects.collect { effect ->
             when (effect) {
                 is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect)
@@ -178,6 +183,7 @@ fun MapContent(
         val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
 
         MapEffect(Unit) { mapView ->
+            mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
             mapView.location.updateSettings {
                 enabled = true
                 locationPuck = LocationPuck2D(

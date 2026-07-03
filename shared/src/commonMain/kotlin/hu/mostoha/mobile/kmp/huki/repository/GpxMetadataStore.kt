@@ -4,8 +4,8 @@ import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
 
 /**
- * Persists lightweight attributes for imported GPX files, keyed by a content-derived
- * trackId so they survive file renames.
+ * Persists lightweight attributes in `FileKit.filesDir/gpx/metadata.json` for imported GPX files.
+ * Goals: cache for GPX attributes + non-cloud based GPX migration.
  */
 interface GpxMetadataStore {
 
