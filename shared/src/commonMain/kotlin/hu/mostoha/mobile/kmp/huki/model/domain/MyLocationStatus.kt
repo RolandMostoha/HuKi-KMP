@@ -24,3 +24,6 @@ sealed class MyLocationStatus(val a11yId: StringResource) {
      */
     data object FollowingLiveCompass : MyLocationStatus(SharedRes.strings.my_location_a11y_live_compass)
 }
+
+fun MyLocationStatus.isFollowing(): Boolean =
+    this == MyLocationStatus.Following || this == MyLocationStatus.FollowingLiveCompass

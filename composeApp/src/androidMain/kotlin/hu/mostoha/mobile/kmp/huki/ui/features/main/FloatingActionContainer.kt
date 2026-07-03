@@ -3,6 +3,8 @@ package hu.mostoha.mobile.kmp.huki.ui.features.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -46,6 +48,8 @@ fun FloatingActionContainer(
     onSearchClicked: () -> Unit,
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
+    onZoomInClicked: () -> Unit,
+    onZoomOutClicked: () -> Unit,
     onGpxToggleLineClicked: () -> Unit,
     onGpxToggleDistancesClicked: () -> Unit,
     onGpxOverviewClicked: () -> Unit,
@@ -98,6 +102,19 @@ fun FloatingActionContainer(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
                 ) {
+                    val myLocationStatus = mainUiState.myLocationState.myLocationStatus
+                    val isFollowing = myLocationStatus == MyLocationStatus.FollowingLiveCompass
+                    AnimatedVisibility(
+                        visible = isFollowing,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut(),
+                    ) {
+                        MapZoomControls(
+                            modifier = Modifier.padding(bottom = Dimens.ExtraSmall),
+                            onZoomInClicked = onZoomInClicked,
+                            onZoomOutClicked = onZoomOutClicked,
+                        )
+                    }
                     FloatingActionButton(
                         containerColor = MaterialTheme.colorScheme.surface,
                         elevation = FloatingActionButtonDefaults.elevation(
@@ -135,7 +152,6 @@ fun FloatingActionContainer(
                             }
                         },
                     ) {
-                        val myLocationStatus = mainUiState.myLocationState.myLocationStatus
                         val myLocationIconRes = when (myLocationStatus) {
                             MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
                             MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
@@ -185,6 +201,8 @@ private fun MainContentPreview() {
             onSearchClicked = {},
             onLayersClicked = {},
             onMyLocationClicked = {},
+            onZoomInClicked = {},
+            onZoomOutClicked = {},
             onGpxToggleLineClicked = {},
             onGpxToggleDistancesClicked = {},
             onGpxOverviewClicked = {},

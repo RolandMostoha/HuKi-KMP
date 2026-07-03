@@ -301,6 +301,60 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given Following, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.ZoomInClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given FollowingLiveCompass, When ZoomOutClicked, Then uiEffect is Zoom zoomOut`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+
+                viewModel.onEvent(MainUiEvents.ZoomOutClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = false)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default my location, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+
+                viewModel.onEvent(MainUiEvents.ZoomInClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
     fun `Given Following my location, When MyLocationUpdated, Then uiState has Default MyLocationStatus`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

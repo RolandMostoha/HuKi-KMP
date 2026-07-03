@@ -37,6 +37,8 @@
     <string name="my_location_a11y_following">Saját pozíció - Követés</string>
     <string name="my_location_a11y_live_compass">Saját pozíció - Élő iránytű</string>
     <string name="my_location_a11y_compass">Saját pozíció - Iránytű</string>
+    <string name="map_zoom_in_a11y">Nagyítás</string>
+    <string name="map_zoom_out_a11y">Kicsinyítés</string>
 
     <string name="search_input_placeholder">Keresés...</string>
     <string name="search_error_retry">Újrapróbálás</string>

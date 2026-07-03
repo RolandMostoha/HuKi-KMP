@@ -259,6 +259,12 @@ private fun MainContent(
                 onMyLocationClicked = {
                     onEvent(MainUiEvents.MyLocationClicked)
                 },
+                onZoomInClicked = {
+                    onEvent(MainUiEvents.ZoomInClicked)
+                },
+                onZoomOutClicked = {
+                    onEvent(MainUiEvents.ZoomOutClicked)
+                },
                 onGpxToggleLineClicked = {
                     onEvent(MainUiEvents.GpxRouteVisibilityToggled)
                 },

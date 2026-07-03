@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.MutableDoubleState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,10 +61,12 @@ import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.viewport.ViewportStatus
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
 import com.mapbox.maps.plugin.viewport.data.OverviewViewportStateOptions
+import com.mapbox.maps.plugin.viewport.state.FollowPuckViewportState
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
@@ -112,6 +116,7 @@ fun MapContent(
         gesturesSettings = GesturesSettings { rotateEnabled = MapConstants.MAP_ROTATION_ENABLED }
     }
     val mapLoaded = remember { CompletableDeferred<Unit>() }
+    val followZoom = remember { mutableDoubleStateOf(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL) }
 
     LaunchedEffect(mapUiEffects) {
         // suspend until map is ready
@@ -119,7 +124,10 @@ fun MapContent(
         mapUiEffects.collect { effect ->
             when (effect) {
                 is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect)
-                is MapUiEffects.ShowMyLocation -> mapViewportState.followLocation(effect)
+                is MapUiEffects.ShowMyLocation -> {
+                    mapViewportState.followLocation(effect.myLocationStatus, followZoom.doubleValue, effect.animated)
+                }
+                is MapUiEffects.Zoom -> mapViewportState.zoom(effect.zoomIn, followZoom)
             }
         }
     }
@@ -285,15 +293,42 @@ fun MapContent(
     }
 }
 
-private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation) {
+private fun MapViewportState.zoom(zoomIn: Boolean, followZoom: MutableDoubleState) {
+    val step = if (zoomIn) MapConstants.MAP_ZOOM_STEP else -MapConstants.MAP_ZOOM_STEP
+    val followState = (mapViewportStatus as? ViewportStatus.State)?.state as? FollowPuckViewportState
+    if (followState != null) {
+        followZoom.doubleValue = (followZoom.doubleValue + step)
+            .coerceIn(MapConstants.MAP_MIN_ZOOM, MapConstants.MAP_MAX_ZOOM)
+        transitionToFollowPuckState(
+            followPuckViewportStateOptions = followState.options.toBuilder()
+                .zoom(followZoom.doubleValue)
+                .build(),
+            defaultTransitionOptions = DefaultViewportTransitionOptions.Builder()
+                .maxDurationMs(MAP_FOLLOW_ANIM_DURATION.inWholeMilliseconds)
+                .build(),
+        )
+    } else {
+        val currentZoom = cameraState?.zoom ?: return
+        easeTo(
+            cameraOptions = CameraOptions.Builder()
+                .zoom((currentZoom + step).coerceIn(MapConstants.MAP_MIN_ZOOM, MapConstants.MAP_MAX_ZOOM))
+                .build(),
+            animationOptions = MapAnimationOptions.mapAnimationOptions {
+                duration(MAP_FOLLOW_ANIM_DURATION.inWholeMilliseconds)
+            },
+        )
+    }
+}
+
+private fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus, zoom: Double, animated: Boolean) {
     val transitionOptions = DefaultViewportTransitionOptions.Builder()
-        .maxDurationMs(effect.animated.toDuration(MAP_FOLLOW_ANIM_DURATION))
+        .maxDurationMs(animated.toDuration(MAP_FOLLOW_ANIM_DURATION))
         .build()
-    when (effect.myLocationStatus) {
+    when (myLocationStatus) {
         MyLocationStatus.Following -> {
             this.transitionToFollowPuckState(
                 followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL)
+                    .zoom(zoom)
                     .pitch(0.0)
                     .bearing(FollowPuckViewportStateBearing.Constant(0.0))
                     .build(),
@@ -303,7 +338,7 @@ private fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation)
         MyLocationStatus.FollowingLiveCompass -> {
             this.transitionToFollowPuckState(
                 followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL)
+                    .zoom(zoom)
                     .pitch(MapConstants.FOLLOW_LOCATION_LIVE_COMPASS_PITCH)
                     .bearing(FollowPuckViewportStateBearing.SyncWithLocationPuck)
                     .build(),

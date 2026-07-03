@@ -96,6 +96,8 @@ class MainViewModel(
             MainUiEvents.MyLocationReceived -> updateMyLocation()
             MainUiEvents.FollowingDisabled -> disableFollowing()
             MainUiEvents.CompassClicked -> resetCameraToNorth()
+            MainUiEvents.ZoomInClicked -> zoom(zoomIn = true)
+            MainUiEvents.ZoomOutClicked -> zoom(zoomIn = false)
             // Layers events
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
@@ -217,6 +219,12 @@ class MainViewModel(
                 myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
                 isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
             )
+        }
+    }
+
+    private fun zoom(zoomIn: Boolean) {
+        viewModelScope.launch {
+            sendEffect(MapUiEffects.Zoom(zoomIn))
         }
     }
 

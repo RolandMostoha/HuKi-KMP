@@ -8,16 +8,35 @@ struct FloatingActionContainer: View {
     let mainActionGlassNamespace: Namespace.ID
     let onLayersClicked: () -> Void
     let onMyLocationClicked: () -> Void
+    let onZoomInClicked: () -> Void
+    let onZoomOutClicked: () -> Void
     let onSearchTap: () -> Void
     let onMenuClick: () -> Void
+
+    private var isFollowingLiveCompass: Bool {
+        if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
+            return true
+        }
+        return false
+    }
 
     var body: some View {
         VStack(spacing: 16) {
             HStack {
                 Spacer()
                 if uiState.sheet == nil {
-                    fabColumn
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                    VStack(alignment: .trailing, spacing: 16) {
+                        if isFollowingLiveCompass {
+                            MapZoomControls(
+                                strings: strings,
+                                onZoomInClicked: onZoomInClicked,
+                                onZoomOutClicked: onZoomOutClicked
+                            )
+                            .transition(.scale.combined(with: .opacity))
+                        }
+                        fabColumn
+                    }
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }
             if uiState.sheet == nil && uiState.isSearchBarVisible {
@@ -32,6 +51,7 @@ struct FloatingActionContainer: View {
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
         .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
+        .animation(.smooth(duration: 0.3), value: isFollowingLiveCompass)
     }
 
     @ViewBuilder
