@@ -97,7 +97,6 @@ class DefaultGpxMetadataStoreTest {
             lastOpened = openedAt.toIsoOffsetString(),
             lastModified = openedAt.toIsoOffsetString(),
             fileName = "$trackId.gpx",
-            fileUri = "uri/$trackId.gpx",
             title = "Title of $trackId",
             distanceMeters = 1000.0,
             travelTimeSeconds = 3600,

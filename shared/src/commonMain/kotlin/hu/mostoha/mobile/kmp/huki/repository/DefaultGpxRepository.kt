@@ -69,10 +69,19 @@ open class DefaultGpxRepository(
         }
 
     override suspend fun getRecentGpxFiles(limit: Int): List<GpxFileItem> =
-        metadataStore.getMetadata().gpxFiles
-            .mapNotNull { it.toGpxFileItem() }
-            .sortedByDescending { it.lastOpened }
-            .take(limit)
+        withContext(Dispatchers.IO) {
+            metadataStore.getMetadata().gpxFiles
+                .mapNotNull { entry ->
+                    val file = gpxStorage.resolveGpxFile(entry.fileName)
+                    if (file == null) {
+                        metadataStore.remove(entry.fileName)
+                        return@mapNotNull null
+                    }
+                    entry.toGpxFileItem(fileUri = file.path)
+                }
+                .sortedByDescending { it.lastOpened }
+                .take(limit)
+        }
 
     override suspend fun deleteGpxFile(fileName: String) {
         gpxStorage.delete(fileName)

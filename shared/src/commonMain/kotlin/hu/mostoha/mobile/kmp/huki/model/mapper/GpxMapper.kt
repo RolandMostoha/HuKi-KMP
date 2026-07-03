@@ -30,7 +30,6 @@ fun GpxDetails.toMetadataEntry(trackId: String, lastModified: Instant, openedAt:
         lastOpened = openedAt.toIsoOffsetString(),
         lastModified = lastModified.toIsoOffsetString(),
         fileName = fileName,
-        fileUri = fileUri,
         title = title,
         distanceMeters = totalDistance.inMeters,
         travelTimeSeconds = travelTime.inWholeSeconds,
@@ -38,7 +37,7 @@ fun GpxDetails.toMetadataEntry(trackId: String, lastModified: Instant, openedAt:
         decline = decline,
     )
 
-fun GpxMetadataEntry.toGpxFileItem(): GpxFileItem? {
+fun GpxMetadataEntry.toGpxFileItem(fileUri: String): GpxFileItem? {
     val openedAt = lastOpened.toInstantFromIsoOffset() ?: return null
     return GpxFileItem(
         fileName = fileName,

@@ -17,7 +17,6 @@ data class GpxMetadataEntry(
     val lastOpened: String,
     val lastModified: String,
     val fileName: String,
-    val fileUri: String,
     val title: String? = null,
     val distanceMeters: Double,
     val travelTimeSeconds: Long,
