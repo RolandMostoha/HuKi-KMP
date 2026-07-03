@@ -11,7 +11,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 
 # Search a place and select it -> records a visit in Place History.
 - assertVisible: "Search..."

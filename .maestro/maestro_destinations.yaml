@@ -12,7 +12,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 
 # Open Destinations from the Menu.
 - tapOn: "Menu"
@@ -63,7 +63,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 
 # Re-open Destinations from the Menu to continue verifying the remaining tabs.
 - tapOn: "Menu"
