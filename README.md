@@ -38,7 +38,7 @@ The project was born for the following reasons:
 
 ## Plan board
 
-Refer to [PLANNING.md](PLANNING.md).
+Refer to [PLANNING.md](tools/planning/PLANNING.md).
 
 ## Tech stack & architecture & coding constraints
 
