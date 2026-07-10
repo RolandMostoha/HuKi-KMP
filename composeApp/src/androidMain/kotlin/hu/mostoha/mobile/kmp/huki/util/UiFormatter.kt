@@ -8,7 +8,7 @@ import androidx.compose.ui.text.withStyle
 object UiFormatter {
 
     /**
-     * Formats (numbers)(letters) values by applying a small style to the trailing part. E.g. "22.6 km"
+     * Formats (numbers)(letters) values by applying a small style to the trailing unit. E.g. "22.6 km"
      */
     fun formatStatValue(value: String, smallSpanStyle: SpanStyle): AnnotatedString =
         buildAnnotatedString {
@@ -19,7 +19,7 @@ object UiFormatter {
                 append(match.groupValues[1])
                 append(match.groupValues[2])
                 withStyle(smallSpanStyle) {
-                    append(match.groupValues[3].uppercase())
+                    append(match.groupValues[3])
                 }
                 currentIndex = match.range.last + 1
             }

@@ -1,7 +1,7 @@
 appId: ${APP_ID}
 ---
-# GPX Control Menu: reveal the control FAB, open the menu, and exercise its three
-# actions: toggle route line visibility, overview, and clear.
+# GPX Control Menu: reveal the control FAB, open the menu, and exercise its
+# actions: toggle route line visibility, show/hide distances, overview, and clear.
 # clearState is false so the uploaded GPX fixtures survive on iOS (they live in the app's
 # Documents container, which clearState would wipe); the in-memory UI state still resets on
 # cold launch, so determinism is preserved on both platforms.
@@ -42,6 +42,8 @@ appId: ${APP_ID}
 - assertVisible:
     id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
 - assertVisible:
+    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible:
     id: MAIN_FAB_GPX_OVERVIEW_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_CLEAR_BUTTON
@@ -58,6 +60,27 @@ appId: ${APP_ID}
 - tapOn:
     id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
 - assertVisible: "Hide the route line"
+
+# Distances are hidden initially -> the toggle offers to show them
+- assertVisible: "Show distances"
+
+# Show distances for all waypoints -> distance info windows appear on the map
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible: "Hide distances"
+- extendedWaitUntil:
+    visible:
+      id: MAP_DISTANCE_INFO_WINDOW
+    timeout: 5000
+
+# Hide distances again -> the info windows disappear
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible: "Show distances"
+- extendedWaitUntil:
+    notVisible:
+      id: MAP_DISTANCE_INFO_WINDOW
+    timeout: 5000
 
 # Overview zooms the camera to fit the whole route
 - tapOn:

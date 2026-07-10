@@ -27,9 +27,9 @@
     <string name="network_error_unknown_title">Something went wrong</string>
     <string name="network_error_unknown_message">Something went wrong while using the service. Please try again.</string>
 
-    <string name="travel_time_minutes_pattern">%s M</string>
-    <string name="travel_time_hours_pattern">%s H</string>
-    <string name="travel_time_hours_minutes_pattern">%sH %sM</string>
+    <string name="travel_time_minutes_pattern">%s min</string>
+    <string name="travel_time_hours_pattern">%s hour</string>
+    <string name="travel_time_hours_minutes_pattern">%sh %sm</string>
 
     <string name="my_location_a11y">My location</string>
     <string name="my_location_a11y_not_available">My location - Not available</string>
@@ -59,12 +59,17 @@
     <string name="gpx_details_decline">Decline</string>
     <string name="gpx_details_start">Start Route</string>
 
+    <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>
+
     <string name="gpx_control_a11y_fab">GPX controls</string>
     <string name="gpx_control_route_visibility_title">Route visibility</string>
     <string name="gpx_control_route_visibility_show">Show the route line</string>
     <string name="gpx_control_route_visibility_hide">Hide the route line</string>
-    <string name="gpx_control_overview_title">Overview</string>
-    <string name="gpx_control_overview_desc">Zoom to fit the whole route</string>
+    <string name="gpx_control_distances_title">Waypoint distances</string>
+    <string name="gpx_control_distances_show">Show distances</string>
+    <string name="gpx_control_distances_hide">Hide distances</string>
+    <string name="gpx_control_overview_title">Zoom to fit the route</string>
+    <string name="gpx_control_overview_desc">Zoom to route</string>
     <string name="gpx_control_clear_title">Close GPX</string>
     <string name="gpx_control_clear_desc">Close the route</string>
 

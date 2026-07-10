@@ -136,8 +136,7 @@ class DefaultDestinationRepositoryTest {
         actual.forEach { it.destinations.shouldNotBeEmpty() }
     }
 
-    private fun List<Destination>.averageDistanceKm(location: Location): Double =
-        map { location.distanceBetween(it.location).inMeters }.average() / 1000.0
+    private fun List<Destination>.averageDistanceKm(location: Location): Double = map { location.distanceBetween(it.location).inMeters }.average() / 1000.0
 
     private companion object {
         const val SEED = 42L

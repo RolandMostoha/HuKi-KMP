@@ -27,9 +27,9 @@
     <string name="network_error_unknown_title">Ismeretlen hiba történt</string>
     <string name="network_error_unknown_message">Ismeretlen Hiba történt a szolgáltatás használata közben. Kérlek próbáld újra.</string>
 
-    <string name="travel_time_minutes_pattern">%s P</string>
-    <string name="travel_time_hours_pattern">%s Ó</string>
-    <string name="travel_time_hours_minutes_pattern">%sÓ %sP</string>
+    <string name="travel_time_minutes_pattern">%s perc</string>
+    <string name="travel_time_hours_pattern">%s óra</string>
+    <string name="travel_time_hours_minutes_pattern">%só %sp</string>
 
     <string name="my_location_a11y">Saját pozíció</string>
     <string name="my_location_a11y_not_available">Saját pozíció - Nem elérhető</string>
@@ -59,12 +59,17 @@
     <string name="gpx_details_decline">Lejtés</string>
     <string name="gpx_details_start">Útvonal kezdése</string>
 
+    <string name="gpx_distance_info_window_a11y">Táv és idő a helyzetedtől eddig a pontig az útvonal mentén</string>
+
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>
-    <string name="gpx_control_route_visibility_title">Útvonal láthatósága</string>
-    <string name="gpx_control_route_visibility_show">Az útvonal megjelenítése</string>
-    <string name="gpx_control_route_visibility_hide">Az útvonal elrejtése</string>
-    <string name="gpx_control_overview_title">Teljes útvonal</string>
-    <string name="gpx_control_overview_desc">Zoom a teljes útvonalhoz</string>
+    <string name="gpx_control_route_visibility_title">Az útvonal láthatósága</string>
+    <string name="gpx_control_route_visibility_show">Útvonal megjelenítése</string>
+    <string name="gpx_control_route_visibility_hide">Útvonal elrejtése</string>
+    <string name="gpx_control_distances_title">Állomások távolságai</string>
+    <string name="gpx_control_distances_show">Távolság megjelenítése</string>
+    <string name="gpx_control_distances_hide">Távolság elrejtése</string>
+    <string name="gpx_control_overview_title">Teljes útvonal megtekintése</string>
+    <string name="gpx_control_overview_desc">Zoom az útvonalhoz</string>
     <string name="gpx_control_clear_title">GPX Bezárása</string>
     <string name="gpx_control_clear_desc">Az útvonal bezárása</string>
 

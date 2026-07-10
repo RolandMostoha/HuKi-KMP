@@ -123,7 +123,6 @@ struct GpxCollectionView: View {
                         onOpen: {
                             viewModel.onEvent(event: GpxCollectionUiEventsFileClicked(file: file))
                         },
-                        // TODO: wire Rename / Share actions to the ViewModel
                         onRename: {},
                         onShare: {},
                         onDelete: {

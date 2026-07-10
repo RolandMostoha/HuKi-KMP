@@ -10,7 +10,7 @@ import kotlin.time.Duration
 object TravelTimeFormatter {
 
     /**
-     * Formats travel time like "7H 28M".
+     * Formats travel time like "7h 28m", or with the full unit for a single component ("28 min", "7 hr").
      */
     fun formatTravelTime(duration: Duration): StringDesc =
         selectTemplate(duration).let { (stringResource, args) ->
