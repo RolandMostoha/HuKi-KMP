@@ -69,6 +69,7 @@
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
+| `[ ]`  | Map        | In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                                                                                                                                                                                                                                |
 
 ### FEATURE: Map
 
@@ -109,7 +110,7 @@
 
 | Status | Scope        | Task                                                                                                                                                                               |
 |--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Destinations | Add a dedicated DescrinationsScreen which lists all destinations.                                                                                                                  |
+| `[x]`  | Destinations | Add a dedicated DestinationsScreen which lists all destinations.                                                                                                                   |
 | `[x]`  | Destinations | Add a "Destinations" button to menu as a main feature, above GPX Collection. A:ic_backpack, iOS:backpack.fill                                                                      |
 | `[x]`  | Destinations | Add "Destinations" screen, copy the style of GpxCollection                                                                                                                         |
 | `[x]`  | Destinations | Empty view is not necessary, @Destinations are always there                                                                                                                        |
