@@ -272,6 +272,7 @@ val [actual] = operation(X)
 
 ### Good to know
 - `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
+- `tools/planning/PLANNING.md` is the live plan board — roadmap, backlog, bugs, and per-feature task lists (with status legend). Read it before starting feature or bugfix work to "see ahead".
 
 ## Code Quality & Linting
 ### Android
