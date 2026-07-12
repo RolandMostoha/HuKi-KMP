@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +55,7 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterS
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -129,6 +131,14 @@ fun MapContent(
         style = { MapStyle(mapUiState.baseLayer.toMapStyle()) },
         mapViewportState = mapViewportState,
         mapState = mapState,
+        onMapClickListener = OnMapClickListener {
+            if (mapUiState.distanceInfoWindows.isNotEmpty()) {
+                onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+                true
+            } else {
+                false
+            }
+        },
         scaleBar = {
             ScaleBar(
                 modifier = Modifier
@@ -248,12 +258,26 @@ fun MapContent(
                 gpxDetails.waypoints.forEach { waypoint ->
                     val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
                     PointAnnotation(waypoint.location.toPoint()) {
+                        interactionsState.onClicked {
+                            onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+                            true
+                        }
                         iconImage = rememberIconImage
                         iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
                             SharedDimens.GPX_WAYPOINT_MARKER_SCALE
                         } else {
                             SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
                         }
+                    }
+                }
+
+                mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->
+                    key(distanceInfoWindowData.location) {
+                        DistanceInfoWindowAnnotation(
+                            info = distanceInfoWindowData,
+                            gpxDetails = gpxDetails,
+                            onEvent = onEvent,
+                        )
                     }
                 }
             }

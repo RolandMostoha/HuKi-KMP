@@ -37,6 +37,7 @@ Lint:
 - `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
 - `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
 - `ios_fix_location.sh [lat,lon]` — fix a wedged location (defaults to Dobogókő). Use when the simulator loses GPS signal.
+- `ios_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the booted simulator's location through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Use for: "simulate walking a route", "move location along GPX".
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
@@ -47,6 +48,7 @@ Lint:
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
 - `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
 - `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
+- `android_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the connected emulator's location (`adb emu geo fix`) through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Requires an emulator (not a physical device). Use for: "simulate walking a route", "move location along GPX".
 
 ### Cross-platform
 - `android_run_all_maestro_tests.sh [device-serial]` — run all `.maestro/maestro_*.yaml` tests against the Android app. Defaults to the first connected adb device. Use for: "run maestro tests (Android)", "run E2E tests (Android)".

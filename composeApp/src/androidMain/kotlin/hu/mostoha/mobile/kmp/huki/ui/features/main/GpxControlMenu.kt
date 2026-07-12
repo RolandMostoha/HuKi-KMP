@@ -35,7 +35,9 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 @Composable
 fun GpxControlMenu(
     isRouteVisible: Boolean,
+    isAllDistancesVisible: Boolean,
     onToggleLineClicked: () -> Unit,
+    onToggleDistancesClicked: () -> Unit,
     onOverviewClicked: () -> Unit,
     onClearClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -107,6 +109,29 @@ fun GpxControlMenu(
             },
         )
         FloatingActionButtonMenuItem(
+            modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON),
+            onClick = onToggleDistancesClicked,
+            containerColor = itemContainerColor,
+            contentColor = itemContentColor,
+            icon = {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_ruler),
+                    contentDescription = null,
+                )
+            },
+            text = {
+                Text(
+                    text = mokoString(
+                        if (isAllDistancesVisible) {
+                            SharedRes.strings.gpx_control_distances_hide
+                        } else {
+                            SharedRes.strings.gpx_control_distances_show
+                        },
+                    ),
+                )
+            },
+        )
+        FloatingActionButtonMenuItem(
             modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_OVERVIEW_BUTTON),
             onClick = {
                 expanded = false
@@ -145,7 +170,9 @@ private fun GpxControlMenuCollapsedPreview() {
         Box(modifier = Modifier.size(width = 360.dp, height = 200.dp)) {
             GpxControlMenu(
                 isRouteVisible = true,
+                isAllDistancesVisible = false,
                 onToggleLineClicked = {},
+                onToggleDistancesClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},
             )
@@ -160,7 +187,9 @@ private fun GpxControlMenuExpandedPreview() {
         Box(modifier = Modifier.size(width = 360.dp, height = 360.dp)) {
             GpxControlMenu(
                 isRouteVisible = true,
+                isAllDistancesVisible = true,
                 onToggleLineClicked = {},
+                onToggleDistancesClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},
                 initiallyExpanded = true,

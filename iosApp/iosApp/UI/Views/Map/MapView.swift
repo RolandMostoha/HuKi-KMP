@@ -7,6 +7,8 @@ struct MapView: View {
     let onFollowingDisabled: () -> Void
     let onMyLocationReceived: () -> Void
     let onCompassClicked: () -> Void
+    let onWaypointClicked: (GpxWaypoint) -> Void
+    let onDistanceInfoWindowDismissed: () -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
     private let viewportObserver = ViewportObserver()
@@ -70,6 +72,30 @@ struct MapView: View {
                                             ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
                                             : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                                     )
+                                    .onTapGesture {
+                                        onWaypointClicked(waypoint)
+                                    }
+                            }
+                            ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.location.id) { info in
+                                let waypointType = gpxDetails.waypoints
+                                    .first { $0.location.id == info.location.id }?.type
+                                let iconScale = CGFloat(
+                                    waypointType == .intermediate
+                                        ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
+                                        : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
+                                )
+                                let markerHeight = (waypointType?.icon.toUIImage()?.size.height ?? 0) * iconScale
+                                let offsetY = markerHeight / 2 + Dimens.infoWindowMarkerPadding
+                                MapViewAnnotation(coordinate: info.location.coordinate) {
+                                    DistanceInfoWindowView(info: info)
+                                        .onTapGesture {
+                                            onDistanceInfoWindowDismissed()
+                                        }
+                                }
+                                .variableAnchors([
+                                    ViewAnnotationAnchorConfig(anchor: .bottom, offsetY: offsetY)
+                                ])
+                                .allowOverlap(true)
                             }
                         }
                     }
@@ -78,6 +104,11 @@ struct MapView: View {
                 .gestureOptions(GestureOptions(
                     rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
                 ))
+                .onMapTapGesture { _ in
+                    if !uiState.mapUiState.distanceInfoWindows.isEmpty {
+                        onDistanceInfoWindowDismissed()
+                    }
+                }
                 .ornamentOptions(OrnamentOptions(
                     scaleBar: ScaleBarViewOptions(
                         position: .topLeft,

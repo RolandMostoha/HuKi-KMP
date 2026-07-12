@@ -16,23 +16,39 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
+import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
+import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -43,6 +59,8 @@ class MainViewModel(
     val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
     private val destinationRepository: DestinationRepository,
+    private val locationMonitoringService: LocationMonitoringService,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -53,9 +71,12 @@ class MainViewModel(
     private val _mapUiEffects = Channel<MapUiEffects>(Channel.BUFFERED)
     val mapUiEffects: Flow<MapUiEffects> = _mapUiEffects.receiveAsFlow()
 
+    private val selectedWaypoint = MutableStateFlow<GpxWaypoint?>(null)
+
     init {
         initLogging()
         initMyLocation()
+        initDistanceMonitoring()
     }
 
     fun onEvent(event: MainUiEvents) {
@@ -85,7 +106,10 @@ class MainViewModel(
             MainUiEvents.GpxCloseClicked -> closeGpx()
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
+            MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
+            is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
+            MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
         }
     }
 
@@ -231,6 +255,47 @@ class MainViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun initDistanceMonitoring() {
+        val allDistancesVisible = uiState
+            .map { it.mapUiState.allDistancesVisible }
+            .distinctUntilChanged()
+        combine(selectedWaypoint, allDistancesVisible) { selected, showAll ->
+            val gpxDetails = uiState.value.mapUiState.gpxDetails
+            when {
+                gpxDetails == null -> emptyList()
+                showAll -> gpxDetails.waypoints
+                selected != null -> listOf(selected)
+                else -> emptyList()
+            }
+        }
+            .flatMapLatest { waypoints ->
+                val gpxDetails = uiState.value.mapUiState.gpxDetails
+                if (waypoints.isEmpty() || gpxDetails == null) {
+                    flowOf(emptyList())
+                } else {
+                    val isRoundTripRoute = gpxDetails.waypoints.any { it.type == WaypointType.ROUND_TRIP }
+                    locationMonitoringService.locations().map { location ->
+                        waypoints.map { waypoint ->
+                            val progress = gpxDetails.locations.routeProgressTo(
+                                from = location,
+                                to = waypoint.location,
+                                isRoundTrip = isRoundTripRoute,
+                            )
+                            DistanceInfoWindowData(
+                                location = waypoint.location,
+                                distance = DistanceFormatter.formatDistance(progress.distance),
+                                travelTime = TravelTimeFormatter.formatTravelTime(progress.travelTime),
+                            )
+                        }
+                    }
+                }
+            }
+            .flowOn(defaultDispatcher)
+            .onEach { data -> _uiState.updateMapUiState { it.copy(distanceInfoWindows = data) } }
+            .launchIn(viewModelScope)
+    }
+
     private suspend fun withLocationPermission(onGranted: suspend () -> Unit) {
         if (permissionsController.getPermissionState(Permission.LOCATION) == PermissionState.Granted) {
             onGranted()
@@ -305,6 +370,7 @@ class MainViewModel(
     }
 
     private fun closeGpx() {
+        selectedWaypoint.value = null
         viewModelScope.launch {
             _uiState.update { uiState ->
                 uiState.copy(
@@ -312,6 +378,8 @@ class MainViewModel(
                         gpxDetails = null,
                         gpxLayerVisible = false,
                         gpxRouteVisible = true,
+                        allDistancesVisible = false,
+                        distanceInfoWindows = emptyList(),
                     ),
                     sheet = null,
                     isSearchBarVisible = shouldShowSearchBar(
@@ -333,12 +401,15 @@ class MainViewModel(
             }
             runCatching { gpxRepository.readGpxFile(uri) }
                 .onSuccess { gpxDetails ->
+                    selectedWaypoint.value = null
                     _uiState.update { uiState ->
                         uiState.copy(
                             mapUiState = uiState.mapUiState.copy(
                                 gpxDetails = gpxDetails,
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
+                                allDistancesVisible = false,
+                                distanceInfoWindows = emptyList(),
                             ),
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
@@ -381,6 +452,13 @@ class MainViewModel(
         }
     }
 
+    private fun toggleAllDistancesVisibility() {
+        selectedWaypoint.value = null
+        _uiState.updateMapUiState {
+            it.copy(allDistancesVisible = it.allDistancesVisible.not())
+        }
+    }
+
     private fun showGpxOverview() {
         viewModelScope.launch {
             val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
@@ -391,6 +469,15 @@ class MainViewModel(
                 ),
             )
         }
+    }
+
+    private fun selectWaypoint(waypoint: GpxWaypoint) {
+        selectedWaypoint.value = waypoint
+    }
+
+    private fun dismissDistanceInfoWindow() {
+        selectedWaypoint.value = null
+        _uiState.updateMapUiState { it.copy(allDistancesVisible = false) }
     }
 
     private fun showGpxFilePicker() {

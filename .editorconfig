@@ -17,5 +17,9 @@ ij_kotlin_line_break_after_multiline_when_entry = false
 [**/*.gradle.kts]
 ktlint_standard_chain-method-continuation = disabled
 
+# Tests — allow long lines
+[**/{test,androidTest,commonTest,androidUnitTest,iosTest}/**/*.kt]
+ktlint_standard_max-line-length = disabled
+
 [**/build/**/*.kt]
 ktlint = disabled

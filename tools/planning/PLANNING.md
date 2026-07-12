@@ -65,17 +65,20 @@
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[L]`  | Map        | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
+| `[L]`  | Map        | Bug: In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                                                                                                                                                                                                                           |
+| `[L]`  | Map        | Bug: In dark mode GPX color is too bright, not readable                                                                                                                                                                                                                                                         |
+| `[L]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top (marker placement order issue)                                                                                                                                                                                                      |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
-| `[ ]`  | Map        | In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                                                                                                                                                                                                                                |
 
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                                     |
 |--------|-------|------------------------------------------------------------------------------------------|
 | `[L]`  | Map   | While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons |
+| `[L]`  | Map   | Rotate with 2 fingers                                                                    |
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX        |
 
 ### FEATURE: My Location
@@ -94,6 +97,7 @@
 
 | Status | Scope  | Task                                                                                                                                                                          |
 |--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | Search | Search section order chnage: Show Recent places and Recent GPX tracks before Destinations. It's more important to see recents than destinations.                              |
 | `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
@@ -108,28 +112,31 @@
 
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                                                                                                                                                               |
-|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Destinations | Add a dedicated DestinationsScreen which lists all destinations.                                                                                                                   |
-| `[x]`  | Destinations | Add a "Destinations" button to menu as a main feature, above GPX Collection. A:ic_backpack, iOS:backpack.fill                                                                      |
-| `[x]`  | Destinations | Add "Destinations" screen, copy the style of GpxCollection                                                                                                                         |
-| `[x]`  | Destinations | Empty view is not necessary, @Destinations are always there                                                                                                                        |
-| `[x]`  | Destinations | Add title as en:"Destinations" hu:"Kirándulóhelyek", and "[Count] destinations"                                                                                                    |
-| `[x]`  | Destinations | Top right "map" button is not needed for the moment.                                                                                                                               |
-| `[x]`  | Destinations | Add a Segmented Control to the top with "Popular", "By area", "Nearby"                                                                                                             |
-| `[x]`  | Destinations | Add list view for "Popular". Rows should be numbered. Distance is not needed.                                                                                                      |
-| `[x]`  | Destinations | Add list view for "Nearby". Row numbers are not needed. Distance is needed. If Permission is not granted for location, show InfoView.Warning, with a link to location permissions. |
-| `[x]`  | Destinations | Do not implement "By area" yet, just have a "blank" state when the segmented control is clicked.                                                                                   |
-| `[x]`  | Destinations | Do not implement item click yet.                                                                                                                                                   |
-| `[x]`  | Destinations | Add "See all" click handling to Search/Destinations -> Navigates to "Destinations"                                                                                                 |
-| `[~]`  | Destinations | Add Preview destination card before navigating to maps                                                                                                                             |
-| `[ ]`  | Destinations | Add Map based destinations with Landscapes                                                                                                                                         |
+| Status | Scope        | Task                                       |
+|--------|--------------|--------------------------------------------|
+| `[ ]`  | Destinations | Add Map based destinations with Landscapes |
 
 ### FEATURE: WhatsNew
 
-| Status | Scope   | Task                                                           |
-|--------|---------|----------------------------------------------------------------|
-| `[L]`  | Version | Add proper versioning to app, which works for Android and iOS. |
+| Status | Scope    | Task                                                           |
+|--------|----------|----------------------------------------------------------------|
+| `[L]`  | WhatsNew | Add proper versioning to app, which works for Android and iOS. |
+| `[L]`  | WhatsNew | On first app open, show a bottom sheet with the latest news    |
+
+### FEATURE: Route Planner: Wandering mode
+
+Goal: Set a single starting point (e.g. parking), and show the straight line distance from the
+point.
+Works like a GPX with waypoints only, set a few points and leave the user to decide which route to
+follow.
+
+### FEATURE: GPX Distance
+
+Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle waypoints.
+
+| Status | Scope       | Task                                                                                                                                                                             |
+|--------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPXDistance | When I intentionally go off the trail, it still snaps and show distance, its misleading. We can show a direct line to the route (with a label "+100m") or offer "Wandering mode" |
 
 ### FEATURE: GPX
 
@@ -178,10 +185,11 @@
 
 | Status | Scope    | Task                                            |
 |--------|----------|-------------------------------------------------|
-| `[ ]`  | Settings | Add "Settings" to the top section of MenuScreen |
-| `[ ]`  | Settings | Create SettingsScreen                           |
-| `[ ]`  | Settings | Add Increase map font size in Settings          |
-| `[ ]`  | Settings | Add Show/Hide +- zooming in Settings            |
+| `[L]`  | Settings | Add "Settings" to the top section of MenuScreen |
+| `[L]`  | Settings | Create SettingsScreen                           |
+| `[L]`  | Settings | Add Increase map font size in Settings          |
+| `[L]`  | Settings | Add Show/Hide +- zooming in Settings            |
+| `[ ]`  | Settings | Add Enable/Disable two finger rotation          |
 
 ### FEATURE: Support + Billing
 
@@ -231,7 +239,15 @@ so an Android export imports on iOS and vice-versa.
 | `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                     |
 | `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`          |
 
-### FEATURE: Report problem on route
+### FEATURE: Menu - Guides
+
+Goal: a new section in Menu, with 1 page guides of different topics:
+
+- GPX Guide - already existing via GPX Collection
+- Trail markers
+- Problem on route
+
+#### Guides: Report problem on route
 
 - Use MTSZ (Magyar Természetjáró Szövetség) email's to report a problem
 - Include location (latitude, longitude)
@@ -254,3 +270,4 @@ so an Android export imports on iOS and vice-versa.
 | GPX Collection | GPX File list view, GPX Tutorial screen                      |
 | GPX Metadata   | Store GPX Metadata in a JSON                                 |
 | Place History  | Place History list view                                      |
+| Destinations   | Destinations with Popular, Ladnscapes, Nearby                |
