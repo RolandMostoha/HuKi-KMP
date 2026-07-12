@@ -14,32 +14,10 @@ appId: ${APP_ID}
 - runFlow: subflows/maestro_flow_import_gpx.yaml
 
 # Dismiss the GPX Details sheet (without closing the GPX) to reveal the control FAB.
-# The two platforms host the sheet differently, so each needs its own swipe gesture.
-# A single swipe is flaky on slow CI emulators (it can fall short of the collapse anchor),
-# so retry the fling until the FAB appears.
-- repeat:
-    times: 3
-    commands:
-      - runFlow:
-          when:
-            notVisible:
-              id: MAIN_FAB_GPX_CONTROL_BUTTON
-            platform: Android
-          commands:
-            - swipe:
-                start: 50%, 82%
-                end: 50%, 95%
-                duration: 200
-      - runFlow:
-          when:
-            notVisible:
-              id: MAIN_FAB_GPX_CONTROL_BUTTON
-            platform: iOS
-          commands:
-            - swipe:
-                start: 50%, 73%
-                end: 50%, 99%
-                duration: 400
+# Tapping Start Route deterministically hides the sheet on both platforms, which avoids
+# the flaky swipe-to-collapse gesture that could fall short of the anchor on slow emulators.
+- tapOn:
+    id: GPX_DETAILS_START_BUTTON
 - extendedWaitUntil:
     visible:
       id: MAIN_FAB_GPX_CONTROL_BUTTON
@@ -56,6 +34,22 @@ appId: ${APP_ID}
     id: MAIN_FAB_GPX_OVERVIEW_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_CLEAR_BUTTON
+
+# Start Route left the camera following the user's location, so frame the whole route first
+# with Overview to bring the waypoints (and their distance info windows) back on screen.
+- tapOn:
+    id: MAIN_FAB_GPX_OVERVIEW_BUTTON
+# Android collapses the menu after Overview; reopen it. iOS keeps it open.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: MAIN_FAB_GPX_CONTROL_BUTTON
+          timeout: 5000
+      - tapOn:
+          id: MAIN_FAB_GPX_CONTROL_BUTTON
 
 # Route is visible initially -> the toggle offers to hide it
 - assertVisible: "Hide the route line"
@@ -90,22 +84,6 @@ appId: ${APP_ID}
     notVisible:
       id: MAP_DISTANCE_INFO_WINDOW
     timeout: 5000
-
-# Overview zooms the camera to fit the whole route
-- tapOn:
-    id: MAIN_FAB_GPX_OVERVIEW_BUTTON
-# Android collapses the menu after Overview; reopen it to reach Clear.
-# iOS keeps the menu open, so Clear is already reachable.
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - extendedWaitUntil:
-          visible:
-            id: MAIN_FAB_GPX_CONTROL_BUTTON
-          timeout: 5000
-      - tapOn:
-          id: MAIN_FAB_GPX_CONTROL_BUTTON
 
 # Clear removes the GPX entirely -> the control FAB disappears and the SearchBar returns
 - tapOn:
