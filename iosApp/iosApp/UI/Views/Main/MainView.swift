@@ -84,6 +84,12 @@ struct MainView: View {
                     onCompassClicked: {
                         viewModel.onEvent(event: MainUiEventsCompassClicked.shared)
                     },
+                    onWaypointClicked: { waypoint in
+                        viewModel.onEvent(event: MainUiEventsGpxWaypointClicked(waypoint: waypoint))
+                    },
+                    onDistanceInfoWindowDismissed: {
+                        viewModel.onEvent(event: MainUiEventsDistanceInfoWindowDismissed.shared)
+                    },
                     mapUiEffects: viewModel.mapUiEffects
                 )
                 VStack {
@@ -230,14 +236,21 @@ struct MainView: View {
         }
     }
 
+}
+
+private extension MainView {
     @ViewBuilder
-    private func gpxControlMenu(uiState: MainUiState) -> some View {
+    func gpxControlMenu(uiState: MainUiState) -> some View {
         if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil {
             GpxControlMenu(
                 strings: strings,
                 isRouteVisible: uiState.mapUiState.gpxRouteVisible,
+                isAllDistancesVisible: uiState.mapUiState.allDistancesVisible,
                 onToggleLine: {
                     viewModel.onEvent(event: MainUiEventsGpxRouteVisibilityToggled())
+                },
+                onToggleDistances: {
+                    viewModel.onEvent(event: MainUiEventsGpxDistancesVisibilityToggled())
                 },
                 onOverview: {
                     viewModel.onEvent(event: MainUiEventsGpxOverviewClicked())
@@ -252,9 +265,6 @@ struct MainView: View {
         }
     }
 
-}
-
-private extension MainView {
     func handleMainEffects(_ effect: MainUiEffects) {
         switch onEnum(of: effect) {
         case .navigateToAppSettings:

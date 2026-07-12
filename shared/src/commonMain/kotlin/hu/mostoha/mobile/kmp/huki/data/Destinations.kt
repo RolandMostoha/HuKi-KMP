@@ -1018,7 +1018,7 @@ val DESTINATIONS_BORZSONY = listOf(
         name = "Bazilika",
         town = "Esztergom",
         type = DestinationType.CHURCH,
-        popularity = 10,
+        popularity = 9,
         description = SharedRes.strings.borzsony_esztergom_bazilika,
     ),
     Destination(

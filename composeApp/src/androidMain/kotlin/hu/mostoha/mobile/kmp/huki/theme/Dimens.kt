@@ -17,6 +17,10 @@ object Dimens {
     val IconContainer = 40.dp
     val IconHero = 96.dp
 
+    val InfoWindowBorder = 1.6.dp
+    val InfoWindowTailWidth = 16.dp
+    val InfoWindowTailHeight = 8.dp
+    val InfoWindowMarkerPadding = 1.dp
     val FloatingActionElevation = 1.dp
 
     val SectionSpacing = 24.dp

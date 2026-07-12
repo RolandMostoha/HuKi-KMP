@@ -22,6 +22,8 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
 
     private val locationManager = CLLocationManager()
 
+    private var locationDelegate: CLLocationManagerDelegateProtocol? = null
+
     override suspend fun lastKnownLocation(): Location? {
         if (!locationManager.isAuthorized()) {
             return null
@@ -77,12 +79,15 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
             }
         }
 
+        // CLLocationManager holds `delegate` weakly; retain it strongly so Kotlin/Native does not garbage-collect
+        locationDelegate = delegate
         manager.delegate = delegate
         startIfAuthorized()
 
         awaitClose {
             manager.stopUpdatingLocation()
             manager.delegate = null
+            locationDelegate = null
         }
     }.shareIn(scope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), replay = 1)
 

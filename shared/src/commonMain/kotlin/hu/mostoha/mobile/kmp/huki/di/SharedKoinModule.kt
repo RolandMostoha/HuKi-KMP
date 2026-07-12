@@ -57,7 +57,9 @@ val appModule = module {
 }
 
 val viewModelModule = module {
-    viewModelOf(::MainViewModel)
+    viewModel {
+        MainViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+    }
     viewModel {
         PlaceFinderViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }

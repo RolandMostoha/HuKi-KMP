@@ -24,6 +24,9 @@ echo "--- Starting Maestro tests for $APP_ID on device $DEVICE_ID ---"
 
 export MAESTRO_CLI_NO_ANALYTICS=1
 
+# Track passed tests so we can list them if a later test fails
+PASSED_TESTS=()
+
 # Loop through each test file
 for test_file in .maestro/maestro_*.yaml; do
   echo "--- Starting Test: $test_file ---"
@@ -44,10 +47,18 @@ for test_file in .maestro/maestro_*.yaml; do
     --debug-output ./; then
     echo ""
     echo "${RED}${BOLD}❌ FAILED: $test_file${RESET}"
+    if [ ${#PASSED_TESTS[@]} -gt 0 ]; then
+      echo ""
+      echo "${GREEN}${BOLD}Already passed (${#PASSED_TESTS[@]}) — safe to skip on rerun:${RESET}"
+      for passed in "${PASSED_TESTS[@]}"; do
+        echo "${GREEN}  ✔ $passed${RESET}"
+      done
+    fi
     echo "${RED}--- Aborting Maestro run. See the output above and ./maestro debug logs for details. ---${RESET}"
     exit 1
   fi
 
+  PASSED_TESTS+=("$test_file")
   echo "${GREEN}✔ COMPLETED: $test_file${RESET}"
   sleep 5
 done

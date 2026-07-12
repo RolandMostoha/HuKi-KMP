@@ -15,12 +15,14 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
+import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_WAY_CLOSED
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
@@ -28,14 +30,23 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
+import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
+import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
+import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -89,7 +100,11 @@ class MainViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(grantedPermission: Boolean, allowPermission: Boolean = true): MainViewModel {
+    private fun createViewModel(
+        grantedPermission: Boolean,
+        allowPermission: Boolean = true,
+        locationMonitoringService: LocationMonitoringService = locationMonitoringService(lastKnownLocation = null),
+    ): MainViewModel {
         val allow = if (allowPermission) setOf(Permission.LOCATION) else emptySet()
         val granted = if (grantedPermission) setOf(Permission.LOCATION) else emptySet()
         return MainViewModel(
@@ -100,7 +115,17 @@ class MainViewModelTest {
             gpxRepository = gpxRepository,
             placeHistoryRepository = placeHistoryRepository,
             destinationRepository = destinationRepository,
+            locationMonitoringService = locationMonitoringService,
+            defaultDispatcher = testDispatcher,
         )
+    }
+
+    private fun locationMonitoringService(
+        lastKnownLocation: Location?,
+        updates: SharedFlow<Location> = MutableSharedFlow(),
+    ) = object : LocationMonitoringService {
+        override val locationUpdates: SharedFlow<Location> = updates
+        override suspend fun lastKnownLocation(): Location? = lastKnownLocation
     }
 
     @Test
@@ -553,6 +578,169 @@ class MainViewModelTest {
                     mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
                     mapUiState.gpxLayerVisible shouldBe true
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `Given imported GPX and known location, When GpxWaypointClicked, Then distanceInfoWindow is set`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            val waypoint = GpxWaypoint(TEST_GPX_WAY_CLOSED[2], WaypointType.INTERMEDIATE)
+            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+            advanceUntilIdle()
+
+            val info = viewModel.uiState.value.mapUiState.distanceInfoWindows.singleOrNull()
+            info.shouldNotBeNull()
+            info.location shouldBe waypoint.location
+
+            viewModel.onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.distanceInfoWindows shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given round trip GPX and intermediate waypoint behind current location, When GpxWaypointClicked, Then distance wraps forward`() {
+        runTest {
+            val waypoint = GpxWaypoint(TEST_GPX_WAY_CLOSED[1], WaypointType.INTERMEDIATE)
+            val gpxDetails = TEST_GPX_DETAILS.copy(
+                waypoints = listOf(
+                    waypoint,
+                    GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.ROUND_TRIP),
+                ),
+            )
+            everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
+            val currentLocation = TEST_GPX_WAY_CLOSED[2]
+            val service = locationMonitoringService(lastKnownLocation = currentLocation)
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+            advanceUntilIdle()
+
+            val info = viewModel.uiState.value.mapUiState.distanceInfoWindows.singleOrNull()
+            info.shouldNotBeNull()
+
+            val expected = TEST_GPX_WAY_CLOSED.routeProgressTo(
+                from = currentLocation,
+                to = waypoint.location,
+                isRoundTrip = true,
+            )
+            info.distance shouldBe DistanceFormatter.formatDistance(expected.distance)
+            info.travelTime shouldBe TravelTimeFormatter.formatTravelTime(expected.travelTime)
+        }
+    }
+
+    @Test
+    fun `Given imported GPX, When GpxDistancesVisibilityToggled, Then all waypoints get distance windows`() {
+        runTest {
+            val waypoints = listOf(
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
+                GpxWaypoint(TEST_GPX_WAY_CLOSED[2], WaypointType.INTERMEDIATE),
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.last(), WaypointType.END),
+            )
+            val gpxDetails = TEST_GPX_DETAILS.copy(waypoints = waypoints)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
+            val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.allDistancesVisible shouldBe false
+            viewModel.uiState.value.mapUiState.distanceInfoWindows shouldBe emptyList()
+
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe true
+                distanceInfoWindows.map { it.location } shouldBe waypoints.map { it.location }
+            }
+
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe false
+                distanceInfoWindows shouldBe emptyList()
+            }
+        }
+    }
+
+    @Test
+    fun `Given selected waypoint, When GpxDistancesVisibilityToggled on and off, Then windows are fully cleared`() {
+        runTest {
+            val waypoints = listOf(
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
+                GpxWaypoint(TEST_GPX_WAY_CLOSED[2], WaypointType.INTERMEDIATE),
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.last(), WaypointType.END),
+            )
+            val gpxDetails = TEST_GPX_DETAILS.copy(waypoints = waypoints)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
+            val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoints[1]))
+            advanceUntilIdle()
+            viewModel.uiState.value.mapUiState.distanceInfoWindows.map { it.location } shouldBe
+                listOf(waypoints[1].location)
+
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe true
+                distanceInfoWindows.map { it.location } shouldBe waypoints.map { it.location }
+            }
+
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe false
+                distanceInfoWindows shouldBe emptyList()
+            }
+        }
+    }
+
+    @Test
+    fun `Given all distances visible, When DistanceInfoWindowDismissed, Then windows cleared and toggle off`() {
+        runTest {
+            val waypoints = listOf(
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
+                GpxWaypoint(TEST_GPX_WAY_CLOSED.last(), WaypointType.END),
+            )
+            val gpxDetails = TEST_GPX_DETAILS.copy(waypoints = waypoints)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
+            val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+            viewModel.uiState.value.mapUiState.distanceInfoWindows.shouldNotBeEmpty()
+
+            viewModel.onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe false
+                distanceInfoWindows shouldBe emptyList()
             }
         }
     }

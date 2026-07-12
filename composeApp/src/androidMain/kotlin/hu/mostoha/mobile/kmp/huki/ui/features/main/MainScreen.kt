@@ -262,6 +262,9 @@ private fun MainContent(
                 onGpxToggleLineClicked = {
                     onEvent(MainUiEvents.GpxRouteVisibilityToggled)
                 },
+                onGpxToggleDistancesClicked = {
+                    onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+                },
                 onGpxOverviewClicked = {
                     onEvent(MainUiEvents.GpxOverviewClicked)
                 },

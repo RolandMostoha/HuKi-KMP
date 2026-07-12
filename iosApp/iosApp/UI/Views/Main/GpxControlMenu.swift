@@ -4,7 +4,9 @@ import SwiftUI
 struct GpxControlMenu: View {
     let strings: Strings
     var isRouteVisible: Bool = true
+    var isAllDistancesVisible: Bool = false
     var onToggleLine: () -> Void = {}
+    var onToggleDistances: () -> Void = {}
     var onOverview: () -> Void = {}
     var onClear: () -> Void = {}
 
@@ -74,19 +76,30 @@ struct GpxControlMenu: View {
         VStack(alignment: .leading, spacing: 4) {
             menuRow(
                 icon: isRouteVisible ? "eye" : "eye.slash",
-                title: strings.get(id: SharedRes.strings().gpx_control_route_visibility_title),
-                description: strings.get(
+                title: strings.get(
                     id: isRouteVisible
                         ? SharedRes.strings().gpx_control_route_visibility_hide
                         : SharedRes.strings().gpx_control_route_visibility_show
                 ),
+                description: strings.get(id: SharedRes.strings().gpx_control_route_visibility_title),
                 action: onToggleLine
             )
             .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_LINE_BUTTON)
             menuRow(
+                icon: "ruler",
+                title: strings.get(
+                    id: isAllDistancesVisible
+                        ? SharedRes.strings().gpx_control_distances_hide
+                        : SharedRes.strings().gpx_control_distances_show
+                ),
+                description: strings.get(id: SharedRes.strings().gpx_control_distances_title),
+                action: onToggleDistances
+            )
+            .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON)
+            menuRow(
                 icon: "rectangle.expand.diagonal",
-                title: strings.get(id: SharedRes.strings().gpx_control_overview_title),
-                description: strings.get(id: SharedRes.strings().gpx_control_overview_desc),
+                title: strings.get(id: SharedRes.strings().gpx_control_overview_desc),
+                description: strings.get(id: SharedRes.strings().gpx_control_overview_title),
                 action: onOverview
             )
             .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_OVERVIEW_BUTTON)

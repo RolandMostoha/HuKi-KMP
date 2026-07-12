@@ -47,6 +47,7 @@ fun FloatingActionContainer(
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
     onGpxToggleLineClicked: () -> Unit,
+    onGpxToggleDistancesClicked: () -> Unit,
     onGpxOverviewClicked: () -> Unit,
     onGpxClearClicked: () -> Unit,
     onMenuClicked: () -> Unit,
@@ -66,7 +67,9 @@ fun FloatingActionContainer(
         ) {
             GpxControlMenu(
                 isRouteVisible = mainUiState.mapUiState.gpxRouteVisible,
+                isAllDistancesVisible = mainUiState.mapUiState.allDistancesVisible,
                 onToggleLineClicked = onGpxToggleLineClicked,
+                onToggleDistancesClicked = onGpxToggleDistancesClicked,
                 onOverviewClicked = onGpxOverviewClicked,
                 onClearClicked = onGpxClearClicked,
             )
@@ -183,6 +186,7 @@ private fun MainContentPreview() {
             onLayersClicked = {},
             onMyLocationClicked = {},
             onGpxToggleLineClicked = {},
+            onGpxToggleDistancesClicked = {},
             onGpxOverviewClicked = {},
             onGpxClearClicked = {},
             onMenuClicked = {},
