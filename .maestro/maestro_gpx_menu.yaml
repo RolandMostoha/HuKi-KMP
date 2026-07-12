@@ -15,22 +15,31 @@ appId: ${APP_ID}
 
 # Dismiss the GPX Details sheet (without closing the GPX) to reveal the control FAB.
 # The two platforms host the sheet differently, so each needs its own swipe gesture.
-- runFlow:
-    when:
-      platform: Android
+# A single swipe is flaky on slow CI emulators (it can fall short of the collapse anchor),
+# so retry the fling until the FAB appears.
+- repeat:
+    times: 3
     commands:
-      - swipe:
-          start: 50%, 80%
-          end: 50%, 97%
-          duration: 1200
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - swipe:
-          start: 50%, 73%
-          end: 50%, 99%
-          duration: 400
+      - runFlow:
+          when:
+            notVisible:
+              id: MAIN_FAB_GPX_CONTROL_BUTTON
+            platform: Android
+          commands:
+            - swipe:
+                start: 50%, 82%
+                end: 50%, 95%
+                duration: 200
+      - runFlow:
+          when:
+            notVisible:
+              id: MAIN_FAB_GPX_CONTROL_BUTTON
+            platform: iOS
+          commands:
+            - swipe:
+                start: 50%, 73%
+                end: 50%, 99%
+                duration: 400
 - extendedWaitUntil:
     visible:
       id: MAIN_FAB_GPX_CONTROL_BUTTON
