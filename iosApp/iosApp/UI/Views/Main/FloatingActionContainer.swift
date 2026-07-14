@@ -20,13 +20,17 @@ struct FloatingActionContainer: View {
         return false
     }
 
+    private var isZoomControlsVisible: Bool {
+        uiState.mapZoomControlsAlwaysVisible || isFollowingLiveCompass
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             HStack {
                 Spacer()
                 if uiState.sheet == nil {
                     VStack(alignment: .trailing, spacing: 16) {
-                        if isFollowingLiveCompass {
+                        if isZoomControlsVisible {
                             MapZoomControls(
                                 strings: strings,
                                 onZoomInClicked: onZoomInClicked,
@@ -51,7 +55,7 @@ struct FloatingActionContainer: View {
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
         .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
-        .animation(.smooth(duration: 0.3), value: isFollowingLiveCompass)
+        .animation(.smooth(duration: 0.3), value: isZoomControlsVisible)
     }
 
     @ViewBuilder

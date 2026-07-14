@@ -39,7 +39,6 @@
 - Recent Places -> from LIQ Autocomplete / Destinations / Long tap place details
 - Place Details -> long tap on map AND destinations
 - Display (distance + time) in an InfoWindow on top Start / End / Waypoint points
-- While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons
 - Destinations screen with filtering
 - Versioning, WhatsNews
 
@@ -65,8 +64,6 @@
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[L]`  | Map        | Bug: zooming deep (17+) removes the hiking layer, it should force scale instead                                                                                                                                                                                                                                 |
-| `[L]`  | Map        | Bug: In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                                                                                                                                                                                                                           |
-| `[L]`  | Map        | Bug: In dark mode GPX color is too bright, not readable                                                                                                                                                                                                                                                         |
 | `[L]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top (marker placement order issue)                                                                                                                                                                                                      |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
@@ -75,11 +72,19 @@
 
 ### FEATURE: Map
 
-| Status | Scope | Task                                                                                     |
-|--------|-------|------------------------------------------------------------------------------------------|
-| `[L]`  | Map   | While Following or FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons |
-| `[L]`  | Map   | Rotate with 2 fingers                                                                    |
-| `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX        |
+| Status | Scope | Task                                                                              |
+|--------|-------|-----------------------------------------------------------------------------------|
+| `[L]`  | Map   | While FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons       |
+| `[L]`  | Map   | Enable Rotate with 2 fingers by default                                           |
+| `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
+
+### FEATURE: Dark Mode
+
+| Status | Scope | Bug                                                                                                      |
+|--------|-------|----------------------------------------------------------------------------------------------------------|
+| `[x]`  | Map   | Decision: In dark mode only the App's UI components are changed, no Mapbox map style change              |
+| `[L]`  | Map   | Bug: In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                    |
+| `[L]`  | Map   | In dark mode GPX color is too bright, not readable -> force light variations for things drawn on the map |
 
 ### FEATURE: My Location
 
@@ -112,9 +117,10 @@
 
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                       |
-|--------|--------------|--------------------------------------------|
-| `[ ]`  | Destinations | Add Map based destinations with Landscapes |
+| Status | Scope        | Task                                                                                                               |
+|--------|--------------|--------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Destinations | Add Map based destinations with Landscapes                                                                         |
+| `[ ]`  | Destinations | Bug: not readable category label ![bug_destinations_category_darkmode.png](bug_destinations_category_darkmode.png) |
 
 ### FEATURE: WhatsNew
 
@@ -183,13 +189,51 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Settings
 
-| Status | Scope    | Task                                            |
-|--------|----------|-------------------------------------------------|
-| `[L]`  | Settings | Add "Settings" to the top section of MenuScreen |
-| `[L]`  | Settings | Create SettingsScreen                           |
-| `[L]`  | Settings | Add Increase map font size in Settings          |
-| `[L]`  | Settings | Add Show/Hide +- zooming in Settings            |
-| `[ ]`  | Settings | Add Enable/Disable two finger rotation          |
+| Status | Scope    | Task                                                                                                                                            |
+|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Settings | Add "Settings" to the top section of MenuScreen. A: ic_settings, iOS: gearshape.fill                                                            |
+| `[x]`  | Settings | Create a blank SettingsScreen. Title: Settings / Beállítások.                                                                                   |
+| `[x]`  | Settings | Use AndroidX DataStore (multiplatform) for User Preference storage -> androidx.datastore:datastore-preferences with KMP (Android + iOS/native). |
+| `[x]`  | Settings | Add Show/Hide +- zooming toggle in Settings.                                                                                                    |
+| `[L]`  | Settings | Add Theme (light/dark/system) in Settings                                                                                                       |
+| `[L]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling)                                                                         |
+| `[ ]`  | Settings | Add Enable/Disable two finger rotation                                                                                                          |
+| `[L]`  | Settings | Add a settings option to Disable Rotate with 2 fingers                                                                                          |
+
+### FEATURE: Map Label Scaling (Global Scale Factor)
+
+Goal: let users increase map **label/icon size** without enlarging the map graphics (roads, fills,
+casings) — a text-visibility + accessibility win for the #1 feature "Map, text visibility".
+
+Approach: Mapbox's **global scale factor**, exposed on Android Compose as
+`mapboxMap.symbolScaleBehavior` (set via `MapEffect`), with three modes:
+
+- `SymbolScaleBehavior.fixed(factor)` — manual multiplier, range **0.5×–3×**
+- `SymbolScaleBehavior.system` — auto-follows the OS font-scale accessibility setting (free win)
+- `SymbolScaleBehavior.system { fontScale -> ... }` — custom mapping/clamp of the OS font scale
+
+Only affects icons + text labels; map geometry stays the same and zoom interpolation is preserved
+by the renderer (no per-layer `text-size` expression juggling).
+
+Blockers:
+
+- **Version gap**: requires Mapbox **11.26.0** (Android + iOS). We are pinned to **11.20.1** in
+  `libs.versions.toml` / the iOS pod, so this needs an SDK bump + map re-verify on both platforms.
+- **Experimental**: `symbolScaleBehavior` is flagged experimental/`@MapboxExperimental` and the
+  signature may change in a later 11.x.
+
+Refs:
+[Mapbox blog — new scaling/styling](https://www.mapbox.com/blog/new-scaling-and-styling-capabilities-support-clear-responsive-and-expressive-map-design)
+[Android Compose example](https://docs.mapbox.com/android/maps/examples/compose/global-scale-factor/)
+
+| Status | Scope    | Task                                                                                          |
+|--------|----------|-----------------------------------------------------------------------------------------------|
+| `[ ]`  | Map      | Bump Mapbox SDK to 11.26.0+ (Android + iOS pod), re-verify map screens on both platforms      |
+| `[ ]`  | Map      | Confirm the iOS SwiftUI equivalent of `symbolScaleBehavior` and wire it in `MapContent` (iOS) |
+| `[L]`  | Settings | Add label-size preference to `AppSettings` + DataStore (Fixed factor and/or System/Custom)    |
+| `[L]`  | Settings | Settings UI control (slider or presets) feeding the map scale factor                          |
+| `[ ]`  | Map      | Apply `symbolScaleBehavior` in Android `MapContent` via `MapEffect` from the settings value   |
+| `[ ]`  | Map      | Default to `SymbolScaleBehavior.system` so it respects OS accessibility font scale out of box |
 
 ### FEATURE: Support + Billing
 

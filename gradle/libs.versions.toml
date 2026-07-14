@@ -4,6 +4,7 @@ android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
+androidx-datastore = "1.2.1"
 androidx-lifecycle = "2.9.6"
 androidx-navigation-compose = "2.9.7"
 androidx-room = "2.8.4"
@@ -31,12 +32,14 @@ moko-graphics = "0.10.1"
 moko-permissions = "0.20.1"
 moko-resources = "0.25.2"
 mokkery = "3.3.0"
+okio = "3.17.0"
 play-services-location = "21.3.0"
 skie = "0.10.10"
 turbine = "1.2.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-viewmodel" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
@@ -80,6 +83,7 @@ moko-permissions-location = { module = "dev.icerock.moko:permissions-location", 
 moko-permissions-test = { module = "dev.icerock.moko:permissions-test", version.ref = "moko-permissions" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko-resources" }
 moko-resources-test = { module = "dev.icerock.moko:resources-test", version.ref = "moko-resources" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]

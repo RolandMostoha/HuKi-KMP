@@ -58,6 +58,8 @@ kotlin {
             implementation(libs.maplibre.units)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.androidx.datastore.preferences.core)
+            implementation(libs.okio)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

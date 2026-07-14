@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Zoom controls are hidden on the map by default
+- assertNotVisible:
+    id: MAIN_FAB_ZOOM_IN_BUTTON
+
+# Open Menu
+- tapOn: "Menu"
+- assertVisible:
+    id: MENU_SCREEN_ROOT
+
+# Settings row in the top section
+- assertVisible:
+    id: MENU_ROW_SETTINGS
+- assertVisible: "Settings"
+
+# Open Settings
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- assertVisible:
+    id: SETTINGS_SCREEN_ROOT
+- assertVisible: "Map"
+- assertVisible: "Zoom controls"
+
+# Enable "always show zoom controls"
+- tapOn:
+    id: SETTINGS_ZOOM_CONTROLS_TOGGLE
+
+# Back navigation returns to the menu, then to the map
+- tapOn:
+    id: SETTINGS_BACK_BUTTON
+- assertVisible:
+    id: MENU_SCREEN_ROOT
+- tapOn:
+    id: MENU_BACK_BUTTON
+- assertVisible:
+    id: MAP_MAPBOX
+
+# With the setting enabled, the zoom controls are now shown on the map
+- assertVisible:
+    id: MAIN_FAB_ZOOM_IN_BUTTON
+- assertVisible:
+    id: MAIN_FAB_ZOOM_OUT_BUTTON

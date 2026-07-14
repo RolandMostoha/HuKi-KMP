@@ -13,8 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.MutableDoubleState
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,18 +23,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
 import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.ImageHolder
 import com.mapbox.maps.MapboxDelicateApi
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
@@ -56,40 +51,30 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJson
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
-import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import com.mapbox.maps.plugin.viewport.ViewportStatus
-import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
-import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
-import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
-import com.mapbox.maps.plugin.viewport.data.OverviewViewportStateOptions
-import com.mapbox.maps.plugin.viewport.state.FollowPuckViewportState
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
-import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
-import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
 import hu.mostoha.mobile.kmp.huki.model.mapper.isIdle
 import hu.mostoha.mobile.kmp.huki.model.mapper.isOverview
+import hu.mostoha.mobile.kmp.huki.model.mapper.moveCamera
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
-import hu.mostoha.mobile.kmp.huki.model.mapper.toDuration
-import hu.mostoha.mobile.kmp.huki.model.mapper.toEdgeInset
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
+import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
-import hu.mostoha.mobile.kmp.huki.util.AnimationConstants
-import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -116,7 +101,6 @@ fun MapContent(
         gesturesSettings = GesturesSettings { rotateEnabled = MapConstants.MAP_ROTATION_ENABLED }
     }
     val mapLoaded = remember { CompletableDeferred<Unit>() }
-    val followZoom = remember { mutableDoubleStateOf(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL) }
 
     LaunchedEffect(mapUiEffects) {
         // suspend until map is ready
@@ -125,9 +109,9 @@ fun MapContent(
             when (effect) {
                 is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect)
                 is MapUiEffects.ShowMyLocation -> {
-                    mapViewportState.followLocation(effect.myLocationStatus, followZoom.doubleValue, effect.animated)
+                    mapViewportState.followLocation(effect.myLocationStatus, effect.animated)
                 }
-                is MapUiEffects.Zoom -> mapViewportState.zoom(effect.zoomIn, followZoom)
+                is MapUiEffects.Zoom -> mapViewportState.zoom(effect.zoomIn)
             }
         }
     }
@@ -289,97 +273,6 @@ fun MapContent(
                     }
                 }
             }
-        }
-    }
-}
-
-private fun MapViewportState.zoom(zoomIn: Boolean, followZoom: MutableDoubleState) {
-    val step = if (zoomIn) MapConstants.MAP_ZOOM_STEP else -MapConstants.MAP_ZOOM_STEP
-    val followState = (mapViewportStatus as? ViewportStatus.State)?.state as? FollowPuckViewportState
-    if (followState != null) {
-        followZoom.doubleValue = (followZoom.doubleValue + step)
-            .coerceIn(MapConstants.MAP_MIN_ZOOM, MapConstants.MAP_MAX_ZOOM)
-        transitionToFollowPuckState(
-            followPuckViewportStateOptions = followState.options.toBuilder()
-                .zoom(followZoom.doubleValue)
-                .build(),
-            defaultTransitionOptions = DefaultViewportTransitionOptions.Builder()
-                .maxDurationMs(MAP_FOLLOW_ANIM_DURATION.inWholeMilliseconds)
-                .build(),
-        )
-    } else {
-        val currentZoom = cameraState?.zoom ?: return
-        easeTo(
-            cameraOptions = CameraOptions.Builder()
-                .zoom((currentZoom + step).coerceIn(MapConstants.MAP_MIN_ZOOM, MapConstants.MAP_MAX_ZOOM))
-                .build(),
-            animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(MAP_FOLLOW_ANIM_DURATION.inWholeMilliseconds)
-            },
-        )
-    }
-}
-
-private fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus, zoom: Double, animated: Boolean) {
-    val transitionOptions = DefaultViewportTransitionOptions.Builder()
-        .maxDurationMs(animated.toDuration(MAP_FOLLOW_ANIM_DURATION))
-        .build()
-    when (myLocationStatus) {
-        MyLocationStatus.Following -> {
-            this.transitionToFollowPuckState(
-                followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(zoom)
-                    .pitch(0.0)
-                    .bearing(FollowPuckViewportStateBearing.Constant(0.0))
-                    .build(),
-                defaultTransitionOptions = transitionOptions,
-            )
-        }
-        MyLocationStatus.FollowingLiveCompass -> {
-            this.transitionToFollowPuckState(
-                followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()
-                    .zoom(zoom)
-                    .pitch(MapConstants.FOLLOW_LOCATION_LIVE_COMPASS_PITCH)
-                    .bearing(FollowPuckViewportStateBearing.SyncWithLocationPuck)
-                    .build(),
-                defaultTransitionOptions = transitionOptions,
-            )
-        }
-        MyLocationStatus.Default, MyLocationStatus.NotAvailable -> Unit
-    }
-}
-
-private fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera) {
-    when (val target = effect.target) {
-        is CameraTarget.Center -> this.flyTo(
-            cameraOptions = CameraOptions.Builder()
-                .apply {
-                    center(target.location.toPoint())
-                    target.zoom?.let { zoom(it) }
-                    effect.bearing?.let { bearing(it) }
-                    effect.pitch?.let { pitch(it) }
-                }
-                .build(),
-            animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
-            },
-        )
-        is CameraTarget.Bounds -> {
-            val transitionOptions = DefaultViewportTransitionOptions.Builder()
-                .maxDurationMs(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
-                .build()
-            this.transitionToOverviewState(
-                overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
-                    .geometry(target.locations.toLineString())
-                    .apply {
-                        effect.bearing?.let { bearing(it) }
-                        effect.pitch?.let { pitch(it) }
-                        effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
-                        target.maxZoom?.let { maxZoom(it) }
-                    }
-                    .build(),
-                defaultTransitionOptions = transitionOptions,
-            )
         }
     }
 }

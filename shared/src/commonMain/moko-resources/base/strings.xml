@@ -86,6 +86,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Version %s</string>
+    <string name="menu_item_settings">Settings</string>
+    <string name="menu_item_settings_description">App preferences</string>
+    <string name="menu_a11y_open_settings">Open Settings</string>
     <string name="menu_item_destinations">Destinations</string>
     <string name="menu_item_destinations_description">Popular hiking spots across Hungary</string>
     <string name="menu_a11y_open_destinations">Open Destinations</string>
@@ -114,6 +117,12 @@
     <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
     <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="menu_location_iq_url">https://locationiq.com/</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_a11y_back">Back</string>
+    <string name="settings_section_map">Map</string>
+    <string name="settings_zoom_controls_title">Zoom controls</string>
+    <string name="settings_zoom_controls_description">Always Show + / − buttons on the map</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>

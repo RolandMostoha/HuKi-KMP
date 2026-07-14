@@ -21,7 +21,6 @@ struct MapView: View {
         return false
     }
 
-    @State private var followZoom = MapConstants.shared.FOLLOW_LOCATION_ZOOM_LEVEL
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
         zoom: MapConstants.shared.HUNGARY_CAMERA_POSITION.zoom,
@@ -33,6 +32,12 @@ struct MapView: View {
         MapReader { proxy in
             ZStack(alignment: .topTrailing) {
                 Map(viewport: $viewport) {
+                    TapInteraction { _ in
+                        if !uiState.mapUiState.distanceInfoWindows.isEmpty {
+                            onDistanceInfoWindowDismissed()
+                        }
+                        return false
+                    }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: .heading)
                             .showsAccuracyRing(true)
@@ -105,11 +110,6 @@ struct MapView: View {
                 .gestureOptions(GestureOptions(
                     rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
                 ))
-                .onMapTapGesture { _ in
-                    if !uiState.mapUiState.distanceInfoWindows.isEmpty {
-                        onDistanceInfoWindowDismissed()
-                    }
-                }
                 .ornamentOptions(OrnamentOptions(
                     scaleBar: ScaleBarViewOptions(
                         position: .topLeft,
@@ -181,7 +181,7 @@ struct MapView: View {
         case .updateCamera(let effect):
             updateCamera(effect)
         case .showMyLocation(let effect):
-            showMyLocation(effect)
+            showMyLocation(effect, proxy: proxy)
         case .zoom(let effect):
             zoom(effect, proxy: proxy)
         }
@@ -189,79 +189,26 @@ struct MapView: View {
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            switch onEnum(of: effect.target) {
-            case .center(let target):
-                viewport = .camera(
-                    center: target.location.coordinate,
-                    zoom: target.zoom?.cgFloat,
-                    bearing: effect.bearing?.cgFloat ?? 0,
-                    pitch: effect.pitch?.cgFloat ?? 0
-                )
-            case .bounds(let target):
-                viewport = .overview(
-                    geometry: target.locations.lineString,
-                    bearing: effect.bearing?.cgFloat ?? 0,
-                    pitch: effect.pitch?.cgFloat ?? 0,
-                    geometryPadding: effect.contentPadding?.edgeInsets ?? .init(),
-                    maxZoom: target.maxZoom?.doubleValue
-                )
-            }
+            viewport = .target(for: effect)
         }
     }
 
-    private func showMyLocation(_ effect: MapUiEffectsShowMyLocation) {
+    private func showMyLocation(_ effect: MapUiEffectsShowMyLocation, proxy: MapProxy) {
+        guard let target = viewport.followLocationTarget(
+            effect.myLocationStatus,
+            cameraZoom: proxy.map?.cameraState.zoom
+        ) else { return }
         let duration = effect.animated ? AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
-
         withViewportAnimation(.default(maxDuration: duration)) {
-            followLocation(effect.myLocationStatus)
+            viewport = target
         }
     }
 
     private func zoom(_ effect: MapUiEffectsZoom, proxy: MapProxy) {
-        let step = effect.zoomIn ? MapConstants.shared.MAP_ZOOM_STEP : -MapConstants.shared.MAP_ZOOM_STEP
-
+        guard let map = proxy.map else { return }
+        let target = viewport.zoomTarget(effect, cameraState: map.cameraState)
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
-            if let followPuck = viewport.followPuck {
-                followZoom = min(
-                    max(followZoom + step, MapConstants.shared.MAP_MIN_ZOOM),
-                    MapConstants.shared.MAP_MAX_ZOOM
-                )
-                viewport = .followPuck(
-                    zoom: followZoom,
-                    bearing: followPuck.bearing,
-                    pitch: followPuck.pitch
-                )
-            } else if let map = proxy.map {
-                let newZoom = min(
-                    max(map.cameraState.zoom + step, MapConstants.shared.MAP_MIN_ZOOM),
-                    MapConstants.shared.MAP_MAX_ZOOM
-                )
-                viewport = .camera(
-                    center: map.cameraState.center,
-                    zoom: newZoom,
-                    bearing: map.cameraState.bearing,
-                    pitch: map.cameraState.pitch
-                )
-            }
-        }
-    }
-
-    private func followLocation(_ myLocationStatus: MyLocationStatus) {
-        switch onEnum(of: myLocationStatus) {
-        case .following:
-            viewport = .followPuck(
-                zoom: followZoom,
-                bearing: .constant(0.0),
-                pitch: 0.0
-            )
-        case .followingLiveCompass:
-            viewport = .followPuck(
-                zoom: followZoom,
-                bearing: .heading,
-                pitch: MapConstants.shared.FOLLOW_LOCATION_LIVE_COMPASS_PITCH
-            )
-        default:
-            break
+            viewport = target
         }
     }
 }

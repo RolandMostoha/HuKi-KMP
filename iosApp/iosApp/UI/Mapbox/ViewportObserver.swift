@@ -23,8 +23,14 @@ private extension ViewportStatus {
     }
 
     var isFollow: Bool {
-        if case .state(let state) = self { return state is FollowPuckViewportState }
-        return false
+        switch self {
+        case .state(let state):
+            return state is FollowPuckViewportState
+        case .transition(_, let toState):
+            return toState is FollowPuckViewportState
+        default:
+            return false
+        }
     }
 
     var isOverview: Bool {

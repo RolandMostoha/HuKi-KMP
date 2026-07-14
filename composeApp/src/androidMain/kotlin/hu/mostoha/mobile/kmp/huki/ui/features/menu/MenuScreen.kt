@@ -64,6 +64,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MenuScreen(
     onBack: () -> Unit,
+    onSettingsClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
@@ -76,6 +77,7 @@ fun MenuScreen(
         menuUiEffects = viewModel.menuUiEffects,
         onEvent = viewModel::onEvent,
         onBack = onBack,
+        onSettingsClicked = onSettingsClicked,
         onDestinationsClicked = onDestinationsClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
@@ -89,6 +91,7 @@ private fun MenuContent(
     menuUiEffects: Flow<MenuUiEffects>,
     onEvent: (MenuUiEvents) -> Unit,
     onBack: () -> Unit,
+    onSettingsClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
@@ -99,6 +102,7 @@ private fun MenuContent(
         menuUiEffects.collect { effect ->
             when (effect) {
                 MenuUiEffects.NavigateBack -> onBack()
+                MenuUiEffects.NavigateToSettings -> onSettingsClicked()
                 MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
                 MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
@@ -141,6 +145,21 @@ private fun MenuContent(
             MenuHero(versionName = uiState.versionName)
             Spacer(modifier = Modifier.height(Dimens.Medium))
             MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_settings),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_settings),
+                    testTag = TestTags.MENU_ROW_SETTINGS,
+                    onClick = { onEvent(MenuUiEvents.SettingsClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_settings_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_settings,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+                MenuRowDivider()
                 MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_destinations),
                     valueText = null,
@@ -445,6 +464,7 @@ private fun MenuContentPreview() {
             menuUiEffects = emptyFlow(),
             onEvent = {},
             onBack = {},
+            onSettingsClicked = {},
             onDestinationsClicked = {},
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},

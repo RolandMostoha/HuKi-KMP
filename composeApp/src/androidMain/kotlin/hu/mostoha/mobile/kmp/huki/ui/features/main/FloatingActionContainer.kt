@@ -100,12 +100,13 @@ fun FloatingActionContainer(
                         )
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     val myLocationStatus = mainUiState.myLocationState.myLocationStatus
-                    val isFollowing = myLocationStatus == MyLocationStatus.FollowingLiveCompass
+                    val isZoomControlsVisible = mainUiState.mapZoomControlsAlwaysVisible ||
+                        myLocationStatus == MyLocationStatus.FollowingLiveCompass
                     AnimatedVisibility(
-                        visible = isFollowing,
+                        visible = isZoomControlsVisible,
                         enter = fadeIn() + scaleIn(),
                         exit = fadeOut() + scaleOut(),
                     ) {

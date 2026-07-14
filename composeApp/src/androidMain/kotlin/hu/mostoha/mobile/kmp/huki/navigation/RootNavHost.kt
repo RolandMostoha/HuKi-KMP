@@ -16,6 +16,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.locationiq.LocationIqScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.menu.MenuScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.placehistory.PlaceHistoryScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
 import hu.mostoha.mobile.kmp.huki.util.millis
 import kotlinx.serialization.Serializable
@@ -25,6 +26,7 @@ private data object Main
 
 private object Routes {
     const val MENU = "menu"
+    const val SETTINGS = "settings"
     const val DESTINATIONS = "destinations"
     const val GPX_COLLECTION = "gpx_collection"
     const val GPX_TUTORIAL = "gpx_tutorial"
@@ -103,10 +105,16 @@ fun RootNavHost() {
         composable(Routes.MENU) {
             MenuScreen(
                 onBack = { navController.popBackStack() },
+                onSettingsClicked = { navController.navigate(Routes.SETTINGS) },
                 onDestinationsClicked = { navController.navigate(Routes.DESTINATIONS) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
+            )
+        }
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
             )
         }
         composable(Routes.DESTINATIONS) {
