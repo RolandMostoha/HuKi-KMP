@@ -15,23 +15,27 @@ struct SettingsView: View {
         Observing(viewModel.uiState) { uiState in
             Form {
                 Section(strings.get(id: SharedRes.strings().settings_section_map)) {
-                    Toggle(
-                        isOn: Binding(
-                            get: { uiState.mapZoomControlsVisible },
-                            set: { newValue in
-                                let event = SettingsUiEventsMapZoomControlsToggled(visible: newValue)
-                                viewModel.onEvent(event: event)
-                            }
-                        )
-                    ) {
+                    HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(strings.get(id: SharedRes.strings().settings_zoom_controls_title))
                             Text(strings.get(id: SharedRes.strings().settings_zoom_controls_description))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
+                        Spacer()
+                        Toggle(
+                            "",
+                            isOn: Binding(
+                                get: { uiState.mapZoomControlsVisible },
+                                set: { newValue in
+                                    let event = SettingsUiEventsMapZoomControlsToggled(visible: newValue)
+                                    viewModel.onEvent(event: event)
+                                }
+                            )
+                        )
+                        .labelsHidden()
+                        .accessibilityIdentifier(TestTags.shared.SETTINGS_ZOOM_CONTROLS_TOGGLE)
                     }
-                    .accessibilityIdentifier(TestTags.shared.SETTINGS_ZOOM_CONTROLS_TOGGLE)
                 }
             }
             .accessibilityIdentifier(TestTags.shared.SETTINGS_SCREEN_ROOT)

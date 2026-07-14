@@ -74,7 +74,7 @@
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[L]`  | Map   | While FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons       |
+| `[x]`  | Map   | While FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons       |
 | `[L]`  | Map   | Enable Rotate with 2 fingers by default                                           |
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 
@@ -195,10 +195,9 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[x]`  | Settings | Create a blank SettingsScreen. Title: Settings / Beállítások.                                                                                   |
 | `[x]`  | Settings | Use AndroidX DataStore (multiplatform) for User Preference storage -> androidx.datastore:datastore-preferences with KMP (Android + iOS/native). |
 | `[x]`  | Settings | Add Show/Hide +- zooming toggle in Settings.                                                                                                    |
-| `[L]`  | Settings | Add Theme (light/dark/system) in Settings                                                                                                       |
-| `[L]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling)                                                                         |
+| `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling)                                                                         |
+| `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                                                                                                       |
 | `[ ]`  | Settings | Add Enable/Disable two finger rotation                                                                                                          |
-| `[L]`  | Settings | Add a settings option to Disable Rotate with 2 fingers                                                                                          |
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
@@ -297,6 +296,34 @@ Goal: a new section in Menu, with 1 page guides of different topics:
 - Include location (latitude, longitude)
 - Possible link to openstreetmap.org which include the problematic point
 
+### TECH: iOS Mapbox viewport deprecation (ViewportObserver → `$viewport` binding)
+
+`MapProxy.viewport` (the imperative `ViewportManager`) is deprecated in Mapbox 11.20 →
+`'viewport' is deprecated: Use Map(viewport:) initializer instead.` This is what
+`MapView.swift` uses via `proxy.viewport?.addStatusObserver(viewportObserver)` in
+`onAppear`/`onDisappear`, plus the whole `UI/Mapbox/ViewportObserver.swift` class.
+
+- **Not deprecated (keep as-is):** `MapReader { proxy in }` → `proxy.map` (cameraState reads)
+  and `proxy.location` (GPS-fix observation). `MapReader`/`MapProxy` is the sanctioned, current,
+  and only way to reach these in SwiftUI — nothing better exists.
+- **Only deprecated bit:** `proxy.viewport` + `ViewportStatusObserver`. The intended replacement
+  is observing the two-way `$viewport` binding we already pass to `Map(viewport:)`.
+  `Map.transitionsToIdleUponUserInteraction` (default `true`) writes `.idle` back into the binding
+  on user pan — exactly what `ViewportObserver` detects (follow → idle/overview →
+  `onFollowingDisabled`).
+  Migration collapses to one `.onChange(of: viewport)` and deletes `ViewportObserver` (~50 lines +
+  class).
+- **Caveat / why deferred:** `Viewport` only reflects values *we* set + the idle write-back, not a
+  live camera mirror (`Viewport.swift:53`). The old observer also saw `.transition` intermediate
+  states; `.onChange` sees only committed values. Edge cases — pan *during* a follow animation,
+  programmatic follow→overview vs. user-driven — need a real simulator pan-test (follow, then drag)
+  to confirm `onFollowingDisabled` fires identically before deleting the observer. Deprecation is a
+  warning, not a removal, so no urgency.
+
+| Status | Scope | Task                                                                                                                           |
+|--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Map   | iOS: replace `ViewportObserver` + `proxy.viewport` observer with `.onChange(of: viewport)`; pan-test before deleting the class |
+
 ---
 
 ## Completed
@@ -310,7 +337,7 @@ Goal: a new section in Menu, with 1 page guides of different topics:
 | Menu           | Features, Contact, Supporters                                |
 | GPX            | GPX Import, added in Layers                                  |
 | GPX Details    | GPX Details Sheet with basic info                            |
-| GPX Menu       | GPX Visibility, Overview, Clear                              |
+| GPX Menu       | GPX Visibility, Overview, Clear, Distances                   |
 | GPX Collection | GPX File list view, GPX Tutorial screen                      |
 | GPX Metadata   | Store GPX Metadata in a JSON                                 |
 | Place History  | Place History list view                                      |
