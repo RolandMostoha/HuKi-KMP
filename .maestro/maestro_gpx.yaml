@@ -61,3 +61,12 @@ appId: ${APP_ID}
 - assertVisible: "516 M"
 - assertVisible:
     id: GPX_DETAILS_START_BUTTON
+
+# Expand the sheet to reveal the Maps navigation buttons (start + end waypoints are ~14km apart)
+- swipe:
+    start: 50%, 85%
+    end: 50%, 35%
+- assertVisible:
+    id: GPX_DETAILS_NAV_START_BUTTON
+- assertVisible:
+    id: GPX_DETAILS_NAV_END_BUTTON

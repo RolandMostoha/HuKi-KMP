@@ -286,6 +286,9 @@ private extension MainView {
             .presentationDragIndicator(.visible)
             .presentationBackgroundInteraction(.enabled)
             .presentationContentInteraction(.resizes)
+            .onChange(of: gpxDetails.fileUri, initial: true) {
+                gpxDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
+            }
         } else {
             EmptyView()
         }

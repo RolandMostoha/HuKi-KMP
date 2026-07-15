@@ -397,13 +397,13 @@ class MainViewModel(
         val targetLocation = when (type) {
             GpxMapsNavigationType.START ->
                 gpxDetails.waypoints
-                    .firstOrNull { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
-                    ?.location
+                    .first { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
+                    .location
             GpxMapsNavigationType.END ->
                 gpxDetails.waypoints
-                    .firstOrNull { it.type == WaypointType.END }
-                    ?.location
-        } ?: return
+                    .first { it.type == WaypointType.END }
+                    .location
+        }
         viewModelScope.launch {
             sendEffect(MainUiEffects.OpenMapsNavigation(targetLocation))
         }
