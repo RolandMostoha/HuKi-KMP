@@ -11,12 +11,14 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
+import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.DefaultSettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
@@ -24,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +53,7 @@ val appModule = module {
     }
     single { get<HukiDatabase>().placeHistoryDao() }
     single<PlaceHistoryRepository> { DefaultPlaceHistoryRepository(get(), get()) }
+    single<SettingsRepository> { DefaultSettingsRepository(get()) }
     single<Clock> { Clock.System }
     single<CoroutineDispatcher>(named(Dispatcher.Default)) { Dispatchers.Default }
     single<CoroutineDispatcher>(named(Dispatcher.IO)) { Dispatchers.IO }
@@ -58,7 +62,7 @@ val appModule = module {
 
 val viewModelModule = module {
     viewModel {
-        MainViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        MainViewModel(get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }
     viewModel {
         PlaceFinderViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
@@ -66,6 +70,7 @@ val viewModelModule = module {
     viewModelOf(::MenuViewModel)
     viewModelOf(::GpxCollectionViewModel)
     viewModelOf(::PlaceHistoryViewModel)
+    viewModelOf(::SettingsViewModel)
     viewModel {
         DestinationsViewModel(get(), get(), get(), get(named(Dispatcher.Default)))
     }

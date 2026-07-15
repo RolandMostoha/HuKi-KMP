@@ -110,6 +110,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
   - iOS: backed by CoreLocation (`CLLocationManager`).
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
+- Androidx DataStore (multiplatform): key/value storge e.g. user preferences.
 - Koin: Used for DI.
 - Turbine: Unit test flows `Flow.test { awaitItem() }`.
 - Kotest: Unit test assertions, like `shouldBe`.

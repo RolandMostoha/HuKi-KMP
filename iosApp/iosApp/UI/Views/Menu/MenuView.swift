@@ -6,6 +6,7 @@ enum MenuRoute: Hashable {
 }
 
 struct MenuView: View {
+    let onSettingsClicked: () -> Void
     let onDestinationsClicked: () -> Void
     let onGpxCollectionClicked: () -> Void
     let onPlaceHistoryClicked: () -> Void
@@ -101,6 +102,16 @@ struct MenuView: View {
 
     private var mainFeaturesSection: some View {
         VStack(spacing: 0) {
+            MenuItemView(
+                icon: tintedSymbol("gearshape.fill", color: onPrimary),
+                title: strings.get(id: SharedRes.strings().menu_item_settings),
+                description: strings.get(id: SharedRes.strings().menu_item_settings_description),
+                iconBackgroundColor: primary,
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_settings),
+                testTag: TestTags.shared.MENU_ROW_SETTINGS,
+                action: { viewModel.onEvent(event: MenuUiEventsSettingsClicked.shared) }
+            )
+            divider
             MenuItemView(
                 icon: tintedSymbol("backpack.fill", color: onPrimary),
                 title: strings.get(id: SharedRes.strings().menu_item_destinations),
@@ -219,6 +230,8 @@ struct MenuView: View {
         switch onEnum(of: effect) {
         case .navigateBack:
             dismiss()
+        case .navigateToSettings:
+            onSettingsClicked()
         case .navigateToDestinations:
             onDestinationsClicked()
         case .navigateToPlaceHistory:

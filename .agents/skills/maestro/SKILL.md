@@ -76,7 +76,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
-    timeout: 5000
+    timeout: 10000
 
 # ...feature steps...
 ```
