@@ -8,6 +8,7 @@ xcuserdata
 !.idea/runConfigurations/
 .idea/runConfigurations/*
 !.idea/runConfigurations/*.xml
+/.idea/runConfigurations/composeApp.xml
 .DS_Store
 captures
 .externalNativeBuild

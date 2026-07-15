@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.theme
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 
 object Dimens {
@@ -28,4 +29,13 @@ object Dimens {
 
     val SectionSpacing = 24.dp
     val SectionHeaderSpacing = 8.dp
+
+    val GpxNavButtonPeek = 16.dp
+
+    val GpxContentPadding = PaddingValues(
+        top = 150.dp,
+        start = 60.dp,
+        bottom = 340.dp,
+        end = 60.dp,
+    )
 }

@@ -50,7 +50,7 @@ fi
 
 # --- Resolve target device --------------------------------------------------
 DEVICE_LINE="$(xcrun devicectl list devices 2>/dev/null \
-    | grep -iE "$DEVICE_QUERY" | grep -iE "available" | head -1 || true)"
+    | grep -iE "$DEVICE_QUERY" | grep -iwE "connected|available" | head -1 || true)"
 if [ -z "$DEVICE_LINE" ]; then
     echo "Error: no available device matching \"$DEVICE_QUERY\". Connected devices:"
     xcrun devicectl list devices 2>/dev/null || true

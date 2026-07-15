@@ -8,6 +8,7 @@ struct MainView: View {
     @State private var showFileImporter = false
     @State private var showAlert = false
     @State private var navigationPath = NavigationPath()
+    @State private var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
 
     private let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -23,51 +24,9 @@ struct MainView: View {
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            mainContent
-                .navigationDestination(for: MenuRoute.self) { _ in
-                    MenuView(
-                        onSettingsClicked: { navigationPath.append(SettingsRoute.settings) },
-                        onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
-                        onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
-                        onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
-                        onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
-                    )
-                }
-                .navigationDestination(for: SettingsRoute.self) { _ in
-                    SettingsView()
-                }
-                .navigationDestination(for: DestinationsRoute.self) { _ in
-                    DestinationsView(
-                        onShowOnMap: { destination in
-                            viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
-                            navigationPath = NavigationPath()
-                        }
-                    )
-                }
-                .navigationDestination(for: GpxCollectionRoute.self) { _ in
-                    GpxCollectionView(
-                        onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
-                        onOpenGpx: { uri in
-                            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
-                            navigationPath = NavigationPath()
-                        }
-                    )
-                }
-                .navigationDestination(for: PlaceHistoryRoute.self) { _ in
-                    PlaceHistoryView(
-                        onOpenPlace: { osmType, osmId in
-                            let event = MainUiEventsHistoryPlaceSelected(osmType: osmType, osmId: osmId)
-                            viewModel.onEvent(event: event)
-                            navigationPath = NavigationPath()
-                        }
-                    )
-                }
-                .navigationDestination(for: LocationIqRoute.self) { _ in
-                    LocationIqView()
-                }
-                .navigationDestination(for: GpxTutorialRoute.self) { _ in
-                    GpxTutorialView()
-                }
+            navigationDestinations {
+                mainContent
+            }
         }
         .onOpenURL { url in
             handleIncomingGpx(url)
@@ -135,83 +94,7 @@ struct MainView: View {
                             }
                         )
                     ) { sheet in
-                        switch onEnum(of: sheet) {
-                        case .search:
-                            SearchSheetView(
-                                strings: strings,
-                                onDismiss: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                },
-                                onPlaceSelected: { place in
-                                    viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
-                                },
-                                onDestinationSelected: { destination in
-                                    let event = MainUiEventsSearchDestinationSelected(destination: destination)
-                                    viewModel.onEvent(event: event)
-                                },
-                                onGpxFileSelected: { uri in
-                                    viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
-                                },
-                                onSeeAllGpxClicked: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                    navigationPath.append(GpxCollectionRoute.gpxCollection)
-                                },
-                                onSeeAllPlacesClicked: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                    navigationPath.append(PlaceHistoryRoute.placeHistory)
-                                },
-                                onSeeAllDestinationsClicked: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                    navigationPath.append(DestinationsRoute.destinations)
-                                },
-                                onLocationIqClicked: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                    navigationPath.append(LocationIqRoute.locationIq)
-                                }
-                            )
-                            .presentationDetents([.large])
-                            .presentationDragIndicator(.visible)
-                            .presentationCompactAdaptation(.sheet)
-                        case .layers:
-                            LayersSheetView(
-                                strings: strings,
-                                selectedBaseLayer: uiState.mapUiState.baseLayer,
-                                isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
-                                isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
-                                onBaseLayerSelected: { baseLayer in
-                                    viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
-                                },
-                                onHikingLayerSelected: {
-                                    viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
-                                },
-                                onGpxLayerSelected: {
-                                    viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
-                                },
-                                onDismissRequest: {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                                }
-                            )
-                            .presentationDetents([.height(360)])
-                            .presentationDragIndicator(.hidden)
-                        case .gpx:
-                            if let gpxDetails = uiState.mapUiState.gpxDetails {
-                                GpxDetailsSheetView(
-                                    strings: strings,
-                                    gpxDetails: gpxDetails,
-                                    onStartClick: {
-                                        viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
-                                    },
-                                    onDismissRequest: {
-                                        viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
-                                    }
-                                )
-                                .presentationDetents([.height(260)])
-                                .presentationDragIndicator(.hidden)
-                                .presentationBackgroundInteraction(.enabled)
-                            } else {
-                                EmptyView()
-                            }
-                        }
+                        sheetContent(for: sheet, uiState: uiState)
                     }
                 .alert(
                     uiState.alert.map { strings.get(id: $0.title) } ?? "",
@@ -249,6 +132,165 @@ struct MainView: View {
 }
 
 private extension MainView {
+    func navigationDestinations<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .navigationDestination(for: MenuRoute.self) { _ in
+                MenuView(
+                    onSettingsClicked: { navigationPath.append(SettingsRoute.settings) },
+                    onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
+                    onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
+                    onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
+                    onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+                )
+            }
+            .navigationDestination(for: SettingsRoute.self) { _ in
+                SettingsView()
+            }
+            .navigationDestination(for: DestinationsRoute.self) { _ in
+                DestinationsView(
+                    onShowOnMap: { destination in
+                        viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
+                        navigationPath = NavigationPath()
+                    }
+                )
+            }
+            .navigationDestination(for: GpxCollectionRoute.self) { _ in
+                GpxCollectionView(
+                    onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
+                    onOpenGpx: { uri in
+                        viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                        navigationPath = NavigationPath()
+                    }
+                )
+            }
+            .navigationDestination(for: PlaceHistoryRoute.self) { _ in
+                PlaceHistoryView(
+                    onOpenPlace: { osmType, osmId in
+                        let event = MainUiEventsHistoryPlaceSelected(osmType: osmType, osmId: osmId)
+                        viewModel.onEvent(event: event)
+                        navigationPath = NavigationPath()
+                    }
+                )
+            }
+            .navigationDestination(for: LocationIqRoute.self) { _ in
+                LocationIqView()
+            }
+            .navigationDestination(for: GpxTutorialRoute.self) { _ in
+                GpxTutorialView()
+            }
+    }
+
+    @ViewBuilder
+    func sheetContent(for sheet: Sheet, uiState: MainUiState) -> some View {
+        switch onEnum(of: sheet) {
+        case .search:
+            searchSheet()
+        case .layers:
+            layersSheet(uiState: uiState)
+        case .gpx:
+            gpxSheet(uiState: uiState)
+        }
+    }
+
+    func searchSheet() -> some View {
+        SearchSheetView(
+            strings: strings,
+            onDismiss: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            },
+            onPlaceSelected: { place in
+                viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
+            },
+            onDestinationSelected: { destination in
+                let event = MainUiEventsSearchDestinationSelected(destination: destination)
+                viewModel.onEvent(event: event)
+            },
+            onGpxFileSelected: { uri in
+                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+            },
+            onSeeAllGpxClicked: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                navigationPath.append(GpxCollectionRoute.gpxCollection)
+            },
+            onSeeAllPlacesClicked: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                navigationPath.append(PlaceHistoryRoute.placeHistory)
+            },
+            onSeeAllDestinationsClicked: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                navigationPath.append(DestinationsRoute.destinations)
+            },
+            onLocationIqClicked: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                navigationPath.append(LocationIqRoute.locationIq)
+            }
+        )
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationCompactAdaptation(.sheet)
+    }
+
+    func layersSheet(uiState: MainUiState) -> some View {
+        LayersSheetView(
+            strings: strings,
+            selectedBaseLayer: uiState.mapUiState.baseLayer,
+            isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
+            isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
+            onBaseLayerSelected: { baseLayer in
+                viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
+            },
+            onHikingLayerSelected: {
+                viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
+            },
+            onGpxLayerSelected: {
+                viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
+            },
+            onDismissRequest: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            }
+        )
+        .presentationDetents([.height(360)])
+        .presentationDragIndicator(.hidden)
+    }
+
+    @ViewBuilder
+    func gpxSheet(uiState: MainUiState) -> some View {
+        if let gpxDetails = uiState.mapUiState.gpxDetails {
+            GpxDetailsSheetView(
+                strings: strings,
+                gpxDetails: gpxDetails,
+                onStartClick: {
+                    viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
+                },
+                onNavigateToStart: {
+                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .start))
+                },
+                onNavigateToEnd: {
+                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .end))
+                },
+                onDismissRequest: {
+                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                }
+            )
+            .presentationDetents(
+                [
+                    .height(Dimens.gpxDetailsCollapsedDetentHeight),
+                    .height(
+                        gpxDetails.waypoints.contains { $0.type == .end }
+                            ? Dimens.gpxDetailsExpandedWithEndDetentHeight
+                            : Dimens.gpxDetailsExpandedDetentHeight
+                    )
+                ],
+                selection: $gpxDetent
+            )
+            .presentationDragIndicator(.visible)
+            .presentationBackgroundInteraction(.enabled)
+            .presentationContentInteraction(.resizes)
+        } else {
+            EmptyView()
+        }
+    }
+
     @ViewBuilder
     func gpxControlMenu(uiState: MainUiState) -> some View {
         if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil {
@@ -281,6 +323,8 @@ private extension MainView {
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         case .showGpxFilePicker:
             showFileImporter = true
+        case .openMapsNavigation(let effect):
+            MapsNavigator.openDirections(to: effect.location)
         }
     }
 

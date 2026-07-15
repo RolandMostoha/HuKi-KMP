@@ -1,7 +1,5 @@
 package hu.mostoha.mobile.kmp.huki.theme
 
-import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
-
 object SharedDimens {
     const val MAP_COMPASS_TOP_PADDING = 56.0
 
@@ -9,11 +7,4 @@ object SharedDimens {
     const val GPX_STROKE_WIDTH = 1.0
     const val GPX_EDGE_LOCATION_MARKER_SCALE = 1.2
     const val GPX_WAYPOINT_MARKER_SCALE = 0.8
-
-    val GPX_CONTENT_PADDING = ContentPadding(
-        top = 150.0,
-        left = 60.0,
-        bottom = 300.0,
-        right = 60.0,
-    )
 }

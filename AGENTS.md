@@ -41,6 +41,7 @@ Lint:
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
+- `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android

@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
+import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
@@ -38,7 +39,6 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
-import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
@@ -848,7 +848,7 @@ class MainViewModelTest {
                     target = CameraTarget.Bounds(
                         TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
                     ),
-                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                    contentPadding = ContentPadding.MAP_GPX,
                 )
                 ensureAllEventsConsumed()
             }

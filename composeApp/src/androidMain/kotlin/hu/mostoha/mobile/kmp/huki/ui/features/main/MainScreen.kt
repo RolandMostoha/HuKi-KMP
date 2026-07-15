@@ -23,9 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.isModal
@@ -51,6 +54,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
+import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
 import hu.mostoha.mobile.kmp.huki.util.rememberScopedViewModelStoreOwner
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -132,6 +136,8 @@ private fun MainContent(
     )
     val standardSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = standardSheetState)
     var showModalBottomSheet by remember { mutableStateOf(false) }
+    var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
+    val currentSheet by rememberUpdatedState(uiState.sheet)
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -144,7 +150,12 @@ private fun MainContent(
         snapshotFlow { standardSheetScaffoldState.bottomSheetState.currentValue }
             .distinctUntilChanged()
             .collect { value ->
-                if (value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden) {
+                val dismissed = if (currentSheet is Sheet.Gpx) {
+                    value == SheetValue.Hidden
+                } else {
+                    value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden
+                }
+                if (dismissed) {
                     onEvent(MainUiEvents.SheetDismissed)
                 }
             }
@@ -161,7 +172,11 @@ private fun MainContent(
             sheet.isStandard() -> {
                 modalSheetState.hide()
                 showModalBottomSheet = false
-                standardSheetState.expand()
+                if (sheet is Sheet.Gpx) {
+                    standardSheetState.partialExpand()
+                } else {
+                    standardSheetState.expand()
+                }
             }
             sheet.isModal() -> {
                 standardSheetState.hide()
@@ -175,15 +190,18 @@ private fun MainContent(
             when (effect) {
                 MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
                 MainUiEffects.ShowGpxFilePicker -> gpxFilePickerLauncher.launch(arrayOf("*/*"))
+                is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
             }
         }
     }
 
     BottomSheetScaffold(
         scaffoldState = standardSheetScaffoldState,
-        sheetPeekHeight = 0.dp,
+        sheetPeekHeight = if (uiState.sheet is Sheet.Gpx) gpxSheetPeekHeight else 0.dp,
         sheetDragHandle = null,
         sheetSwipeEnabled = true,
+        sheetContainerColor = Color.Transparent,
+        sheetShadowElevation = 0.dp,
         sheetContent = {
             when (val sheet = uiState.sheet) {
                 is Sheet.Gpx -> {
@@ -192,12 +210,19 @@ private fun MainContent(
                         onStartClick = {
                             onEvent(MainUiEvents.GpxStartNavigationClicked)
                         },
+                        onNavigateToStart = {
+                            onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                        },
+                        onNavigateToEnd = {
+                            onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+                        },
                         onCloseClick = {
                             coroutineScope.launch {
                                 standardSheetState.hide()
                                 onEvent(MainUiEvents.GpxCloseClicked)
                             }
                         },
+                        onCollapsedHeightMeasured = { gpxSheetPeekHeight = it },
                     )
                 }
                 is Sheet.Search -> {
@@ -236,12 +261,10 @@ private fun MainContent(
                 else -> Unit
             }
         },
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        containerColor = Color.Transparent,
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             MapContent(
                 mapUiState = uiState.mapUiState,
@@ -249,6 +272,7 @@ private fun MainContent(
                 onEvent = onEvent,
             )
             FloatingActionContainer(
+                modifier = Modifier.padding(innerPadding),
                 mainUiState = uiState,
                 onSearchClicked = {
                     onEvent(MainUiEvents.SearchClicked)

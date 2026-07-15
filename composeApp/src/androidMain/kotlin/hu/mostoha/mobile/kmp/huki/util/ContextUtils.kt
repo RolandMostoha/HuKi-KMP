@@ -8,6 +8,19 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
+
+fun Context.navigateToDirections(location: Location) {
+    val uri = "https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}".toUri()
+    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    try {
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Logger.w(throwable = e) { "No activity found to open directions to: $location" }
+    }
+}
 
 fun Context.navigateToAppSettings() {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

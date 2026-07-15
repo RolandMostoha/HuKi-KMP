@@ -15,7 +15,7 @@ appId: ${APP_ID}
 - tapOn:
     id: GPX_DETAILS_CLOSE_BUTTON
 
-# Open Search with an empty query: the Recent GPX section is the last discovery section.
+# Open Search with an empty query: the Recent GPX section is shown among the discovery sections.
 # Dismiss the auto-focused keyboard so the Recent GPX item isn't left behind it.
 # iOS: swipe up on the list (scrollDismissesKeyboard is .immediately, like Apple Maps) — hideKeyboard
 # is avoided because its downward swipe dismisses the .large-detent sheet.
