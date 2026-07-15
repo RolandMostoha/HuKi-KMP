@@ -30,11 +30,13 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -47,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -89,6 +92,9 @@ class MainViewModelTest {
     private val gpxRepository = mock<GpxRepository>()
     private val placeHistoryRepository = mock<PlaceHistoryRepository>(MockMode.autoUnit)
     private val destinationRepository = mock<DestinationRepository>(MockMode.autoUnit)
+    private val settingsRepository = mock<SettingsRepository>(MockMode.autoUnit) {
+        every { settings } returns flowOf(UserPreferences.DEFAULTS)
+    }
 
     @BeforeTest
     fun setup() {
@@ -116,6 +122,7 @@ class MainViewModelTest {
             placeHistoryRepository = placeHistoryRepository,
             destinationRepository = destinationRepository,
             locationMonitoringService = locationMonitoringService,
+            settingsRepository = settingsRepository,
             defaultDispatcher = testDispatcher,
         )
     }
@@ -295,6 +302,60 @@ class MainViewModelTest {
                 viewModel.onEvent(MainUiEvents.CompassClicked)
 
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Following, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+
+                viewModel.onEvent(MainUiEvents.ZoomInClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = true)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given FollowingLiveCompass, When ZoomOutClicked, Then uiEffect is Zoom zoomOut`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+
+                viewModel.onEvent(MainUiEvents.ZoomOutClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = false)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default my location, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+
+                viewModel.onEvent(MainUiEvents.ZoomInClicked)
+
+                awaitItem() shouldBe MapUiEffects.Zoom(zoomIn = true)
                 ensureAllEventsConsumed()
             }
         }

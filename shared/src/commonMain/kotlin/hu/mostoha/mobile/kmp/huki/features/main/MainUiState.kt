@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -14,6 +15,7 @@ data class MainUiState(
     val isSearchBarVisible: Boolean = true,
     val isGpxLoading: Boolean = false,
     val isMyLocationLoading: Boolean = false,
+    val mapZoomControlsAlwaysVisible: Boolean = UserPreferences.DEFAULTS.mapZoomControlsVisible,
     val alert: Alert? = null,
 ) {
     companion object {

@@ -37,6 +37,8 @@
     <string name="my_location_a11y_following">Saját pozíció - Követés</string>
     <string name="my_location_a11y_live_compass">Saját pozíció - Élő iránytű</string>
     <string name="my_location_a11y_compass">Saját pozíció - Iránytű</string>
+    <string name="map_zoom_in_a11y">Nagyítás</string>
+    <string name="map_zoom_out_a11y">Kicsinyítés</string>
 
     <string name="search_input_placeholder">Keresés...</string>
     <string name="search_error_retry">Újrapróbálás</string>
@@ -84,6 +86,9 @@
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
     <string name="menu_version_pattern">Verzió %s</string>
+    <string name="menu_item_settings">Beállítások</string>
+    <string name="menu_item_settings_description">Alkalmazás beállításai</string>
+    <string name="menu_a11y_open_settings">Beállítások megnyitása</string>
     <string name="menu_item_destinations">Kirándulóhelyek</string>
     <string name="menu_item_destinations_description">Népszerű kirándulóhelyek országszerte</string>
     <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
@@ -112,6 +117,12 @@
     <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
     <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="menu_location_iq_url">https://locationiq.com/</string>
+
+    <string name="settings_title">Beállítások</string>
+    <string name="settings_a11y_back">Vissza</string>
+    <string name="settings_section_map">Térkép</string>
+    <string name="settings_zoom_controls_title">Zoom gombok</string>
+    <string name="settings_zoom_controls_description">Mindig mutasd a + / − gombokat térképen</string>
 
     <string name="gpx_collection_title">GPX gyűjtemény</string>
     <string name="gpx_collection_subtitle_pattern">%d útvonal</string>

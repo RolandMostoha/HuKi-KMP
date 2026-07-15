@@ -1,10 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import dev.icerock.moko.permissions.PermissionsController
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
+import hu.mostoha.mobile.kmp.huki.datastore.SETTINGS_DATA_STORE_FILE_NAME
+import hu.mostoha.mobile.kmp.huki.datastore.createDataStore
 import hu.mostoha.mobile.kmp.huki.service.AndroidLocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import io.ktor.client.engine.HttpClientEngine
@@ -23,6 +27,10 @@ val androidPlatformModule = module {
             context = context,
             name = context.getDatabasePath(HukiDatabase.DATABASE_NAME).absolutePath,
         )
+    }
+    single<DataStore<Preferences>> {
+        val context = get<Context>()
+        createDataStore { context.filesDir.resolve(SETTINGS_DATA_STORE_FILE_NAME).absolutePath }
     }
     single<LocationMonitoringService> {
         AndroidLocationMonitoringService(

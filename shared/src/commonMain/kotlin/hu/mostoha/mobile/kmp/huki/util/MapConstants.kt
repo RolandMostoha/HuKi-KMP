@@ -19,4 +19,8 @@ object MapConstants {
     const val FOLLOW_LOCATION_ZOOM_LEVEL = 16.0
     const val FOLLOW_LOCATION_LIVE_COMPASS_PITCH = 45.0
     const val MAP_ROTATION_ENABLED = false
+
+    const val MAP_ZOOM_STEP = 1.0
+    const val MAP_MIN_ZOOM = 3.0
+    const val MAP_MAX_ZOOM = 20.0
 }

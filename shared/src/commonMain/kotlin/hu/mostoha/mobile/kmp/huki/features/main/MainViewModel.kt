@@ -28,6 +28,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -60,6 +61,7 @@ class MainViewModel(
     private val placeHistoryRepository: PlaceHistoryRepository,
     private val destinationRepository: DestinationRepository,
     private val locationMonitoringService: LocationMonitoringService,
+    private val settingsRepository: SettingsRepository,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
@@ -77,6 +79,7 @@ class MainViewModel(
         initLogging()
         initMyLocation()
         initDistanceMonitoring()
+        observeSettings()
     }
 
     fun onEvent(event: MainUiEvents) {
@@ -96,6 +99,8 @@ class MainViewModel(
             MainUiEvents.MyLocationReceived -> updateMyLocation()
             MainUiEvents.FollowingDisabled -> disableFollowing()
             MainUiEvents.CompassClicked -> resetCameraToNorth()
+            MainUiEvents.ZoomInClicked -> zoom(zoomIn = true)
+            MainUiEvents.ZoomOutClicked -> zoom(zoomIn = false)
             // Layers events
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
@@ -220,6 +225,12 @@ class MainViewModel(
         }
     }
 
+    private fun zoom(zoomIn: Boolean) {
+        viewModelScope.launch {
+            sendEffect(MapUiEffects.Zoom(zoomIn))
+        }
+    }
+
     private fun resetCameraToNorth() {
         viewModelScope.launch {
             val newStatus = MyLocationStatus.Following
@@ -253,6 +264,16 @@ class MainViewModel(
             }
             sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
         }
+    }
+
+    private fun observeSettings() {
+        settingsRepository.settings
+            .map { it.mapZoomControlsVisible }
+            .distinctUntilChanged()
+            .onEach { alwaysVisible ->
+                _uiState.update { it.copy(mapZoomControlsAlwaysVisible = alwaysVisible) }
+            }
+            .launchIn(viewModelScope)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

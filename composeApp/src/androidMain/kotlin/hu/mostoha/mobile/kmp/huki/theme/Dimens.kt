@@ -23,6 +23,9 @@ object Dimens {
     val InfoWindowMarkerPadding = 1.dp
     val FloatingActionElevation = 1.dp
 
+    val ZoomControlWidth = 53.dp
+    val ZoomControlIconSize = 51.dp
+
     val SectionSpacing = 24.dp
     val SectionHeaderSpacing = 8.dp
 }

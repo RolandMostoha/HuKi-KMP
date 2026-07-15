@@ -17,4 +17,6 @@ sealed interface MapUiEffects : UiEffect {
         val myLocationStatus: MyLocationStatus,
         val animated: Boolean,
     ) : MapUiEffects
+
+    data class Zoom(val zoomIn: Boolean) : MapUiEffects
 }

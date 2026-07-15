@@ -24,12 +24,26 @@ echo "--- Starting Maestro tests for $APP_ID on device $DEVICE_ID ---"
 
 export MAESTRO_CLI_NO_ANALYTICS=1
 
+# Format a duration in seconds as "Xm Ys" (or "Ys" under a minute)
+format_duration() {
+  local total=$1
+  if [ "$total" -ge 60 ]; then
+    echo "$((total / 60))m $((total % 60))s"
+  else
+    echo "${total}s"
+  fi
+}
+
 # Track passed tests so we can list them if a later test fails
 PASSED_TESTS=()
+
+# Overall run timer (SECONDS is a bash builtin that counts up from assignment)
+SECONDS=0
 
 # Loop through each test file
 for test_file in .maestro/maestro_*.yaml; do
   echo "--- Starting Test: $test_file ---"
+  test_start=$SECONDS
 
     # Setup test data based on platform
     if [[ "$APP_ID" == *".ios."* ]]; then
@@ -54,13 +68,13 @@ for test_file in .maestro/maestro_*.yaml; do
         echo "${GREEN}  ✔ $passed${RESET}"
       done
     fi
-    echo "${RED}--- Aborting Maestro run. See the output above and ./maestro debug logs for details. ---${RESET}"
+    echo "${RED}--- Aborting Maestro run after $(format_duration "$SECONDS"). See the output above and ./maestro debug logs for details. ---${RESET}"
     exit 1
   fi
 
   PASSED_TESTS+=("$test_file")
-  echo "${GREEN}✔ COMPLETED: $test_file${RESET}"
+  echo "${GREEN}✔ COMPLETED: $test_file ($(format_duration $((SECONDS - test_start))))${RESET}"
   sleep 5
 done
 
-echo "${GREEN}${BOLD}✅ All Maestro tests passed for $APP_ID.${RESET}"
+echo "${GREEN}${BOLD}✅ All ${#PASSED_TESTS[@]} Maestro tests passed for $APP_ID in $(format_duration "$SECONDS").${RESET}"
