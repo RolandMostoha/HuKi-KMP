@@ -60,6 +60,8 @@
     <string name="gpx_details_incline">Incline</string>
     <string name="gpx_details_decline">Decline</string>
     <string name="gpx_details_start">Start Route</string>
+    <string name="gpx_details_navigation_to_start">Maps navigation to start</string>
+    <string name="gpx_details_navigation_to_end">Maps navigation to end</string>
 
     <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>
 

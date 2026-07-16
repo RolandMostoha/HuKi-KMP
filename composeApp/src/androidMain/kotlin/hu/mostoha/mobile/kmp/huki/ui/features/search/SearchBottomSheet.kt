@@ -308,13 +308,6 @@ private fun SearchBottomSheetContent(
                         .weight(1f)
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    if (uiState.topDestinations.isNotEmpty()) {
-                        DestinationsSection(
-                            destinations = uiState.topDestinations,
-                            onDestinationSelected = onDestinationSelected,
-                            onSeeAllClick = onSeeAllDestinationsClicked,
-                        )
-                    }
                     if (uiState.recentPlaces.isNotEmpty()) {
                         RecentPlacesSection(
                             places = uiState.recentPlaces,
@@ -327,6 +320,13 @@ private fun SearchBottomSheetContent(
                             files = uiState.recentGpxFiles,
                             onFileSelected = { onGpxFileSelected(it.fileUri) },
                             onSeeAllClicked = onSeeAllGpxClicked,
+                        )
+                    }
+                    if (uiState.topDestinations.isNotEmpty()) {
+                        DestinationsSection(
+                            destinations = uiState.topDestinations,
+                            onDestinationSelected = onDestinationSelected,
+                            onSeeAllClick = onSeeAllDestinationsClicked,
                         )
                     }
                     Spacer(modifier = Modifier.height(Dimens.ExtraLarge + navigationBarBottomPadding))

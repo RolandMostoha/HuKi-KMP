@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -47,6 +48,7 @@ sealed interface MainUiEvents {
      */
     data object GpxLayerSelected : MainUiEvents
     data object GpxStartNavigationClicked : MainUiEvents
+    data class GpxMapsNavigationClicked(val type: GpxMapsNavigationType) : MainUiEvents
     data object GpxCloseClicked : MainUiEvents
     data class GpxFileSelected(val uri: String) : MainUiEvents
     data object GpxRouteVisibilityToggled : MainUiEvents

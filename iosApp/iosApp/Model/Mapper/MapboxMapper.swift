@@ -31,12 +31,10 @@ extension Array where Element == Shared.Location {
 
 extension Shared.ContentPadding {
     var edgeInsets: SwiftUI.EdgeInsets {
-        SwiftUI.EdgeInsets(
-            top: Double(self.top),
-            leading: Double(self.left),
-            bottom: Double(self.bottom),
-            trailing: Double(self.right)
-        )
+        switch self {
+        case .mapGpx:
+            return Dimens.gpxContentPadding
+        }
     }
 }
 
