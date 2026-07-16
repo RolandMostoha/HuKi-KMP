@@ -71,21 +71,6 @@ struct SearchSheetView: View {
     private func discoveryList(uiState: PlaceFinderUiState) -> some View {
         ScrollView {
             VStack(spacing: 0) {
-                if !uiState.topDestinations.isEmpty {
-                    DestinationsSectionView(
-                        strings: strings,
-                        destinations: uiState.topDestinations,
-                        onDestinationSelected: { destination in
-                            isSearchFieldFocused = false
-                            onDestinationSelected(destination)
-                        },
-                        onSeeAllClicked: {
-                            isSearchFieldFocused = false
-                            onSeeAllDestinationsClicked()
-                        }
-                    )
-                    .padding(.top, 8)
-                }
                 if !uiState.recentPlaces.isEmpty {
                     RecentPlacesSectionView(
                         strings: strings,
@@ -111,6 +96,20 @@ struct SearchSheetView: View {
                         onSeeAllClicked: {
                             isSearchFieldFocused = false
                             onSeeAllGpxClicked()
+                        }
+                    )
+                }
+                if !uiState.topDestinations.isEmpty {
+                    DestinationsSectionView(
+                        strings: strings,
+                        destinations: uiState.topDestinations,
+                        onDestinationSelected: { destination in
+                            isSearchFieldFocused = false
+                            onDestinationSelected(destination)
+                        },
+                        onSeeAllClicked: {
+                            isSearchFieldFocused = false
+                            onSeeAllDestinationsClicked()
                         }
                     )
                 }

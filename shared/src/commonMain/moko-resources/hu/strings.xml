@@ -60,6 +60,8 @@
     <string name="gpx_details_incline">Emelkedés</string>
     <string name="gpx_details_decline">Lejtés</string>
     <string name="gpx_details_start">Útvonal kezdése</string>
+    <string name="gpx_details_navigation_to_start">Maps navigáció a kezdéshez</string>
+    <string name="gpx_details_navigation_to_end">Maps navigáció a végéhez</string>
 
     <string name="gpx_distance_info_window_a11y">Táv és idő a helyzetedtől eddig a pontig az útvonal mentén</string>
 

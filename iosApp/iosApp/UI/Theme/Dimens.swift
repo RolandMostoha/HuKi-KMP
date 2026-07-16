@@ -1,4 +1,5 @@
 import CoreGraphics
+import SwiftUI
 
 enum Dimens {
     static let infoWindowBorder: CGFloat = 1.5
@@ -8,4 +9,15 @@ enum Dimens {
     static let infoWindowMarkerPadding: CGFloat = 1
 
     static let zoomControlIconSize: CGFloat = 20
+
+    static let gpxContentPadding = EdgeInsets(
+        top: 120,
+        leading: 60,
+        bottom: 300,
+        trailing: 60
+    )
+
+    static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
+    static let gpxDetailsExpandedDetentHeight: CGFloat = 320
+    static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 350
 }

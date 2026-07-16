@@ -15,9 +15,11 @@ import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
+import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
@@ -31,7 +33,6 @@ import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
-import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -108,6 +109,7 @@ class MainViewModel(
             // GPX events
             MainUiEvents.GpxLayerSelected -> switchGpxLayer()
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
+            is MainUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
             MainUiEvents.GpxCloseClicked -> closeGpx()
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
@@ -390,6 +392,23 @@ class MainViewModel(
         }
     }
 
+    private fun openMapsNavigation(type: GpxMapsNavigationType) {
+        val gpxDetails = _uiState.value.mapUiState.gpxDetails ?: return
+        val targetLocation = when (type) {
+            GpxMapsNavigationType.START ->
+                gpxDetails.waypoints
+                    .first { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
+                    .location
+            GpxMapsNavigationType.END ->
+                gpxDetails.waypoints
+                    .first { it.type == WaypointType.END }
+                    .location
+        }
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenMapsNavigation(targetLocation))
+        }
+    }
+
     private fun closeGpx() {
         selectedWaypoint.value = null
         viewModelScope.launch {
@@ -444,7 +463,7 @@ class MainViewModel(
                     sendEffect(
                         MapUiEffects.UpdateCamera(
                             target = CameraTarget.Bounds(gpxDetails.bounds),
-                            contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                            contentPadding = ContentPadding.MAP_GPX,
                         ),
                     )
                 }
@@ -486,7 +505,7 @@ class MainViewModel(
             sendEffect(
                 MapUiEffects.UpdateCamera(
                     target = CameraTarget.Bounds(gpxDetails.bounds),
-                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                    contentPadding = ContentPadding.MAP_GPX,
                 ),
             )
         }

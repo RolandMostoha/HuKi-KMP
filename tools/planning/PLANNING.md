@@ -54,6 +54,7 @@
 | `[L]`  | Register Apple Developer Account                                                                 |
 | `[L]`  | CD on Apple Store                                                                                |
 | `[L]`  | Implement T&C on huki.hu                                                                         |
+| `[L]`  | Use swiftlint --strict                                                                           |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
 | `[ ]`  | Check project against Swift agent skills in XCode                                                |
@@ -67,14 +68,13 @@
 | `[L]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top (marker placement order issue)                                                                                                                                                                                                      |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
-| `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead.                                                                                                                                                          |
+| `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[x]`  | Map   | While FollowingLiveCompass, show "+" -> zoom in and "-" -> zoom out buttons       |
 | `[L]`  | Map   | Enable Rotate with 2 fingers by default                                           |
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 
@@ -94,15 +94,15 @@
 
 ### FEATURE: Layers
 
-| Status | Scope  | Task                                                                   |
-|--------|--------|------------------------------------------------------------------------|
-| `[ ]`  | Layers | Save picked layer state permanently for users (multiplatform-settings) |
+| Status | Scope  | Task                                                                                                                                         |
+|--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Layers | Save picked layer state permanently for users (UserPreferencesRepository). E.g. picked layer -> Satellite, it saves for the next app launch. |
 
 ### FEATURE: Search
 
 | Status | Scope  | Task                                                                                                                                                                          |
 |--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Search | Search section order chnage: Show Recent places and Recent GPX tracks before Destinations. It's more important to see recents than destinations.                              |
+| `[x]`  | Search | Search section order chnage: Show Recent places and Recent GPX tracks before Destinations. It's more important to see recents than destinations.                              |
 | `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
@@ -148,7 +148,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Display (distance + time) in an InfoWindow on top Start / End / Waypoint points   |
 | `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
 | `[ ]`  | GPX   | Colored GPX                                                                       |
 | `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
@@ -157,12 +156,11 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: GPX Details
 
-| Status | Scope        | Task                                                |
-|--------|--------------|-----------------------------------------------------|
-| `[L]`  | GPXDetails   | Show as secondary button "Maps Navigation to Start" |
-| `[L]`  | GPXDetails   | Show as secondary button "Maps Navigation to End"   |
-| `[ ]`  | GPXDetails   | Show as secondary button "Share GPX file"           |
-| `[ ]`  | Destinations | Show context menu "Navigate with Maps" in preview   |
+| Status | Scope      | Task                                                |
+|--------|------------|-----------------------------------------------------|
+| `[x]`  | GPXDetails | Show as secondary button "Maps Navigation to Start" |
+| `[x]`  | GPXDetails | Show as secondary button "Maps Navigation to End"   |
+| `[ ]`  | GPXDetails | Show as secondary button "Share GPX file"           |
 
 ### FEATURE: GPX Collection
 
@@ -189,15 +187,11 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Settings
 
-| Status | Scope    | Task                                                                                                                                            |
-|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Settings | Add "Settings" to the top section of MenuScreen. A: ic_settings, iOS: gearshape.fill                                                            |
-| `[x]`  | Settings | Create a blank SettingsScreen. Title: Settings / Beállítások.                                                                                   |
-| `[x]`  | Settings | Use AndroidX DataStore (multiplatform) for User Preference storage -> androidx.datastore:datastore-preferences with KMP (Android + iOS/native). |
-| `[x]`  | Settings | Add Show/Hide +- zooming toggle in Settings.                                                                                                    |
-| `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling)                                                                         |
-| `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                                                                                                       |
-| `[ ]`  | Settings | Add Enable/Disable two finger rotation                                                                                                          |
+| Status | Scope    | Task                                                                    |
+|--------|----------|-------------------------------------------------------------------------|
+| `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
+| `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                               |
+| `[ ]`  | Settings | Add Enable/Disable two finger rotation                                  |
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
@@ -335,8 +329,8 @@ Goal: a new section in Menu, with 1 page guides of different topics:
 | Layers         | Mapbox Outdoor, Street, Satellite, Hiking                    |
 | Search         | Place Autocomplete, Destinations, Recent GPXs, Recent Places |
 | Menu           | Features, Contact, Supporters                                |
-| GPX            | GPX Import, added in Layers                                  |
-| GPX Details    | GPX Details Sheet with basic info                            |
+| GPX            | GPX Import, Layers                                           |
+| GPX Details    | GPX Details Sheet with basic info, Maps Navigation           |
 | GPX Menu       | GPX Visibility, Overview, Clear, Distances                   |
 | GPX Collection | GPX File list view, GPX Tutorial screen                      |
 | GPX Metadata   | Store GPX Metadata in a JSON                                 |

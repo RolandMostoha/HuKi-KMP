@@ -11,19 +11,19 @@ struct BaseButton: View {
 
     var body: some View {
         Button(action: action) {
-            Label {
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-            } icon: {
-                Image(systemName: systemImage)
-                    .font(.system(size: 15, weight: .semibold))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.vertical, verticalPadding)
-            .foregroundStyle(foregroundColor)
-            .background(backgroundColor, in: .capsule)
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+                .overlay(alignment: .leading) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, verticalPadding)
+                .foregroundStyle(foregroundColor)
+                .background(backgroundColor, in: .capsule)
         }
         .buttonStyle(PressFeedbackButtonStyle())
     }

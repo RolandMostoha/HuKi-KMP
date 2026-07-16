@@ -20,8 +20,10 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
+import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
@@ -38,7 +40,6 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
-import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
@@ -848,7 +849,7 @@ class MainViewModelTest {
                     target = CameraTarget.Bounds(
                         TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
                     ),
-                    contentPadding = SharedDimens.GPX_CONTENT_PADDING,
+                    contentPadding = ContentPadding.MAP_GPX,
                 )
                 ensureAllEventsConsumed()
             }
@@ -895,6 +896,97 @@ class MainViewModelTest {
                     mapUiState.gpxLayerVisible shouldBe false
                     sheet shouldBe null
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `Given loaded GPX, When GpxMapsNavigationClicked START, Then effect is OpenMapsNavigation to start`() {
+        runTest {
+            val startLocation = Location(47.0, 19.0, 300.0)
+            val endLocation = Location(48.0, 20.0, 500.0)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                waypoints = listOf(
+                    GpxWaypoint(startLocation, WaypointType.START),
+                    GpxWaypoint(endLocation, WaypointType.END),
+                ),
+            )
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(startLocation)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given loaded GPX, When GpxMapsNavigationClicked END, Then effect is OpenMapsNavigation to end`() {
+        runTest {
+            val startLocation = Location(47.0, 19.0, 300.0)
+            val endLocation = Location(48.0, 20.0, 500.0)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                waypoints = listOf(
+                    GpxWaypoint(startLocation, WaypointType.START),
+                    GpxWaypoint(endLocation, WaypointType.END),
+                ),
+            )
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(endLocation)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given round trip GPX, When GpxMapsNavigationClicked START, Then effect is OpenMapsNavigation to round trip`() {
+        runTest {
+            val roundTripLocation = Location(47.0, 19.0, 300.0)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                waypoints = listOf(
+                    GpxWaypoint(roundTripLocation, WaypointType.ROUND_TRIP),
+                ),
+            )
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(roundTripLocation)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given no loaded GPX, When GpxMapsNavigationClicked, Then no effect is emitted`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                advanceUntilIdle()
+
+                expectNoEvents()
             }
         }
     }

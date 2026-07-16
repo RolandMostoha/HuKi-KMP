@@ -129,12 +129,10 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim -camera-back none
           script: |
             adb wait-for-device
+            until adb shell service check package 2>/dev/null | grep -q found; do sleep 1; done
             adb emu geo fix 18.8950729 47.7168079
             adb install "$PATH_APK"
-            
             chmod +x tools/scripts/*.sh
-            
-            # Run Maestro tests
             ./tools/scripts/shared_run_maestro_tests.sh "$APP_ID" "$DEVICE_ID"
 
       - name: Upload Maestro Test Reports
