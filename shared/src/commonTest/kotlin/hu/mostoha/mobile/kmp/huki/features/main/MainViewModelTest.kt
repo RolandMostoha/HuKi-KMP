@@ -273,7 +273,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Default, When CompassClicked, Then uiState has Following`() {
+    fun `Given Default, When CompassClicked, Then uiState still has Default`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -284,14 +284,15 @@ class MainViewModelTest {
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
 
                 viewModel.onEvent(MainUiEvents.CompassClicked)
+                advanceUntilIdle()
 
-                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                expectNoEvents()
             }
         }
     }
 
     @Test
-    fun `Given Default, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+    fun `Given Default, When CompassClicked, Then uiEffect is ResetBearing`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -302,7 +303,7 @@ class MainViewModelTest {
 
                 viewModel.onEvent(MainUiEvents.CompassClicked)
 
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                awaitItem() shouldBe MapUiEffects.ResetBearing
                 ensureAllEventsConsumed()
             }
         }

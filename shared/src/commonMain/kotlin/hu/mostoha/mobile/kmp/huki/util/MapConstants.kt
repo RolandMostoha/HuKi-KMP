@@ -18,7 +18,17 @@ object MapConstants {
     const val PLACE_DEFAULT_CAMERA_ZOOM = 16.0
     const val FOLLOW_LOCATION_ZOOM_LEVEL = 16.0
     const val FOLLOW_LOCATION_LIVE_COMPASS_PITCH = 45.0
-    const val MAP_ROTATION_ENABLED = false
+    const val MAP_ROTATION_ENABLED = true
+
+    /**
+     * Smallest bearing change worth reacting to, matching Mapbox's own compass throttling.
+     */
+    const val MAP_BEARING_EPSILON = 0.1
+
+    /**
+     * Bearing tolerance in degrees within which the camera counts as facing north, for compass uses to fade out.
+     */
+    const val MAP_FACING_NORTH_TOLERANCE = 1.0
 
     const val MAP_ZOOM_STEP = 1.0
     const val MAP_MIN_ZOOM = 3.0

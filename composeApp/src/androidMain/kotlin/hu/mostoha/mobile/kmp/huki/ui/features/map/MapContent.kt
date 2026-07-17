@@ -67,6 +67,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
 import hu.mostoha.mobile.kmp.huki.model.mapper.isIdle
 import hu.mostoha.mobile.kmp.huki.model.mapper.isOverview
 import hu.mostoha.mobile.kmp.huki.model.mapper.moveCamera
+import hu.mostoha.mobile.kmp.huki.model.mapper.resetBearing
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
@@ -112,6 +113,7 @@ fun MapContent(
                     mapViewportState.followLocation(effect.myLocationStatus, effect.animated)
                 }
                 is MapUiEffects.Zoom -> mapViewportState.zoom(effect.zoomIn)
+                is MapUiEffects.ResetBearing -> mapViewportState.resetBearing()
             }
         }
     }

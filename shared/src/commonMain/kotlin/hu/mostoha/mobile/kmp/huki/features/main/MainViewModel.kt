@@ -233,16 +233,25 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Recenters north-up on the puck while following, otherwise only rotates the camera back to north,
+     * so browsing the map away from the current location is not interrupted.
+     */
     private fun resetCameraToNorth() {
         viewModelScope.launch {
-            val newStatus = MyLocationStatus.Following
-            _uiState.update { uiState ->
-                uiState.copy(
-                    myLocationState = uiState.myLocationState.copy(myLocationStatus = newStatus),
-                    isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
-                )
+            when (_uiState.value.myLocationState.myLocationStatus) {
+                MyLocationStatus.Following, MyLocationStatus.FollowingLiveCompass -> {
+                    val newStatus = MyLocationStatus.Following
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            myLocationState = uiState.myLocationState.copy(myLocationStatus = newStatus),
+                            isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
+                        )
+                    }
+                    sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+                }
+                MyLocationStatus.Default, MyLocationStatus.NotAvailable -> sendEffect(MapUiEffects.ResetBearing)
             }
-            sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
         }
     }
 

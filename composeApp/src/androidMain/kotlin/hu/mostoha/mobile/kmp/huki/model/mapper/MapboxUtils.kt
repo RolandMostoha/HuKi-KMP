@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Density
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.animation.MapAnimationOwnerRegistry
 import com.mapbox.maps.plugin.viewport.ViewportStatus
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
@@ -104,6 +105,22 @@ internal fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus,
         }
         MyLocationStatus.Default, MyLocationStatus.NotAvailable -> Unit
     }
+}
+
+/**
+ * Eases the camera back to north-up, keeping the center and zoom.
+ * Uses the GESTURES animation owner so it can interrupt an active viewport state.
+ */
+internal fun MapViewportState.resetBearing() {
+    easeTo(
+        cameraOptions = CameraOptions.Builder()
+            .bearing(0.0)
+            .build(),
+        animationOptions = MapAnimationOptions.mapAnimationOptions {
+            duration(MAP_FOLLOW_ANIM_DURATION.inWholeMilliseconds)
+            owner(MapAnimationOwnerRegistry.GESTURES)
+        },
+    )
 }
 
 /**
