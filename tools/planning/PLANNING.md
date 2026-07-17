@@ -54,7 +54,8 @@
 | `[L]`  | Register Apple Developer Account                                                                 |
 | `[L]`  | CD on Apple Store                                                                                |
 | `[L]`  | Implement T&C on huki.hu                                                                         |
-| `[L]`  | Use swiftlint --strict                                                                           |
+| `[L]`  | Use swiftlint --strict everywhere (pipelines, build scripts etc.)                                |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
 | `[ ]`  | Check project against Swift agent skills in XCode                                                |
@@ -74,7 +75,6 @@
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[L]`  | Map   | Enable Rotate with 2 fingers by default                                           |
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 
 ### FEATURE: Dark Mode
@@ -101,7 +101,6 @@
 
 | Status | Scope  | Task                                                                                                                                                                          |
 |--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Search | Search section order chnage: Show Recent places and Recent GPX tracks before Destinations. It's more important to see recents than destinations.                              |
 | `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
@@ -155,11 +154,9 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: GPX Details
 
-| Status | Scope      | Task                                                |
-|--------|------------|-----------------------------------------------------|
-| `[x]`  | GPXDetails | Show as secondary button "Maps Navigation to Start" |
-| `[x]`  | GPXDetails | Show as secondary button "Maps Navigation to End"   |
-| `[ ]`  | GPXDetails | Show as secondary button "Share GPX file"           |
+| Status | Scope      | Task                                      |
+|--------|------------|-------------------------------------------|
+| `[ ]`  | GPXDetails | Show as secondary button "Share GPX file" |
 
 ### FEATURE: GPX Collection
 
@@ -233,6 +230,10 @@ Refs:
   development.
 - Google: Google Play Billing API
 - Apple: Apple App Store Connect, Apple Pay
+- Base concept: subscriptions and one time payments. Categorized by wild animals (e.g.
+  Board=1EUR/month, Owl=1EUR).
+- The benefit of supporting is just visual: showing the supporter animal in various places (e.g.
+  WhatsNew)
 
 ### FEATURE: Route Planner
 

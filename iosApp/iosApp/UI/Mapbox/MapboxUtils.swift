@@ -25,6 +25,16 @@ extension Viewport {
         }
     }
 
+    /// North-up target that keeps the current center, zoom and pitch.
+    static func resetBearingTarget(cameraState: CameraState) -> Viewport {
+        return .camera(
+            center: cameraState.center,
+            zoom: cameraState.zoom,
+            bearing: 0,
+            pitch: cameraState.pitch
+        )
+    }
+
     /// Follow-puck target for the given status; preserves the current zoom while already following,
     /// otherwise applies at least the default follow zoom. Returns nil for non-follow statuses.
     func followLocationTarget(_ myLocationStatus: MyLocationStatus, cameraZoom: CGFloat?) -> Viewport? {

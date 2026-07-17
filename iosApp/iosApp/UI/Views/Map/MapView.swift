@@ -14,12 +14,22 @@ struct MapView: View {
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
 
+    /// Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
+    /// otherwise only once the camera is rotated away from north.
     private var isCompassVisible: Bool {
         if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
             return true
         }
-        return false
+        return !isFacingNorth(cameraBearing)
     }
+
+    private func isFacingNorth(_ bearing: Double) -> Bool {
+        let tolerance = MapConstants.shared.MAP_FACING_NORTH_TOLERANCE
+        let rotation = abs(bearing)
+        return rotation >= 360.0 - tolerance || rotation <= tolerance
+    }
+
+    @State private var cameraBearing: Double = 0
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -142,6 +152,24 @@ struct MapView: View {
                         handleMapEffects(effect, proxy: proxy)
                     }
                 }
+                .task(id: proxy.map != nil) {
+                    // Retries once the map is created, otherwise the compass would never track the bearing.
+                    guard let map = proxy.map else { return }
+                    cameraBearing = map.cameraState.bearing
+                    let bearingChanges = AsyncStream<Double> { continuation in
+                        let cancelable = map.onCameraChanged.observe { event in
+                            continuation.yield(event.cameraState.bearing)
+                        }
+                        continuation.onTermination = { _ in cancelable.cancel() }
+                    }
+                    for await newBearing in bearingChanges {
+                        // Camera changes fire every frame; only a real rotation may re-render the map.
+                        guard abs(newBearing - cameraBearing) >= MapConstants.shared.MAP_BEARING_EPSILON else {
+                            continue
+                        }
+                        cameraBearing = newBearing
+                    }
+                }
                 .task(id: uiState.myLocationState.permissionState == PermissionState.granted) {
                     // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
                     guard uiState.myLocationState.permissionState == PermissionState.granted,
@@ -163,7 +191,7 @@ struct MapView: View {
 
                 if isCompassVisible {
                     CompassOrnamentView(
-                        proxy: proxy,
+                        bearing: cameraBearing,
                         accessibilityLabel: strings.get(id: SharedRes.strings().my_location_a11y_compass),
                         onTap: onCompassClicked
                     )
@@ -184,6 +212,15 @@ struct MapView: View {
             showMyLocation(effect, proxy: proxy)
         case .zoom(let effect):
             zoom(effect, proxy: proxy)
+        case .resetBearing:
+            resetBearing(proxy: proxy)
+        }
+    }
+
+    private func resetBearing(proxy: MapProxy) {
+        guard let map = proxy.map else { return }
+        withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
+            viewport = .resetBearingTarget(cameraState: map.cameraState)
         }
     }
 

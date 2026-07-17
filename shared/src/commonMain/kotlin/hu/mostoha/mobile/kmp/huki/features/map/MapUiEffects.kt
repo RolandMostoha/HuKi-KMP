@@ -19,4 +19,6 @@ sealed interface MapUiEffects : UiEffect {
     ) : MapUiEffects
 
     data class Zoom(val zoomIn: Boolean) : MapUiEffects
+
+    data object ResetBearing : MapUiEffects
 }
