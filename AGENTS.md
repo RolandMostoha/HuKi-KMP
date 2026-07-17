@@ -24,7 +24,7 @@ Build on Booted device:
 ```
 Lint:
 ```bash
-(cd iosApp && swiftlint)
+(cd iosApp && swiftlint --strict)
 ```
 
 ### Shared
@@ -283,7 +283,7 @@ val [actual] = operation(X)
 - **Formatting:** Use **ktlint**. Refer to `.editorconfig` in the root for specific formatting rules.
 - **Static Analysis:** Use **Detekt**. Strictly follow the rules defined in `tools/quality/HuKi-detekt.yml`.
 ### iOS
-- **Formatting:** Use **SwiftLint**
+- **Formatting:** Use **SwiftLint** with `--strict` (warnings are errors) — this is what CI and the Xcode build phase run.
 
 ## Secrets
 - Always check `.aiexclude`
