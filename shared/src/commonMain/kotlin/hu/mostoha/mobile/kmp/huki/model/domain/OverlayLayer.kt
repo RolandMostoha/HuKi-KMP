@@ -16,6 +16,6 @@ enum class OverlayLayer(
         ),
         tileSize = 256,
         minZoom = 5,
-        maxZoom = 18,
+        maxZoom = 17,
     ),
 }
