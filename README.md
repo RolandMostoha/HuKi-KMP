@@ -80,12 +80,12 @@ The following steps are running on the CI server on `main` push:
 ```
 
 ### iOS
-1. SwiftLint - Enforces Swift style and conventions
+1. SwiftLint - Enforces Swift style and conventions, warnings fail the build (`--strict`)
 2. Xcode build
 3. iOS E2E UI tests - Using `Maestro`
 
 ```shell
-swiftlint xcodebuild maestro test
+swiftlint --strict xcodebuild maestro test
 ```
 
 ## Testing

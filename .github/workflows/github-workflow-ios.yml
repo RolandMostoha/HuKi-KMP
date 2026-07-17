@@ -39,7 +39,7 @@ jobs:
       - name: SwiftLint
         run: |
           cd iosApp
-          swiftlint
+          swiftlint --strict
 
       - name: Select latest Xcode
         uses: maxim-lobanov/setup-xcode@v1

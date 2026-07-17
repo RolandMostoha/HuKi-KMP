@@ -54,7 +54,6 @@
 | `[L]`  | Register Apple Developer Account                                                                 |
 | `[L]`  | CD on Apple Store                                                                                |
 | `[L]`  | Implement T&C on huki.hu                                                                         |
-| `[L]`  | Use swiftlint --strict everywhere (pipelines, build scripts etc.)                                |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
