@@ -6,7 +6,7 @@
 
 bundle="hu.mostoha.mobile.ios.huki"
 
-DEV=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')
+DEV=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)
 if [ -z "$DEV" ]; then
   echo "No booted simulator found."
   exit 1

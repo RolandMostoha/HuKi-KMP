@@ -5,7 +5,7 @@
 # Default to Dobogókő; override with: ios_fix_location.sh <lat>,<lon>
 LOCATION="${1:-47.7168079,18.8950729}"
 
-BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')
+BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)
 
 if [ -z "$BOOTED_DEVICE_ID" ]; then
     echo "No booted simulator found. Boot a simulator first."
