@@ -3,7 +3,7 @@
 # Useful for piping into other xcrun simctl commands.
 
 # Extract the UUID of the booted simulator into a variable
-BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')
+BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)
 
 # Check if a booted device was found
 if [ -z "$BOOTED_DEVICE_ID" ]; then

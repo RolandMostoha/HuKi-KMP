@@ -27,7 +27,7 @@ struct SearchBarView: View {
                 .padding(.leading, 48)
                 .padding(.trailing, 16)
                 .padding(.vertical, 12)
-                .background(Color(.systemBackground).opacity(0.8), in: .capsule)
+                .background(Color(.tertiarySystemFill), in: .capsule)
                 .overlay(alignment: .leading) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 16, weight: .semibold))

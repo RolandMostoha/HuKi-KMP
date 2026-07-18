@@ -64,7 +64,7 @@
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top (marker placement order issue)                                                                                                                                                                                                      |
+| `[ ]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top compared to Waypoint / Middle points (marker placement order issue)                                                                                                                                                                 |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
@@ -78,11 +78,12 @@
 
 ### FEATURE: Dark Mode
 
-| Status | Scope | Bug                                                                                                      |
-|--------|-------|----------------------------------------------------------------------------------------------------------|
-| `[x]`  | Map   | Decision: In dark mode only the App's UI components are changed, no Mapbox map style change              |
-| `[L]`  | Map   | Bug: In dark mode FABs are not dark ![bug_map_fab_darkmode](bug_map_fab_darkmode.png)                    |
-| `[L]`  | Map   | In dark mode GPX color is too bright, not readable -> force light variations for things drawn on the map |
+| Status | Scope    | Bug                                                                                                                                                    |
+|--------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | DarkMode | Decision: In dark mode only the App's UI components are changed, no Mapbox map style change                                                            |
+| `[x]`  | DarkMode | Bug: SearchBar input is too dark in dark mode                                                                                                          |
+| `[L]`  | DarkMode | Bug: In dark mode FABs are not always dark, sometimes they don't change according to System settings ![bug_map_fab_darkmode](bug_map_fab_darkmode.png) |
+| `[L]`  | DarkMode | In dark mode GPX color is too bright, not readable -> force light variations for things drawn on the map                                               |
 
 ### FEATURE: My Location
 
@@ -218,8 +219,8 @@ Refs:
 |--------|----------|-----------------------------------------------------------------------------------------------|
 | `[ ]`  | Map      | Bump Mapbox SDK to 11.26.0+ (Android + iOS pod), re-verify map screens on both platforms      |
 | `[ ]`  | Map      | Confirm the iOS SwiftUI equivalent of `symbolScaleBehavior` and wire it in `MapContent` (iOS) |
-| `[L]`  | Settings | Add label-size preference to `AppSettings` + DataStore (Fixed factor and/or System/Custom)    |
-| `[L]`  | Settings | Settings UI control (slider or presets) feeding the map scale factor                          |
+| `[ ]`  | Settings | Add label-size preference to `AppSettings` + DataStore (Fixed factor and/or System/Custom)    |
+| `[ ]`  | Settings | Settings UI control (slider or presets) feeding the map scale factor                          |
 | `[ ]`  | Map      | Apply `symbolScaleBehavior` in Android `MapContent` via `MapEffect` from the settings value   |
 | `[ ]`  | Map      | Default to `SymbolScaleBehavior.system` so it respects OS accessibility font scale out of box |
 
