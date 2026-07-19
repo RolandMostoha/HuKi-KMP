@@ -78,12 +78,18 @@
 
 ### FEATURE: Dark Mode
 
+- In dark mode only the App's UI components are changed, Mapbox doesn't have dark modes for its
+  default layers (Outdoors, Satellite etc.)
+
 | Status | Scope    | Bug                                                                                                                                                    |
 |--------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | DarkMode | Decision: In dark mode only the App's UI components are changed, no Mapbox map style change                                                            |
 | `[x]`  | DarkMode | Bug: SearchBar input is too dark in dark mode                                                                                                          |
-| `[L]`  | DarkMode | Bug: In dark mode FABs are not always dark, sometimes they don't change according to System settings ![bug_map_fab_darkmode](bug_map_fab_darkmode.png) |
-| `[L]`  | DarkMode | In dark mode GPX color is too bright, not readable -> force light variations for things drawn on the map                                               |
+| `[x]`  | DarkMode | Bug: In dark mode FABs are not always dark, sometimes they don't change according to System settings ![bug_map_fab_darkmode](bug_map_fab_darkmode.png) |
+| `[x]`  | DarkMode | Bug: Dark Mode markers are light green (primary-dark), they should remain the same light colors as Mapbox is light-only                                |
+| `[x]`  | DarkMode | Bug: GPX Menu -> Delete dark color for the icon is barely visible                                                                                      |
+| `[x]`  | DarkMode | Bug: My location FAB primary-dark color is used                                                                                                        |
+| `[x]`  | DarkMode | Bug: My location FAB primary-dark color is used                                                                                                        |
+| `[ ]`  | DarkMode | Bug, iOS 27. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png)                                 |
 
 ### FEATURE: My Location
 

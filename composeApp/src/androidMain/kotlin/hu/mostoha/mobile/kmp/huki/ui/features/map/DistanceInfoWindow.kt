@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -20,6 +23,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +44,24 @@ import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
 @Composable
 fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val lightContext = remember(context) {
+        context.createConfigurationContext(
+            Configuration(context.resources.configuration).apply {
+                uiMode = Configuration.UI_MODE_NIGHT_NO or (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv())
+            },
+        )
+    }
+    // Mapbox is light-only, so keep the window in its light appearance regardless of app theme
+    CompositionLocalProvider(LocalContext provides lightContext) {
+        HuKiTheme(darkTheme = false) {
+            DistanceInfoWindowContent(info, modifier)
+        }
+    }
+}
+
+@Composable
+private fun DistanceInfoWindowContent(info: DistanceInfoWindowData, modifier: Modifier = Modifier) {
     val contentDescription = mokoString(SharedRes.strings.gpx_distance_info_window_a11y)
     val strokeColor = mokoColor(SharedRes.colors.mapStroke)
     val surfaceColor = MaterialTheme.colorScheme.surface

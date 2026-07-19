@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
@@ -183,7 +182,7 @@ fun MapContent(
             )
         },
     ) {
-        val primaryColor = MaterialTheme.colorScheme.primary
+        val primaryOnMapColor = SharedRes.colors.primaryOnMap.toComposeColor(context)
         val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
 
         MapEffect(Unit) { mapView ->
@@ -198,9 +197,9 @@ fun MapContent(
                 puckBearingEnabled = true
                 puckBearing = PuckBearing.HEADING
                 showAccuracyRing = true
-                accuracyRingColor = SharedRes.colors.accuracyRing.getColor(context)
+                accuracyRingColor = SharedRes.colors.accuracyRingOnMap.getColor(context)
                 pulsingEnabled = true
-                pulsingColor = primaryColor.toArgb()
+                pulsingColor = primaryOnMapColor.toArgb()
             }
             val positionListener = object : OnIndicatorPositionChangedListener {
                 override fun onIndicatorPositionChanged(point: Point) {
@@ -241,7 +240,7 @@ fun MapContent(
                         layerId = gpxDetails.layerId,
                     ) {
                         lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
-                        lineColor = ColorValue(primaryColor)
+                        lineColor = ColorValue(primaryOnMapColor)
                         lineBorderColor = ColorValue(mapStrokeColor)
                         lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
                         lineCap = LineCapValue.ROUND
