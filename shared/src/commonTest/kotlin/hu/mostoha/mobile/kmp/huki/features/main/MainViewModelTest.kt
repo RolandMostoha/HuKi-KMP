@@ -39,6 +39,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -96,6 +97,9 @@ class MainViewModelTest {
     private val settingsRepository = mock<SettingsRepository>(MockMode.autoUnit) {
         every { settings } returns flowOf(UserPreferences.DEFAULTS)
     }
+    private val whatsNewRepository = mock<WhatsNewRepository>(MockMode.autoUnit) {
+        everySuspend { shouldShowWhatsNew() } returns false
+    }
 
     @BeforeTest
     fun setup() {
@@ -124,6 +128,7 @@ class MainViewModelTest {
             destinationRepository = destinationRepository,
             locationMonitoringService = locationMonitoringService,
             settingsRepository = settingsRepository,
+            whatsNewRepository = whatsNewRepository,
             defaultDispatcher = testDispatcher,
         )
     }

@@ -31,6 +31,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
@@ -63,6 +64,7 @@ class MainViewModel(
     private val destinationRepository: DestinationRepository,
     private val locationMonitoringService: LocationMonitoringService,
     private val settingsRepository: SettingsRepository,
+    private val whatsNewRepository: WhatsNewRepository,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
@@ -80,6 +82,7 @@ class MainViewModel(
         initLogging()
         initMyLocation()
         initDistanceMonitoring()
+        initWhatsNew()
         observeSettings()
     }
 
@@ -274,6 +277,15 @@ class MainViewModel(
                 )
             }
             sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+        }
+    }
+
+    private fun initWhatsNew() {
+        viewModelScope.launch {
+            if (whatsNewRepository.shouldShowWhatsNew()) {
+                showSheet(Sheet.WhatsNew(whatsNewRepository.currentWhatsNew))
+                whatsNewRepository.markCurrentWhatsNewSeen()
+            }
         }
     }
 

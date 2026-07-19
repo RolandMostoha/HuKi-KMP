@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +54,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
@@ -129,7 +132,7 @@ private fun MainContent(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val modalSheetState = rememberModalBottomSheetState()
+    val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val standardSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false,
@@ -150,7 +153,9 @@ private fun MainContent(
         snapshotFlow { standardSheetScaffoldState.bottomSheetState.currentValue }
             .distinctUntilChanged()
             .collect { value ->
-                val dismissed = if (currentSheet is Sheet.Gpx) {
+                val sheet = currentSheet ?: return@collect
+                if (!sheet.isStandard()) return@collect
+                val dismissed = if (sheet is Sheet.Gpx) {
                     value == SheetValue.Hidden
                 } else {
                     value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden
@@ -185,15 +190,10 @@ private fun MainContent(
         }
     }
 
-    LaunchedEffect(mainUiEffects) {
-        mainUiEffects.collect { effect ->
-            when (effect) {
-                MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
-                MainUiEffects.ShowGpxFilePicker -> gpxFilePickerLauncher.launch(arrayOf("*/*"))
-                is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
-            }
-        }
-    }
+    MainUiEffectHandler(
+        mainUiEffects = mainUiEffects,
+        onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
+    )
 
     BottomSheetScaffold(
         scaffoldState = standardSheetScaffoldState,
@@ -304,23 +304,10 @@ private fun MainContent(
                 onMenuClicked = onMenuClicked,
             )
             if (showModalBottomSheet) {
-                LayersBottomSheet(
+                MainModalBottomSheet(
+                    uiState = uiState,
                     sheetState = modalSheetState,
-                    selectedBaseLayer = uiState.mapUiState.baseLayer,
-                    isHikingLayerSelected = uiState.mapUiState.hikingLayerVisible,
-                    isGpxLayerSelected = uiState.mapUiState.gpxLayerVisible,
-                    onBaseLayerSelected = {
-                        onEvent(MainUiEvents.BaseLayerSelected(it))
-                    },
-                    onHikingLayerSelected = {
-                        onEvent(MainUiEvents.HikingLayerSelected)
-                    },
-                    onGpxLayerSelected = {
-                        onEvent(MainUiEvents.GpxLayerSelected)
-                    },
-                    onDismissRequest = {
-                        onEvent(MainUiEvents.SheetDismissed)
-                    },
+                    onEvent = onEvent,
                 )
             }
             uiState.alert?.let { alert ->
@@ -356,6 +343,47 @@ private fun MainContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun MainUiEffectHandler(mainUiEffects: Flow<MainUiEffects>, onShowGpxFilePicker: () -> Unit) {
+    val context = LocalContext.current
+    LaunchedEffect(mainUiEffects) {
+        mainUiEffects.collect { effect ->
+            when (effect) {
+                MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
+                MainUiEffects.ShowGpxFilePicker -> onShowGpxFilePicker()
+                is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, onEvent: (MainUiEvents) -> Unit) {
+    when (val sheet = uiState.sheet) {
+        is Sheet.Layers -> {
+            LayersBottomSheet(
+                sheetState = sheetState,
+                selectedBaseLayer = uiState.mapUiState.baseLayer,
+                isHikingLayerSelected = uiState.mapUiState.hikingLayerVisible,
+                isGpxLayerSelected = uiState.mapUiState.gpxLayerVisible,
+                onBaseLayerSelected = { onEvent(MainUiEvents.BaseLayerSelected(it)) },
+                onHikingLayerSelected = { onEvent(MainUiEvents.HikingLayerSelected) },
+                onGpxLayerSelected = { onEvent(MainUiEvents.GpxLayerSelected) },
+                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+            )
+        }
+        is Sheet.WhatsNew -> {
+            WhatsNewBottomSheet(
+                whatsNew = sheet.whatsNew,
+                sheetState = sheetState,
+                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+            )
+        }
+        else -> Unit
     }
 }
 

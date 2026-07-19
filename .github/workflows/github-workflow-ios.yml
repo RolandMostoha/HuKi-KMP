@@ -46,6 +46,9 @@ jobs:
         with:
           xcode-version: "latest"
 
+      - name: Generate Version.xcconfig
+        run: ./gradlew :shared:generateVersionXcconfig
+
       - name: Build iOS App
         env:
           JAVA_HOME: ${{ env.JAVA_HOME }}
