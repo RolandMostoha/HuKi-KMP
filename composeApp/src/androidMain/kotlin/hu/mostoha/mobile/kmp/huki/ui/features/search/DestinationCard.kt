@@ -56,6 +56,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.adaptiveTint
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -68,6 +69,7 @@ private val CategoryRowHeight = 32.dp
 fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     val typeColor = mokoColor(destination.type.colorRes)
+    val chipTint = typeColor.adaptiveTint()
 
     Box(
         modifier = modifier
@@ -104,7 +106,7 @@ fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Mod
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
-                    TypeChip(type = destination.type, typeColor = typeColor)
+                    TypeChip(type = destination.type, typeColor = chipTint)
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 ExpandButton(

@@ -49,10 +49,10 @@ struct DestinationCardView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(typeColor)
+                .foregroundStyle(chipTint)
             Text(strings.get(id: destination.type.title))
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(typeColor)
+                .foregroundStyle(chipTint)
                 .lineLimit(1)
         }
         .padding(.horizontal, 10)
@@ -100,6 +100,10 @@ struct DestinationCardView: View {
 
     private var typeColor: SwiftUI.Color {
         SwiftUI.Color(destination.type.colorRes.getUIColor())
+    }
+
+    private var chipTint: SwiftUI.Color {
+        SwiftUI.Color(destination.type.colorRes.getUIColor().adaptiveTint())
     }
 
     private var gradientOverlay: some View {

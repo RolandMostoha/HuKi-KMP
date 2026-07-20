@@ -24,6 +24,7 @@ extension View {
 }
 
 struct GlassContainer<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -31,6 +32,9 @@ struct GlassContainer<Content: View>: View {
             GlassEffectContainer {
                 self.content()
             }
+            .id(colorScheme)
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.2), value: colorScheme)
         } else {
             content()
                 .background(
