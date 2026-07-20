@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.datastore.SettingsPreferenceKeys
 import hu.mostoha.mobile.kmp.huki.model.domain.WhatsNew
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
 import hu.mostoha.mobile.kmp.huki.model.mapper.toWhatsNewHistory
+import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -21,6 +22,9 @@ class DefaultWhatsNewRepository(private val dataStore: DataStore<Preferences>) :
     override val whatsNewHistory: List<WhatsNew> = WhatsNewContent.toWhatsNewHistory()
 
     override suspend fun shouldShowWhatsNew(): Boolean {
+        if (AppLaunchConfig.skipWhatsNew) {
+            return false
+        }
         if (FeatureFlags.ALWAYS_SHOW_WHATSNEW) {
             return true
         }

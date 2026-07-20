@@ -119,62 +119,8 @@
 
 ### FEATURE: Versioning + WhatsNew
 
-**Decisions (resolved):**
-
-- **Versioning**: one **shared marketing version** (e.g. `1.4.0`) identical on both platforms;
-  **independent build numbers** per platform (`versionCode` / `CURRENT_PROJECT_VERSION`).
-- **Build numbers = Fastlane owns them at release.** At release Fastlane sets a monotonic number
-  from the store (`latest_testflight_build_number + 1` iOS / Play track max `versionCode` + 1
-  Android) or CI `run_number`. Until Fastlane lands, `version.properties` carries **temporary
-  hardcoded** `androidBuildNumber` / `iosBuildNumber` placeholders that local/interim builds read.
-  No date formula, no build-time computation.
-- **Release notes**: **single source** per version → feeds Play Store, App Store, **and** in-app
-  WhatsNew.
-- **Source of truth**: **Fastlane-managed** long-term. Sequencing = **Plan B**: introduce a minimal
-  interim SoT now (`version.properties` at repo root) so both platforms read one value and in-app
-  WhatsNew works; when the Fastlane/CD task lands it adopts that same file for bumping (nothing
-  thrown away). Depends on: "Release process setup: CD - Fastlane" for the store-facing half.
-
-**WhatsNew source layout (resolved):**
-
-- One **version-named dir per release** (no `latest` alias, no rename step):
-  `tools/release/whatsnew/v<version>/` — e.g. `v0.9/`. The dir matching `appVersion` is the
-  current one; older dirs are the store/audit history.
-- Per dir: locale-split notes (`whatsnew-en-US.md`, `whatsnew-hu-HU.md`) — **store-facing** (
-  Fastlane
-  feeds these to Play/App Store) — + `metadata.json` (`releaseDate`, and an optional **in-app-only**
-  `message`). **`version` is not stored here** — it comes from `version.properties` (`appVersion`);
-  the dir name is only the lookup key.
-- **In-app-only `message`** (welcome / thanks-to-supporters, per the mockup): stored in
-  `metadata.json` as inline locale maps (`title` / `body`), **never** sent to stores (it's not in
-  the
-  `.md`). Generated into moko strings like the notes.
-- `WhatsNew` domain model (per release) = `version` + `releaseDate` (from `metadata.json`) +
-  `releaseNotes: StringDesc` + optional `message: WhatsNewMessage?` (`title` / `body` as
-  `StringDesc`)
-  — all moko-resolved by system language, like other localized text.
-- The **social/Follow card** (e.g. Facebook) is **app-global**, not per-release — a moko string +
-  constant URL rendered on every sheet; not stored in per-version metadata.
-- Generator reads **all** `v*` dirs → (a) `strings_whatsnew.xml` into moko `base/` (en) + `hu/`
-  (gitignored, generated) with one `whatsnew_v<ver>` string per release, and (b) a `WhatsNewContent`
-  object with `currentVersion` (= `appVersion`) + `releases: List<Entry>` (each `notes` is a moko
-  `StringResource`), sorted newest-first (semantic version compare). **Locale is solved by moko**
-  (system language + automatic `base` fallback) — no `languageCode` plumbing. moko's `generateMR*`
-  tasks depend on `generateWhatsNew`. Serves the first-open bottom sheet (current entry) **and** a
-  future Version history screen (full list).
-
 | Status | Scope    | Task                                                                                                                                                                                                                                                                                                                                                                                    |
 |--------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | WhatsNew | Changelog layout: version-named dir `tools/release/whatsnew/v<version>/` with locale `.md` + `metadata.json` (releaseDate).                                                                                                                                                                                                                                                             |
-| `[x]`  | WhatsNew | Add `version.properties` (repo root): `appVersion` + **temporary hardcoded** `androidBuildNumber` / `iosBuildNumber` (Fastlane overrides at release).                                                                                                                                                                                                                                   |
-| `[x]`  | WhatsNew | Wire Android: `versionName` ← `appVersion`, `versionCode` ← `androidBuildNumber` in `composeApp/build.gradle.kts`.                                                                                                                                                                                                                                                                      |
-| `[x]`  | WhatsNew | Wire iOS: `generateVersionXcconfig` Gradle task (buildSrc, mirrors `GenerateSecretsTask`) → `Version.xcconfig` (`#include`d by `Config.xcconfig`, runs via `embedAndSignAppleFrameworkForXcode`); `MARKETING_VERSION` ← `appVersion`, `CURRENT_PROJECT_VERSION` ← `iosBuildNumber`.                                                                                                     |
-| `[x]`  | WhatsNew | `generateWhatsNew` Gradle task (buildSrc) → generated moko `strings_whatsnew.xml` (base+hu, gitignored) + `WhatsNewContent` (`currentVersion` + `releases: List<Entry>` w/ moko `StringResource` notes, all `v*` dirs, semantic sort). moko `generateMR*` depends on it. No runtime file IO.                                                                                            |
-| `[x]`  | WhatsNew | `WhatsNewMapper.kt`: `Entry.toWhatsNew()` (parse `releaseDate` → `LocalDate`, wrap notes `StringResource` → `StringDesc`) + `toCurrentWhatsNew` / `toWhatsNewHistory`. No `languageCode` (moko resolves locale). Unit-tested.                                                                                                                                                           |
-| `[x]`  | WhatsNew | In-app-only `message` (welcome/thanks): optional `message` (`title`/`body`) in `metadata.json` (locale maps) → generated moko strings + `WhatsNewContent.Entry.message` → `WhatsNew.message: WhatsNewMessage?`. Generator parses JSON via `JsonSlurper`. Unit-tested (present/absent).                                                                                                  |
-| `[x]`  | WhatsNew | `WhatsNewRepository` (commonMain, Koin): `currentWhatsNew` + `whatsNewHistory` (via mapper), `shouldShowWhatsNew()` (`lastSeenVersion` != `currentVersion`; shows on fresh install too), `markCurrentWhatsNewSeen()`. `WHATS_NEW_LAST_SEEN_VERSION` DataStore key. Unit-tested (fake DataStore).                                                                                        |
-| `[x]`  | WhatsNew | **Android** bottom sheet: `Sheet.WhatsNew` (modal) + `WhatsNewBottomSheet` (header w/ app icon + version pill + month-year, notes card, optional message card, Facebook card). `MainViewModel.initWhatsNew()`: if `shouldShowWhatsNew()` → show + `markCurrentWhatsNewSeen()` (mark-on-show). `String.toReleaseNoteLines()` mapper (unit-tested) turns the notes markdown into bullets. |
-| `[L]`  | WhatsNew | **iOS** bottom sheet (SwiftUI) — same content, driven by the same `Sheet.WhatsNew` state.                                                                                                                                                                                                                                                                                               |
 | `[L]`  | WhatsNew | (Fastlane/CD task) Project the `v<version>` dir into Fastlane metadata; `supply`/`deliver` feed the changelog to the stores; adopt `version.properties` for bumping.                                                                                                                                                                                                                    |
 | `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                                                                                                                                                                                                                                                                                                        |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                                                                                                                                                                                                                  |

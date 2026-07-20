@@ -285,6 +285,8 @@ val [actual] = operation(X)
   - `whatsnew-en-US.md` (required) and `whatsnew-hu-HU.md` — one release-note bullet per line.
   - `metadata.json` — `releaseDate` (ISO `yyyy-MM-dd`) and an optional per-locale `message` (`title`/`body`) for the personal message card.
 - **Generation**: the `generateWhatsNew` Gradle task (in `:shared`, runs before compile) generates `WhatsNewContent.kt` (with `currentVersion`) and the moko `strings_whatsnew.xml` files. Both are generated — do not edit by hand.
+- **Show-once**: the sheet auto-shows on first launch after an update; `DefaultWhatsNewRepository` compares `currentVersion` against the `WHATS_NEW_LAST_SEEN_VERSION` DataStore key. `FeatureFlags.ALWAYS_SHOW_WHATSNEW` forces it for debugging (keep `false` on commit).
+- **E2E**: because the sheet auto-shows on a clean `clearState` launch, every Maestro flow except `maestro_whats_new.yaml` passes `arguments: { skipWhatsNew: true }` to `launchApp` to suppress it (`AppLaunchConfig.skipWhatsNew`, read from the intent extra on Android and `ProcessInfo.arguments` on iOS). Add this arg to any new flow.
 
 ## Code Quality & Linting
 ### Android

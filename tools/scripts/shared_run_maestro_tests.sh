@@ -48,7 +48,7 @@ for test_file in .maestro/maestro_*.yaml; do
     # Setup test data based on platform
     if [[ "$APP_ID" == *".ios."* ]]; then
       echo "Uploading GPX files for iOS..."
-      ./tools/scripts/ios_upload_test_gpx_files.sh
+      ./tools/scripts/ios_upload_test_gpx_files.sh "$DEVICE_ID"
     elif [[ "$APP_ID" == *".android."* ]]; then
       echo "Uploading GPX files for Android..."
       ./tools/scripts/android_upload_test_gpx_files.sh
