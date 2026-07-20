@@ -183,7 +183,8 @@ fun MapContent(
         },
     ) {
         val primaryOnMapColor = SharedRes.colors.primaryOnMap.toComposeColor(context)
-        val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
+        val primaryLightOnMapColor = SharedRes.colors.primaryLightOnMap.toComposeColor(context)
+        val mapStrokeColor = SharedRes.colors.mapStrokeOnMap.toComposeColor(context)
 
         MapEffect(Unit) { mapView ->
             mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
@@ -199,7 +200,7 @@ fun MapContent(
                 showAccuracyRing = true
                 accuracyRingColor = SharedRes.colors.accuracyRingOnMap.getColor(context)
                 pulsingEnabled = true
-                pulsingColor = primaryOnMapColor.toArgb()
+                pulsingColor = primaryLightOnMapColor.toArgb()
             }
             val positionListener = object : OnIndicatorPositionChangedListener {
                 override fun onIndicatorPositionChanged(point: Point) {

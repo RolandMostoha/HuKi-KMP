@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -45,9 +46,10 @@ import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 @Composable
 fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val lightContext = remember(context) {
+    val configuration = LocalConfiguration.current
+    val lightContext = remember(context, configuration) {
         context.createConfigurationContext(
-            Configuration(context.resources.configuration).apply {
+            Configuration(configuration).apply {
                 uiMode = Configuration.UI_MODE_NIGHT_NO or (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv())
             },
         )

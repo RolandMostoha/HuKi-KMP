@@ -77,7 +77,7 @@ struct MapView: View {
                                     .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
                                     .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
                                     .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                                    .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                                    .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
                             }
 
                             PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
