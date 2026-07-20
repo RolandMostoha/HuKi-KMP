@@ -1,4 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val versionProps = Properties().apply {
+    rootProject.file("version.properties").inputStream().use { load(it) }
+}
+
+fun versionProp(key: String): String = versionProps.getProperty(key) ?: error("version.properties: '$key' is missing")
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -30,6 +37,7 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.moko.permissions.compose)
             implementation(libs.kermit)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.maplibre.units)
         }
         commonMain.dependencies {
@@ -60,8 +68,8 @@ android {
         applicationId = "hu.mostoha.mobile.android.huki"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionProp("androidBuildNumber").toInt()
+        versionName = versionProp("appVersion")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {

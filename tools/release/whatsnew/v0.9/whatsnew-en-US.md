@@ -1,0 +1,4 @@
+- Map, GPS navigation
+- Hungarian trails
+- GPX import
+- Destinations

@@ -30,5 +30,11 @@ secrets.properties
 **/Secrets.xcconfig
 **/mapbox_access_token.xml
 
+# Generated from version.properties by the generateVersionXcconfig Gradle task
+**/Version.xcconfig
+
+# Generated from tools/release/whatsnew by the generateWhatsNew Gradle task
+**/strings_whatsnew.xml
+
 # Maestro
 .maestro/tests

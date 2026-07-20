@@ -2,6 +2,8 @@ appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
+    arguments:
+      skipWhatsNew: true
     permissions: { all: allow }
 - extendedWaitUntil:
     visible:
@@ -14,7 +16,7 @@ appId: ${APP_ID}
 # Hero
 - assertVisible: "HuKi"
 - assertVisible: "Hungarian Hiking App"
-- assertVisible: "Version \\d+\\.\\d+\\.\\d+"
+- assertVisible: "Version v\\d+\\.\\d+"
 
 # Contact section
 - assertVisible: "Contact"

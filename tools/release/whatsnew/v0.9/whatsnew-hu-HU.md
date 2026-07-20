@@ -1,0 +1,4 @@
+- Térkép, GPS navigáció
+- Magyar túraútvonalak
+- GPX importálás
+- Kirándulóhelyek

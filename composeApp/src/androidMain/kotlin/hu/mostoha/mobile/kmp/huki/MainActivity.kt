@@ -10,11 +10,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import hu.mostoha.mobile.kmp.huki.navigation.RootNavHost
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        AppLaunchConfig.skipWhatsNew = intent.getBooleanExtra(AppLaunchConfig.ARG_SKIP_WHATS_NEW, false)
 
         setContent {
             HuKiTheme {
