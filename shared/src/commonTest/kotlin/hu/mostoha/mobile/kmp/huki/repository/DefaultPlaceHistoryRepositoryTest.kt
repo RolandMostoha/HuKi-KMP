@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -201,6 +202,61 @@ class DefaultPlaceHistoryRepositoryTest {
                 osmType = OsmType.NODE,
                 boundingBox = null,
             )
+        }
+    }
+
+    @Test
+    fun `Given a query, When searchPlaces, Then dao is queried with the normalized query and entities are mapped`() {
+        runTest {
+            val entity = PlaceHistoryEntity(
+                osmType = OsmType.NODE,
+                osmId = "123",
+                name = "Dobogókő",
+                nameNormalized = "dobogoko",
+                address = null,
+                latitude = 47.7181,
+                longitude = 18.8948,
+                placeCategory = PlaceCategory.PEAK,
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                boundingBox = null,
+                lastVisited = VISITED_AT,
+            )
+            everySuspend { dao.searchByName("dobogo", 5) } returns listOf(entity)
+
+            val actual = repository.searchPlaces("DOBOGÓ", 5)
+
+            actual shouldBe listOf(
+                Place(
+                    osmId = "123",
+                    location = Location(47.7181, 18.8948),
+                    name = "Dobogókő",
+                    placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                    address = null,
+                    placeCategory = PlaceCategory.PEAK,
+                    osmType = OsmType.NODE,
+                    boundingBox = null,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `Given a blank query, When searchPlaces, Then an empty list is returned`() {
+        runTest {
+            val actual = repository.searchPlaces("   ", 5)
+
+            actual shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given a query with LIKE wildcards, When searchPlaces, Then the wildcards are escaped`() {
+        runTest {
+            everySuspend { dao.searchByName(any(), any()) } returns emptyList()
+
+            repository.searchPlaces("a%b_c", 5)
+
+            verifySuspend { dao.searchByName("a\\%b\\_c", 5) }
         }
     }
 

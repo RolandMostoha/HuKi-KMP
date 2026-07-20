@@ -45,6 +45,8 @@
     <string name="search_powered_by">Powered by</string>
     <string name="search_recent_gpx_title">Recent GPX tracks</string>
     <string name="search_recent_places_title">Recent places</string>
+    <string name="search_online_title">Online results</string>
+    <string name="search_searching">Searching…</string>
 
     <string name="layers_base_layers_title">Base Map</string>
     <string name="layers_base_outdoors_title">Outdoors</string>

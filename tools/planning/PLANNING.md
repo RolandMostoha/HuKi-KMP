@@ -34,14 +34,6 @@
 4. iOS Go-Live
 5. Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
-### Go-live remaining features
-
-- Recent Places -> from LIQ Autocomplete / Destinations / Long tap place details
-- Place Details -> long tap on map AND destinations
-- Display (distance + time) in an InfoWindow on top Start / End / Waypoint points
-- Destinations screen with filtering
-- Versioning, WhatsNews
-
 ## Backlog
 
 ### General / tech tasks
@@ -78,9 +70,9 @@
 
 ### FEATURE: Dark Mode
 
-| Status | Scope    | Bug                                                                                                                                                    |
-|--------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | DarkMode | Bug, iOS 27. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png)                                 |
+| Status | Scope    | Bug                                                                                                                    |
+|--------|----------|------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | DarkMode | Bug, iOS 27. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png) |
 
 ### FEATURE: My Location
 
@@ -98,7 +90,6 @@
 
 | Status | Scope  | Task                                                                                                                                                                          |
 |--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Search | Use PlaceHistory + Destinations as well as data sources in SearchResults. They populate search results immediately (without LIQ debounce and without meeting minChar=3 limit) |
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
 
@@ -119,12 +110,12 @@
 
 ### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                                                                                                                                                                                                                                                                                                                                                    |
-|--------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | WhatsNew | (Fastlane/CD task) Project the `v<version>` dir into Fastlane metadata; `supply`/`deliver` feed the changelog to the stores; adopt `version.properties` for bumping.                                                                                                                                                                                                                    |
-| `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                                                                                                                                                                                                                                                                                                        |
-| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                                                                                                                                                                                                                  |
-| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                                                                                                                                                                                                               |
+| Status | Scope    | Task                                                                                                                                                                 |
+|--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | WhatsNew | (Fastlane/CD task) Project the `v<version>` dir into Fastlane metadata; `supply`/`deliver` feed the changelog to the stores; adopt `version.properties` for bumping. |
+| `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                                                                                     |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                               |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                            |
 
 ### FEATURE: Route Planner: Wandering mode
 
@@ -277,11 +268,16 @@ so an Android export imports on iOS and vice-versa.
 
 ### FEATURE: Menu - Guides
 
-Goal: a new section in Menu, with 1 page guides of different topics:
+Goal: a new section in Menu, with 1 page guides of different topics.
 
-- GPX Guide - already existing via GPX Collection
-- Trail markers
-- Problem on route
+| Status | Scope  | Task                                                                                                                                          |
+|--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Guides | Add Guides section to MenuScreen                                                                                                              |
+| `[ ]`  | Guides | Add "GPX Guide" element to Guides section. The bg of the icons in "Guides" is uniformly blue -> choose a proper blue as a secondary app color |
+| `[ ]`  | Guides | "GPX Guide" should navigate to GpxTutorialScreen                                                                                              |
+| `[ ]`  | Guides | Add "Trail Markers Guide" element to Guides section.                                                                                          |
+| `[ ]`  | Guides | Add "Trail Markers Guide" Screen, temporarily blank.                                                                                          |
+| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                     |
 
 #### Guides: Report problem on route
 

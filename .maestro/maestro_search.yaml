@@ -17,6 +17,13 @@ appId: ${APP_ID}
 - assertVisible: "No results"
 - tapOn: Clear text
 
+# Local destination results appear instantly (no network, no debounce)
+- inputText: "Dobog"
+- assertVisible:
+    id: DESTINATIONS_SECTION
+- assertVisible: "Dobogókő"
+- tapOn: Clear text
+
 # Successful search results
 - inputText: "Pilisszentker"
 - assertVisible: "Pilisszentkereszt"

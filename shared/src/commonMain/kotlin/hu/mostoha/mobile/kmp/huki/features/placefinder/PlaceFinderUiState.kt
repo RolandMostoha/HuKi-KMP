@@ -9,6 +9,8 @@ data class PlaceFinderUiState(
     val searchText: String = "",
     val isLoading: Boolean = false,
     val places: List<Place> = emptyList(),
+    val searchRecentPlaces: List<Place> = emptyList(),
+    val searchDestinations: List<Destination> = emptyList(),
     val error: InfoViewData? = null,
     val topDestinations: List<Destination> = emptyList(),
     val recentPlaces: List<Place> = emptyList(),

@@ -6,6 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import org.maplibre.spatialk.units.extensions.inMeters
 import kotlin.math.min
@@ -53,6 +54,18 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
 
     override fun getNearbyDestinations(location: Location): List<Destination> =
         ALL_DESTINATIONS.sortedBy { it.location.distanceBetween(location).inMeters }
+
+    override fun searchDestinations(query: String, limit: Int): List<Destination> {
+        val normalizedQuery = NameNormalizer.normalize(query.trim())
+        if (normalizedQuery.isEmpty()) return emptyList()
+        return ALL_DESTINATIONS
+            .filter { destination ->
+                NameNormalizer.normalize(destination.name).contains(normalizedQuery) ||
+                    NameNormalizer.normalize(destination.town).contains(normalizedQuery)
+            }
+            .sortedWith(compareByDescending<Destination> { it.popularity }.thenBy { it.name })
+            .take(limit)
+    }
 
     override fun requireDestination(osmId: String): Destination = ALL_DESTINATIONS.first { it.osmId == osmId }
 
