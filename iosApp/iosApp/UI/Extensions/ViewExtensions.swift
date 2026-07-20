@@ -33,6 +33,8 @@ struct GlassContainer<Content: View>: View {
                 self.content()
             }
             .id(colorScheme)
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.2), value: colorScheme)
         } else {
             content()
                 .background(

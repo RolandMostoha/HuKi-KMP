@@ -203,6 +203,7 @@ UI → UiEvent → ViewModel → UiState
 - Prefer official + community KMP libraries for wrapping platform-specific code
 - Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
 - Don't use comments for Composables/SwiftUI views. Previews are much better than comments.
+- Dark mode: Mapbox doesn't have dark modes for its layers (Outdoors, Satellite etc.) so we use light mode what we draw on map (markers, routes etc.)
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
