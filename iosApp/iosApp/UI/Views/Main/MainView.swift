@@ -189,7 +189,24 @@ private extension MainView {
             layersSheet(uiState: uiState)
         case .gpx:
             gpxSheet(uiState: uiState)
+        case .whatsNew(let sheet):
+            whatsNewSheet(whatsNew: sheet.whatsNew)
         }
+    }
+
+    func whatsNewSheet(whatsNew: WhatsNew) -> some View {
+        let detentHeight = whatsNew.message != nil
+            ? Dimens.whatsNewDetentHeightWithMessage
+            : Dimens.whatsNewDetentHeight
+        return WhatsNewSheetView(
+            strings: strings,
+            whatsNew: whatsNew,
+            onDismissRequest: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            }
+        )
+        .presentationDetents([.height(detentHeight)])
+        .presentationDragIndicator(.hidden)
     }
 
     func searchSheet() -> some View {

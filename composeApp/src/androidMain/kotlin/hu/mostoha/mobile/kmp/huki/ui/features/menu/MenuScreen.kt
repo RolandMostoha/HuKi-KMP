@@ -51,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.VersionPill
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -296,40 +297,11 @@ private fun MenuHero(versionName: String) {
             modifier = Modifier.padding(top = Dimens.ExtraSmall),
         )
         VersionPill(
-            text = mokoString(SharedRes.strings.menu_version_pattern, versionName),
+            text = mokoString(SharedRes.strings.menu_version_pattern, "v$versionName"),
             modifier = Modifier
                 .padding(top = Dimens.Medium)
                 .testTag(TestTags.MENU_VERSION),
         )
-    }
-}
-
-@Composable
-private fun VersionPill(text: String, modifier: Modifier = Modifier) {
-    val container = mokoColor(SharedRes.colors.primaryContainer)
-    val content = mokoColor(SharedRes.colors.primary)
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(percent = 50),
-        color = container,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Dimens.MediumLarge, vertical = Dimens.Small),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(Dimens.Small)
-                    .background(color = content, shape = CircleShape),
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = content,
-                modifier = Modifier.padding(start = Dimens.Small),
-            )
-        }
     }
 }
 

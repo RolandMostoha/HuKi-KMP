@@ -267,4 +267,8 @@
     <string name="location_iq_offer_routing">Routing</string>
     <string name="location_iq_visit_website">Visit LocationIQ website</string>
 
+    <string name="whats_new_title">New Features</string>
+    <string name="whats_new_a11y_app_icon">HuKi app icon</string>
+    <string name="whats_new_message_signature">— The HuKi team</string>
+
 </resources>

@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+---
+# Fresh state → the What's New sheet is shown automatically on first launch
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: WHATS_NEW_SHEET
+    timeout: 10000
+
+# Header: title, version pill and release notes
+- assertVisible: "New Features"
+- assertVisible: "v\\d+\\.\\d+"
+- assertVisible: "GPX import"
+- assertVisible: "Destinations"
+
+# Personal message card
+- assertVisible: "BEFORE YOU BEGIN"
+
+# Close the sheet → back to the map
+- tapOn: "Close"
+- assertNotVisible:
+    id: WHATS_NEW_SHEET
+- assertVisible:
+    id: MAP_MAPBOX
+
+# Relaunch without clearing state → the current version is marked seen, sheet stays hidden
+- launchApp:
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- assertNotVisible:
+    id: WHATS_NEW_SHEET

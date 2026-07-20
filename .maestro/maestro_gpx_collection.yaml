@@ -3,6 +3,8 @@ appId: ${APP_ID}
 # GPX Collection: import a GPX file, open GpxCollection, GpxTutorial
 - launchApp:
     clearState: false
+    arguments:
+      skipWhatsNew: true
     permissions: { all: allow }
 - setLocation:
     latitude: 47.7168079

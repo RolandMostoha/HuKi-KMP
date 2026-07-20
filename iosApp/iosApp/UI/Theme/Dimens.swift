@@ -20,4 +20,7 @@ enum Dimens {
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
     static let gpxDetailsExpandedDetentHeight: CGFloat = 320
     static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 350
+
+    static let whatsNewDetentHeight: CGFloat = 350
+    static let whatsNewDetentHeightWithMessage: CGFloat = 400
 }

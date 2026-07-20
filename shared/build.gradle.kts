@@ -16,6 +16,19 @@ val generateSecrets = tasks.register<GenerateSecretsTask>("generateSecrets") {
     outputDirectory.set(layout.buildDirectory.dir("generated/secrets"))
 }
 
+val generateVersionXcconfig = tasks.register<GenerateVersionXcconfigTask>("generateVersionXcconfig") {
+    versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
+    outputFile.set(rootProject.layout.projectDirectory.file("iosApp/Configuration/Version.xcconfig"))
+}
+
+val generateWhatsNew = tasks.register<GenerateWhatsNewTask>("generateWhatsNew") {
+    versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
+    whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew"))
+    kotlinOutputDir.set(layout.buildDirectory.dir("generated/whatsnew"))
+    baseStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/base/strings_whatsnew.xml"))
+    huStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/hu/strings_whatsnew.xml"))
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -40,6 +53,7 @@ kotlin {
     sourceSets {
         commonMain {
             kotlin.srcDir(generateSecrets.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateWhatsNew.flatMap { it.kotlinOutputDir })
         }
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
@@ -126,4 +140,13 @@ skie {
 
 tasks.matching { it.name == "prepareKotlinIdeaImport" }.configureEach {
     dependsOn(generateSecrets)
+    dependsOn(generateWhatsNew)
+}
+
+tasks.matching { it.name.startsWith("generateMR") }.configureEach {
+    dependsOn(generateWhatsNew)
+}
+
+tasks.matching { it.name == "embedAndSignAppleFrameworkForXcode" }.configureEach {
+    dependsOn(generateVersionXcconfig)
 }

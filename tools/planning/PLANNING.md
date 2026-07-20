@@ -117,12 +117,14 @@
 | `[ ]`  | Destinations | Add Map based destinations with Landscapes                                                                         |
 | `[ ]`  | Destinations | Bug: not readable category label ![bug_destinations_category_darkmode.png](bug_destinations_category_darkmode.png) |
 
-### FEATURE: WhatsNew
+### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                           |
-|--------|----------|----------------------------------------------------------------|
-| `[L]`  | WhatsNew | Add proper versioning to app, which works for Android and iOS. |
-| `[L]`  | WhatsNew | On first app open, show a bottom sheet with the latest news    |
+| Status | Scope    | Task                                                                                                                                                                                                                                                                                                                                                                                    |
+|--------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | WhatsNew | (Fastlane/CD task) Project the `v<version>` dir into Fastlane metadata; `supply`/`deliver` feed the changelog to the stores; adopt `version.properties` for bumping.                                                                                                                                                                                                                    |
+| `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                                                                                                                                                                                                                                                                                                        |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                                                                                                                                                                                                                  |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                                                                                                                                                                                                               |
 
 ### FEATURE: Route Planner: Wandering mode
 

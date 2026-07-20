@@ -267,4 +267,8 @@
     <string name="location_iq_offer_routing">Útvonaltervezés</string>
     <string name="location_iq_visit_website">LocationIQ weboldal megnyitása</string>
 
+    <string name="whats_new_title">Újdonságok</string>
+    <string name="whats_new_a11y_app_icon">HuKi alkalmazás ikon</string>
+    <string name="whats_new_message_signature">— A HuKi fejlesztője</string>
+
 </resources>
