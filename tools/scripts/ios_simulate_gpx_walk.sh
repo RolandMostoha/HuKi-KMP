@@ -19,7 +19,7 @@ if [ -z "$GPX_FILE" ] || [ ! -f "$GPX_FILE" ]; then
     exit 1
 fi
 
-BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')
+BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)
 
 if [ -z "$BOOTED_DEVICE_ID" ]; then
     echo "No booted simulator found. Boot a simulator first."

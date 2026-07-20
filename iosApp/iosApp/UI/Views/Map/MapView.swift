@@ -51,8 +51,8 @@ struct MapView: View {
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: .heading)
                             .showsAccuracyRing(true)
-                            .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
-                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
+                            .accuracyRingColor(SharedRes.colors().accuracyRingOnMap.getUIColor())
+                            .pulsing(.init(color: SharedRes.colors().primaryLightOnMap.getUIColor()))
                             .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
                             .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
                             .scale(1.2)
@@ -75,9 +75,9 @@ struct MapView: View {
 
                                 LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
                                     .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                                    .lineColor(SharedRes.colors().primary.getUIColor())
+                                    .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
                                     .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                                    .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                                    .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
                             }
 
                             PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in

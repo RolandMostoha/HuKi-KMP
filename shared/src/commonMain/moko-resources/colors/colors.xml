@@ -12,10 +12,6 @@
         <light>#115711</light>
         <dark>#7ac17d</dark>
     </color>
-    <color name="primaryLight">
-        <light>#89dd72</light>
-        <dark>#52ad56</dark>
-    </color>
     <color name="primaryExtraLight">
         <light>#CFF5CC</light>
         <dark>#4ba04f</dark>
@@ -36,9 +32,26 @@
         <light>#1a1a1a</light>
         <dark>#e0e0e0</dark>
     </color>
-    <color name="accuracyRing">
+    <!-- On-map colors: Mapbox is light-only, so these stay fixed to the light values in both themes -->
+    <color name="primaryOnMap">
+        <light>#136313</light>
+        <dark>#136313</dark>
+    </color>
+    <color name="primaryLightOnMap">
+        <light>#89dd72</light>
+        <dark>#89dd72</dark>
+    </color>
+    <color name="accuracyRingOnMap">
         <light>#1363138A</light>
-        <dark>#6BBA6F8A</dark>
+        <dark>#1363138A</dark>
+    </color>
+    <color name="mapStrokeOnMap">
+        <light>#1a1a1a</light>
+        <dark>#1a1a1a</dark>
+    </color>
+    <color name="errorOnMap">
+        <light>#BE2E23</light>
+        <dark>#BE2E23</dark>
     </color>
     <color name="error">
         <light>#BE2E23</light>

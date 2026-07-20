@@ -14,6 +14,7 @@ struct GpxControlMenu: View {
     @Namespace private var glassNamespace
 
     private let menuGlassID = "gpx_control_menu_glass"
+    private let destructiveIconColor = Color(SharedRes.colors().errorOnMap.getUIColor())
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -130,13 +131,13 @@ struct GpxControlMenu: View {
             HStack(spacing: 16) {
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(isDestructive ? Color.red : .black)
+                    .foregroundStyle(isDestructive ? destructiveIconColor : .black)
                     .frame(width: 46, height: 46)
                     .background(Circle().fill(.white))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.headline)
-                        .foregroundStyle(isDestructive ? Color.red : .primary)
+                        .foregroundStyle(isDestructive ? destructiveIconColor : .primary)
                     Text(description)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
