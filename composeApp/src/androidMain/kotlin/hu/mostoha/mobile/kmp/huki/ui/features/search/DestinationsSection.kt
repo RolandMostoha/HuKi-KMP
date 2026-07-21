@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
@@ -24,18 +25,19 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun DestinationsSection(
     destinations: List<Destination>,
     onDestinationSelected: (Destination) -> Unit,
-    onSeeAllClick: () -> Unit,
     modifier: Modifier = Modifier,
+    topPadding: Dp = Dimens.SectionSpacing,
+    onSeeAllClick: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
-            .padding(top = Dimens.Small)
+            .padding(top = topPadding)
             .testTag(TestTags.DESTINATIONS_SECTION),
         verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
     ) {
         SectionHeader(
             title = mokoString(SharedRes.strings.destinations_section_title),
-            actionText = mokoString(SharedRes.strings.see_all),
+            actionText = onSeeAllClick?.let { mokoString(SharedRes.strings.see_all) },
             onActionClick = onSeeAllClick,
             actionModifier = Modifier.testTag(TestTags.DESTINATIONS_SEE_ALL_BUTTON),
         )

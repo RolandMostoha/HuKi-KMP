@@ -11,6 +11,8 @@ interface DestinationRepository {
 
     fun getNearbyDestinations(location: Location): List<Destination>
 
+    fun searchDestinations(query: String, limit: Int): List<Destination>
+
     fun requireDestination(osmId: String): Destination
 
     fun getLandscapes(): List<Landscape>

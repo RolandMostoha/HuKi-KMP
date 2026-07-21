@@ -18,6 +18,13 @@ interface PlaceHistoryDao {
     @Query("SELECT * FROM place_history ORDER BY lastVisited DESC LIMIT :limit")
     suspend fun getRecent(limit: Int): List<PlaceHistoryEntity>
 
+    @Query(
+        "SELECT * FROM place_history " +
+            "WHERE nameNormalized LIKE '%' || :normalizedQuery || '%' ESCAPE '\\' " +
+            "ORDER BY lastVisited DESC LIMIT :limit",
+    )
+    suspend fun searchByName(normalizedQuery: String, limit: Int): List<PlaceHistoryEntity>
+
     @Query("SELECT * FROM place_history ORDER BY lastVisited DESC")
     suspend fun getAll(): List<PlaceHistoryEntity>
 

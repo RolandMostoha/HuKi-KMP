@@ -8,6 +8,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceHistoryEntity
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceHistoryItem
+import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
+import hu.mostoha.mobile.kmp.huki.util.escapeLikeWildcards
 import kotlin.time.Clock
 
 class DefaultPlaceHistoryRepository(
@@ -24,6 +26,12 @@ class DefaultPlaceHistoryRepository(
 
     override suspend fun getRecentPlaces(limit: Int): List<Place> =
         placeHistoryDao.getRecent(limit).map { it.toPlace() }
+
+    override suspend fun searchPlaces(query: String, limit: Int): List<Place> {
+        val normalizedQuery = NameNormalizer.normalize(query.trim()).escapeLikeWildcards()
+        if (normalizedQuery.isEmpty()) return emptyList()
+        return placeHistoryDao.searchByName(normalizedQuery, limit).map { it.toPlace() }
+    }
 
     override suspend fun getPlaceHistory(): List<PlaceHistoryItem> =
         placeHistoryDao.getAll().map { it.toPlaceHistoryItem() }

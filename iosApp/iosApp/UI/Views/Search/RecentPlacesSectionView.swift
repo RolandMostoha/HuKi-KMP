@@ -5,13 +5,13 @@ struct RecentPlacesSectionView: View {
     let strings: Strings
     let places: [Place]
     let onPlaceSelected: (Place) -> Void
-    let onSeeAllClicked: () -> Void
+    var onSeeAllClicked: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeaderView(
                 title: strings.get(id: SharedRes.strings().search_recent_places_title),
-                actionText: strings.get(id: SharedRes.strings().see_all),
+                actionText: onSeeAllClicked == nil ? nil : strings.get(id: SharedRes.strings().see_all),
                 onActionClick: onSeeAllClicked,
                 actionAccessibilityId: TestTags.shared.RECENT_PLACES_SEE_ALL_BUTTON
             )
@@ -33,7 +33,7 @@ struct RecentPlacesSectionView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, 16)
         }
-        .padding(.top, 24)
+        .padding(.top, Dimens.sectionSpacing)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.RECENT_PLACES_SECTION)
     }

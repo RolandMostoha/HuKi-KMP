@@ -31,8 +31,8 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun RecentPlacesSection(
     places: List<Place>,
     onPlaceSelected: (Place) -> Unit,
-    onSeeAllClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    onSeeAllClicked: (() -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -43,7 +43,7 @@ fun RecentPlacesSection(
     ) {
         SectionHeader(
             title = mokoString(SharedRes.strings.search_recent_places_title),
-            actionText = mokoString(SharedRes.strings.see_all),
+            actionText = onSeeAllClicked?.let { mokoString(SharedRes.strings.see_all) },
             onActionClick = onSeeAllClicked,
             actionModifier = Modifier.testTag(TestTags.RECENT_PLACES_SEE_ALL_BUTTON),
         )

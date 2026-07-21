@@ -45,6 +45,8 @@
     <string name="search_powered_by">Powered by</string>
     <string name="search_recent_gpx_title">Legutóbbi GPX útvonalak</string>
     <string name="search_recent_places_title">Legutóbbi helyek</string>
+    <string name="search_online_title">Online találatok</string>
+    <string name="search_searching">Keresés…</string>
 
     <string name="layers_base_layers_title">Alap térkép</string>
     <string name="layers_base_outdoors_title">Természet</string>
@@ -87,7 +89,7 @@
     <string name="menu_a11y_back">Vissza</string>
     <string name="menu_app_name">HuKi</string>
     <string name="menu_app_description">Hungarian Hiking App</string>
-    <string name="menu_version_pattern">Verzió %s</string>
+    <string name="menu_version_pattern">Verzió v%s</string>
     <string name="menu_item_settings">Beállítások</string>
     <string name="menu_item_settings_description">Alkalmazás beállításai</string>
     <string name="menu_a11y_open_settings">Beállítások megnyitása</string>

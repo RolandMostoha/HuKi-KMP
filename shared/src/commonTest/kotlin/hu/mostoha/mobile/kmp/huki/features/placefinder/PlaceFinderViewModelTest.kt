@@ -50,12 +50,14 @@ class PlaceFinderViewModelTest {
     private val locationMonitoringService = noOpLocationMonitoringService()
     private val destinationRepository = mock<DestinationRepository> {
         every { getTopDestinations(any()) } returns emptyList()
+        every { searchDestinations(any(), any()) } returns emptyList()
     }
     private val gpxRepository = mock<GpxRepository> {
         everySuspend { getRecentGpxFiles(any()) } returns emptyList()
     }
     private val placeHistoryRepository = mock<PlaceHistoryRepository> {
         everySuspend { getRecentPlaces(any()) } returns emptyList()
+        everySuspend { searchPlaces(any(), any()) } returns emptyList()
     }
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
@@ -624,6 +626,117 @@ class PlaceFinderViewModelTest {
 
                 autocompleteCallCount shouldBe 2
             }
+        }
+    }
+
+    @Test
+    fun `Given local matches, When two characters typed, Then local groups populate instantly and online stays empty`() {
+        runTest {
+            val recentPlace = Place(
+                osmId = "r1",
+                name = "Dobogókő",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                location = Location(47.7181, 18.8948),
+            )
+            val destination = Destination(
+                osmId = "d1",
+                name = "Dobogó-tető",
+                town = "Pilisszentkereszt",
+                type = DestinationType.PEAK,
+                location = Location(47.72, 18.89),
+                description = SharedRes.strings.destinations_type_peak,
+                popularity = 8,
+            )
+            everySuspend { placeHistoryRepository.searchPlaces("Do", 5) } returns listOf(recentPlace)
+            every { destinationRepository.searchDestinations("Do", 20) } returns listOf(destination)
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Do"))
+            testDispatcher.scheduler.runCurrent()
+
+            val state = placeFinderViewModel.uiState.value
+            state.searchRecentPlaces shouldBe listOf(recentPlace)
+            state.searchDestinations shouldBe listOf(destination)
+            state.places shouldBe emptyList()
+            state.isLoading shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given three character query, When debounce elapses, Then online results merge with local groups`() {
+        runTest {
+            val recentPlace = Place(
+                osmId = "r1",
+                name = "Pilis",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                location = Location(47.6, 18.9),
+            )
+            everySuspend { placeHistoryRepository.searchPlaces("Pil", 5) } returns listOf(recentPlace)
+            everySuspend {
+                geocodingRepository.autocomplete("Pil")
+            } returns NetworkResult.Success(
+                listOf(locationIqPlace(placeId = "pilis-id", lat = 47.6, lon = 18.9, displayName = "Pilis, Hungary")),
+            )
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Pil"))
+            testDispatcher.scheduler.runCurrent()
+
+            placeFinderViewModel.uiState.value.searchRecentPlaces shouldBe listOf(recentPlace)
+            placeFinderViewModel.uiState.value.places shouldBe emptyList()
+
+            testDispatcher.scheduler.advanceTimeBy(800)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = placeFinderViewModel.uiState.value
+            state.places.map { it.name } shouldBe listOf("Pilis, Hungary")
+            state.searchRecentPlaces shouldBe listOf(recentPlace)
+        }
+    }
+
+    @Test
+    fun `Given local matches, When online fails, Then local groups remain and error is set`() {
+        runTest {
+            val recentPlace = Place(
+                osmId = "r1",
+                name = "Bükk",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                location = Location(48.0, 20.5),
+            )
+            everySuspend { placeHistoryRepository.searchPlaces("Bük", 5) } returns listOf(recentPlace)
+            everySuspend {
+                geocodingRepository.autocomplete("Bük")
+            } returns NetworkResult.Error(NetworkError.NO_INTERNET)
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Bük"))
+            testDispatcher.scheduler.advanceTimeBy(800)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = placeFinderViewModel.uiState.value
+            state.searchRecentPlaces shouldBe listOf(recentPlace)
+            state.places shouldBe emptyList()
+            state.error shouldBe NetworkError.NO_INTERNET.toInfoViewData()
+        }
+    }
+
+    @Test
+    fun `Given local matches, When query cleared, Then local groups are cleared`() {
+        runTest {
+            val recentPlace = Place(
+                osmId = "r1",
+                name = "Mátra",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                location = Location(47.8, 20.0),
+            )
+            everySuspend { placeHistoryRepository.searchPlaces("Mát", 5) } returns listOf(recentPlace)
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Mát"))
+            testDispatcher.scheduler.runCurrent()
+            placeFinderViewModel.uiState.value.searchRecentPlaces shouldBe listOf(recentPlace)
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged(""))
+            testDispatcher.scheduler.runCurrent()
+
+            placeFinderViewModel.uiState.value.searchRecentPlaces shouldBe emptyList()
+            placeFinderViewModel.uiState.value.searchDestinations shouldBe emptyList()
         }
     }
 

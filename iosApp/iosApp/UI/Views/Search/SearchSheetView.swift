@@ -22,7 +22,6 @@ struct SearchSheetView: View {
                 content(uiState: uiState)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 header(uiState: uiState)
-                loadingIndicator(uiState: uiState)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color(.systemGray6))
@@ -37,34 +36,63 @@ struct SearchSheetView: View {
 
     @ViewBuilder
     private func content(uiState: PlaceFinderUiState) -> some View {
-        if !uiState.places.isEmpty {
-            resultsList(places: uiState.places)
-        } else if let error = uiState.error {
-            ScrollView {
-                attributionRow
-                InfoView(
-                    strings: strings,
-                    infoViewData: error,
-                    primaryActionText: strings.get(id: SharedRes.strings().search_error_retry),
-                    onPrimaryActionClick: {
-                        viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
-                    }
-                )
-                .padding(.top, 32)
-                .padding(.horizontal, 16)
-            }
-            .contentMargins(.top, headerHeight, for: .scrollContent)
-        } else if uiState.isLoading {
-            ScrollView {
-                attributionRow
-            }
-            .contentMargins(.top, headerHeight, for: .scrollContent)
-        } else if uiState.searchText.isEmpty &&
+        let hasLocalMatches = !uiState.searchRecentPlaces.isEmpty || !uiState.searchDestinations.isEmpty
+        let hasOnlineActivity = uiState.isLoading || uiState.error != nil
+        let hasAnyResults = hasLocalMatches || !uiState.places.isEmpty
+        let isSearching = !uiState.searchText.isEmpty
+        if isSearching && (hasAnyResults || hasOnlineActivity) {
+            groupedResults(uiState: uiState)
+        } else if !isSearching &&
             (!uiState.topDestinations.isEmpty || !uiState.recentPlaces.isEmpty || !uiState.recentGpxFiles.isEmpty) {
             discoveryList(uiState: uiState)
         } else {
             Color.clear
         }
+    }
+
+    @ViewBuilder
+    private func groupedResults(uiState: PlaceFinderUiState) -> some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                if !uiState.searchRecentPlaces.isEmpty {
+                    RecentPlacesSectionView(
+                        strings: strings,
+                        places: uiState.searchRecentPlaces,
+                        onPlaceSelected: { place in
+                            isSearchFieldFocused = false
+                            onPlaceSelected(place)
+                        }
+                    )
+                }
+                if !uiState.searchDestinations.isEmpty {
+                    DestinationsSectionView(
+                        strings: strings,
+                        destinations: uiState.searchDestinations,
+                        onDestinationSelected: { destination in
+                            isSearchFieldFocused = false
+                            onDestinationSelected(destination)
+                        }
+                    )
+                }
+                OnlineResultsSectionView(
+                    strings: strings,
+                    places: uiState.places,
+                    error: uiState.error,
+                    isLoading: uiState.isLoading,
+                    onPlaceSelected: { place in
+                        isSearchFieldFocused = false
+                        onPlaceSelected(place)
+                    },
+                    onRetryClicked: {
+                        viewModel.onEvent(event: PlaceFinderUiEventsRetryClicked.shared)
+                    },
+                    onLocationIqClicked: onLocationIqClicked
+                )
+            }
+            .padding(.bottom, 24)
+        }
+        .contentMargins(.top, headerHeight, for: .scrollContent)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     @ViewBuilder
@@ -135,19 +163,6 @@ struct SearchSheetView: View {
         )
     }
 
-    @ViewBuilder
-    private func loadingIndicator(uiState: PlaceFinderUiState) -> some View {
-        if uiState.isLoading || !uiState.places.isEmpty || uiState.error != nil {
-            ProgressView()
-                .controlSize(.regular)
-                .opacity(uiState.isLoading ? 1 : 0)
-                .frame(height: 28)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, headerHeight + 10)
-                .frame(maxHeight: .infinity, alignment: .top)
-                .allowsHitTesting(false)
-        }
-    }
 }
 
 private extension SearchSheetView {
@@ -229,55 +244,5 @@ private extension SearchSheetView {
                 .glassBackground()
         })
         .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
-    }
-
-    @ViewBuilder
-    private var attributionRow: some View {
-        HStack(spacing: 8) {
-            Spacer()
-            Button(action: onLocationIqClicked) {
-                HStack(spacing: 8) {
-                    Text(strings.get(id: SharedRes.strings().search_powered_by))
-                        .font(.caption)
-                        .foregroundStyle(Color(.secondaryLabel))
-                    Image(uiImage: SharedRes.images().ic_location_iq_logo.toUIImage()!)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 16)
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(strings.get(id: SharedRes.strings().menu_a11y_open_location_iq))
-        }
-        .frame(height: 28)
-        .padding(.horizontal, 24)
-        .padding(.top, 10)
-    }
-
-    @ViewBuilder
-    private func resultsList(places: [Place]) -> some View {
-        ScrollView {
-            attributionRow
-            LazyVStack(spacing: 0) {
-                ForEach(Array(places.enumerated()), id: \.element.osmId) { index, place in
-                    SearchResultItem(place: place, onClick: {
-                        isSearchFieldFocused = false
-                        onPlaceSelected(place)
-                    })
-                    if index < places.count - 1 {
-                        Divider()
-                            .padding(.leading, 76)
-                    }
-                }
-            }
-            .animation(.easeInOut(duration: 0.2), value: places.map(\.osmId))
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal, 16)
-            .padding(.top, 4)
-            .padding(.bottom, 24)
-        }
-        .contentMargins(.top, headerHeight, for: .scrollContent)
-        .scrollDismissesKeyboard(.immediately)
     }
 }

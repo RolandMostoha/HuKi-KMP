@@ -14,11 +14,20 @@ APP_ID="hu.mostoha.mobile.ios.huki"
 
 DEVICE_ID="${1:-}"
 if [ -z "$DEVICE_ID" ]; then
-    DEVICE_ID="$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)"
-fi
-if [ -z "$DEVICE_ID" ]; then
-    echo "Error: no booted iOS simulator. Boot one in Xcode or with: xcrun simctl boot <udid>"
-    exit 1
+    BOOTED_IDS="$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')"
+    BOOTED_COUNT="$(printf '%s\n' "$BOOTED_IDS" | grep -c .)"
+    if [ "$BOOTED_COUNT" -eq 0 ]; then
+        echo "Error: no booted iOS simulator. Boot one in Xcode or with: xcrun simctl boot <udid>"
+        exit 1
+    fi
+    if [ "$BOOTED_COUNT" -gt 1 ]; then
+        echo "Error: multiple booted iOS simulators. Pass a specific one as an argument:"
+        echo "  tools/scripts/ios_run_all_maestro_tests.sh <simulator-udid>"
+        echo "Booted simulators:"
+        xcrun simctl list devices | grep "(Booted)"
+        exit 1
+    fi
+    DEVICE_ID="$BOOTED_IDS"
 fi
 
 cd "$REPO_ROOT"

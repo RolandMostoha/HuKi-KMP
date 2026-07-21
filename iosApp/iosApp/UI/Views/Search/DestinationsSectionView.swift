@@ -5,13 +5,14 @@ struct DestinationsSectionView: View {
     let strings: Strings
     let destinations: [Destination]
     let onDestinationSelected: (Destination) -> Void
-    let onSeeAllClicked: () -> Void
+    var topPadding: CGFloat = Dimens.sectionSpacing
+    var onSeeAllClicked: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeaderView(
                 title: strings.get(id: SharedRes.strings().destinations_section_title),
-                actionText: strings.get(id: SharedRes.strings().see_all),
+                actionText: onSeeAllClicked == nil ? nil : strings.get(id: SharedRes.strings().see_all),
                 onActionClick: onSeeAllClicked,
                 actionAccessibilityId: TestTags.shared.DESTINATIONS_SEE_ALL_BUTTON
             )
@@ -29,7 +30,7 @@ struct DestinationsSectionView: View {
             }
             .scrollClipDisabled()
         }
-        .padding(.top, 16)
+        .padding(.top, topPadding)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.DESTINATIONS_SECTION)
     }

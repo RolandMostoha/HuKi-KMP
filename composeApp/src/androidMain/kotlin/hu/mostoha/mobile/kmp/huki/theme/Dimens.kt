@@ -27,7 +27,7 @@ object Dimens {
     val ZoomControlWidth = 53.dp
     val ZoomControlIconSize = 51.dp
 
-    val SectionSpacing = 24.dp
+    val SectionSpacing = 18.dp
     val SectionHeaderSpacing = 8.dp
 
     val GpxNavButtonPeek = 16.dp
