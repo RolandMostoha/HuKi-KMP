@@ -33,7 +33,7 @@ struct RecentGpxSectionView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, 16)
         }
-        .padding(.top, 24)
+        .padding(.top, Dimens.sectionSpacing)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.RECENT_GPX_SECTION)
     }

@@ -3,12 +3,15 @@ package hu.mostoha.mobile.kmp.huki.repository
 import hu.mostoha.mobile.kmp.huki.data.ALL_DESTINATIONS
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.maplibre.spatialk.units.extensions.inMeters
@@ -126,6 +129,62 @@ class DefaultDestinationRepositoryTest {
         shouldThrow<NoSuchElementException> {
             repository.requireDestination("unknown_osm_id")
         }
+    }
+
+    @Test
+    fun `Given an ascii query, When searchDestinations, Then diacritic destination names match`() {
+        val actual = repository.searchDestinations(query = "dobogoko", limit = 10)
+
+        actual.map { it.name } shouldContain "Dobogókő"
+    }
+
+    @Test
+    fun `Given a query with diacritics and uppercase, When searchDestinations, Then it still matches`() {
+        val actual = repository.searchDestinations(query = "DOBOGÓKŐ", limit = 10)
+
+        actual.map { it.name } shouldContain "Dobogókő"
+    }
+
+    @Test
+    fun `Given a town query, When searchDestinations, Then destinations in that town match`() {
+        val actual = repository.searchDestinations(query = "lillafured", limit = 20)
+
+        actual.shouldNotBeEmpty()
+        actual.forEach { destination ->
+            val matches = NameNormalizer.normalize(destination.name).contains("lillafured") ||
+                NameNormalizer.normalize(destination.town).contains("lillafured")
+            matches shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a limit, When searchDestinations, Then at most that many results are returned`() {
+        val limit = 3
+
+        val actual = repository.searchDestinations(query = "k", limit = limit)
+
+        actual.size shouldBeLessThanOrEqual limit
+    }
+
+    @Test
+    fun `When searchDestinations, Then results are sorted by popularity descending`() {
+        val actual = repository.searchDestinations(query = "k", limit = 10)
+
+        actual.map { it.popularity } shouldBe actual.map { it.popularity }.sortedDescending()
+    }
+
+    @Test
+    fun `Given a query with no match, When searchDestinations, Then an empty list is returned`() {
+        val actual = repository.searchDestinations(query = "zzqxnomatch", limit = 10)
+
+        actual shouldBe emptyList()
+    }
+
+    @Test
+    fun `Given a blank query, When searchDestinations, Then an empty list is returned`() {
+        val actual = repository.searchDestinations(query = "   ", limit = 10)
+
+        actual shouldBe emptyList()
     }
 
     @Test

@@ -12,6 +12,8 @@ interface PlaceHistoryRepository {
 
     suspend fun getRecentPlaces(limit: Int): List<Place>
 
+    suspend fun searchPlaces(query: String, limit: Int): List<Place>
+
     suspend fun getPlaceHistory(): List<PlaceHistoryItem>
 
     suspend fun getPlace(osmType: OsmType, osmId: String): Place?

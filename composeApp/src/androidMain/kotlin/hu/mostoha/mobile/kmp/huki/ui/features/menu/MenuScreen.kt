@@ -297,7 +297,7 @@ private fun MenuHero(versionName: String) {
             modifier = Modifier.padding(top = Dimens.ExtraSmall),
         )
         VersionPill(
-            text = mokoString(SharedRes.strings.menu_version_pattern, "v$versionName"),
+            text = mokoString(SharedRes.strings.menu_version_pattern, versionName),
             modifier = Modifier
                 .padding(top = Dimens.Medium)
                 .testTag(TestTags.MENU_VERSION),

@@ -38,14 +38,22 @@ appId: ${APP_ID}
                 visible: "Browse"
                 timeout: 5000
             - tapOn: "Browse"
+            - extendedWaitUntil:
+                visible:
+                  id: "gpx_test_with_comments, gpx"
+                timeout: 15000
             - tapOn:
                 id: "gpx_test_with_comments, gpx"
       - runFlow:
           when:
-            # Old simulator -> Browse is already open
+            # Old simulator -> Browse is already open inside the folder
             visible:
               id: "BackButton"
           commands:
+            - extendedWaitUntil:
+                visible:
+                  id: "gpx_test_with_comments, gpx"
+                timeout: 15000
             - tapOn:
                 id: "gpx_test_with_comments, gpx"
 

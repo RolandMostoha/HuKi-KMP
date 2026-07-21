@@ -1,9 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.search
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,17 +35,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.mostoha.mobile.android.huki.R
@@ -68,9 +59,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
-import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.util.mokoString
-import hu.mostoha.mobile.kmp.huki.util.resolveMoko
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -117,7 +106,6 @@ private fun SearchBottomSheetContent(
     onLocationIqClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
     val errorInfo = uiState.error
@@ -215,126 +203,115 @@ private fun SearchBottomSheetContent(
                 )
             }
             Spacer(modifier = Modifier.width(Dimens.Small))
-            val isSearchActive = uiState.isLoading || uiState.places.isNotEmpty() || errorInfo != null
-            if (isSearchActive) {
-                Row(
-                    modifier = Modifier
-                        .height(30.dp)
-                        .fillMaxWidth()
-                        .padding(
-                            start = Dimens.Large,
-                            end = Dimens.Large,
-                            bottom = Dimens.Small,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    if (uiState.isLoading) {
-                        LoadingIndicator(
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(Dimens.MediumLarge))
-                    Row(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .clickable(onClick = onLocationIqClicked)
-                            .semantics(mergeDescendants = true) {
-                                contentDescription = context.resolveMoko(
-                                    SharedRes.strings.menu_a11y_open_location_iq,
-                                )
-                            }
-                            .padding(Dimens.ExtraSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = mokoString(SharedRes.strings.search_powered_by),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.width(Dimens.Small))
-                        Icon(
-                            painter = painterResource(id = SharedRes.images.ic_location_iq_logo.drawableResId),
-                            contentDescription = null,
-                            modifier = Modifier.height(18.dp),
-                            tint = Color.Unspecified,
-                        )
-                    }
-                }
-            }
-            if (uiState.places.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentPadding = PaddingValues(
-                        start = Dimens.Large,
-                        top = Dimens.Small,
-                        end = Dimens.Large,
-                        bottom = Dimens.ExtraLarge + navigationBarBottomPadding,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
-                ) {
-                    itemsIndexed(
-                        items = uiState.places,
-                        key = { index, place -> "${place.osmId}-$index" },
-                    ) { _, place ->
-                        SearchResultItem(
-                            place = place,
-                            onClick = { onPlaceSelected(place) },
-                        )
-                    }
-                }
-            } else if (errorInfo != null) {
-                InfoView(
-                    infoViewData = errorInfo,
-                    primaryActionText = mokoString(SharedRes.strings.search_error_retry),
-                    onPrimaryActionClick = {
-                        onEvent(PlaceFinderUiEvents.RetryClicked)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = Dimens.Huge,
-                            start = Dimens.Large,
-                            end = Dimens.Large,
-                            bottom = Dimens.ExtraLarge + navigationBarBottomPadding,
-                        ),
+            val isSearching = uiState.searchText.isNotEmpty()
+            val hasLocalMatches = uiState.searchRecentPlaces.isNotEmpty() ||
+                uiState.searchDestinations.isNotEmpty()
+            val hasAnyResults = hasLocalMatches || uiState.places.isNotEmpty()
+            val scrollModifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+            val bottomPadding = Dimens.ExtraLarge + navigationBarBottomPadding
+            val hasOnlineActivity = uiState.isLoading || errorInfo != null
+            if (isSearching && (hasAnyResults || hasOnlineActivity)) {
+                SearchResultsContent(
+                    uiState = uiState,
+                    onPlaceSelected = onPlaceSelected,
+                    onDestinationSelected = onDestinationSelected,
+                    onRetryClicked = { onEvent(PlaceFinderUiEvents.RetryClicked) },
+                    onLocationIqClicked = onLocationIqClicked,
+                    bottomPadding = bottomPadding,
+                    modifier = scrollModifier,
                 )
-            } else if (uiState.searchText.isEmpty() && hasDiscoveryContent) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    if (uiState.recentPlaces.isNotEmpty()) {
-                        RecentPlacesSection(
-                            places = uiState.recentPlaces,
-                            onPlaceSelected = onPlaceSelected,
-                            onSeeAllClicked = onSeeAllPlacesClicked,
-                        )
-                    }
-                    if (uiState.recentGpxFiles.isNotEmpty()) {
-                        RecentGpxSection(
-                            files = uiState.recentGpxFiles,
-                            onFileSelected = { onGpxFileSelected(it.fileUri) },
-                            onSeeAllClicked = onSeeAllGpxClicked,
-                        )
-                    }
-                    if (uiState.topDestinations.isNotEmpty()) {
-                        DestinationsSection(
-                            destinations = uiState.topDestinations,
-                            onDestinationSelected = onDestinationSelected,
-                            onSeeAllClick = onSeeAllDestinationsClicked,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(Dimens.ExtraLarge + navigationBarBottomPadding))
-                }
+            } else if (!isSearching && hasDiscoveryContent) {
+                SearchDiscoveryContent(
+                    uiState = uiState,
+                    onPlaceSelected = onPlaceSelected,
+                    onDestinationSelected = onDestinationSelected,
+                    onGpxFileSelected = onGpxFileSelected,
+                    onSeeAllGpxClicked = onSeeAllGpxClicked,
+                    onSeeAllPlacesClicked = onSeeAllPlacesClicked,
+                    onSeeAllDestinationsClicked = onSeeAllDestinationsClicked,
+                    bottomPadding = bottomPadding,
+                    modifier = scrollModifier,
+                )
             } else {
                 Spacer(modifier = Modifier.weight(1f, fill = true))
             }
         }
+    }
+}
+
+@Composable
+private fun SearchResultsContent(
+    uiState: PlaceFinderUiState,
+    onPlaceSelected: (Place) -> Unit,
+    onDestinationSelected: (Destination) -> Unit,
+    onRetryClicked: () -> Unit,
+    onLocationIqClicked: () -> Unit,
+    bottomPadding: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        if (uiState.searchRecentPlaces.isNotEmpty()) {
+            RecentPlacesSection(
+                places = uiState.searchRecentPlaces,
+                onPlaceSelected = onPlaceSelected,
+            )
+        }
+        if (uiState.searchDestinations.isNotEmpty()) {
+            DestinationsSection(
+                destinations = uiState.searchDestinations,
+                onDestinationSelected = onDestinationSelected,
+            )
+        }
+        OnlineResultsSection(
+            places = uiState.places,
+            error = uiState.error,
+            isLoading = uiState.isLoading,
+            onPlaceSelected = onPlaceSelected,
+            onRetryClicked = onRetryClicked,
+            onLocationIqClicked = onLocationIqClicked,
+        )
+        Spacer(modifier = Modifier.height(bottomPadding))
+    }
+}
+
+@Composable
+private fun SearchDiscoveryContent(
+    uiState: PlaceFinderUiState,
+    onPlaceSelected: (Place) -> Unit,
+    onDestinationSelected: (Destination) -> Unit,
+    onGpxFileSelected: (String) -> Unit,
+    onSeeAllGpxClicked: () -> Unit,
+    onSeeAllPlacesClicked: () -> Unit,
+    onSeeAllDestinationsClicked: () -> Unit,
+    bottomPadding: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        if (uiState.recentPlaces.isNotEmpty()) {
+            RecentPlacesSection(
+                places = uiState.recentPlaces,
+                onPlaceSelected = onPlaceSelected,
+                onSeeAllClicked = onSeeAllPlacesClicked,
+            )
+        }
+        if (uiState.recentGpxFiles.isNotEmpty()) {
+            RecentGpxSection(
+                files = uiState.recentGpxFiles,
+                onFileSelected = { onGpxFileSelected(it.fileUri) },
+                onSeeAllClicked = onSeeAllGpxClicked,
+            )
+        }
+        if (uiState.topDestinations.isNotEmpty()) {
+            DestinationsSection(
+                destinations = uiState.topDestinations,
+                onDestinationSelected = onDestinationSelected,
+                onSeeAllClick = onSeeAllDestinationsClicked,
+            )
+        }
+        Spacer(modifier = Modifier.height(bottomPadding))
     }
 }
 
@@ -344,7 +321,27 @@ private fun SearchBottomSheetContentPreview() {
     HuKiTheme {
         SearchBottomSheetContent(
             uiState = PlaceFinderUiState(
-                searchText = "Arden",
+                searchText = "Dob",
+                searchRecentPlaces = listOf(
+                    Place(
+                        osmId = "r1",
+                        name = "Dobogókő",
+                        placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                        address = "Pilis Mountains, Hungary",
+                        location = Location(47.7181, 18.8948),
+                    ),
+                ),
+                searchDestinations = listOf(
+                    Destination(
+                        osmId = "d1",
+                        name = "Dobogókő",
+                        town = "Pilisszentkereszt",
+                        type = DestinationType.PEAK,
+                        location = Location(47.7181, 18.8948),
+                        description = SharedRes.strings.destinations_section_title,
+                        popularity = 10,
+                    ),
+                ),
                 places = listOf(
                     Place(
                         osmId = "1",

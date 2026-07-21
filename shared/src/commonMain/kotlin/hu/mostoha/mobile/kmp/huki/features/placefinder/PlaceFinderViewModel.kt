@@ -38,11 +38,13 @@ class PlaceFinderViewModel(
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private companion object {
-        private val AUTOCOMPLETE_DEBOUNCE = 800.milliseconds
+        private val AUTOCOMPLETE_DEBOUNCE = 1100.milliseconds
         private val AUTOCOMPLETE_LOCATION_TIMEOUT = 2.seconds
         private const val AUTOCOMPLETE_MIN_CHARACTERS = 3
         private const val RECENT_GPX_LIMIT = 3
         private const val RECENT_PLACES_LIMIT = 3
+        private const val SEARCH_RECENT_PLACES_LIMIT = 5
+        private const val SEARCH_DESTINATIONS_LIMIT = 20
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -57,6 +59,10 @@ class PlaceFinderViewModel(
         loadTopDestinations()
         loadRecentPlaces()
         loadRecentGpxFiles()
+
+        viewModelScope.launch {
+            searchQueries.collectLatest { query -> searchLocal(query) }
+        }
 
         viewModelScope.launch {
             searchQueries
@@ -128,6 +134,25 @@ class PlaceFinderViewModel(
         }
 
         searchQueries.tryEmit(trimmedSearchText)
+    }
+
+    private suspend fun searchLocal(query: String) {
+        if (query.isBlank()) {
+            _uiState.update { uiState ->
+                uiState.copy(searchRecentPlaces = emptyList(), searchDestinations = emptyList())
+            }
+            return
+        }
+        val recentPlaces = placeHistoryRepository.searchPlaces(query, SEARCH_RECENT_PLACES_LIMIT)
+        val destinations = withContext(defaultDispatcher) {
+            destinationRepository.searchDestinations(query, SEARCH_DESTINATIONS_LIMIT)
+        }
+        _uiState.update { uiState ->
+            uiState.copy(
+                searchRecentPlaces = recentPlaces,
+                searchDestinations = destinations,
+            )
+        }
     }
 
     private suspend fun searchPlaces(query: String) {
