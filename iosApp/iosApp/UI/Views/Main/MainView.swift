@@ -122,7 +122,7 @@ struct MainView: View {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: filePickerTypes) { result in
             switch result {
             case .success(let url):
-                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString))
+                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
             case .failure(let error):
                 print(error)
             }
@@ -158,7 +158,7 @@ private extension MainView {
                 GpxCollectionView(
                     onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
                     onOpenGpx: { uri in
-                        viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                        viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
                         navigationPath = NavigationPath()
                     }
                 )
@@ -218,12 +218,22 @@ private extension MainView {
             onPlaceSelected: { place in
                 viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
             },
+            onRecentPlaceSelected: { place in
+                viewModel.onEvent(event: MainUiEventsSearchRecentPlaceSelected(place: place))
+            },
+            onSearchPlaceHistorySelected: { place in
+                viewModel.onEvent(event: MainUiEventsSearchResultPlaceHistorySelected(place: place))
+            },
             onDestinationSelected: { destination in
                 let event = MainUiEventsSearchDestinationSelected(destination: destination)
                 viewModel.onEvent(event: event)
             },
+            onSearchDestinationSelected: { destination in
+                let event = MainUiEventsSearchResultDestinationSelected(destination: destination)
+                viewModel.onEvent(event: event)
+            },
             onGpxFileSelected: { uri in
-                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: uri))
+                viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
             },
             onSeeAllGpxClicked: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
@@ -358,7 +368,7 @@ private extension MainView {
         do {
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
             try FileManager.default.copyItem(at: url, to: destination)
-            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString))
+            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
             navigationPath = NavigationPath()
         } catch {
             print("Failed to copy incoming GPX file: \(error)")

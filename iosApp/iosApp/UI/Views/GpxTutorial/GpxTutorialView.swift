@@ -7,6 +7,7 @@ enum GpxTutorialRoute: Hashable {
 
 struct GpxTutorialView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var viewModel = KoinViewModelProvider.shared.getGpxTutorialViewModel()
 
     private let strings = Strings()
     private let primary = Color(SharedRes.colors().primary.getUIColor())

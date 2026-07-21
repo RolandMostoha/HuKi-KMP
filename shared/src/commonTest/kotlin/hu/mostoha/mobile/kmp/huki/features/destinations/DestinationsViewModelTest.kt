@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.destinations
 
 import app.cash.turbine.test
 import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
@@ -12,6 +13,8 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
@@ -19,6 +22,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -40,6 +44,7 @@ class DestinationsViewModelTest {
     private val destinationRepository = mock<DestinationRepository>()
     private val locationMonitoringService = mock<LocationMonitoringService>()
     private val permissionsController = mock<PermissionsController>()
+    private val analyticsService = FakeAnalyticsService()
 
     @BeforeTest
     fun setup() {
@@ -57,8 +62,9 @@ class DestinationsViewModelTest {
         val viewModel = DestinationsViewModel(
             destinationRepository,
             locationMonitoringService,
-            permissionsController,
             testDispatcher,
+            permissionsController,
+            analyticsService,
         )
         testDispatcher.scheduler.runCurrent()
         return viewModel
@@ -66,6 +72,17 @@ class DestinationsViewModelTest {
 
     private fun stubPermissionState(state: PermissionState) {
         everySuspend { permissionsController.getPermissionState(Permission.LOCATION) } returns state
+    }
+
+    @Test
+    fun `Given view model init, When created, Then destinations screen view is logged`() {
+        stubPermissionState(PermissionState.NotDetermined)
+
+        runTest {
+            createViewModel()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.DESTINATIONS))
+        }
     }
 
     @Test
@@ -226,6 +243,29 @@ class DestinationsViewModelTest {
 
                 awaitItem() shouldBe DestinationsUiEffects.NavigateToAppSettings
             }
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.LocationPermissionDenied(deniedAlways = true),
+            )
+        }
+    }
+
+    @Test
+    fun `Given permission denied, When permission requested, Then denied analytics event is logged`() {
+        stubPermissionState(PermissionState.NotDetermined)
+        everySuspend {
+            permissionsController.providePermission(Permission.LOCATION)
+        } throws DeniedException(Permission.LOCATION)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(DestinationsUiEvents.GrantLocationClicked)
+            testDispatcher.scheduler.runCurrent()
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.LocationPermissionDenied(deniedAlways = false),
+            )
         }
     }
 

@@ -2,6 +2,10 @@ package hu.mostoha.mobile.kmp.huki.features.menu
 
 import app.cash.turbine.test
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +21,7 @@ import kotlin.test.Test
 class MenuViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private val analyticsService = FakeAnalyticsService()
 
     private lateinit var menuViewModel: MenuViewModel
 
@@ -24,7 +29,7 @@ class MenuViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        menuViewModel = MenuViewModel()
+        menuViewModel = MenuViewModel(analyticsService)
         testDispatcher.scheduler.runCurrent()
     }
 
@@ -91,6 +96,7 @@ class MenuViewModelTest {
                     emailRes = SharedRes.strings.menu_contact_email,
                     subjectRes = SharedRes.strings.menu_email_subject,
                 )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL))
             }
         }
     }
@@ -104,6 +110,7 @@ class MenuViewModelTest {
                 val actual = awaitItem()
 
                 actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_facebook_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.FACEBOOK))
             }
         }
     }
@@ -117,6 +124,7 @@ class MenuViewModelTest {
                 val actual = awaitItem()
 
                 actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB))
             }
         }
     }
@@ -130,7 +138,15 @@ class MenuViewModelTest {
                 val actual = awaitItem()
 
                 actual shouldBe MenuUiEffects.NavigateToLocationIq
+                analyticsService.loggedEvents shouldBe emptyList()
             }
+        }
+    }
+
+    @Test
+    fun `Given view model init, When created, Then menu screen view is logged`() {
+        runTest {
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.MENU))
         }
     }
 }

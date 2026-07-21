@@ -7,6 +7,8 @@ import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
+import hu.mostoha.mobile.kmp.huki.features.gpxtutorial.GpxTutorialViewModel
+import hu.mostoha.mobile.kmp.huki.features.locationiq.LocationIqViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
@@ -65,17 +67,19 @@ val appModule = module {
 
 val viewModelModule = module {
     viewModel {
-        MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }
     viewModel {
-        PlaceFinderViewModel(get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        PlaceFinderViewModel(get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }
     viewModelOf(::MenuViewModel)
     viewModelOf(::GpxCollectionViewModel)
+    viewModelOf(::GpxTutorialViewModel)
+    viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
     viewModelOf(::SettingsViewModel)
     viewModel {
-        DestinationsViewModel(get(), get(), get(), get(named(Dispatcher.Default)))
+        DestinationsViewModel(get(), get(), get(named(Dispatcher.Default)), get(), get())
     }
 }
 

@@ -11,4 +11,5 @@ object FeatureFlags {
      * Debug only flags.
      */
     const val ALWAYS_SHOW_WHATSNEW = false
+    const val DEBUG_ENABLE_ANALYTICS = false
 }

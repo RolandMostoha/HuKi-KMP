@@ -66,7 +66,7 @@ Lint:
   - Android: minSdk=26, targetSdk=36
   - iOS: Xcode=26.1.1+, Deployment Target=18.2
 - **Package IDs**:
-  - Android: `hu.mostoha.mobile.android.huki`
+  - Android: `hu.mostoha.mobile.android.huki` — debug builds append ".debug"`
   - iOS: `hu.mostoha.mobile.ios.huki`
 - **Project Structure**:
   - `:composeApp`: Android native code.
@@ -94,6 +94,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - Translations
 - Accessibility labels (e.g. strings.a11y_close)
 - TestTag IDs for Maestro element targets
+- Analytics for worth-to-measure events 
 - Always ask: what happens with this feature in offline mode? -> for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
@@ -117,6 +118,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - Kotest: Unit test assertions, like `shouldBe`.
 - Mokkery: The mocking library for KMP.
 - Maestro: E2E UI testing for Android + iOS.
+- Analytics: Firebase Analytics with native Android + iOS Firebase dependencies.
 
 ## Git Workflow
 
@@ -165,6 +167,11 @@ feat(Scope): short description in lowercase
   - E.g. `Logger.e(exception) { "Network: Failed serialization." }`
   - E.g. `Logger.d { "Map: Camera moved to $latLng" }`
 - filekit: File handling (used for reading/writing GPX files).
+- Firebase Analytics: user-event logging, wired natively per platform (no third-party KMP wrappers).
+  - Shared framework in `shared/**/analytics/`
+  - ViewModels log via an injected `AnalyticsService` from the private handler functions (keep `onEvent` branches one-liners)
+  - **Event shape**: flatten low-cardinality enums into the event name (`layer_selected_satellite`) so they filter by event name with no setup; use `params` only for high-cardinality/continuous values (needs a registered Custom Dimension in GA4)
+  - **PII rule**: never put free text (search queries), precise coordinates, place names
 - Ktor: Networking, Rest APIs.
 - kotlin-serialization: Serialization. 
 - Spatial K
@@ -204,6 +211,8 @@ UI → UiEvent → ViewModel → UiState
 - Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
 - Don't use comments for Composables/SwiftUI views. Previews are much better than comments.
 - Dark mode: Mapbox doesn't have dark modes for its layers (Outdoors, Satellite etc.) so we use light mode what we draw on map (markers, routes etc.)
+- ViewModels
+  - fun onEvent(event: [X]UiEvents) should contain 1 liner actions. Extract to a dedicated function if more complex than 1 line.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
@@ -301,3 +310,9 @@ val [actual] = operation(X)
 - `GenerateSecretsTask` pastes property values verbatim into a generated `Secrets.kt` `object` as `const val` declarations.
 - **Convention**: values in `secrets.properties` MUST be valid Kotlin string literals, e.g: `LOCATION_IQ_API_KEY="pk.abc123"`.
 - Unquoted values will produce a `Secrets.kt` that fails to compile.
+
+### Firebase config
+- `composeApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` are gitignored and `.aiexclude`d
+- Both builds **hard-fail** without them: Gradle reports *"File google-services.json is missing"*, Xcode reports a missing build input file.
+- CI injects them from the `GOOGLE_SERVICES_JSON_BASE64` / `GOOGLE_SERVICE_INFO_PLIST_BASE64` repo secrets via the `checkout-with-secrets` composite actions, so every job that builds gets them automatically.
+- Regenerate a secret value with `base64 -i <file> | pbcopy`.

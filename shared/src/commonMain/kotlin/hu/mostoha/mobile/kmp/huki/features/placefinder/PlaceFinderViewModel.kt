@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceSearchResult
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -9,6 +10,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
@@ -35,6 +37,7 @@ class PlaceFinderViewModel(
     private val destinationRepository: DestinationRepository,
     private val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
+    private val analyticsService: AnalyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private companion object {
@@ -161,19 +164,27 @@ class PlaceFinderViewModel(
         }
 
         when (val result = geocodingRepository.autocomplete(query)) {
-            is NetworkResult.Success -> _uiState.update { uiState ->
-                uiState.copy(
-                    isLoading = false,
-                    places = result.data.map { it.toPlaceSearchResult(currentLocation) },
-                    error = null,
-                )
+            is NetworkResult.Success -> {
+                if (result.data.isEmpty()) {
+                    analyticsService.logEvent(AnalyticsEvent.SearchEmpty)
+                }
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        isLoading = false,
+                        places = result.data.map { it.toPlaceSearchResult(currentLocation) },
+                        error = null,
+                    )
+                }
             }
-            is NetworkResult.Error -> _uiState.update { uiState ->
-                uiState.copy(
-                    isLoading = false,
-                    places = emptyList(),
-                    error = result.error.toInfoViewData(),
-                )
+            is NetworkResult.Error -> {
+                analyticsService.logEvent(AnalyticsEvent.SearchFailed)
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        isLoading = false,
+                        places = emptyList(),
+                        error = result.error.toInfoViewData(),
+                    )
+                }
             }
         }
     }
