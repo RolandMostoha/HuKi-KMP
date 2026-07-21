@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -13,6 +15,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryItem
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistorySection
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +40,7 @@ class PlaceHistoryViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val placeHistoryRepository = mock<PlaceHistoryRepository>()
+    private val analyticsService = FakeAnalyticsService()
 
     private val timeZone = TimeZone.currentSystemDefault()
     private val now = Clock.System.now()
@@ -58,7 +62,7 @@ class PlaceHistoryViewModelTest {
     }
 
     private fun createViewModel(): PlaceHistoryViewModel {
-        val viewModel = PlaceHistoryViewModel(placeHistoryRepository, clock)
+        val viewModel = PlaceHistoryViewModel(placeHistoryRepository, clock, analyticsService)
         testDispatcher.scheduler.runCurrent()
         return viewModel
     }
@@ -165,6 +169,17 @@ class PlaceHistoryViewModelTest {
 
                 awaitItem() shouldBe PlaceHistoryUiEffects.OpenPlace(OsmType.NODE, "123")
             }
+        }
+    }
+
+    @Test
+    fun `Given view model init, When created, Then place history screen view is logged`() {
+        everySuspend { placeHistoryRepository.getPlaceHistory() } returns emptyList()
+
+        runTest {
+            createViewModel()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.PLACE_HISTORY))
         }
     }
 }

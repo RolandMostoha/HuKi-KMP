@@ -7,6 +7,7 @@ enum LocationIqRoute: Hashable {
 
 struct LocationIqView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var viewModel = KoinViewModelProvider.shared.getLocationIqViewModel()
 
     private let strings = Strings()
 

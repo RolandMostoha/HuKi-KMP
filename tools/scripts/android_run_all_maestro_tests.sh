@@ -10,7 +10,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-APP_ID="hu.mostoha.mobile.android.huki"
+APP_ID="hu.mostoha.mobile.android.huki.debug"
 
 DEVICE_ID="${1:-}"
 if [ -z "$DEVICE_ID" ]; then

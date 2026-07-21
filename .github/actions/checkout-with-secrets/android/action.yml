@@ -7,6 +7,9 @@ inputs:
   LOCATION_IQ_API_KEY:
     description: "LocationIQ API Key"
     required: true
+  GOOGLE_SERVICES_JSON_BASE64:
+    description: "Firebase google-services.json as Base64 string"
+    required: true
 
 runs:
   using: "composite"
@@ -29,3 +32,7 @@ runs:
     - name: Copy LOCATION_IQ_API_KEY to secrets.properties
       shell: bash
       run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties
+
+    - name: Create google-services.json
+      shell: bash
+      run: echo "${{ inputs.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > composeApp/google-services.json

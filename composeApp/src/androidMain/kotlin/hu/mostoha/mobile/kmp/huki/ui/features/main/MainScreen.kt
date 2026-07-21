@@ -44,6 +44,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -86,7 +87,7 @@ fun MainScreen(
 
     LaunchedEffect(openGpxUri) {
         openGpxUri?.let {
-            viewModel.onEvent(MainUiEvents.GpxFileSelected(it))
+            viewModel.onEvent(MainUiEvents.GpxFileReopened(it))
             onOpenGpxConsumed()
         }
     }
@@ -145,7 +146,7 @@ private fun MainContent(
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri: Uri? ->
-            uri?.let { onEvent(MainUiEvents.GpxFileSelected(it.toString())) }
+            uri?.let { onEvent(MainUiEvents.GpxFileSelected(it.toString(), GpxSource.LAYERS)) }
         },
     )
 
@@ -239,16 +240,34 @@ private fun MainContent(
                                     onEvent(MainUiEvents.SearchPlaceSelected(place))
                                 }
                             },
+                            onRecentPlaceSelected = { place ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.SearchRecentPlaceSelected(place))
+                                }
+                            },
+                            onSearchPlaceHistorySelected = { place ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.SearchResultPlaceHistorySelected(place))
+                                }
+                            },
                             onDestinationSelected = { destination ->
                                 coroutineScope.launch {
                                     standardSheetState.hide()
                                     onEvent(MainUiEvents.SearchDestinationSelected(destination))
                                 }
                             },
+                            onSearchDestinationSelected = { destination ->
+                                coroutineScope.launch {
+                                    standardSheetState.hide()
+                                    onEvent(MainUiEvents.SearchResultDestinationSelected(destination))
+                                }
+                            },
                             onGpxFileSelected = { fileUri ->
                                 coroutineScope.launch {
                                     standardSheetState.hide()
-                                    onEvent(MainUiEvents.GpxFileSelected(fileUri))
+                                    onEvent(MainUiEvents.GpxFileReopened(fileUri))
                                 }
                             },
                             onSeeAllGpxClicked = onGpxCollectionClicked,

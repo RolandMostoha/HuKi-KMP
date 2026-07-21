@@ -14,9 +14,15 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.WhatsNewContent
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_WAY_CLOSED
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
+import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
@@ -35,11 +41,13 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -100,6 +108,7 @@ class MainViewModelTest {
     private val whatsNewRepository = mock<WhatsNewRepository>(MockMode.autoUnit) {
         everySuspend { shouldShowWhatsNew() } returns false
     }
+    private val analyticsService = FakeAnalyticsService()
 
     @BeforeTest
     fun setup() {
@@ -129,6 +138,7 @@ class MainViewModelTest {
             locationMonitoringService = locationMonitoringService,
             settingsRepository = settingsRepository,
             whatsNewRepository = whatsNewRepository,
+            analyticsService = analyticsService,
             defaultDispatcher = testDispatcher,
         )
     }
@@ -181,6 +191,10 @@ class MainViewModelTest {
                     permissionState shouldBe PermissionState.Denied
                     myLocationStatus shouldBe MyLocationStatus.NotAvailable
                 }
+
+                analyticsService.loggedEvents shouldBe listOf(
+                    AnalyticsEvent.LocationPermissionDenied(deniedAlways = false),
+                )
             }
         }
     }
@@ -1232,6 +1246,307 @@ class MainViewModelTest {
                     isSearchBarVisible shouldBe true
                 }
             }
+        }
+    }
+
+    @Test
+    fun `Given following state, When my location clicked, Then live compass analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MyLocationClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.MyLocationFollowed(MyLocationMode.LIVE_COMPASS),
+            )
+        }
+    }
+
+    @Test
+    fun `Given live compass state, When my location clicked, Then following analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MyLocationClicked)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MyLocationClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.MyLocationFollowed(MyLocationMode.LIVE_COMPASS),
+                AnalyticsEvent.MyLocationFollowed(MyLocationMode.FOLLOWING),
+            )
+        }
+    }
+
+    @Test
+    fun `Given base layer selection, When onEvent, Then layer analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.SATELLITE))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.SATELLITE))
+        }
+    }
+
+    @Test
+    fun `Given place selection from search, When onEvent, Then place analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchPlaceSelected)
+        }
+    }
+
+    @Test
+    fun `Given recent place selection from search, When onEvent, Then history place analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchRecentPlaceSelected(TEST_PLACE))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HistoryPlaceSelected)
+        }
+    }
+
+    @Test
+    fun `Given destination selection from search, When onEvent, Then destination analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.DestinationSelected(TEST_DESTINATION.name))
+        }
+    }
+
+    @Test
+    fun `Given place history match from search results, When onEvent, Then search place history event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchResultPlaceHistorySelected(TEST_PLACE))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchPlaceHistorySelected)
+        }
+    }
+
+    @Test
+    fun `Given destination match from search results, When onEvent, Then search destination event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchResultDestinationSelected(TEST_DESTINATION))
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.name),
+            )
+        }
+    }
+
+    @Test
+    fun `Given successful GPX import, When onEvent, Then gpx imported analytics event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImported(GpxSource.FILES))
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.GPX_DETAILS))
+        }
+    }
+
+    @Test
+    fun `Given GPX imported from the Layers sheet, When onEvent, Then gpx imported layers event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri", GpxSource.LAYERS))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImported(GpxSource.LAYERS))
+        }
+    }
+
+    @Test
+    fun `Given saved GPX reopened, When onEvent, Then history gpx selected analytics event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileReopened("uri"))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HistoryGpxSelected)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxStartNavigationClicked, Then gpx navigation started event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxNavigationStarted)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxMapsNavigationClicked, Then gpx maps navigation opened event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxMapsNavigationOpened)
+        }
+    }
+
+    @Test
+    fun `Given failing GPX import, When onEvent, Then gpx import failed event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } throws NonGpxFileException()
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImportFailed)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxCloseClicked, Then gpx closed event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxClosed)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxRouteVisibilityToggled, Then gpx route visibility toggled event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxRouteVisibilityToggled)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxRouteVisibilityToggled)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxDistancesVisibilityToggled, Then gpx distances toggled event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxDistancesToggled)
+        }
+    }
+
+    @Test
+    fun `Given GPX details, When GpxOverviewClicked, Then gpx overview clicked event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxOverviewClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxOverviewClicked)
+        }
+    }
+
+    @Test
+    fun `Given whats new to show, When init, Then whats new screen view is logged`() {
+        runTest {
+            everySuspend { whatsNewRepository.shouldShowWhatsNew() } returns true
+            every { whatsNewRepository.currentWhatsNew } returns WhatsNewContent.toCurrentWhatsNew()
+
+            createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.WHATS_NEW))
+        }
+    }
+
+    @Test
+    fun `Given search sheet opened, When onEvent, Then search screen view is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchClicked)
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.SEARCH))
+        }
+    }
+
+    @Test
+    fun `Given layers sheet opened, When onEvent, Then layers screen view is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.LayersClicked)
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.LAYERS))
+        }
+    }
+
+    @Test
+    fun `Given search sheet dismissed and reopened, When onEvent, Then two search screen views are logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchClicked)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SheetDismissed)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchClicked)
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(
+                AnalyticsEvent.ScreenView(Screen.SEARCH),
+                AnalyticsEvent.ScreenView(Screen.SEARCH),
+            )
         }
     }
 }

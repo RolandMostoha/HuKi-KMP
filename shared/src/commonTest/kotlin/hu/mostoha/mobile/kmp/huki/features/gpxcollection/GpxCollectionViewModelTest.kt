@@ -6,10 +6,13 @@ import dev.mokkery.answering.returnsBy
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +36,7 @@ class GpxCollectionViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val gpxRepository = mock<GpxRepository>()
+    private val analyticsService = FakeAnalyticsService()
 
     private val now = Clock.System.now()
 
@@ -47,7 +51,7 @@ class GpxCollectionViewModelTest {
     }
 
     private fun createViewModel(): GpxCollectionViewModel {
-        val viewModel = GpxCollectionViewModel(gpxRepository)
+        val viewModel = GpxCollectionViewModel(gpxRepository, analyticsService)
         testDispatcher.scheduler.runCurrent()
         return viewModel
     }
@@ -170,6 +174,7 @@ class GpxCollectionViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             verifySuspend { gpxRepository.deleteGpxFile("today.gpx") }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxDeleted)
             val uiState = viewModel.uiState.value
             uiState.pendingDelete shouldBe null
             uiState.fileCount shouldBe 0
@@ -219,7 +224,19 @@ class GpxCollectionViewModelTest {
                 viewModel.onEvent(GpxCollectionUiEvents.HelpClicked)
 
                 awaitItem() shouldBe GpxCollectionUiEffects.NavigateToTutorial
+                analyticsService.loggedEvents shouldBe emptyList()
             }
+        }
+    }
+
+    @Test
+    fun `Given view model init, When created, Then gpx history screen view is logged`() {
+        everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
+
+        runTest {
+            createViewModel()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.GPX_HISTORY))
         }
     }
 }

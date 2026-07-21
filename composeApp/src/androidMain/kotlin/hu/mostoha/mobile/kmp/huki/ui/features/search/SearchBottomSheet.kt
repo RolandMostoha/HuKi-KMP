@@ -66,7 +66,10 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SearchBottomSheet(
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onRecentPlaceSelected: (Place) -> Unit,
+    onSearchPlaceHistorySelected: (Place) -> Unit,
     onDestinationSelected: (Destination) -> Unit,
+    onSearchDestinationSelected: (Destination) -> Unit,
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
     onSeeAllPlacesClicked: () -> Unit,
@@ -82,7 +85,10 @@ fun SearchBottomSheet(
         uiState = uiState,
         onCloseClick = onCloseClick,
         onPlaceSelected = onPlaceSelected,
+        onRecentPlaceSelected = onRecentPlaceSelected,
+        onSearchPlaceHistorySelected = onSearchPlaceHistorySelected,
         onDestinationSelected = onDestinationSelected,
+        onSearchDestinationSelected = onSearchDestinationSelected,
         onGpxFileSelected = onGpxFileSelected,
         onSeeAllGpxClicked = onSeeAllGpxClicked,
         onSeeAllPlacesClicked = onSeeAllPlacesClicked,
@@ -98,7 +104,10 @@ private fun SearchBottomSheetContent(
     onEvent: (PlaceFinderUiEvents) -> Unit,
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
+    onRecentPlaceSelected: (Place) -> Unit,
+    onSearchPlaceHistorySelected: (Place) -> Unit,
     onDestinationSelected: (Destination) -> Unit,
+    onSearchDestinationSelected: (Destination) -> Unit,
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
     onSeeAllPlacesClicked: () -> Unit,
@@ -217,7 +226,8 @@ private fun SearchBottomSheetContent(
                 SearchResultsContent(
                     uiState = uiState,
                     onPlaceSelected = onPlaceSelected,
-                    onDestinationSelected = onDestinationSelected,
+                    onSearchPlaceHistorySelected = onSearchPlaceHistorySelected,
+                    onSearchDestinationSelected = onSearchDestinationSelected,
                     onRetryClicked = { onEvent(PlaceFinderUiEvents.RetryClicked) },
                     onLocationIqClicked = onLocationIqClicked,
                     bottomPadding = bottomPadding,
@@ -226,7 +236,7 @@ private fun SearchBottomSheetContent(
             } else if (!isSearching && hasDiscoveryContent) {
                 SearchDiscoveryContent(
                     uiState = uiState,
-                    onPlaceSelected = onPlaceSelected,
+                    onRecentPlaceSelected = onRecentPlaceSelected,
                     onDestinationSelected = onDestinationSelected,
                     onGpxFileSelected = onGpxFileSelected,
                     onSeeAllGpxClicked = onSeeAllGpxClicked,
@@ -246,7 +256,8 @@ private fun SearchBottomSheetContent(
 private fun SearchResultsContent(
     uiState: PlaceFinderUiState,
     onPlaceSelected: (Place) -> Unit,
-    onDestinationSelected: (Destination) -> Unit,
+    onSearchPlaceHistorySelected: (Place) -> Unit,
+    onSearchDestinationSelected: (Destination) -> Unit,
     onRetryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     bottomPadding: Dp,
@@ -256,13 +267,13 @@ private fun SearchResultsContent(
         if (uiState.searchRecentPlaces.isNotEmpty()) {
             RecentPlacesSection(
                 places = uiState.searchRecentPlaces,
-                onPlaceSelected = onPlaceSelected,
+                onPlaceSelected = onSearchPlaceHistorySelected,
             )
         }
         if (uiState.searchDestinations.isNotEmpty()) {
             DestinationsSection(
                 destinations = uiState.searchDestinations,
-                onDestinationSelected = onDestinationSelected,
+                onDestinationSelected = onSearchDestinationSelected,
             )
         }
         OnlineResultsSection(
@@ -280,7 +291,7 @@ private fun SearchResultsContent(
 @Composable
 private fun SearchDiscoveryContent(
     uiState: PlaceFinderUiState,
-    onPlaceSelected: (Place) -> Unit,
+    onRecentPlaceSelected: (Place) -> Unit,
     onDestinationSelected: (Destination) -> Unit,
     onGpxFileSelected: (String) -> Unit,
     onSeeAllGpxClicked: () -> Unit,
@@ -293,7 +304,7 @@ private fun SearchDiscoveryContent(
         if (uiState.recentPlaces.isNotEmpty()) {
             RecentPlacesSection(
                 places = uiState.recentPlaces,
-                onPlaceSelected = onPlaceSelected,
+                onPlaceSelected = onRecentPlaceSelected,
                 onSeeAllClicked = onSeeAllPlacesClicked,
             )
         }
@@ -368,7 +379,10 @@ private fun SearchBottomSheetContentPreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onRecentPlaceSelected = {},
+            onSearchPlaceHistorySelected = {},
             onDestinationSelected = {},
+            onSearchDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
@@ -390,7 +404,10 @@ private fun SearchBottomSheetErrorStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onRecentPlaceSelected = {},
+            onSearchPlaceHistorySelected = {},
             onDestinationSelected = {},
+            onSearchDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
@@ -439,7 +456,10 @@ private fun SearchBottomSheetDestinationsStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onRecentPlaceSelected = {},
+            onSearchPlaceHistorySelected = {},
             onDestinationSelected = {},
+            onSearchDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},
@@ -461,7 +481,10 @@ private fun SearchBottomSheetLoadingStatePreview() {
             ),
             onCloseClick = {},
             onPlaceSelected = {},
+            onRecentPlaceSelected = {},
+            onSearchPlaceHistorySelected = {},
             onDestinationSelected = {},
+            onSearchDestinationSelected = {},
             onGpxFileSelected = {},
             onSeeAllGpxClicked = {},
             onSeeAllPlacesClicked = {},

@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
@@ -19,7 +20,10 @@ sealed interface MainUiEvents {
      */
     data object SearchClicked : MainUiEvents
     data class SearchPlaceSelected(val place: Place) : MainUiEvents
+    data class SearchRecentPlaceSelected(val place: Place) : MainUiEvents
     data class SearchDestinationSelected(val destination: Destination) : MainUiEvents
+    data class SearchResultPlaceHistorySelected(val place: Place) : MainUiEvents
+    data class SearchResultDestinationSelected(val destination: Destination) : MainUiEvents
     data class DestinationSelected(val osmId: String) : MainUiEvents
     data class HistoryPlaceSelected(
         val osmType: OsmType,
@@ -50,7 +54,11 @@ sealed interface MainUiEvents {
     data object GpxStartNavigationClicked : MainUiEvents
     data class GpxMapsNavigationClicked(val type: GpxMapsNavigationType) : MainUiEvents
     data object GpxCloseClicked : MainUiEvents
-    data class GpxFileSelected(val uri: String) : MainUiEvents
+    data class GpxFileSelected(
+        val uri: String,
+        val source: GpxSource = GpxSource.FILES,
+    ) : MainUiEvents
+    data class GpxFileReopened(val uri: String) : MainUiEvents
     data object GpxRouteVisibilityToggled : MainUiEvents
     data object GpxDistancesVisibilityToggled : MainUiEvents
     data object GpxOverviewClicked : MainUiEvents
