@@ -16,9 +16,7 @@
 		<string>comgooglemaps</string>
 	</array>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Your location is used to show where you are on the map, get directions, travel times, search results.</string>
+    <string>Your location is used while HuKi is open to show where you are on the map, improve nearby hiking suggestions, and support search and directions.</string>
     <key>CFBundleDocumentTypes</key>
     <array>
         <dict>
