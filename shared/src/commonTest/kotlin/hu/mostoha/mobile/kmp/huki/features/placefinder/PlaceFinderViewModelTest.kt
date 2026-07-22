@@ -7,6 +7,7 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
@@ -22,6 +23,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -59,6 +61,7 @@ class PlaceFinderViewModelTest {
         everySuspend { getRecentPlaces(any()) } returns emptyList()
         everySuspend { searchPlaces(any(), any()) } returns emptyList()
     }
+    private val analyticsService = FakeAnalyticsService()
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
 
@@ -72,6 +75,7 @@ class PlaceFinderViewModelTest {
             destinationRepository = destinationRepository,
             gpxRepository = gpxRepository,
             placeHistoryRepository = placeHistoryRepository,
+            analyticsService = analyticsService,
             defaultDispatcher = testDispatcher,
         )
         testDispatcher.scheduler.runCurrent()
@@ -111,6 +115,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -131,6 +136,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -160,6 +166,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -246,6 +253,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -318,6 +326,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -357,6 +366,37 @@ class PlaceFinderViewModelTest {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Balaton")
+            } returns NetworkResult.Error(NetworkError.UNKNOWN)
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState.Default
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = true,
+                )
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = false,
+                    places = emptyList(),
+                    error = NetworkError.UNKNOWN.toInfoViewData(),
+                )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchFailed)
+            }
+        }
+    }
+
+    @Test
+    fun `Given valid search text, When autocomplete has no internet, Then search no internet event is logged`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Balaton")
             } returns NetworkResult.Error(NetworkError.NO_INTERNET)
 
             placeFinderViewModel.uiState.test {
@@ -378,6 +418,69 @@ class PlaceFinderViewModelTest {
                     places = emptyList(),
                     error = NetworkError.NO_INTERNET.toInfoViewData(),
                 )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchNoInternet)
+            }
+        }
+    }
+
+    @Test
+    fun `Given valid search text, When autocomplete is rate limited, Then search rate limited event is logged`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Balaton")
+            } returns NetworkResult.Error(NetworkError.RATE_LIMITED)
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState.Default
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = true,
+                )
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = false,
+                    places = emptyList(),
+                    error = NetworkError.RATE_LIMITED.toInfoViewData(),
+                )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchRateLimited)
+            }
+        }
+    }
+
+    @Test
+    fun `Given valid search text, When autocomplete returns empty, Then search empty event is logged`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Nowhere")
+            } returns NetworkResult.Success(emptyList())
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState.Default
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Nowhere"))
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Nowhere",
+                    isLoading = true,
+                )
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Nowhere",
+                    isLoading = false,
+                    places = emptyList(),
+                    error = null,
+                )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchEmpty)
             }
         }
     }
@@ -524,6 +627,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()
@@ -601,6 +705,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
             testDispatcher.scheduler.runCurrent()

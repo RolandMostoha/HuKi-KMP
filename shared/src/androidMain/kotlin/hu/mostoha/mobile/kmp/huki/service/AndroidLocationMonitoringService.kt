@@ -32,6 +32,7 @@ import kotlin.coroutines.resume
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidLocationMonitoringService(
     private val context: Context,
+    private val crashlyticsService: CrashlyticsService,
     scope: CoroutineScope,
 ) : LocationMonitoringService {
 
@@ -70,7 +71,10 @@ class AndroidLocationMonitoringService(
             }
 
             locationService.getDeviceLocationProvider(request).fold(
-                { error -> Logger.e { "Failed to get location provider: $error" } },
+                { error ->
+                    Logger.e { "Failed to get location provider: $error" }
+                    crashlyticsService.recordException(IllegalStateException("Failed to get location provider: $error"))
+                },
                 { provider ->
                     deviceLocationProvider = provider
                     provider.addLocationObserver(observer)

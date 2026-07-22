@@ -30,6 +30,10 @@ secrets.properties
 **/Secrets.xcconfig
 **/mapbox_access_token.xml
 
+# Firebase — injected locally and by the checkout-with-secrets CI actions
+google-services.json
+GoogleService-Info.plist
+
 # Generated from version.properties by the generateVersionXcconfig Gradle task
 **/Version.xcconfig
 

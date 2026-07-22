@@ -23,6 +23,7 @@ jobs:
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Detekt
         run: ./gradlew detekt
@@ -58,6 +59,7 @@ jobs:
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Enable KVM for Android emulator
         run: |
@@ -96,6 +98,7 @@ jobs:
         with:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Install Maestro
         run: |
@@ -116,7 +119,7 @@ jobs:
 
       - name: Run Maestro e2e tests
         env:
-          APP_ID: "hu.mostoha.mobile.android.huki"
+          APP_ID: "hu.mostoha.mobile.android.huki.debug"
           DEVICE_ID: "emulator-5554"
         uses: reactivecircus/android-emulator-runner@v2
         with:

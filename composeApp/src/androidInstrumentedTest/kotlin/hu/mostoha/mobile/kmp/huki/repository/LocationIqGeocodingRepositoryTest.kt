@@ -30,7 +30,10 @@ import org.junit.runner.RunWith
 class LocationIqGeocodingRepositoryTest {
 
     private val httpClient = createHttpClient(engine = OkHttp.create())
-    private val repository = LocationIqGeocodingRepository(httpClient = httpClient)
+    private val repository = LocationIqGeocodingRepository(
+        httpClient = httpClient,
+        crashlyticsService = FakeCrashlyticsService,
+    )
 
     @After
     fun tearDown() {

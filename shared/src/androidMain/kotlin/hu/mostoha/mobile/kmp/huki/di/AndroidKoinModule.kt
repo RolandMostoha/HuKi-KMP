@@ -35,6 +35,7 @@ val androidPlatformModule = module {
     single<LocationMonitoringService> {
         AndroidLocationMonitoringService(
             context = get(),
+            crashlyticsService = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
         )
     }

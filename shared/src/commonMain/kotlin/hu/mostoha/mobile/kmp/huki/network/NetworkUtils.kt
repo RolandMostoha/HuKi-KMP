@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.network
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.JsonConvertException
@@ -10,7 +11,10 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 
 @Suppress("MagicNumber")
-suspend inline fun <reified T> handleNetworkCall(call: suspend () -> HttpResponse): NetworkResult<T> =
+suspend inline fun <reified T> handleNetworkCall(
+    crashlyticsService: CrashlyticsService,
+    call: suspend () -> HttpResponse,
+): NetworkResult<T> =
     try {
         val response = call.invoke()
 
@@ -31,9 +35,11 @@ suspend inline fun <reified T> handleNetworkCall(call: suspend () -> HttpRespons
         NetworkResult.Error(NetworkError.NO_INTERNET)
     } catch (exception: SerializationException) {
         Logger.e(exception) { "Network: Failed serialization." }
+        crashlyticsService.recordException(exception)
         NetworkResult.Error(NetworkError.SERIALIZATION)
     } catch (exception: JsonConvertException) {
         Logger.e(exception) { "Network: Failed serialization." }
+        crashlyticsService.recordException(exception)
         NetworkResult.Error(NetworkError.SERIALIZATION)
     } catch (exception: Exception) {
         if (exception.isNoInternetException()) {
@@ -41,6 +47,7 @@ suspend inline fun <reified T> handleNetworkCall(call: suspend () -> HttpRespons
             NetworkResult.Error(NetworkError.NO_INTERNET)
         } else {
             Logger.e(exception) { "Network: Uncaught exception. ${exception.toDeepLog()}" }
+            crashlyticsService.recordException(exception)
             NetworkResult.Error(NetworkError.UNKNOWN)
         }
     }

@@ -5,7 +5,10 @@ struct SearchSheetView: View {
     let strings: Strings
     let onDismiss: () -> Void
     let onPlaceSelected: (Place) -> Void
+    let onRecentPlaceSelected: (Place) -> Void
+    let onSearchPlaceHistorySelected: (Place) -> Void
     let onDestinationSelected: (Destination) -> Void
+    let onSearchDestinationSelected: (Destination) -> Void
     let onGpxFileSelected: (String) -> Void
     let onSeeAllGpxClicked: () -> Void
     let onSeeAllPlacesClicked: () -> Void
@@ -60,7 +63,7 @@ struct SearchSheetView: View {
                         places: uiState.searchRecentPlaces,
                         onPlaceSelected: { place in
                             isSearchFieldFocused = false
-                            onPlaceSelected(place)
+                            onSearchPlaceHistorySelected(place)
                         }
                     )
                 }
@@ -70,7 +73,7 @@ struct SearchSheetView: View {
                         destinations: uiState.searchDestinations,
                         onDestinationSelected: { destination in
                             isSearchFieldFocused = false
-                            onDestinationSelected(destination)
+                            onSearchDestinationSelected(destination)
                         }
                     )
                 }
@@ -105,7 +108,7 @@ struct SearchSheetView: View {
                         places: uiState.recentPlaces,
                         onPlaceSelected: { place in
                             isSearchFieldFocused = false
-                            onPlaceSelected(place)
+                            onRecentPlaceSelected(place)
                         },
                         onSeeAllClicked: {
                             isSearchFieldFocused = false

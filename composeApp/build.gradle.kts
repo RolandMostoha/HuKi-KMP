@@ -13,6 +13,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 kotlin {
@@ -72,14 +74,21 @@ android {
         versionName = versionProp("appVersion")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildFeatures {
+        buildConfig = true
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+        }
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
     compileOptions {
@@ -94,6 +103,10 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
     lintChecks(libs.compose.lint.checks)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
     androidTestImplementation(libs.filekit.core)

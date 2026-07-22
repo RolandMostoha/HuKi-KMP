@@ -6,8 +6,11 @@ import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +32,7 @@ class SettingsViewModelTest {
     private val settingsRepository = mock<SettingsRepository>(MockMode.autoUnit) {
         every { settings } returns flowOf(UserPreferences.DEFAULTS)
     }
+    private val analyticsService = FakeAnalyticsService()
 
     @BeforeTest
     fun setup() {
@@ -40,7 +44,7 @@ class SettingsViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = SettingsViewModel(settingsRepository)
+    private fun createViewModel() = SettingsViewModel(settingsRepository, analyticsService)
 
     @Test
     fun `Given default preferences, When observed, Then uiState is default`() {
@@ -74,6 +78,7 @@ class SettingsViewModelTest {
             advanceUntilIdle()
 
             verifySuspend { settingsRepository.setMapZoomControlsVisible(true) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsZoomControlsToggled)
         }
     }
 
@@ -90,6 +95,16 @@ class SettingsViewModelTest {
 
                 actual shouldBe SettingsUiEffects.NavigateBack
             }
+        }
+    }
+
+    @Test
+    fun `Given view model init, When created, Then settings screen view is logged`() {
+        runTest {
+            createViewModel()
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.SETTINGS))
         }
     }
 }
