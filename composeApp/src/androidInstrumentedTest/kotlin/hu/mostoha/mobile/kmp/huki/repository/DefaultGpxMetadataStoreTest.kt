@@ -32,9 +32,9 @@ class DefaultGpxMetadataStoreTest {
     fun givenRecordedMark_whenReadByNewStore_thenMarkPersisted() {
         runTest {
             val openedAt = Instant.fromEpochSeconds(1_700_000_000)
-            DefaultGpxMetadataStore().recordOpened(entry("track-1", openedAt))
+            DefaultGpxMetadataStore(FakeCrashlyticsService).recordOpened(entry("track-1", openedAt))
 
-            val metadata = DefaultGpxMetadataStore().getMetadata()
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
 
             metadata.gpxFiles shouldHaveSize 1
             metadata.gpxFiles.first().trackId shouldBe "track-1"
@@ -48,7 +48,7 @@ class DefaultGpxMetadataStoreTest {
             gpxDir.mkdirs()
             metadataFile.writeText("{ not valid json")
 
-            val metadata = DefaultGpxMetadataStore().getMetadata()
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
 
             metadata.gpxFiles shouldHaveSize 0
         }
@@ -57,20 +57,20 @@ class DefaultGpxMetadataStoreTest {
     @Test
     fun givenMissingMetadata_whenGetMetadata_thenReturnsEmpty() {
         runTest {
-            DefaultGpxMetadataStore().getMetadata().gpxFiles shouldHaveSize 0
+            DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata().gpxFiles shouldHaveSize 0
         }
     }
 
     @Test
     fun givenMultipleAttributes_whenRemove_thenStaleAttributesRemoved() {
         runTest {
-            val store = DefaultGpxMetadataStore()
+            val store = DefaultGpxMetadataStore(FakeCrashlyticsService)
             store.recordOpened(entry("track-1", Instant.fromEpochSeconds(1_700_000_000)))
             store.recordOpened(entry("track-2", Instant.fromEpochSeconds(1_700_000_100)))
 
             store.remove(setOf("track-1"))
 
-            val metadata = DefaultGpxMetadataStore().getMetadata()
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
             metadata.gpxFiles shouldHaveSize 1
             metadata.gpxFiles.first().trackId shouldBe "track-1"
         }
@@ -79,13 +79,13 @@ class DefaultGpxMetadataStoreTest {
     @Test
     fun givenMultipleAttributes_whenRemoveByFileName_thenOnlyMatchingRemoved() {
         runTest {
-            val store = DefaultGpxMetadataStore()
+            val store = DefaultGpxMetadataStore(FakeCrashlyticsService)
             store.recordOpened(entry("track-1", Instant.fromEpochSeconds(1_700_000_000)))
             store.recordOpened(entry("track-2", Instant.fromEpochSeconds(1_700_000_100)))
 
             store.remove("track-1.gpx")
 
-            val metadata = DefaultGpxMetadataStore().getMetadata()
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
             metadata.gpxFiles shouldHaveSize 1
             metadata.gpxFiles.first().trackId shouldBe "track-2"
         }

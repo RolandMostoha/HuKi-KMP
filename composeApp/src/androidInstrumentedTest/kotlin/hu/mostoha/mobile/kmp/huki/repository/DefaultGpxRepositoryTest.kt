@@ -34,7 +34,11 @@ import kotlin.test.assertFailsWith
 @MediumTest
 class DefaultGpxRepositoryTest {
 
-    val repository = DefaultGpxRepository(DefaultGpxStorage(), DefaultGpxMetadataStore())
+    val repository = DefaultGpxRepository(
+        DefaultGpxStorage(),
+        DefaultGpxMetadataStore(FakeCrashlyticsService),
+        FakeCrashlyticsService,
+    )
 
     @Test
     fun givenGpxWithRoutes_whenReadGpxFile_thenCorrectGpxReturns() {
@@ -200,7 +204,8 @@ class DefaultGpxRepositoryTest {
             File(appContext.filesDir, "gpx/external/${gpx.fileName}").delete() shouldBe true
 
             repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldNotContain gpx.fileName
-            DefaultGpxMetadataStore().getMetadata().gpxFiles.map { it.fileName } shouldNotContain gpx.fileName
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
+            metadata.gpxFiles.map { it.fileName } shouldNotContain gpx.fileName
         }
     }
 

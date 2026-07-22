@@ -45,8 +45,8 @@ import kotlin.time.Clock
 
 val appModule = module {
     single<GpxStorage> { DefaultGpxStorage() }
-    single<GpxMetadataStore> { DefaultGpxMetadataStore() }
-    single<GpxRepository> { DefaultGpxRepository(get(), get()) }
+    single<GpxMetadataStore> { DefaultGpxMetadataStore(get()) }
+    single<GpxRepository> { DefaultGpxRepository(get(), get(), get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
     single {
         get<RoomDatabase.Builder<HukiDatabase>>()
@@ -67,7 +67,7 @@ val appModule = module {
 
 val viewModelModule = module {
     viewModel {
-        MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }
     viewModel {
         PlaceFinderViewModel(get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
@@ -85,7 +85,7 @@ val viewModelModule = module {
 
 val networkModule = module {
     single<HttpClient> { createHttpClient(get()) }
-    single<GeocodingRepository> { LocationIqGeocodingRepository(get()) }
+    single<GeocodingRepository> { LocationIqGeocodingRepository(get(), get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

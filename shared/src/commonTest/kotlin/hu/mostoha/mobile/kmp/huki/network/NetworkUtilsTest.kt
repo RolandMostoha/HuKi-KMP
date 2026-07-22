@@ -2,6 +2,9 @@ package hu.mostoha.mobile.kmp.huki.network
 
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -16,6 +19,8 @@ import kotlin.test.Test
 
 class NetworkUtilsTest {
 
+    private val crashlyticsService = FakeCrashlyticsService()
+
     @Test
     fun `Given successful response, When handleNetworkCall invoked, Then success result has decoded body`() {
         runTest {
@@ -29,7 +34,7 @@ class NetworkUtilsTest {
                 },
             )
 
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 client.get("https://example.com")
             }
 
@@ -40,7 +45,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given bad request response, When handleNetworkCall invoked, Then error result is BAD_REQUEST`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.BadRequest) })
                     .get("https://example.com")
             }
@@ -52,7 +57,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given not found response, When handleNetworkCall invoked, Then error result is NOT_FOUND`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.NotFound) })
                     .get("https://example.com")
             }
@@ -64,7 +69,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given request timeout response, When handleNetworkCall invoked, Then error result is REQUEST_TIMEOUT`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.RequestTimeout) })
                     .get("https://example.com")
             }
@@ -76,7 +81,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given rate limited response, When handleNetworkCall invoked, Then error result is RATE_LIMITED`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.Locked) })
                     .get("https://example.com")
             }
@@ -88,7 +93,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given server error response, When handleNetworkCall invoked, Then error result is INTERNAL_SERVER_ERROR`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
                     .get("https://example.com")
             }
@@ -100,7 +105,7 @@ class NetworkUtilsTest {
     @Test
     fun `Given unexpected response, When handleNetworkCall invoked, Then error result is UNKNOWN`() {
         runTest {
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.Found) })
                     .get("https://example.com")
             }
@@ -118,11 +123,12 @@ class NetworkUtilsTest {
                 },
             )
 
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 client.get("https://example.com")
             }
 
             actual shouldBe NetworkResult.Error(NetworkError.NO_INTERNET)
+            crashlyticsService.recordedExceptions.shouldBeEmpty()
         }
     }
 
@@ -135,11 +141,12 @@ class NetworkUtilsTest {
                 },
             )
 
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 client.get("https://example.com")
             }
 
             actual shouldBe NetworkResult.Error(NetworkError.NO_INTERNET)
+            crashlyticsService.recordedExceptions.shouldBeEmpty()
         }
     }
 
@@ -156,11 +163,30 @@ class NetworkUtilsTest {
                 },
             )
 
-            val actual = handleNetworkCall<TestDto> {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 client.get("https://example.com")
             }
 
             actual shouldBe NetworkResult.Error(NetworkError.SERIALIZATION)
+            crashlyticsService.recordedExceptions shouldHaveSize 1
+        }
+    }
+
+    @Test
+    fun `Given unexpected exception, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
+        runTest {
+            val client = createHttpClient(
+                engine = MockEngine {
+                    throw IllegalStateException("Boom")
+                },
+            )
+
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
+                client.get("https://example.com")
+            }
+
+            actual shouldBe NetworkResult.Error(NetworkError.UNKNOWN)
+            crashlyticsService.recordedExceptions shouldHaveSize 1
         }
     }
 

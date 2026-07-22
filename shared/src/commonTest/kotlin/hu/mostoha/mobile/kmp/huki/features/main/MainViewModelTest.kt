@@ -48,6 +48,7 @@ import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -109,6 +110,7 @@ class MainViewModelTest {
         everySuspend { shouldShowWhatsNew() } returns false
     }
     private val analyticsService = FakeAnalyticsService()
+    private val crashlyticsService = FakeCrashlyticsService()
 
     @BeforeTest
     fun setup() {
@@ -139,6 +141,7 @@ class MainViewModelTest {
             settingsRepository = settingsRepository,
             whatsNewRepository = whatsNewRepository,
             analyticsService = analyticsService,
+            crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
         )
     }

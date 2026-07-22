@@ -87,15 +87,17 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - UI tests (Maestro E2E) - should work on both platforms
 - Lint passes — ktlint, Detekt, SwiftLint
 - Compose Previews
-- Potential re-usable UI components
-- Independent UI styling - Material Design / SwiftUI guideline
+- Potential re-usable Compose / SwiftUI UI components
+- Independent UI styling - Material Design / SwiftUI guidelines followed
+- Use official Material Design / SwiftUI components where possible, avoid custom UI solutions
 - Dark mode (Colors)
 - Device landscape mode
 - Translations
 - Accessibility labels (e.g. strings.a11y_close)
 - TestTag IDs for Maestro element targets
-- Analytics for worth-to-measure events 
-- Always ask: what happens with this feature in offline mode? -> for a hiking app offline mode is crucial
+- Analytics: check for worth-to-measure events
+- Crashlytics: check for worth-to-measure non-fatals, logs, breadcrumbs 
+- Always ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
 
@@ -119,6 +121,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - Mokkery: The mocking library for KMP.
 - Maestro: E2E UI testing for Android + iOS.
 - Analytics: Firebase Analytics with native Android + iOS Firebase dependencies.
+- Crashlytics: Firebase Crashlytics with native Android + iOS Firebase dependencies.
 
 ## Git Workflow
 
@@ -172,6 +175,7 @@ feat(Scope): short description in lowercase
   - ViewModels log via an injected `AnalyticsService` from the private handler functions (keep `onEvent` branches one-liners)
   - **Event shape**: flatten low-cardinality enums into the event name (`layer_selected_satellite`) so they filter by event name with no setup; use `params` only for high-cardinality/continuous values (needs a registered Custom Dimension in GA4)
   - **PII rule**: never put free text (search queries), precise coordinates, place names
+- Firebase Crashlytics: crash + non-fatal reporting, wired natively per platform like Analytics.
 - Ktor: Networking, Rest APIs.
 - kotlin-serialization: Serialization. 
 - Spatial K
@@ -242,6 +246,7 @@ val [actual] = operation(X)
 - Use Kotest assertions
 - Use Turbine for `Flow` testing
 - For pure input → output mappings with many cases (parsers, enum, error mappers, etc.), use parametrized tests, pattern: a single `@Test` that iterates a `testCases()` list of `TestCase(input, result)` from the companion object. See `NetworkErrorMapperTest` as reference.
+- Use Fakes, avoid NoOp naming
 
 ### E2E UI testing
 - Test cases are written in Maestro `yaml` files under `./maestro/*.yaml`

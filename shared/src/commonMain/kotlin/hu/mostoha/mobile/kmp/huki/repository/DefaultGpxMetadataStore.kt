@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.createDirectories
@@ -21,7 +22,7 @@ import kotlinx.serialization.json.Json
 /**
  * JSON-backed [GpxMetadataStore] persisting to `FileKit.filesDir/gpx/metadata.json`.
  */
-class DefaultGpxMetadataStore : GpxMetadataStore {
+class DefaultGpxMetadataStore(private val crashlyticsService: CrashlyticsService) : GpxMetadataStore {
 
     private val json = Json { ignoreUnknownKeys = true }
     private val mutex = Mutex()
@@ -78,6 +79,7 @@ class DefaultGpxMetadataStore : GpxMetadataStore {
             if (file.exists()) json.decodeFromString<GpxMetadataModel>(file.readString()) else GpxMetadataModel()
         }.getOrElse {
             Logger.e(it) { "GpxMetadata: failed to read metadata, rebuilding empty" }
+            crashlyticsService.recordException(it)
             GpxMetadataModel()
         }
         cache = model
@@ -87,7 +89,10 @@ class DefaultGpxMetadataStore : GpxMetadataStore {
     private suspend fun persistLocked(model: GpxMetadataModel) {
         cache = model
         runCatching { metadataFile().writeString(json.encodeToString(model)) }
-            .onFailure { Logger.e(it) { "GpxMetadata: failed to persist metadata" } }
+            .onFailure {
+                Logger.e(it) { "GpxMetadata: failed to persist metadata" }
+                crashlyticsService.recordException(it)
+            }
     }
 
     private fun metadataFile(): PlatformFile =

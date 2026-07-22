@@ -22,7 +22,7 @@ struct HukiApp: App {
         if let index = args.firstIndex(of: "skipWhatsNew"), index + 1 < args.count {
             AppLaunchConfig.shared.skipWhatsNew = (args[index + 1] as NSString).boolValue
         }
-        doInitKoin(analyticsService: IosAnalyticsService())
+        doInitKoin(analyticsService: IosAnalyticsService(), crashlyticsService: IosCrashlyticsService())
     }
 
     var body: some Scene {

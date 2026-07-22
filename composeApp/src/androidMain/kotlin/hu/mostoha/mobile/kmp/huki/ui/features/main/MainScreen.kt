@@ -131,7 +131,6 @@ private fun MainContent(
     onPlaceHistoryClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val standardSheetState = rememberStandardBottomSheetState(

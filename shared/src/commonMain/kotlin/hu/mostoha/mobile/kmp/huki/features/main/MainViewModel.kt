@@ -22,9 +22,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
+import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -39,6 +41,7 @@ import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
@@ -74,6 +77,7 @@ class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val whatsNewRepository: WhatsNewRepository,
     private val analyticsService: AnalyticsService,
+    private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
@@ -405,7 +409,10 @@ class MainViewModel(
             return
         }
         runCatching { permissionsController.providePermission(Permission.LOCATION) }
-            .onSuccess { onGranted() }
+            .onSuccess {
+                analyticsService.logEvent(AnalyticsEvent.LocationPermissionGranted)
+                onGranted()
+            }
             .onFailure { exception ->
                 _uiState.updateMyLocationState { uiState ->
                     uiState.copy(
@@ -562,6 +569,10 @@ class MainViewModel(
                 .onFailure { exception ->
                     Logger.e(exception) { "Failed to import GPX file." }
                     analyticsService.logEvent(AnalyticsEvent.GpxImportFailed)
+                    // NonGpx/Empty are expected user errors (wrong file picked); record the rest as real defects.
+                    if (exception !is NonGpxFileException && exception !is EmptyGpxContentException) {
+                        crashlyticsService.recordException(exception)
+                    }
                     _uiState.update { uiState ->
                         uiState.copy(
                             alert = Alert(

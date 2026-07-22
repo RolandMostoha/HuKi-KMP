@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceSearchResult
+import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
@@ -177,7 +178,12 @@ class PlaceFinderViewModel(
                 }
             }
             is NetworkResult.Error -> {
-                analyticsService.logEvent(AnalyticsEvent.SearchFailed)
+                val event = when (result.error) {
+                    NetworkError.RATE_LIMITED -> AnalyticsEvent.SearchRateLimited
+                    NetworkError.NO_INTERNET -> AnalyticsEvent.SearchNoInternet
+                    else -> AnalyticsEvent.SearchFailed
+                }
+                analyticsService.logEvent(event)
                 _uiState.update { uiState ->
                     uiState.copy(
                         isLoading = false,
