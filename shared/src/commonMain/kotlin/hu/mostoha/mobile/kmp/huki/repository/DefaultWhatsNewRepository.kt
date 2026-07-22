@@ -25,7 +25,7 @@ class DefaultWhatsNewRepository(private val dataStore: DataStore<Preferences>) :
         if (AppLaunchConfig.skipWhatsNew) {
             return false
         }
-        if (FeatureFlags.ALWAYS_SHOW_WHATSNEW) {
+        if (FeatureFlags.DEBUG_ALWAYS_SHOW_WHATSNEW) {
             return true
         }
         val lastSeenVersion = dataStore.data

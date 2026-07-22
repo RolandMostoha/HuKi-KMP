@@ -19,6 +19,14 @@ sealed interface AnalyticsEvent {
         override val name = "search_failed"
     }
 
+    data object SearchRateLimited : AnalyticsEvent {
+        override val name = "search_rate_limited"
+    }
+
+    data object SearchNoInternet : AnalyticsEvent {
+        override val name = "search_no_internet"
+    }
+
     data object SearchEmpty : AnalyticsEvent {
         override val name = "search_empty"
     }
@@ -60,6 +68,10 @@ sealed interface AnalyticsEvent {
 
     data class MyLocationFollowed(val mode: MyLocationMode) : AnalyticsEvent {
         override val name = "my_location_${mode.value}"
+    }
+
+    data object LocationPermissionGranted : AnalyticsEvent {
+        override val name = "location_permission_granted"
     }
 
     data class LocationPermissionDenied(val deniedAlways: Boolean) : AnalyticsEvent {

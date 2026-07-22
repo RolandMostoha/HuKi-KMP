@@ -13,6 +13,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.UnreadableGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMetadataEntry
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
 import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
@@ -38,6 +39,7 @@ import kotlin.time.Clock
 open class DefaultGpxRepository(
     private val gpxStorage: GpxStorage,
     private val metadataStore: GpxMetadataStore,
+    private val crashlyticsService: CrashlyticsService,
 ) : GpxRepository {
 
     override suspend fun readGpxFile(uri: String): GpxDetails =
@@ -92,9 +94,9 @@ open class DefaultGpxRepository(
      * Parses a sandbox GPX, deleting it when it's unreadable or corrupt.
      */
     private suspend fun scanGpxFile(file: PlatformFile, entriesByTrackId: Map<String, GpxMetadataEntry>): GpxFileItem? {
-        val bytes = runCatching { file.readBytes() }.getOrNull()
-        if (bytes == null) {
-            Logger.e { "Gpx: failed to read ${file.name}, deleting" }
+        val bytes = runCatching { file.readBytes() }.getOrElse { throwable ->
+            Logger.e(throwable) { "Gpx: failed to read ${file.name}, deleting" }
+            crashlyticsService.recordException(throwable)
             gpxStorage.delete(file.name)
             return null
         }
@@ -105,8 +107,9 @@ open class DefaultGpxRepository(
                 lastModified = file.lastModified(),
                 lastOpened = entriesByTrackId[trackId]?.lastOpened?.toInstantFromIsoOffset(),
             )
-        }.onFailure {
-            Logger.e(it) { "Gpx: failed to parse ${file.name}, deleting" }
+        }.onFailure { throwable ->
+            Logger.e(throwable) { "Gpx: failed to parse ${file.name}, deleting" }
+            crashlyticsService.recordException(throwable)
             gpxStorage.delete(file.name)
         }.getOrNull()
     }

@@ -122,7 +122,10 @@ class DestinationsViewModel(
     private fun requestLocationPermission() {
         viewModelScope.launch {
             runCatching { permissionsController.providePermission(Permission.LOCATION) }
-                .onSuccess { loadNearby() }
+                .onSuccess {
+                    analyticsService.logEvent(AnalyticsEvent.LocationPermissionGranted)
+                    loadNearby()
+                }
                 .onFailure { exception ->
                     when (exception) {
                         is DeniedAlwaysException -> {

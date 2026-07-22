@@ -20,6 +20,8 @@ import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.IosLocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import io.ktor.client.engine.HttpClientEngine
@@ -47,10 +49,17 @@ val iosPlatformModule = module {
     }
 }
 
-fun initKoin(analyticsService: AnalyticsService) {
+fun initKoin(analyticsService: AnalyticsService, crashlyticsService: CrashlyticsService) {
     initKoin {
         modules(iosPlatformModule)
-        modules(module { single { analyticsService } })
+        modules(module { single { crashlyticsService } })
+        modules(
+            module {
+                single<AnalyticsService> {
+                    CrashlyticsDecoratorService(analyticsService, crashlyticsService)
+                }
+            },
+        )
     }
 }
 

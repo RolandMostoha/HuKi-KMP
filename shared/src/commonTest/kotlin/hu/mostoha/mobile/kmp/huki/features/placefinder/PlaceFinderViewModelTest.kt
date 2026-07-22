@@ -366,6 +366,37 @@ class PlaceFinderViewModelTest {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Balaton")
+            } returns NetworkResult.Error(NetworkError.UNKNOWN)
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState.Default
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = true,
+                )
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = false,
+                    places = emptyList(),
+                    error = NetworkError.UNKNOWN.toInfoViewData(),
+                )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchFailed)
+            }
+        }
+    }
+
+    @Test
+    fun `Given valid search text, When autocomplete has no internet, Then search no internet event is logged`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Balaton")
             } returns NetworkResult.Error(NetworkError.NO_INTERNET)
 
             placeFinderViewModel.uiState.test {
@@ -387,7 +418,38 @@ class PlaceFinderViewModelTest {
                     places = emptyList(),
                     error = NetworkError.NO_INTERNET.toInfoViewData(),
                 )
-                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchFailed)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchNoInternet)
+            }
+        }
+    }
+
+    @Test
+    fun `Given valid search text, When autocomplete is rate limited, Then search rate limited event is logged`() {
+        runTest {
+            everySuspend {
+                geocodingRepository.autocomplete("Balaton")
+            } returns NetworkResult.Error(NetworkError.RATE_LIMITED)
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState.Default
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = true,
+                )
+
+                testDispatcher.scheduler.advanceTimeBy(800)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Balaton",
+                    isLoading = false,
+                    places = emptyList(),
+                    error = NetworkError.RATE_LIMITED.toInfoViewData(),
+                )
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchRateLimited)
             }
         }
     }
