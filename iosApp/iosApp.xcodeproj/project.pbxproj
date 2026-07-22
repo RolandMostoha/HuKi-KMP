@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		308875FD30011C9700924526 /* HukiAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 308875FC30011C9700924526 /* HukiAppIcon.icon */; };
 		30BD1E832EFAE3AD00CD3768 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 30BD1E822EFAE3AD00CD3768 /* MapboxMaps */; };
+		30D20A51300E1F5700404D1E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30D20A50300E1F5700404D1E /* FirebaseAnalytics */; };
+		30D20A53300E1F5700404D1E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30D20A52300E1F5700404D1E /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30D20A53300E1F5700404D1E /* FirebaseCrashlytics in Frameworks */,
+				30D20A51300E1F5700404D1E /* FirebaseAnalytics in Frameworks */,
 				30BD1E832EFAE3AD00CD3768 /* MapboxMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,6 +95,7 @@
 				305BDE9E2F1146B300A60BF0 /* Generate moko-resources */,
 				D8D327D30997DEA839114820 /* Frameworks */,
 				7AC2AAFB4B5FB5EF0D613F66 /* Resources */,
+				30D20A60300E1F5700404D1E /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -104,6 +109,8 @@
 			name = iosApp;
 			packageProductDependencies = (
 				30BD1E822EFAE3AD00CD3768 /* MapboxMaps */,
+				30D20A50300E1F5700404D1E /* FirebaseAnalytics */,
+				30D20A52300E1F5700404D1E /* FirebaseCrashlytics */,
 			);
 			productName = iosApp;
 			productReference = 1A9A712AB036D9037ECB1140 /* HuKi.app */;
@@ -137,6 +144,7 @@
 			packageReferences = (
 				30BD1E812EFAE3AD00CD3768 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 				30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				30D20A4F300E1F5700404D1E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2F0795DE8B4FD8C854FA6817 /* Products */;
@@ -217,6 +225,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if command -v swiftlint >/dev/null; then\n  swiftlint lint \\\n    --config \"${SRCROOT}/.swiftlint.yml\" \\\n    --strict \\\n    --reporter xcode\nelse\n  echo \"warning: SwiftLint not installed\"\nfi\n";
+		};
+		30D20A60300E1F5700404D1E /* Upload Crashlytics dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Upload Crashlytics dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -468,6 +499,14 @@
 				version = 0.62.2;
 			};
 		};
+		30D20A4F300E1F5700404D1E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 12.16.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -480,6 +519,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		30D20A50300E1F5700404D1E /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30D20A4F300E1F5700404D1E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		30D20A52300E1F5700404D1E /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30D20A4F300E1F5700404D1E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

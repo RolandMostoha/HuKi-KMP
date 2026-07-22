@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +28,10 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
-class GpxCollectionViewModel(private val gpxRepository: GpxRepository) : ViewModel() {
+class GpxCollectionViewModel(
+    private val gpxRepository: GpxRepository,
+    private val analyticsService: AnalyticsService,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GpxCollectionUiState.Default)
     val uiState: StateFlow<GpxCollectionUiState> = _uiState.asStateFlow()
@@ -34,6 +40,7 @@ class GpxCollectionViewModel(private val gpxRepository: GpxRepository) : ViewMod
     val uiEffects: Flow<GpxCollectionUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
+        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.GPX_HISTORY))
         initLogging()
         loadGpxFiles()
     }
@@ -42,12 +49,16 @@ class GpxCollectionViewModel(private val gpxRepository: GpxRepository) : ViewMod
         Logger.d { "GpxCollectionEvent: $event" }
         when (event) {
             GpxCollectionUiEvents.BackClicked -> sendEffect(GpxCollectionUiEffects.NavigateBack)
-            GpxCollectionUiEvents.HelpClicked -> sendEffect(GpxCollectionUiEffects.NavigateToTutorial)
+            GpxCollectionUiEvents.HelpClicked -> openTutorial()
             is GpxCollectionUiEvents.FileClicked -> sendEffect(GpxCollectionUiEffects.OpenGpx(event.file.fileUri))
             is GpxCollectionUiEvents.DeleteClicked -> _uiState.update { it.copy(pendingDelete = event.file) }
             GpxCollectionUiEvents.DeleteDismissed -> _uiState.update { it.copy(pendingDelete = null) }
             GpxCollectionUiEvents.DeleteConfirmed -> deletePendingFile()
         }
+    }
+
+    private fun openTutorial() {
+        sendEffect(GpxCollectionUiEffects.NavigateToTutorial)
     }
 
     private fun loadGpxFiles() {
@@ -56,6 +67,7 @@ class GpxCollectionViewModel(private val gpxRepository: GpxRepository) : ViewMod
 
     private fun deletePendingFile() {
         val file = _uiState.value.pendingDelete ?: return
+        analyticsService.logEvent(AnalyticsEvent.GpxDeleted)
         viewModelScope.launch {
             gpxRepository.deleteGpxFile(file.fileName)
             refreshFiles()

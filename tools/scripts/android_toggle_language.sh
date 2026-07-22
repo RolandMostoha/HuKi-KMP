@@ -1,7 +1,7 @@
 #!/bin/bash
 # Toggles the HuKi app language between Hungarian (hu-HU) and English (en-US) on the connected Android device/emulator via adb.
 
-package="hu.mostoha.mobile.android.huki"
+package="hu.mostoha.mobile.android.huki.debug"
 
 current=$(adb shell cmd locale get-app-locales "$package" | sed -n 's/.*\[\(.*\)\].*/\1/p')
 

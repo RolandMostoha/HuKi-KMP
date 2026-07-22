@@ -6,11 +6,15 @@ import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.handleNetworkCall
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
-class LocationIqGeocodingRepository(private val httpClient: HttpClient) : GeocodingRepository {
+class LocationIqGeocodingRepository(
+    private val httpClient: HttpClient,
+    private val crashlyticsService: CrashlyticsService,
+) : GeocodingRepository {
     companion object {
         private const val BASE_URL = "https://eu1.locationiq.com/v1/"
         private const val URL_AUTOCOMPLETE = BASE_URL + "autocomplete"
@@ -18,7 +22,7 @@ class LocationIqGeocodingRepository(private val httpClient: HttpClient) : Geocod
     }
 
     override suspend fun autocomplete(searchText: String): NetworkResult<List<LocationIqPlace>> =
-        handleNetworkCall {
+        handleNetworkCall(crashlyticsService) {
             httpClient.get(urlString = URL_AUTOCOMPLETE) {
                 parameter("q", searchText)
                 parameter("countrycodes", "hu")

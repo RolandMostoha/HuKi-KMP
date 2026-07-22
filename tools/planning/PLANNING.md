@@ -40,12 +40,7 @@
 
 | Status | Feature                                                                                          |
 |--------|--------------------------------------------------------------------------------------------------|
-| `[L]`  | Launcher icon Android + iOS                                                                      |
-| `[L]`  | Google Analytics                                                                                 |                                                 
-| `[L]`  | LogLevel.ALL only in debug                                                                       |
-| `[L]`  | Register Apple Developer Account                                                                 |
-| `[L]`  | CD on Apple Store                                                                                |
-| `[L]`  | Implement T&C on huki.hu                                                                         |
+| `[ ]`  | Launcher icon Android                                                                            |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
 | `[ ]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
@@ -62,6 +57,20 @@
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 
+### iOS Release
+
+| Status | Feature                                                                  |
+|--------|--------------------------------------------------------------------------|
+| `[L]`  | Launcher icon Android + iOS                                              |
+| `[L]`  | LogLevel.ALL only in debug                                               |
+| `[L]`  | Register Apple Developer Account                                         |
+| `[L]`  | Add fastlane to the project                                              |
+| `[L]`  | feed the changelog to the stores; adopt `version.properties` for bumping |
+| `[L]`  | CD on Apple Store                                                        |
+| `[L]`  | Add App Store screenshots                                                |
+| `[L]`  | Implement Privacy Policy and T&C on huki.hu                              |
+| `[L]`  | GPXTutorial - T&C link                                                   |                                                                                                                   |
+
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                              |
@@ -74,11 +83,18 @@
 |--------|----------|------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | DarkMode | Bug, iOS 27. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png) |
 
+### FEATURE: Landscape
+
+| Status | Feature                                   |
+|--------|-------------------------------------------|
+| `[L]`  | Check how the app works in landscape mode |
+
 ### FEATURE: My Location
 
-| Status | Scope      | Task                    |
-|--------|------------|-------------------------|
-| `[ ]`  | MyLocation | Show altitude somewhere |
+| Status | Scope      | Task                                                                                                                                                                                                                                            |
+|--------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                         |
+| `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Measure via permission-funnel analytics (grant/deny before & after) to validate the lift. |
 
 ### FEATURE: Layers
 
@@ -88,10 +104,10 @@
 
 ### FEATURE: Search
 
-| Status | Scope  | Task                                                                                                                                                                          |
-|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                                                                                                                  |
-| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                                                        |
+| Status | Scope  | Task                                                                                   |
+|--------|--------|----------------------------------------------------------------------------------------|
+| `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                           |
+| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
 
 #### Add Place History items to Search -> Autocomplete
 
@@ -110,12 +126,11 @@
 
 ### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                                                                                                                                 |
-|--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | WhatsNew | (Fastlane/CD task) Project the `v<version>` dir into Fastlane metadata; `supply`/`deliver` feed the changelog to the stores; adopt `version.properties` for bumping. |
-| `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                                                                                     |
-| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                               |
-| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                            |
+| Status | Scope    | Task                                                                                                      |
+|--------|----------|-----------------------------------------------------------------------------------------------------------|
+| `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                          |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                    |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list). |
 
 ### FEATURE: Route Planner: Wandering mode
 
@@ -152,7 +167,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope         | Task                                                        |
 |--------|---------------|-------------------------------------------------------------|
-| `[L]`  | GPXTutorial   | T&C link                                                    |                                                                                                                   |
 | `[ ]`  | GPXCollection | Implement share                                             |
 | `[ ]`  | GPXCollection | Implement rename                                            |
 | `[ ]`  | GPXCollection | "Imported vs Route Planner" badges / chips OR icon to start |
@@ -178,6 +192,17 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
 | `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                               |
 | `[ ]`  | Settings | Add Enable/Disable two finger rotation                                  |
+
+### FEATURE: Analytics
+
+| Status | Scope       | Task                                                                                                                |
+|--------|-------------|---------------------------------------------------------------------------------------------------------------------|
+| `[L]`  | Crashlytics | Integrate it natively, both platforms (native impl, Firebase dependency)                                            |
+| `[ ]`  | Analytics   | My Location: No-signal / GPS lost                                                                                   |
+| `[ ]`  | Analytics   | Search with no results                                                                                              |
+| `[ ]`  | Analytics   | GPX as params: attach distance_km and waypoint_count as params                                                      |
+| `[ ]`  | Analytics   | whats_new_shown, whats_new_dismissed                                                                                |
+| `[ ]`  | Analytics   | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
@@ -272,11 +297,12 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 | Status | Scope  | Task                                                                                                                                          |
 |--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Guides | Add Guides section to MenuScreen                                                                                                              |
-| `[ ]`  | Guides | Add "GPX Guide" element to Guides section. The bg of the icons in "Guides" is uniformly blue -> choose a proper blue as a secondary app color |
-| `[ ]`  | Guides | "GPX Guide" should navigate to GpxTutorialScreen                                                                                              |
-| `[ ]`  | Guides | Add "Trail Markers Guide" element to Guides section.                                                                                          |
-| `[ ]`  | Guides | Add "Trail Markers Guide" Screen, temporarily blank.                                                                                          |
+| `[L]`  | Guides | Add Guides section to MenuScreen                                                                                                              |
+| `[L]`  | Guides | Add "GPX Guide" element to Guides section. The bg of the icons in "Guides" is uniformly blue -> choose a proper blue as a secondary app color |
+| `[L]`  | Guides | "GPX Guide" should navigate to GpxTutorialScreen                                                                                              |
+| `[L]`  | Guides | Add "Trail Markers Guide" element to Guides section.                                                                                          |
+| `[L]`  | Guides | Add "Trail Markers Guide" Screen, temporarily blank.                                                                                          |
+| `[L]`  | Guides | Implement "Trail Markers Guide" Screen                                                                                                        |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                     |
 
 #### Guides: Report problem on route

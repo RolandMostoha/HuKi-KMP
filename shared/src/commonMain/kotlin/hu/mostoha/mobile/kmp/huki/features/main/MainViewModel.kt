@@ -12,6 +12,9 @@ import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
@@ -19,19 +22,26 @@ import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
+import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
+import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
@@ -47,6 +57,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -65,6 +76,8 @@ class MainViewModel(
     private val locationMonitoringService: LocationMonitoringService,
     private val settingsRepository: SettingsRepository,
     private val whatsNewRepository: WhatsNewRepository,
+    private val analyticsService: AnalyticsService,
+    private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
@@ -84,6 +97,7 @@ class MainViewModel(
         initDistanceMonitoring()
         initWhatsNew()
         observeSettings()
+        observeSheetViews()
     }
 
     fun onEvent(event: MainUiEvents) {
@@ -93,9 +107,12 @@ class MainViewModel(
             MainUiEvents.SheetDismissed -> hideSheet()
             MainUiEvents.AlertDismissed -> dismissAlert()
             // Search events
-            MainUiEvents.SearchClicked -> showSheet(Sheet.Search)
-            is MainUiEvents.SearchPlaceSelected -> showPlace(event.place)
-            is MainUiEvents.SearchDestinationSelected -> showDestination(event.destination)
+            MainUiEvents.SearchClicked -> showSearch()
+            is MainUiEvents.SearchPlaceSelected -> showSearchPlace(event.place)
+            is MainUiEvents.SearchRecentPlaceSelected -> showRecentPlace(event.place)
+            is MainUiEvents.SearchDestinationSelected -> showSearchDestination(event.destination)
+            is MainUiEvents.SearchResultPlaceHistorySelected -> showSearchResultPlaceHistory(event.place)
+            is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // My location events
@@ -114,13 +131,19 @@ class MainViewModel(
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
             is MainUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
             MainUiEvents.GpxCloseClicked -> closeGpx()
-            is MainUiEvents.GpxFileSelected -> importGpx(event.uri)
+            is MainUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
+            is MainUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
             MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
             is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
             MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
         }
+    }
+
+    private fun showSearch() {
+        analyticsService.logEvent(AnalyticsEvent.SearchOpened)
+        showSheet(Sheet.Search)
     }
 
     private fun showSheet(sheet: Sheet) {
@@ -137,6 +160,21 @@ class MainViewModel(
                 uiState.copy(alert = null)
             }
         }
+    }
+
+    private fun showSearchPlace(place: Place) {
+        analyticsService.logEvent(AnalyticsEvent.SearchPlaceSelected)
+        showPlace(place)
+    }
+
+    private fun showRecentPlace(place: Place) {
+        analyticsService.logEvent(AnalyticsEvent.HistoryPlaceSelected)
+        showPlace(place)
+    }
+
+    private fun showSearchResultPlaceHistory(place: Place) {
+        analyticsService.logEvent(AnalyticsEvent.SearchPlaceHistorySelected)
+        showPlace(place)
     }
 
     private fun showPlace(place: Place) {
@@ -164,10 +202,21 @@ class MainViewModel(
     }
 
     private fun showHistoryPlace(osmType: OsmType, osmId: String) {
+        analyticsService.logEvent(AnalyticsEvent.HistoryPlaceSelected)
         viewModelScope.launch {
             val place = placeHistoryRepository.getPlace(osmType, osmId) ?: return@launch
             showPlace(place)
         }
+    }
+
+    private fun showSearchDestination(destination: Destination) {
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+        showDestination(destination)
+    }
+
+    private fun showSearchResultDestination(destination: Destination) {
+        analyticsService.logEvent(AnalyticsEvent.SearchDestinationSelected(destination.name))
+        showDestination(destination)
     }
 
     private fun showDestination(destination: Destination) {
@@ -185,7 +234,9 @@ class MainViewModel(
     }
 
     private fun showDestinationById(osmId: String) {
-        showDestination(destinationRepository.requireDestination(osmId))
+        val destination = destinationRepository.requireDestination(osmId)
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+        showDestination(destination)
     }
 
     private fun enableMyLocation() {
@@ -196,6 +247,9 @@ class MainViewModel(
                     MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
                     MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following
                     MyLocationStatus.NotAvailable -> MyLocationStatus.Following
+                }
+                newStatus.toMyLocationMode()?.let {
+                    analyticsService.logEvent(AnalyticsEvent.MyLocationFollowed(it))
                 }
                 _uiState.update { uiState ->
                     uiState.copy(
@@ -289,6 +343,15 @@ class MainViewModel(
         }
     }
 
+    private fun observeSheetViews() {
+        uiState
+            .map { it.sheet.toScreen() }
+            .distinctUntilChanged()
+            .filter { it != Screen.MAP }
+            .onEach { analyticsService.logEvent(AnalyticsEvent.ScreenView(it)) }
+            .launchIn(viewModelScope)
+    }
+
     private fun observeSettings() {
         settingsRepository.settings
             .map { it.mapZoomControlsVisible }
@@ -346,7 +409,10 @@ class MainViewModel(
             return
         }
         runCatching { permissionsController.providePermission(Permission.LOCATION) }
-            .onSuccess { onGranted() }
+            .onSuccess {
+                analyticsService.logEvent(AnalyticsEvent.LocationPermissionGranted)
+                onGranted()
+            }
             .onFailure { exception ->
                 _uiState.updateMyLocationState { uiState ->
                     uiState.copy(
@@ -357,8 +423,14 @@ class MainViewModel(
                         },
                     )
                 }
-                if (exception is DeniedAlwaysException) {
-                    sendEffect(MainUiEffects.NavigateToAppSettings)
+                when (exception) {
+                    is DeniedAlwaysException -> {
+                        analyticsService.logEvent(AnalyticsEvent.LocationPermissionDenied(deniedAlways = true))
+                        sendEffect(MainUiEffects.NavigateToAppSettings)
+                    }
+                    is DeniedException -> {
+                        analyticsService.logEvent(AnalyticsEvent.LocationPermissionDenied(deniedAlways = false))
+                    }
                 }
             }
     }
@@ -367,12 +439,14 @@ class MainViewModel(
         !gpxLayerVisible && myLocationStatus != MyLocationStatus.FollowingLiveCompass
 
     private fun selectBaseLayer(baseLayer: BaseLayer) {
+        analyticsService.logEvent(AnalyticsEvent.LayerSelected(baseLayer.toLayer()))
         _uiState.updateMapUiState {
             it.copy(baseLayer = baseLayer)
         }
     }
 
     private fun toggleHikingLayer() {
+        analyticsService.logEvent(AnalyticsEvent.LayerSelected(Layer.HIKING))
         _uiState.updateMapUiState {
             it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
         }
@@ -394,6 +468,7 @@ class MainViewModel(
     }
 
     private fun startGpxNavigation() {
+        analyticsService.logEvent(AnalyticsEvent.GpxNavigationStarted)
         viewModelScope.launch {
             hideSheet()
             withLocationPermission {
@@ -414,6 +489,7 @@ class MainViewModel(
     }
 
     private fun openMapsNavigation(type: GpxMapsNavigationType) {
+        analyticsService.logEvent(AnalyticsEvent.GpxMapsNavigationOpened)
         val gpxDetails = _uiState.value.mapUiState.gpxDetails ?: return
         val targetLocation = when (type) {
             GpxMapsNavigationType.START ->
@@ -431,6 +507,7 @@ class MainViewModel(
     }
 
     private fun closeGpx() {
+        analyticsService.logEvent(AnalyticsEvent.GpxClosed)
         selectedWaypoint.value = null
         viewModelScope.launch {
             _uiState.update { uiState ->
@@ -452,7 +529,7 @@ class MainViewModel(
         }
     }
 
-    private fun importGpx(uri: String) {
+    private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -462,6 +539,7 @@ class MainViewModel(
             }
             runCatching { gpxRepository.readGpxFile(uri) }
                 .onSuccess { gpxDetails ->
+                    analyticsService.logEvent(analyticsEvent)
                     selectedWaypoint.value = null
                     _uiState.update { uiState ->
                         uiState.copy(
@@ -490,6 +568,11 @@ class MainViewModel(
                 }
                 .onFailure { exception ->
                     Logger.e(exception) { "Failed to import GPX file." }
+                    analyticsService.logEvent(AnalyticsEvent.GpxImportFailed)
+                    // NonGpx/Empty are expected user errors (wrong file picked); record the rest as real defects.
+                    if (exception !is NonGpxFileException && exception !is EmptyGpxContentException) {
+                        crashlyticsService.recordException(exception)
+                    }
                     _uiState.update { uiState ->
                         uiState.copy(
                             alert = Alert(
@@ -508,12 +591,14 @@ class MainViewModel(
     }
 
     private fun toggleGpxRouteVisibility() {
+        analyticsService.logEvent(AnalyticsEvent.GpxRouteVisibilityToggled)
         _uiState.updateMapUiState {
             it.copy(gpxRouteVisible = it.gpxRouteVisible.not())
         }
     }
 
     private fun toggleAllDistancesVisibility() {
+        analyticsService.logEvent(AnalyticsEvent.GpxDistancesToggled)
         selectedWaypoint.value = null
         _uiState.updateMapUiState {
             it.copy(allDistancesVisible = it.allDistancesVisible.not())
@@ -521,6 +606,7 @@ class MainViewModel(
     }
 
     private fun showGpxOverview() {
+        analyticsService.logEvent(AnalyticsEvent.GpxOverviewClicked)
         viewModelScope.launch {
             val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
             sendEffect(

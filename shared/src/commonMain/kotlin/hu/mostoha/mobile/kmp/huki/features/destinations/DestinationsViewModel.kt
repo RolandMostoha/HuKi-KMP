@@ -4,16 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationListItem
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDestinationListItem
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -37,8 +41,9 @@ import kotlin.time.Duration.Companion.seconds
 class DestinationsViewModel(
     private val destinationRepository: DestinationRepository,
     private val locationMonitoringService: LocationMonitoringService,
-    val permissionsController: PermissionsController,
     private val defaultDispatcher: CoroutineDispatcher,
+    val permissionsController: PermissionsController,
+    private val analyticsService: AnalyticsService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DestinationsUiState.Default)
@@ -48,6 +53,7 @@ class DestinationsViewModel(
     val uiEffects: Flow<DestinationsUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
+        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.DESTINATIONS))
         initLogging()
         loadDestinations()
     }
@@ -116,10 +122,19 @@ class DestinationsViewModel(
     private fun requestLocationPermission() {
         viewModelScope.launch {
             runCatching { permissionsController.providePermission(Permission.LOCATION) }
-                .onSuccess { loadNearby() }
+                .onSuccess {
+                    analyticsService.logEvent(AnalyticsEvent.LocationPermissionGranted)
+                    loadNearby()
+                }
                 .onFailure { exception ->
-                    if (exception is DeniedAlwaysException) {
-                        sendEffect(DestinationsUiEffects.NavigateToAppSettings)
+                    when (exception) {
+                        is DeniedAlwaysException -> {
+                            analyticsService.logEvent(AnalyticsEvent.LocationPermissionDenied(deniedAlways = true))
+                            sendEffect(DestinationsUiEffects.NavigateToAppSettings)
+                        }
+                        is DeniedException -> {
+                            analyticsService.logEvent(AnalyticsEvent.LocationPermissionDenied(deniedAlways = false))
+                        }
                     }
                 }
         }

@@ -7,6 +7,9 @@ inputs:
   LOCATION_IQ_API_KEY:
     description: "LocationIQ API Key"
     required: true
+  GOOGLE_SERVICE_INFO_PLIST_BASE64:
+    description: "Firebase GoogleService-Info.plist as Base64 string"
+    required: true
 
 runs:
   using: "composite"
@@ -26,3 +29,7 @@ runs:
     - name: Copy LOCATION_IQ_API_KEY to secrets.properties
       shell: bash
       run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties
+
+    - name: Create GoogleService-Info.plist
+      shell: bash
+      run: echo "${{ inputs.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist

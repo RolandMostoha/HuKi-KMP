@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class MenuViewModel : ViewModel() {
+class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel() {
     private val _uiState = MutableStateFlow(MenuUiState.Default)
     val uiState: StateFlow<MenuUiState> = _uiState.asStateFlow()
 
@@ -23,6 +27,7 @@ class MenuViewModel : ViewModel() {
     val menuUiEffects: Flow<MenuUiEffects> = _menuUiEffects.receiveAsFlow()
 
     init {
+        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.MENU))
         initLogging()
     }
 
@@ -34,20 +39,31 @@ class MenuViewModel : ViewModel() {
             MenuUiEvents.DestinationsClicked -> sendEffect(MenuUiEffects.NavigateToDestinations)
             MenuUiEvents.PlaceHistoryClicked -> sendEffect(MenuUiEffects.NavigateToPlaceHistory)
             MenuUiEvents.GpxCollectionClicked -> sendEffect(MenuUiEffects.NavigateToGpxCollection)
-            MenuUiEvents.EmailClicked ->
-                sendEffect(
-                    MenuUiEffects.SendEmail(
-                        emailRes = SharedRes.strings.menu_contact_email,
-                        subjectRes = SharedRes.strings.menu_email_subject,
-                    ),
-                )
-            MenuUiEvents.FacebookClicked ->
-                sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_facebook_url))
-            MenuUiEvents.GithubClicked ->
-                sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url))
-            MenuUiEvents.LocationIqClicked ->
-                sendEffect(MenuUiEffects.NavigateToLocationIq)
+            MenuUiEvents.EmailClicked -> openEmail()
+            MenuUiEvents.FacebookClicked -> openFacebook()
+            MenuUiEvents.GithubClicked -> openGithub()
+            MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
         }
+    }
+
+    private fun openEmail() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL))
+        sendEffect(
+            MenuUiEffects.SendEmail(
+                emailRes = SharedRes.strings.menu_contact_email,
+                subjectRes = SharedRes.strings.menu_email_subject,
+            ),
+        )
+    }
+
+    private fun openFacebook() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.FACEBOOK))
+        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_facebook_url))
+    }
+
+    private fun openGithub() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB))
+        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url))
     }
 
     private fun sendEffect(uiEffect: MenuUiEffects) {

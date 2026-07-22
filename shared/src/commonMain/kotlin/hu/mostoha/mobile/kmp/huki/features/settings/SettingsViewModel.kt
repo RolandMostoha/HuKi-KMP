@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
+import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +19,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class SettingsViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val analyticsService: AnalyticsService,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState.Default)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -25,6 +31,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
     val uiEffects: Flow<SettingsUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
+        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.SETTINGS))
         initLogging()
         observeSettings()
     }
@@ -33,9 +40,14 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         Logger.d { "SettingsEvent: $event" }
         when (event) {
             SettingsUiEvents.BackClicked -> sendEffect(SettingsUiEffects.NavigateBack)
-            is SettingsUiEvents.MapZoomControlsToggled -> viewModelScope.launch {
-                settingsRepository.setMapZoomControlsVisible(event.visible)
-            }
+            is SettingsUiEvents.MapZoomControlsToggled -> toggleMapZoomControls(event.visible)
+        }
+    }
+
+    private fun toggleMapZoomControls(visible: Boolean) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsZoomControlsToggled)
+        viewModelScope.launch {
+            settingsRepository.setMapZoomControlsVisible(visible)
         }
     }
 
