@@ -20,6 +20,14 @@
         <light>#ffffff</light>
         <dark>#232323</dark>
     </color>
+    <color name="secondary">
+        <light>#1565C0</light>
+        <dark>#64B5F6</dark>
+    </color>
+    <color name="onSecondary">
+        <light>#ffffff</light>
+        <dark>#232323</dark>
+    </color>
     <color name="icon">
         <light>#404040</light>
         <dark>#B3ffffff</dark>

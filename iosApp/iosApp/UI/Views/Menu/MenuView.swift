@@ -9,6 +9,8 @@ struct MenuView: View {
     let onSettingsClicked: () -> Void
     let onDestinationsClicked: () -> Void
     let onGpxCollectionClicked: () -> Void
+    let onGpxGuideClicked: () -> Void
+    let onTrailSymbolsGuideClicked: () -> Void
     let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
@@ -19,6 +21,8 @@ struct MenuView: View {
 
     private let primary = Color(SharedRes.colors().primary.getUIColor())
     private let onPrimary = Color(SharedRes.colors().onPrimary.getUIColor())
+    private let secondary = Color(SharedRes.colors().secondary.getUIColor())
+    private let onSecondary = Color(SharedRes.colors().onSecondary.getUIColor())
 
     var body: some View {
         Observing(viewModel.uiState) { uiState in
@@ -27,6 +31,7 @@ struct MenuView: View {
                     hero(versionName: uiState.versionName)
                     Spacer().frame(height: 10)
                     mainFeaturesSection
+                    guidesSection
                     contactSection
                     legalSection
                     supportersSection
@@ -147,6 +152,35 @@ struct MenuView: View {
         .padding(.horizontal, 16)
     }
 
+    private var guidesSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_guides))
+            VStack(spacing: 0) {
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onSecondary),
+                    title: strings.get(id: SharedRes.strings().menu_item_gpx_guide),
+                    description: strings.get(id: SharedRes.strings().menu_item_gpx_guide_description),
+                    iconBackgroundColor: secondary,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_guide),
+                    testTag: TestTags.shared.MENU_ROW_GPX_GUIDE,
+                    action: { viewModel.onEvent(event: MenuUiEventsGpxGuideClicked.shared) }
+                )
+                divider
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_place_category_guidepost.toUIImage()!, color: onSecondary),
+                    title: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide),
+                    description: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide_description),
+                    iconBackgroundColor: secondary,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_trail_symbols_guide),
+                    testTag: TestTags.shared.MENU_ROW_TRAIL_SYMBOLS_GUIDE,
+                    action: { viewModel.onEvent(event: MenuUiEventsTrailSymbolsGuideClicked.shared) }
+                )
+            }
+            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal, 16)
+        }
+    }
+
     private var contactSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_contact))
@@ -230,6 +264,7 @@ struct MenuView: View {
             .frame(width: 22, height: 22)
             .foregroundStyle(color)
     }
+}
 
     private func tintedSymbol(_ systemName: String, color: SwiftUI.Color = Color(.label)) -> some View {
         Image(systemName: systemName)
@@ -241,7 +276,8 @@ struct MenuView: View {
 
     private var divider: some View { Divider().padding(.leading, 16 + 40 + 16) }
 
-    private func handleEffect(_ effect: MenuUiEffects) {
+private extension MenuView {
+    func handleEffect(_ effect: MenuUiEffects) {
         switch onEnum(of: effect) {
         case .navigateBack:
             dismiss()
@@ -253,19 +289,29 @@ struct MenuView: View {
             onPlaceHistoryClicked()
         case .navigateToGpxCollection:
             onGpxCollectionClicked()
+        case .navigateToGpxGuide:
+            onGpxGuideClicked()
+        case .navigateToTrailSymbolsGuide:
+            onTrailSymbolsGuideClicked()
         case .navigateToLocationIq:
             onLocationIqClicked()
         case .openUrl(let openUrl):
-            if let url = URL(string: strings.get(id: openUrl.urlRes)) {
-                UIApplication.shared.open(url)
-            }
+            openExternalUrl(strings.get(id: openUrl.urlRes))
         case .sendEmail(let sendEmail):
-            let email = strings.get(id: sendEmail.emailRes)
-            let subject = strings.get(id: sendEmail.subjectRes)
-            let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-            if let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)") {
-                UIApplication.shared.open(url)
-            }
+            composeEmail(email: strings.get(id: sendEmail.emailRes), subject: strings.get(id: sendEmail.subjectRes))
+        }
+    }
+
+    func openExternalUrl(_ urlString: String) {
+        if let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    func composeEmail(email: String, subject: String) {
+        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        if let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)") {
+            UIApplication.shared.open(url)
         }
     }
 }

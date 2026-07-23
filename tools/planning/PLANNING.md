@@ -304,9 +304,9 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | `[L]`  | Guides | Add Guides section to MenuScreen                                                                                                              |
 | `[L]`  | Guides | Add "GPX Guide" element to Guides section. The bg of the icons in "Guides" is uniformly blue -> choose a proper blue as a secondary app color |
 | `[L]`  | Guides | "GPX Guide" should navigate to GpxTutorialScreen                                                                                              |
-| `[L]`  | Guides | Add "Trail Markers Guide" element to Guides section.                                                                                          |
-| `[L]`  | Guides | Add "Trail Markers Guide" Screen, temporarily blank.                                                                                          |
-| `[L]`  | Guides | Implement "Trail Markers Guide" Screen                                                                                                        |
+| `[L]`  | Guides | Add "Trail Symbols Guide" element to Guides section.                                                                                          |
+| `[L]`  | Guides | Add "Trail Symbols Guide" Screen, temporarily blank.                                                                                          |
+| `[L]`  | Guides | Implement "Trail Symbols Guide" Screen                                                                                                        |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                     |
 
 #### Guides: Report problem on route

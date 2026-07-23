@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 ---
-# GPX Collection: import a GPX file, open GpxCollection, GpxTutorial
+# GPX Collection: import a GPX file, open GpxCollection, GpxGuide
 - launchApp:
     clearState: false
     arguments:
@@ -32,10 +32,10 @@ appId: ${APP_ID}
     id: GPX_COLLECTION_HELP_BUTTON
 - extendedWaitUntil:
     visible:
-      id: GPX_TUTORIAL_SCREEN_ROOT
+      id: GPX_GUIDE_SCREEN_ROOT
     timeout: 5000
 - tapOn:
-    id: GPX_TUTORIAL_BACK_BUTTON
+    id: GPX_GUIDE_BACK_BUTTON
 - assertVisible:
     id: GPX_COLLECTION_SCREEN_ROOT
 

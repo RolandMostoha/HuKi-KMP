@@ -7,13 +7,14 @@ import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
-import hu.mostoha.mobile.kmp.huki.features.gpxtutorial.GpxTutorialViewModel
+import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.locationiq.LocationIqViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
@@ -74,7 +75,8 @@ val viewModelModule = module {
     }
     viewModelOf(::MenuViewModel)
     viewModelOf(::GpxCollectionViewModel)
-    viewModelOf(::GpxTutorialViewModel)
+    viewModelOf(::GpxGuideViewModel)
+    viewModelOf(::TrailSymbolsGuideViewModel)
     viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
     viewModelOf(::SettingsViewModel)

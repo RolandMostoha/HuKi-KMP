@@ -139,6 +139,8 @@ private extension MainView {
                     onSettingsClicked: { navigationPath.append(SettingsRoute.settings) },
                     onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
                     onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
+                    onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) },
+                    onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },
                     onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
                     onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
                 )
@@ -156,7 +158,7 @@ private extension MainView {
             }
             .navigationDestination(for: GpxCollectionRoute.self) { _ in
                 GpxCollectionView(
-                    onOpenTutorial: { navigationPath.append(GpxTutorialRoute.gpxTutorial) },
+                    onOpenTutorial: { navigationPath.append(GpxGuideRoute.gpxGuide) },
                     onOpenGpx: { uri in
                         viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
                         navigationPath = NavigationPath()
@@ -175,8 +177,11 @@ private extension MainView {
             .navigationDestination(for: LocationIqRoute.self) { _ in
                 LocationIqView()
             }
-            .navigationDestination(for: GpxTutorialRoute.self) { _ in
-                GpxTutorialView()
+            .navigationDestination(for: GpxGuideRoute.self) { _ in
+                GpxGuideView()
+            }
+            .navigationDestination(for: TrailSymbolsGuideRoute.self) { _ in
+                TrailSymbolsGuideView()
             }
     }
 
