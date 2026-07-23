@@ -104,9 +104,9 @@ class AnalyticsEventTest {
                     mapOf("screen_name" to "gpx_history"),
                 ),
                 TestCase(
-                    AnalyticsEvent.ScreenView(Screen.GPX_TUTORIAL),
+                    AnalyticsEvent.ScreenView(Screen.GPX_GUIDE),
                     "screen_view",
-                    mapOf("screen_name" to "gpx_tutorial"),
+                    mapOf("screen_name" to "gpx_guide"),
                 ),
                 TestCase(
                     AnalyticsEvent.ScreenView(Screen.PLACE_HISTORY),

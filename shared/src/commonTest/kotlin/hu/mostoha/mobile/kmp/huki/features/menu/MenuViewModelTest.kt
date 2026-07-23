@@ -85,6 +85,32 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state, When GpxGuideClicked event, Then NavigateToGpxGuide effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.GpxGuideClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToGpxGuide
+            }
+        }
+    }
+
+    @Test
+    fun `Given default state, When TrailSymbolsGuideClicked event, Then NavigateToTrailSymbolsGuide effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.TrailSymbolsGuideClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToTrailSymbolsGuide
+            }
+        }
+    }
+
+    @Test
     fun `Given default state, When EmailClicked event, Then SendEmail effect with email and subject is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

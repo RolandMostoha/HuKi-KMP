@@ -18,7 +18,12 @@ appId: ${APP_ID}
 - assertVisible: "Hungarian Hiking App"
 - assertVisible: "Version v\\d+\\.\\d+"
 
-# Contact section
+# Contact section — scroll into view if the screen is short
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_EMAIL
+    direction: DOWN
+    centerElement: true
 - assertVisible: "Contact"
 - assertVisible:
     id: MENU_ROW_EMAIL
