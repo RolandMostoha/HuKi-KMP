@@ -7,6 +7,7 @@ sealed interface MenuUiEvents {
     data object PlaceHistoryClicked : MenuUiEvents
     data object GpxCollectionClicked : MenuUiEvents
     data object EmailClicked : MenuUiEvents
+    data object PrivacyPolicyClicked : MenuUiEvents
     data object FacebookClicked : MenuUiEvents
     data object GithubClicked : MenuUiEvents
     data object LocationIqClicked : MenuUiEvents

@@ -92,7 +92,6 @@ fun GpxTutorialScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             Header()
             WhatIsCard(modifier = Modifier.padding(top = Dimens.Small))
             StepsSection(onOpenUrl = { context.openUrl(it) })
-            TermsButton(modifier = Modifier.padding(top = Dimens.ExtraLarge))
         }
     }
 }
@@ -328,34 +327,6 @@ private fun StepBadge(number: Int) {
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = mokoColor(SharedRes.colors.onPrimary),
-        )
-    }
-}
-
-@Composable
-private fun TermsButton(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = Dimens.Large)
-            .clip(RoundedCornerShape(Dimens.Large))
-            .clickable {} // TODO Terms screen not wired yet
-            .testTag(TestTags.GPX_TUTORIAL_TERMS_BUTTON)
-            .padding(vertical = Dimens.MediumLarge),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Small, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(SharedRes.images.ic_help.drawableResId),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(Dimens.IconSmall),
-        )
-        Text(
-            text = mokoString(SharedRes.strings.gpx_tutorial_terms),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

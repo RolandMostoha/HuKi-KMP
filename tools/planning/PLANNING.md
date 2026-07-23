@@ -28,11 +28,17 @@
 
 ## Release plan
 
-1. Feature complete for iOS Go-Live - Map, My Location, Layers, Search, GPX, Settings
-2. Release process setup: CD - Fastlane, versioning, release notes, store presence etc.
-3. Apple developer account registration
-4. iOS Go-Live
-5. Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
+### iOS Release #1 - Go Live
+
+Map, My Location, Layers, Search, GPX, Settings.
+
+### iOS Release #2
+
+Route Planner, Support / Billing
+
+### Android Go-live
+
+Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered.
 
 ## Backlog
 
@@ -69,7 +75,6 @@
 | `[L]`  | CD on Apple Store                                                        |
 | `[L]`  | Add App Store screenshots                                                |
 | `[L]`  | Implement Privacy Policy and T&C on huki.hu                              |
-| `[L]`  | GPXTutorial - T&C link                                                   |                                                                                                                   |
 
 ### FEATURE: Map
 
@@ -197,7 +202,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope       | Task                                                                                                                |
 |--------|-------------|---------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Crashlytics | Integrate it natively, both platforms (native impl, Firebase dependency)                                            |
 | `[ ]`  | Analytics   | My Location: No-signal / GPS lost                                                                                   |
 | `[ ]`  | Analytics   | Search with no results                                                                                              |
 | `[ ]`  | Analytics   | GPX as params: attach distance_km and waypoint_count as params                                                      |

@@ -100,6 +100,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - Always ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
+- Privacy Policy: check if change is necessary
 
 ## Technology Stack
 - **MapBox**: Used for the map engine.

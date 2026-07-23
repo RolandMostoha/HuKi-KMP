@@ -28,6 +28,7 @@ struct MenuView: View {
                     Spacer().frame(height: 10)
                     mainFeaturesSection
                     contactSection
+                    legalSection
                     supportersSection
                 }
                 .padding(.bottom, 24)
@@ -182,6 +183,23 @@ struct MenuView: View {
         }
     }
 
+    private var legalSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_legal))
+            VStack(spacing: 0) {
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_link.toUIImage()!),
+                    title: strings.get(id: SharedRes.strings().menu_item_privacy_policy),
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_privacy_policy),
+                    testTag: TestTags.shared.MENU_ROW_PRIVACY_POLICY,
+                    action: { viewModel.onEvent(event: MenuUiEventsPrivacyPolicyClicked.shared) }
+                )
+            }
+            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal, 16)
+        }
+    }
+
     private var supportersSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_supporters))
@@ -221,10 +239,7 @@ struct MenuView: View {
             .foregroundStyle(color)
     }
 
-    private var divider: some View {
-        Divider()
-            .padding(.leading, 16 + 40 + 16)
-    }
+    private var divider: some View { Divider().padding(.leading, 16 + 40 + 16) }
 
     private func handleEffect(_ effect: MenuUiEffects) {
         switch onEnum(of: effect) {
