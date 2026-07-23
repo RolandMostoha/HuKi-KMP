@@ -240,6 +240,18 @@ private fun MenuContent(
                     TintedRowIcon(SharedRes.images.ic_github.drawableResId)
                 }
             }
+            MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_legal))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_privacy_policy),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_privacy_policy),
+                    testTag = TestTags.MENU_ROW_PRIVACY_POLICY,
+                    onClick = { onEvent(MenuUiEvents.PrivacyPolicyClicked) },
+                ) {
+                    TintedRowIcon(SharedRes.images.ic_link.drawableResId)
+                }
+            }
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_supporters))
             MenuCard {
                 MenuRow(
