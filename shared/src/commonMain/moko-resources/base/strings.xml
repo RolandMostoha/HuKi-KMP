@@ -191,22 +191,24 @@
 
     <string name="trail_symbols_guide_title">Trail Symbols Guide</string>
     <string name="trail_symbols_guide_a11y_back">Back</string>
-    <string name="trail_symbols_main_section_title">Main trail markings</string>
-    <string name="trail_symbols_branch_section_title">Branch trail markings</string>
+    <string name="trail_symbols_main_section_title">Route trail markings</string>
+    <string name="trail_symbols_branch_section_title">Destination trail markings</string>
     <string name="trail_symbols_blue_title">Blue stripe</string>
-    <string name="trail_symbols_blue_description">The blue stripe marks the most important, nationally significant routes, as well as the main local routes of certain regions.</string>
+    <string name="trail_symbols_blue_description">Marks the most important, nationally significant routes, and the main route of certain regions.</string>
     <string name="trail_symbols_red_title">Red stripe</string>
-    <string name="trail_symbols_red_description">The red stripe marks trails that cross at least one region, as well as locally prominent routes.</string>
+    <string name="trail_symbols_red_description">Trails crossing at least one region, as well as locally prominent routes.</string>
     <string name="trail_symbols_yellow_title">Yellow stripe</string>
-    <string name="trail_symbols_yellow_description">The yellow stripe marks locally important backbone routes.</string>
+    <string name="trail_symbols_yellow_description">Marks locally important backbone network routes.</string>
     <string name="trail_symbols_green_title">Green stripe</string>
-    <string name="trail_symbols_green_description">The green stripe marks other local backbone routes not covered by the above.</string>
+    <string name="trail_symbols_green_description">Marks minor, local routes.</string>
     <string name="trail_symbols_cross_title">Cross</string>
-    <string name="trail_symbols_cross_description">The upright cross (blue, red, yellow or green) marks the primary connections between stripe-marked trails. It may also mark a main route or a link between two stripe-marked trails.</string>
+    <string name="trail_symbols_cross_description">A crossing point in the connections between blue, red, yellow or green stripes.</string>
     <string name="trail_symbols_round_tour_title">Round tour</string>
-    <string name="trail_symbols_round_tour_description">The round tour marks easier, 2–10 km loop trails that start from a hiking centre, transport hub, car park or settlement and return to the same place without a change of marking.</string>
+    <string name="trail_symbols_round_tour_description">Marks easier, 2–10 km trails that return to their starting point.</string>
+    <string name="trail_symbols_educational_trail_title">Educational trail</string>
+    <string name="trail_symbols_educational_trail_description">Marks shorter, educational routes usually made up of several stations.</string>
     <string name="trail_symbols_triangle_title">Triangle</string>
-    <string name="trail_symbols_triangle_description">Leads to a high point, hilltop, peak, natural viewpoint or a built lookout tower.</string>
+    <string name="trail_symbols_triangle_description">High point, hilltop, peak, natural viewpoint.</string>
     <string name="trail_symbols_square_title">Square</string>
     <string name="trail_symbols_square_description">Leads to a settlement, accommodation or transport option.</string>
     <string name="trail_symbols_circle_title">Circle</string>
@@ -220,7 +222,7 @@
     <string name="trail_symbols_monument_title">Monument</string>
     <string name="trail_symbols_monument_description">Leads to a cultural or historical monument or memorial.</string>
     <string name="trail_symbols_stamp_title">Stamp</string>
-    <string name="trail_symbols_stamp_description">Leads to a stamping point that certifies completion of a hiking challenge; at most 1 km long.</string>
+    <string name="trail_symbols_stamp_description">Leads to a stamping point that certifies completion of a hiking challenge (e.g. OKT).</string>
 
     <string name="place_category_group_travel">Travel</string>
     <string name="place_category_group_nature">Nature</string>

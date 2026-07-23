@@ -157,16 +157,6 @@ struct MenuView: View {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_guides))
             VStack(spacing: 0) {
                 MenuItemView(
-                    icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onSecondary),
-                    title: strings.get(id: SharedRes.strings().menu_item_gpx_guide),
-                    description: strings.get(id: SharedRes.strings().menu_item_gpx_guide_description),
-                    iconBackgroundColor: secondary,
-                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_guide),
-                    testTag: TestTags.shared.MENU_ROW_GPX_GUIDE,
-                    action: { viewModel.onEvent(event: MenuUiEventsGpxGuideClicked.shared) }
-                )
-                divider
-                MenuItemView(
                     icon: tintedIcon(SharedRes.images().ic_place_category_guidepost.toUIImage()!, color: onSecondary),
                     title: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide),
                     description: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide_description),
@@ -174,6 +164,16 @@ struct MenuView: View {
                     accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_trail_symbols_guide),
                     testTag: TestTags.shared.MENU_ROW_TRAIL_SYMBOLS_GUIDE,
                     action: { viewModel.onEvent(event: MenuUiEventsTrailSymbolsGuideClicked.shared) }
+                )
+                divider
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onSecondary),
+                    title: strings.get(id: SharedRes.strings().menu_item_gpx_guide),
+                    description: strings.get(id: SharedRes.strings().menu_item_gpx_guide_description),
+                    iconBackgroundColor: secondary,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_guide),
+                    testTag: TestTags.shared.MENU_ROW_GPX_GUIDE,
+                    action: { viewModel.onEvent(event: MenuUiEventsGpxGuideClicked.shared) }
                 )
             }
             .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))

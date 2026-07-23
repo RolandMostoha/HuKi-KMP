@@ -217,21 +217,6 @@ private fun MenuContent(
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_guides))
             MenuCard {
                 MenuRow(
-                    title = mokoString(SharedRes.strings.menu_item_gpx_guide),
-                    valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_guide),
-                    testTag = TestTags.MENU_ROW_GPX_GUIDE,
-                    onClick = { onEvent(MenuUiEvents.GpxGuideClicked) },
-                    description = mokoString(SharedRes.strings.menu_item_gpx_guide_description),
-                    iconBackgroundColor = mokoColor(SharedRes.colors.secondary),
-                ) {
-                    TintedRowIcon(
-                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
-                        tint = mokoColor(SharedRes.colors.onSecondary),
-                    )
-                }
-                MenuRowDivider()
-                MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_trail_symbols_guide),
                     valueText = null,
                     contentDescription = mokoString(SharedRes.strings.menu_a11y_open_trail_symbols_guide),
@@ -242,6 +227,21 @@ private fun MenuContent(
                 ) {
                     TintedRowIcon(
                         drawableResId = SharedRes.images.ic_place_category_guidepost.drawableResId,
+                        tint = mokoColor(SharedRes.colors.onSecondary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_gpx_guide),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_guide),
+                    testTag = TestTags.MENU_ROW_GPX_GUIDE,
+                    onClick = { onEvent(MenuUiEvents.GpxGuideClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_gpx_guide_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.secondary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
                         tint = mokoColor(SharedRes.colors.onSecondary),
                     )
                 }

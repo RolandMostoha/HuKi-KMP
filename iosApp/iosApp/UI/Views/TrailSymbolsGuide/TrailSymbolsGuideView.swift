@@ -16,14 +16,14 @@ struct TrailSymbolsGuideView: View {
             VStack(spacing: 20) {
                 symbolSection(
                     title: strings.get(id: SharedRes.strings().trail_symbols_main_section_title),
-                    symbols: TrailSymbol.allCases.filter { $0.section == .main }
+                    symbols: TrailSymbol.allCases.filter { $0.section == .route }
                 )
                 symbolSection(
                     title: strings.get(id: SharedRes.strings().trail_symbols_branch_section_title),
-                    symbols: TrailSymbol.allCases.filter { $0.section == .branch }
+                    symbols: TrailSymbol.allCases.filter { $0.section == .target }
                 )
             }
-            .padding(.top, 8)
+            .padding(.top, 14)
             .padding(.bottom, 24)
         }
         .background(Color(.systemGroupedBackground))
@@ -89,7 +89,7 @@ struct TrailSymbolsGuideView: View {
 
     private func sectionHeader(_ text: String) -> some View {
         Text(text.uppercased())
-            .font(.caption.weight(.bold))
+            .font(.footnote.weight(.bold))
             .tracking(0.8)
             .foregroundStyle(.primary.opacity(0.4))
             .frame(maxWidth: .infinity, alignment: .leading)

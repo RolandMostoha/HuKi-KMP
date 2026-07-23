@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.trailsymbolsguide
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,10 +49,17 @@ import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TrailSymbolsGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     koinViewModel<TrailSymbolsGuideViewModel>()
+    TrailSymbolsGuideContent(
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TrailSymbolsGuideContent(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val screenColor = MaterialTheme.colorScheme.surfaceVariant
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
@@ -89,16 +95,16 @@ fun TrailSymbolsGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
-                .padding(top = Dimens.Small, bottom = Dimens.ExtraLarge),
+                .padding(top = Dimens.Large, bottom = Dimens.ExtraLarge),
             verticalArrangement = Arrangement.spacedBy(Dimens.ExtraLarge),
         ) {
             SymbolSection(
                 title = mokoString(SharedRes.strings.trail_symbols_main_section_title),
-                symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.MAIN },
+                symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.ROUTE },
             )
             SymbolSection(
                 title = mokoString(SharedRes.strings.trail_symbols_branch_section_title),
-                symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.BRANCH },
+                symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.TARGET },
             )
         }
     }
@@ -112,12 +118,15 @@ private fun SymbolSection(title: String, symbols: List<TrailSymbol>) {
     ) {
         Text(
             text = title.uppercase(),
-            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.8.sp),
+            style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 0.8.sp),
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = Dimens.ExtraSmall),
+                .padding(
+                    start = Dimens.ExtraSmall,
+                    bottom = Dimens.ExtraSmall,
+                ),
         )
         Surface(
             modifier = Modifier
@@ -184,17 +193,26 @@ private fun SymbolRow(iconRes: Int, title: String, description: String) {
             )
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode",
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode",
+)
 @Composable
 private fun TrailSymbolsGuideScreenPreview() {
     HuKiTheme {
-        TrailSymbolsGuideScreen(onBack = {})
+        TrailSymbolsGuideContent(onBack = {})
     }
 }

@@ -67,14 +67,12 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Feature                                                                  |
 |--------|--------------------------------------------------------------------------|
-| `[L]`  | Launcher icon Android + iOS                                              |
+| `[L]`  | Add App Store screenshots                                                |
 | `[L]`  | LogLevel.ALL only in debug                                               |
-| `[L]`  | Register Apple Developer Account                                         |
 | `[L]`  | Add fastlane to the project                                              |
 | `[L]`  | feed the changelog to the stores; adopt `version.properties` for bumping |
-| `[L]`  | CD on Apple Store                                                        |
-| `[L]`  | Add App Store screenshots                                                |
-| `[L]`  | Implement Privacy Policy and T&C on huki.hu                              |
+| `[L]`  | Register Apple Developer Account                                         |
+| `[ ]`  | CD on Apple Store                                                        |
 
 ### FEATURE: Map
 
@@ -301,12 +299,6 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 | Status | Scope  | Task                                                                                                                                          |
 |--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `[L]`  | Guides | Add Guides section to MenuScreen                                                                                                              |
-| `[L]`  | Guides | Add "GPX Guide" element to Guides section. The bg of the icons in "Guides" is uniformly blue -> choose a proper blue as a secondary app color |
-| `[L]`  | Guides | "GPX Guide" should navigate to GpxTutorialScreen                                                                                              |
-| `[L]`  | Guides | Add "Trail Symbols Guide" element to Guides section.                                                                                          |
-| `[L]`  | Guides | Add "Trail Symbols Guide" Screen, temporarily blank.                                                                                          |
-| `[L]`  | Guides | Implement "Trail Symbols Guide" Screen                                                                                                        |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                     |
 
 #### Guides: Report problem on route
