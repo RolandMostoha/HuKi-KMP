@@ -735,6 +735,54 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
+    fun `Given completed search, When same search text re-emitted, Then autocomplete does not run again`() {
+        runTest {
+            var autocompleteCallCount = 0
+            placeFinderViewModel = PlaceFinderViewModel(
+                geocodingRepository = object : GeocodingRepository {
+                    override suspend fun autocomplete(searchText: String): NetworkResult<List<LocationIqPlace>> {
+                        autocompleteCallCount += 1
+                        return NetworkResult.Success(
+                            listOf(locationIqPlace(placeId = "dob-id", lat = 47.7, lon = 18.8, displayName = "Dob")),
+                        )
+                    }
+
+                    override suspend fun reverseGeocode(location: Location): NetworkResult<LocationIqPlace?> {
+                        error("Not used in this test")
+                    }
+                },
+                locationMonitoringService = locationMonitoringService,
+                destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
+                defaultDispatcher = testDispatcher,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Dob"))
+            testDispatcher.scheduler.advanceTimeBy(1200)
+            testDispatcher.scheduler.advanceUntilIdle()
+            autocompleteCallCount shouldBe 1
+
+            placeFinderViewModel.uiState.test {
+                awaitItem() shouldBe PlaceFinderUiState(
+                    searchText = "Dob",
+                    isLoading = false,
+                    places = placeFinderViewModel.uiState.value.places,
+                )
+
+                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Dob"))
+                testDispatcher.scheduler.advanceTimeBy(1200)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                expectNoEvents()
+                autocompleteCallCount shouldBe 1
+            }
+        }
+    }
+
+    @Test
     fun `Given local matches, When two characters typed, Then local groups populate instantly and online stays empty`() {
         runTest {
             val recentPlace = Place(
