@@ -30,6 +30,15 @@ appId: ${APP_ID}
     id: MENU_ROW_GITHUB
 - assertVisible: "GitHub repository"
 
+# Legal section — scroll into view if the screen is short
+- scrollUntilVisible:
+    element:
+      text: "Legal"
+    direction: DOWN
+- assertVisible: "Legal"
+- assertVisible:
+    id: MENU_ROW_PRIVACY_POLICY
+
 # Supporters section — scroll into view if the screen is short
 - scrollUntilVisible:
     element:

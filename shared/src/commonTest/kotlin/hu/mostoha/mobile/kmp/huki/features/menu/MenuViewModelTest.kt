@@ -130,6 +130,20 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state, When PrivacyPolicyClicked event, Then OpenUrl effect with privacy policy url is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.PrivacyPolicyClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_privacy_policy_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.PRIVACY_POLICY))
+            }
+        }
+    }
+
+    @Test
     fun `Given default state, When LocationIqClicked event, Then NavigateToLocationIq effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
