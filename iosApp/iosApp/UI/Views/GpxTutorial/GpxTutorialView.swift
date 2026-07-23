@@ -20,8 +20,6 @@ struct GpxTutorialView: View {
                 whatIsCard
                     .padding(.top, 4)
                 stepsSection
-                termsButton
-                    .padding(.top, 20)
             }
             .padding(.bottom, 24)
         }
@@ -218,26 +216,6 @@ struct GpxTutorialView: View {
         )
         .buttonStyle(.plain)
         .accessibilityLabel(strings.get(id: SharedRes.strings().gpx_tutorial_a11y_open_collection, args: [name]))
-    }
-
-    private var termsButton: some View {
-        Button(
-            action: {},
-            label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark.shield")
-                        .font(.system(size: 14, weight: .semibold))
-                    Text(strings.get(id: SharedRes.strings().gpx_tutorial_terms))
-                        .font(.subheadline.weight(.semibold))
-                }
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-            }
-        )
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(TestTags.shared.GPX_TUTORIAL_TERMS_BUTTON)
-        .padding(.horizontal, 16)
     }
 
     private func sectionHeader(_ text: String) -> some View {

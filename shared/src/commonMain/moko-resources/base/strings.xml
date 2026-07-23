@@ -103,8 +103,10 @@
     <string name="menu_item_gpx_collection_description">Your imported routes in one place</string>
     <string name="menu_a11y_open_gpx_collection">Open GPX Collection</string>
     <string name="menu_section_contact">Contact</string>
+    <string name="menu_section_legal">Legal</string>
     <string name="menu_section_supporters">Supporters</string>
     <string name="menu_item_email">Email</string>
+    <string name="menu_item_privacy_policy">Privacy Policy</string>
     <string name="menu_item_facebook">Facebook</string>
     <string name="menu_item_facebook_description">Join for news and tips</string>
     <string name="menu_item_github">GitHub repository</string>
@@ -113,11 +115,13 @@
     <string name="menu_item_location_iq_description">LocationIQ supports HuKi with a generous free plan for its geocoding services.</string>
     <string name="menu_a11y_app_icon">HuKi app icon</string>
     <string name="menu_a11y_open_email">Send email</string>
+    <string name="menu_a11y_open_privacy_policy">Open Privacy Policy</string>
     <string name="menu_a11y_open_facebook">Open Facebook page</string>
     <string name="menu_a11y_open_github">Open GitHub repository</string>
     <string name="menu_a11y_open_location_iq">Open Location IQ website</string>
     <string name="menu_contact_email">huki.app@gmail.com</string>
     <string name="menu_email_subject">[HuKi]</string>
+    <string name="menu_privacy_policy_url">https://huki.hu/en/privacy-policy/</string>
     <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
     <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="menu_location_iq_url">https://locationiq.com/</string>
@@ -176,7 +180,6 @@
     <string name="gpx_tutorial_recommended_aktivkalandor_url">https://aktivkalandor.hu/turak-a-terkepen/</string>
     <string name="gpx_tutorial_recommended_termeszetjaro_url">https://www.termeszetjaro.hu</string>
     <string name="gpx_tutorial_recommended_kirandulastippek_url">https://kirandulastippek.hu</string>
-    <string name="gpx_tutorial_terms">Terms &amp; Conditions</string>
     <string name="gpx_tutorial_a11y_open_collection">Open %s</string>
 
     <string name="place_category_group_travel">Travel</string>
