@@ -114,6 +114,8 @@ class PlaceFinderViewModel(
     }
 
     private fun onSearchTextChanged(searchText: String) {
+        if (searchText == _uiState.value.searchText) return
+
         val trimmedSearchText = searchText.trim()
         val isTooShort = trimmedSearchText.length < AUTOCOMPLETE_MIN_CHARACTERS
 
