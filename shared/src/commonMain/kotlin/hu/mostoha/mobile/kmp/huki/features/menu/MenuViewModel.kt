@@ -39,6 +39,8 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             MenuUiEvents.DestinationsClicked -> sendEffect(MenuUiEffects.NavigateToDestinations)
             MenuUiEvents.PlaceHistoryClicked -> sendEffect(MenuUiEffects.NavigateToPlaceHistory)
             MenuUiEvents.GpxCollectionClicked -> sendEffect(MenuUiEffects.NavigateToGpxCollection)
+            MenuUiEvents.GpxGuideClicked -> sendEffect(MenuUiEffects.NavigateToGpxGuide)
+            MenuUiEvents.TrailSymbolsGuideClicked -> sendEffect(MenuUiEffects.NavigateToTrailSymbolsGuide)
             MenuUiEvents.EmailClicked -> openEmail()
             MenuUiEvents.FacebookClicked -> openFacebook()
             MenuUiEvents.GithubClicked -> openGithub()

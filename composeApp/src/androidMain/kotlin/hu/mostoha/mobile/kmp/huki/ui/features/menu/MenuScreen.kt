@@ -68,6 +68,8 @@ fun MenuScreen(
     onSettingsClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
+    onTrailSymbolsGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     viewModel: MenuViewModel = koinViewModel(),
@@ -81,6 +83,8 @@ fun MenuScreen(
         onSettingsClicked = onSettingsClicked,
         onDestinationsClicked = onDestinationsClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
+        onGpxGuideClicked = onGpxGuideClicked,
+        onTrailSymbolsGuideClicked = onTrailSymbolsGuideClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
         onLocationIqClicked = onLocationIqClicked,
     )
@@ -95,6 +99,8 @@ private fun MenuContent(
     onSettingsClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
+    onTrailSymbolsGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
 ) {
@@ -106,6 +112,8 @@ private fun MenuContent(
                 MenuUiEffects.NavigateToSettings -> onSettingsClicked()
                 MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
+                MenuUiEffects.NavigateToGpxGuide -> onGpxGuideClicked()
+                MenuUiEffects.NavigateToTrailSymbolsGuide -> onTrailSymbolsGuideClicked()
                 MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
                 is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
                 is MenuUiEffects.SendEmail -> context.sendEmail(
@@ -203,6 +211,38 @@ private fun MenuContent(
                     TintedRowIcon(
                         drawableResId = SharedRes.images.ic_gpx.drawableResId,
                         tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+            }
+            MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_guides))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_trail_symbols_guide),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_trail_symbols_guide),
+                    testTag = TestTags.MENU_ROW_TRAIL_SYMBOLS_GUIDE,
+                    onClick = { onEvent(MenuUiEvents.TrailSymbolsGuideClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_trail_symbols_guide_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.secondary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = SharedRes.images.ic_place_category_guidepost.drawableResId,
+                        tint = mokoColor(SharedRes.colors.onSecondary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_gpx_guide),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_guide),
+                    testTag = TestTags.MENU_ROW_GPX_GUIDE,
+                    onClick = { onEvent(MenuUiEvents.GpxGuideClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_gpx_guide_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.secondary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
+                        tint = mokoColor(SharedRes.colors.onSecondary),
                     )
                 }
             }
@@ -451,6 +491,8 @@ private fun MenuContentPreview() {
             onSettingsClicked = {},
             onDestinationsClicked = {},
             onGpxCollectionClicked = {},
+            onGpxGuideClicked = {},
+            onTrailSymbolsGuideClicked = {},
             onPlaceHistoryClicked = {},
             onLocationIqClicked = {},
         )

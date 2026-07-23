@@ -12,13 +12,14 @@ import hu.mostoha.mobile.kmp.huki.datastore.createDataStore
 import hu.mostoha.mobile.kmp.huki.db.documentDirectoryPath
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
-import hu.mostoha.mobile.kmp.huki.features.gpxtutorial.GpxTutorialViewModel
+import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.locationiq.LocationIqViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
@@ -68,7 +69,8 @@ object KoinViewModelProvider : KoinComponent {
     fun getPlaceFinderViewModel(): PlaceFinderViewModel = get()
     fun getMenuViewModel(): MenuViewModel = get()
     fun getGpxCollectionViewModel(): GpxCollectionViewModel = get()
-    fun getGpxTutorialViewModel(): GpxTutorialViewModel = get()
+    fun getGpxGuideViewModel(): GpxGuideViewModel = get()
+    fun getTrailSymbolsGuideViewModel(): TrailSymbolsGuideViewModel = get()
     fun getLocationIqViewModel(): LocationIqViewModel = get()
     fun getPlaceHistoryViewModel(): PlaceHistoryViewModel = get()
     fun getSettingsViewModel(): SettingsViewModel = get()

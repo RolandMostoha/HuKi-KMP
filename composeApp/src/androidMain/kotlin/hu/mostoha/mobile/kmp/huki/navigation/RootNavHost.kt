@@ -11,12 +11,13 @@ import androidx.navigation.compose.rememberNavController
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.ui.features.destinations.DestinationsScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.gpxcollection.GpxCollectionScreen
-import hu.mostoha.mobile.kmp.huki.ui.features.gpxtutorial.GpxTutorialScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.gpxguide.GpxGuideScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.locationiq.LocationIqScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.menu.MenuScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.placehistory.PlaceHistoryScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.trailsymbolsguide.TrailSymbolsGuideScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
 import hu.mostoha.mobile.kmp.huki.util.millis
 import kotlinx.serialization.Serializable
@@ -29,7 +30,8 @@ private object Routes {
     const val SETTINGS = "settings"
     const val DESTINATIONS = "destinations"
     const val GPX_COLLECTION = "gpx_collection"
-    const val GPX_TUTORIAL = "gpx_tutorial"
+    const val GPX_GUIDE = "gpx_guide"
+    const val TRAIL_SYMBOLS_GUIDE = "trail_symbols_guide"
     const val PLACE_HISTORY = "place_history"
     const val LOCATION_IQ = "location_iq"
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
@@ -108,6 +110,8 @@ fun RootNavHost() {
                 onSettingsClicked = { navController.navigate(Routes.SETTINGS) },
                 onDestinationsClicked = { navController.navigate(Routes.DESTINATIONS) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
+                onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
+                onTrailSymbolsGuideClicked = { navController.navigate(Routes.TRAIL_SYMBOLS_GUIDE) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
             )
@@ -130,7 +134,7 @@ fun RootNavHost() {
         composable(Routes.GPX_COLLECTION) {
             GpxCollectionScreen(
                 onBack = { navController.popBackStack() },
-                onOpenTutorial = { navController.navigate(Routes.GPX_TUTORIAL) },
+                onOpenTutorial = { navController.navigate(Routes.GPX_GUIDE) },
                 onOpenGpx = { uri ->
                     navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_GPX_URI_KEY] = uri
                     navController.popBackStack<Main>(inclusive = false)
@@ -148,8 +152,13 @@ fun RootNavHost() {
                 },
             )
         }
-        composable(Routes.GPX_TUTORIAL) {
-            GpxTutorialScreen(
+        composable(Routes.GPX_GUIDE) {
+            GpxGuideScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.TRAIL_SYMBOLS_GUIDE) {
+            TrailSymbolsGuideScreen(
                 onBack = { navController.popBackStack() },
             )
         }
