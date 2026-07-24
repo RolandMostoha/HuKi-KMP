@@ -12,16 +12,31 @@ enum Dimens {
 
     static let zoomControlIconSize: CGFloat = 20
 
-    static let gpxContentPadding = EdgeInsets(
+    static let gpxContentPaddingPortrait = EdgeInsets(
         top: 120,
         leading: 60,
         bottom: 300,
+        trailing: 60
+    )
+    static let gpxContentPaddingLandscape = EdgeInsets(
+        top: 60,
+        leading: 60,
+        bottom: 60,
         trailing: 60
     )
 
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
     static let gpxDetailsExpandedDetentHeight: CGFloat = 320
     static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 350
+    static let gpxDetailsPadExpandedDetentHeight: CGFloat = 320
+    static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 380
+
+    static func gpxDetailsExpandedHeight(hasEnd: Bool, isPad: Bool) -> CGFloat {
+        if isPad {
+            return hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight
+        }
+        return hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight
+    }
 
     static let whatsNewDetentHeight: CGFloat = 350
     static let whatsNewDetentHeightWithMessage: CGFloat = 400

@@ -21,6 +21,7 @@ struct GpxGuideView: View {
             }
             .padding(.top, 8)
             .padding(.bottom, 24)
+            .readableWidth()
         }
         .background(Color(.systemGroupedBackground))
         .accessibilityIdentifier(TestTags.shared.GPX_GUIDE_SCREEN_ROOT)

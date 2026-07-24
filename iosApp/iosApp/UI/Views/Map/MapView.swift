@@ -30,6 +30,7 @@ struct MapView: View {
     }
 
     @State private var cameraBearing: Double = 0
+    @State private var isMapLandscape = false
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -188,6 +189,9 @@ struct MapView: View {
                     }
                 }
                 .ignoresSafeArea()
+                .onGeometryChange(for: CGSize.self) { $0.size } action: {
+                    isMapLandscape = AdaptiveLayout.isLandscapeViewport(mapSize: $0)
+                }
 
                 if isCompassVisible {
                     CompassOrnamentView(
@@ -226,7 +230,7 @@ struct MapView: View {
 
     private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            viewport = .target(for: effect)
+            viewport = .target(for: effect, isLandscape: isMapLandscape)
         }
     }
 

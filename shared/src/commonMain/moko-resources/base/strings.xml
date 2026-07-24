@@ -316,6 +316,6 @@
 
     <string name="whats_new_title">New Features</string>
     <string name="whats_new_a11y_app_icon">HuKi app icon</string>
-    <string name="whats_new_message_signature">— The HuKi team</string>
+    <string name="whats_new_message_signature">— The developer of HuKi</string>
 
 </resources>
