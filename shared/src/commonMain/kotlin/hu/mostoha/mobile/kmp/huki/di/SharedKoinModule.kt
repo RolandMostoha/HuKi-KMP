@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.di
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
 import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
@@ -32,6 +33,7 @@ import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
+import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +95,7 @@ val networkModule = module {
 fun initKoin(config: KoinAppDeclaration? = null) {
     Logger.setLogWriters(platformLogWriter())
     Logger.setTag("HuKi")
+    Logger.setMinSeverity(if (isDebugBuild) Severity.Verbose else Severity.Warn)
 
     startKoin {
         config?.invoke(this)
