@@ -25,6 +25,7 @@ struct GpxCollectionView: View {
                             }
                         }
                         .padding(.bottom, 24)
+                        .readableWidth()
                     .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_LIST)
                     }
                 }

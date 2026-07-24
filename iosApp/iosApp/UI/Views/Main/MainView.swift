@@ -15,12 +15,11 @@ struct MainView: View {
     private let searchBarHeight: CGFloat = 80
     private let mainActionGlassID: String = "main_action_glass_id"
 
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.layoutMode) private var layoutMode
     @Namespace private var mainActionGlassNamespace
 
-    private var isLandscape: Bool {
-        verticalSizeClass == .compact
-    }
+    private var isLandscape: Bool { layoutMode.isLandscape }
+    private var isPad: Bool { layoutMode.isPad }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -83,7 +82,8 @@ struct MainView: View {
                     )
                     .padding(.bottom, isLandscape ? 12 : 0)
                 }
-                .safeAreaPadding(.horizontal)
+                .safeAreaPadding(isLandscape ? .leading : .horizontal)
+                .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
                     .sheet(
                         item: Binding(
                             get: { uiState.sheet },
@@ -281,8 +281,20 @@ private extension MainView {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
             }
         )
-        .presentationDetents([.height(360)])
+        .presentationDetents([layersDetent])
         .presentationDragIndicator(.hidden)
+    }
+
+    private var layersDetent: PresentationDetent {
+        if isPad {
+            return .height(400)
+        }
+        return isLandscape ? .large : .height(360)
+    }
+
+    private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
+        let hasEnd = gpxDetails.waypoints.contains { $0.type == .end }
+        return .height(Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isPad: isPad))
     }
 
     @ViewBuilder
@@ -305,21 +317,18 @@ private extension MainView {
                 }
             )
             .presentationDetents(
-                [
-                    .height(Dimens.gpxDetailsCollapsedDetentHeight),
-                    .height(
-                        gpxDetails.waypoints.contains { $0.type == .end }
-                            ? Dimens.gpxDetailsExpandedWithEndDetentHeight
-                            : Dimens.gpxDetailsExpandedDetentHeight
-                    )
-                ],
+                isPad
+                    ? [gpxExpandedDetent(gpxDetails)]
+                    : [.height(Dimens.gpxDetailsCollapsedDetentHeight), gpxExpandedDetent(gpxDetails)],
                 selection: $gpxDetent
             )
-            .presentationDragIndicator(.visible)
+            .presentationDragIndicator(isPad ? .hidden : .visible)
             .presentationBackgroundInteraction(.enabled)
             .presentationContentInteraction(.resizes)
             .onChange(of: gpxDetails.fileUri, initial: true) {
-                gpxDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
+                gpxDetent = isPad
+                    ? gpxExpandedDetent(gpxDetails)
+                    : .height(Dimens.gpxDetailsCollapsedDetentHeight)
             }
         } else {
             EmptyView()
@@ -328,7 +337,7 @@ private extension MainView {
 
     @ViewBuilder
     func gpxControlMenu(uiState: MainUiState) -> some View {
-        if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil {
+        if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil, uiState.mapUiState.gpxLayerVisible {
             GpxControlMenu(
                 strings: strings,
                 isRouteVisible: uiState.mapUiState.gpxRouteVisible,
@@ -348,6 +357,7 @@ private extension MainView {
             )
             .safeAreaPadding(.horizontal)
             .padding(.bottom, isLandscape ? 12 : 0)
+            .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
             .transition(.opacity)
         }
     }

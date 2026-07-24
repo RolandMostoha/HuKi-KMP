@@ -32,10 +32,18 @@ object Dimens {
 
     val GpxNavButtonPeek = 16.dp
 
-    val GpxContentPadding = PaddingValues(
+    val SearchBarLandscapeWidth = 350.dp
+
+    val GpxContentPaddingPortrait = PaddingValues(
         top = 150.dp,
         start = 60.dp,
         bottom = 340.dp,
+        end = 60.dp,
+    )
+    val GpxContentPaddingLandscape = PaddingValues(
+        top = 70.dp,
+        start = 60.dp,
+        bottom = 60.dp,
         end = 60.dp,
     )
 }

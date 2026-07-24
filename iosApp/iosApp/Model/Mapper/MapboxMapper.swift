@@ -30,10 +30,10 @@ extension Array where Element == Shared.Location {
 }
 
 extension Shared.ContentPadding {
-    var edgeInsets: SwiftUI.EdgeInsets {
+    func edgeInsets(isLandscape: Bool) -> SwiftUI.EdgeInsets {
         switch self {
         case .mapGpx:
-            return Dimens.gpxContentPadding
+            return isLandscape ? Dimens.gpxContentPaddingLandscape : Dimens.gpxContentPaddingPortrait
         }
     }
 }

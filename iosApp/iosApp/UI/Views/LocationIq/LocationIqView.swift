@@ -39,6 +39,7 @@ struct LocationIqView: View {
                     .padding(.top, 24)
             }
             .padding(.bottom, 24)
+            .readableWidth()
         }
         .background(backgroundColor.ignoresSafeArea())
         .accessibilityIdentifier(TestTags.shared.LOCATION_IQ_SCREEN_ROOT)

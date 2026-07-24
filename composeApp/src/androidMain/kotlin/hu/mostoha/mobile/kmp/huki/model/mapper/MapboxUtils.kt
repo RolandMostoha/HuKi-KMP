@@ -126,7 +126,7 @@ internal fun MapViewportState.resetBearing() {
 /**
  * Moves the camera to a single point (flyTo) or fits a bounds/route with padding (overview).
  */
-internal fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera) {
+internal fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera, isLandscape: Boolean) {
     when (val target = effect.target) {
         is CameraTarget.Center -> this.flyTo(
             cameraOptions = CameraOptions.Builder()
@@ -151,7 +151,7 @@ internal fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.
                     .apply {
                         effect.bearing?.let { bearing(it) }
                         effect.pitch?.let { pitch(it) }
-                        effect.contentPadding?.let { padding(it.toEdgeInset(density)) }
+                        effect.contentPadding?.let { padding(it.toEdgeInset(density, isLandscape)) }
                         target.maxZoom?.let { maxZoom(it) }
                     }
                     .build(),

@@ -13,6 +13,10 @@ struct FloatingActionContainer: View {
     let onSearchTap: () -> Void
     let onMenuClick: () -> Void
 
+    @Environment(\.layoutMode) private var layoutMode
+
+    private var isWideLayout: Bool { layoutMode.isWide }
+
     private var isFollowingLiveCompass: Bool {
         if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
             return true
@@ -25,37 +29,59 @@ struct FloatingActionContainer: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Spacer()
-                if uiState.sheet == nil {
-                    VStack(alignment: .trailing, spacing: 16) {
-                        if isZoomControlsVisible {
-                            MapZoomControls(
-                                strings: strings,
-                                onZoomInClicked: onZoomInClicked,
-                                onZoomOutClicked: onZoomOutClicked
-                            )
-                            .transition(.scale.combined(with: .opacity))
-                        }
-                        fabColumn
-                    }
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
+        Group {
+            if isWideLayout {
+                HStack(alignment: .bottom, spacing: 16) {
+                    searchBar
+                    Spacer(minLength: 0)
+                    fabControls
                 }
-            }
-            if uiState.sheet == nil && uiState.isSearchBarVisible {
-                SearchBarView(
-                    strings: strings,
-                    onSearchTap: onSearchTap,
-                    onMenuClick: onMenuClick
-                )
-                .padding(.horizontal, 11)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else {
+                VStack(spacing: 16) {
+                    HStack {
+                        Spacer()
+                        fabControls
+                    }
+                    searchBar
+                }
             }
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
         .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
         .animation(.smooth(duration: 0.3), value: isZoomControlsVisible)
+    }
+
+    @ViewBuilder
+    private var fabControls: some View {
+        if uiState.sheet == nil {
+            VStack(alignment: .trailing, spacing: 16) {
+                if isZoomControlsVisible {
+                    MapZoomControls(
+                        strings: strings,
+                        onZoomInClicked: onZoomInClicked,
+                        onZoomOutClicked: onZoomOutClicked
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+                fabColumn
+            }
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        }
+    }
+
+    @ViewBuilder
+    private var searchBar: some View {
+        if uiState.sheet == nil && uiState.isSearchBarVisible {
+            SearchBarView(
+                strings: strings,
+                onSearchTap: onSearchTap,
+                onMenuClick: onMenuClick
+            )
+            .frame(maxWidth: isWideLayout ? AdaptiveLayout.searchBarMaxWidth : .infinity, alignment: .leading)
+            .padding(.leading, isWideLayout ? 0 : 11)
+            .padding(.trailing, 11)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
     }
 
     @ViewBuilder
