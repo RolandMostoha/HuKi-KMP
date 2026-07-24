@@ -37,6 +37,7 @@ struct MenuView: View {
                     supportersSection
                 }
                 .padding(.bottom, 24)
+                .readableWidth()
             }
             .background(Color(.systemGray6))
             .accessibilityIdentifier(TestTags.shared.MENU_SCREEN_ROOT)

@@ -25,6 +25,7 @@ struct TrailSymbolsGuideView: View {
             }
             .padding(.top, 14)
             .padding(.bottom, 24)
+            .readableWidth()
         }
         .background(Color(.systemGroupedBackground))
         .accessibilityIdentifier(TestTags.shared.TRAIL_SYMBOLS_GUIDE_SCREEN_ROOT)

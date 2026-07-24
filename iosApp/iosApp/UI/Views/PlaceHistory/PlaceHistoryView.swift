@@ -23,6 +23,7 @@ struct PlaceHistoryView: View {
                             }
                         }
                         .padding(.bottom, 24)
+                        .readableWidth()
                         .accessibilityIdentifier(TestTags.shared.PLACE_HISTORY_LIST)
                     }
                 }

@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -29,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,6 +60,7 @@ fun FloatingActionContainer(
     onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -65,7 +69,9 @@ fun FloatingActionContainer(
     ) {
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.BottomStart),
-            visible = mainUiState.sheet == null && mainUiState.mapUiState.gpxDetails != null,
+            visible = mainUiState.sheet == null &&
+                mainUiState.mapUiState.gpxDetails != null &&
+                mainUiState.mapUiState.gpxLayerVisible,
             enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
         ) {
@@ -78,118 +84,177 @@ fun FloatingActionContainer(
                 onClearClicked = onGpxClearClicked,
             )
         }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    horizontal = Dimens.Medium,
-                    vertical = Dimens.Small,
-                ),
-            horizontalAlignment = Alignment.End,
-        ) {
-            AnimatedVisibility(
-                visible = mainUiState.sheet == null,
-                enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            end = Dimens.Medium,
-                            bottom = Dimens.Large,
-                        )
-                        .wrapContentWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    val myLocationStatus = mainUiState.myLocationState.myLocationStatus
-                    val isZoomControlsVisible = mainUiState.mapZoomControlsAlwaysVisible ||
-                        myLocationStatus == MyLocationStatus.FollowingLiveCompass
-                    AnimatedVisibility(
-                        visible = isZoomControlsVisible,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut(),
-                    ) {
-                        MapZoomControls(
-                            modifier = Modifier.padding(bottom = Dimens.ExtraSmall),
-                            onZoomInClicked = onZoomInClicked,
-                            onZoomOutClicked = onZoomOutClicked,
-                        )
-                    }
-                    FloatingActionButton(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        elevation = FloatingActionButtonDefaults.elevation(
-                            defaultElevation = Dimens.FloatingActionElevation,
-                        ),
-                        shape = CircleShape,
-                        onClick = {
-                            if (!mainUiState.isGpxLoading) {
-                                onLayersClicked()
-                            }
-                        },
-                    ) {
-                        if (mainUiState.isGpxLoading) {
-                            LoadingIndicator(
-                                modifier = Modifier.size(24.dp),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_fab_layers),
-                                contentDescription = mokoString(SharedRes.strings.layers_a11y_fab),
-                            )
-                        }
-                    }
-                    FloatingActionButton(
-                        modifier = Modifier.testTag(TestTags.MAIN_FAB_MY_LOCATION_BUTTON),
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        elevation = FloatingActionButtonDefaults.elevation(
-                            defaultElevation = Dimens.FloatingActionElevation,
-                        ),
-                        shape = CircleShape,
-                        onClick = {
-                            if (!mainUiState.isMyLocationLoading) {
-                                onMyLocationClicked()
-                            }
-                        },
-                    ) {
-                        val myLocationIconRes = when (myLocationStatus) {
-                            MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
-                            MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
-                            MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
-                            MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
-                        }
-                        if (mainUiState.isMyLocationLoading) {
-                            LoadingIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        } else {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(myLocationIconRes),
-                                contentDescription = mokoString(myLocationStatus.a11yId),
-                            )
-                        }
-                    }
-                }
-            }
-            AnimatedVisibility(
+        if (isLandscape) {
+            // Landscape: search bar bottom-start with a fixed width, FABs dropped to bottom-end.
+            SearchBarAction(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(
+                        horizontal = Dimens.Medium,
+                        vertical = Dimens.Small,
+                    ),
                 visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
-                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                searchBarModifier = Modifier.width(Dimens.SearchBarLandscapeWidth),
+                onSearchClicked = onSearchClicked,
+                onMenuClicked = onMenuClicked,
+            )
+            FabColumnAction(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        horizontal = Dimens.Medium,
+                        vertical = Dimens.Small,
+                    ),
+                mainUiState = mainUiState,
+                onLayersClicked = onLayersClicked,
+                onMyLocationClicked = onMyLocationClicked,
+                onZoomInClicked = onZoomInClicked,
+                onZoomOutClicked = onZoomOutClicked,
+            )
+        } else {
+            // Portrait: FABs stacked above a full-width search bar.
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        horizontal = Dimens.Medium,
+                        vertical = Dimens.Small,
+                    ),
+                horizontalAlignment = Alignment.End,
             ) {
-                SearchBar(
-                    modifier = Modifier
-                        .padding(horizontal = Dimens.Medium),
-                    onSearchClick = {
-                        onSearchClicked()
-                    },
-                    onMenuClick = {
-                        onMenuClicked()
-                    },
+                FabColumnAction(
+                    modifier = Modifier.padding(bottom = Dimens.Large),
+                    mainUiState = mainUiState,
+                    onLayersClicked = onLayersClicked,
+                    onMyLocationClicked = onMyLocationClicked,
+                    onZoomInClicked = onZoomInClicked,
+                    onZoomOutClicked = onZoomOutClicked,
+                )
+                SearchBarAction(
+                    visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
+                    searchBarModifier = Modifier.padding(horizontal = Dimens.Medium),
+                    onSearchClicked = onSearchClicked,
+                    onMenuClicked = onMenuClicked,
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FabColumnAction(
+    mainUiState: MainUiState,
+    onLayersClicked: () -> Unit,
+    onMyLocationClicked: () -> Unit,
+    onZoomInClicked: () -> Unit,
+    onZoomOutClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = mainUiState.sheet == null,
+        enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+        exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(end = Dimens.Medium)
+                .wrapContentWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            val myLocationStatus = mainUiState.myLocationState.myLocationStatus
+            val isZoomControlsVisible = mainUiState.mapZoomControlsAlwaysVisible ||
+                myLocationStatus == MyLocationStatus.FollowingLiveCompass
+            AnimatedVisibility(
+                visible = isZoomControlsVisible,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut(),
+            ) {
+                MapZoomControls(
+                    modifier = Modifier.padding(bottom = Dimens.ExtraSmall),
+                    onZoomInClicked = onZoomInClicked,
+                    onZoomOutClicked = onZoomOutClicked,
+                )
+            }
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.surface,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = Dimens.FloatingActionElevation,
+                ),
+                shape = CircleShape,
+                onClick = {
+                    if (!mainUiState.isGpxLoading) {
+                        onLayersClicked()
+                    }
+                },
+            ) {
+                if (mainUiState.isGpxLoading) {
+                    LoadingIndicator(
+                        modifier = Modifier.size(24.dp),
+                    )
+                } else {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_fab_layers),
+                        contentDescription = mokoString(SharedRes.strings.layers_a11y_fab),
+                    )
+                }
+            }
+            FloatingActionButton(
+                modifier = Modifier.testTag(TestTags.MAIN_FAB_MY_LOCATION_BUTTON),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = Dimens.FloatingActionElevation,
+                ),
+                shape = CircleShape,
+                onClick = {
+                    if (!mainUiState.isMyLocationLoading) {
+                        onMyLocationClicked()
+                    }
+                },
+            ) {
+                val myLocationIconRes = when (myLocationStatus) {
+                    MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
+                    MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
+                    MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
+                    MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
+                }
+                if (mainUiState.isMyLocationLoading) {
+                    LoadingIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                } else {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(myLocationIconRes),
+                        contentDescription = mokoString(myLocationStatus.a11yId),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchBarAction(
+    visible: Boolean,
+    onSearchClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    searchBarModifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+    ) {
+        SearchBar(
+            modifier = searchBarModifier,
+            onSearchClick = onSearchClicked,
+            onMenuClick = onMenuClicked,
+        )
     }
 }
 

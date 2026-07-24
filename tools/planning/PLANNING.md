@@ -2,13 +2,14 @@
 
 ## Legend
 
-| Status | Meaning                   |
-|--------|---------------------------|
-| `[ ]`  | Not started               |
-| `[L]`  | Required for Go-Live      |
-| `[~]`  | In progress               |
-| `[x]`  | Done                      |
-| `[-]`  | Cancelled / deprioritized |
+| Status | Meaning                     |
+|--------|-----------------------------|
+| `[ ]`  | Not started                 |
+| `[L]`  | Required for Go-Live        |
+| `[~]`  | In progress                 |
+| `[x]`  | Done                        |
+| `[-]`  | Cancelled / deprioritized   |
+| `[?]`  | Questionable / spike needed |
 
 ---
 
@@ -63,7 +64,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 
-### iOS Release
+### FEATURE: Release
 
 | Status | Feature                                                                  |
 |--------|--------------------------------------------------------------------------|
@@ -79,6 +80,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
+| `[ ]`  | Map   | Bug: GPX Menu -> Overview -> applies a big bottom padding, not necessary          |
 
 ### FEATURE: Dark Mode
 
@@ -88,9 +90,12 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### FEATURE: Landscape
 
-| Status | Feature                                   |
-|--------|-------------------------------------------|
-| `[L]`  | Check how the app works in landscape mode |
+| Status | Feature                                                                                                     |
+|--------|-------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Add Previews to Landscape / Tablet view                                                                     |
+| `[ ]`  | iOS: In Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)  |
+| `[ ]`  | In Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                         |
+| `[?]`  | In Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side |
 
 ### FEATURE: My Location
 
@@ -198,13 +203,13 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Analytics
 
-| Status | Scope       | Task                                                                                                                |
-|--------|-------------|---------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Analytics   | My Location: No-signal / GPS lost                                                                                   |
-| `[ ]`  | Analytics   | Search with no results                                                                                              |
-| `[ ]`  | Analytics   | GPX as params: attach distance_km and waypoint_count as params                                                      |
-| `[ ]`  | Analytics   | whats_new_shown, whats_new_dismissed                                                                                |
-| `[ ]`  | Analytics   | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
+| Status | Scope     | Task                                                                                                                |
+|--------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Analytics | My Location: No-signal / GPS lost                                                                                   |
+| `[ ]`  | Analytics | Search with no results                                                                                              |
+| `[ ]`  | Analytics | GPX as params: attach distance_km and waypoint_count as params                                                      |
+| `[ ]`  | Analytics | whats_new_shown, whats_new_dismissed                                                                                |
+| `[ ]`  | Analytics | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
@@ -297,9 +302,9 @@ so an Android export imports on iOS and vice-versa.
 
 Goal: a new section in Menu, with 1 page guides of different topics.
 
-| Status | Scope  | Task                                                                                                                                          |
-|--------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                     |
+| Status | Scope  | Task                                      |
+|--------|--------|-------------------------------------------|
+| `[ ]`  | Guides | Add "Problem on route" to Guides section. |
 
 #### Guides: Report problem on route
 

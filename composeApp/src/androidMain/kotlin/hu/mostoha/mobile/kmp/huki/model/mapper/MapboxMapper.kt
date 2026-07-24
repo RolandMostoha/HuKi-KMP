@@ -45,9 +45,13 @@ fun BaseLayer.toMapStyle(): String =
         BaseLayer.SATELLITE -> Style.SATELLITE
     }
 
-fun ContentPadding.toEdgeInset(density: Density): EdgeInsets =
+fun ContentPadding.toEdgeInset(density: Density, isLandscape: Boolean): EdgeInsets =
     when (this) {
-        ContentPadding.MAP_GPX -> Dimens.GpxContentPadding.toEdgeInset(density)
+        ContentPadding.MAP_GPX -> if (isLandscape) {
+            Dimens.GpxContentPaddingLandscape
+        } else {
+            Dimens.GpxContentPaddingPortrait
+        }.toEdgeInset(density)
     }
 
 private fun PaddingValues.toEdgeInset(density: Density): EdgeInsets =

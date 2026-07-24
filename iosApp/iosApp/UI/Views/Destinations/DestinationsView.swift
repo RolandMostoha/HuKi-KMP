@@ -24,6 +24,7 @@ struct DestinationsView: View {
                     content(uiState: uiState)
                 }
                 .padding(.bottom, 24)
+                .readableWidth()
                 .accessibilityIdentifier(TestTags.shared.DESTINATIONS_LIST)
                 .onAppear {
                     selectedTab = uiState.selectedTab

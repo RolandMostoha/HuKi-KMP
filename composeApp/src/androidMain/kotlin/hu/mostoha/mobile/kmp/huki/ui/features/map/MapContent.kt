@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,12 +12,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -83,6 +87,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
+private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
+private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
+
 @OptIn(MapboxDelicateApi::class, MapboxExperimental::class)
 @Composable
 fun MapContent(
@@ -93,6 +100,9 @@ fun MapContent(
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
+    val isLandscape by rememberUpdatedState(
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
+    )
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
@@ -107,7 +117,7 @@ fun MapContent(
         mapLoaded.await()
         mapUiEffects.collect { effect ->
             when (effect) {
-                is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect)
+                is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect, isLandscape)
                 is MapUiEffects.ShowMyLocation -> {
                     mapViewportState.followLocation(effect.myLocationStatus, effect.animated)
                 }
@@ -140,6 +150,7 @@ fun MapContent(
                 contentPadding = insetPadding,
                 height = 2.dp,
                 textSize = 10.sp,
+                ratio = if (isLandscape) SCALE_BAR_RATIO_LANDSCAPE else SCALE_BAR_RATIO_PORTRAIT,
             )
         },
         compass = {

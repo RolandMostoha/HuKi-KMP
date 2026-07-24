@@ -5,7 +5,9 @@ import SwiftUI
 extension Viewport {
 
     /// Camera target for an `updateCamera` effect: a single centered point or a route fitted to bounds.
-    static func target(for effect: MapUiEffectsUpdateCamera) -> Viewport {
+    /// `isLandscape` selects orientation-specific overview padding so it always fits the viewport (portrait
+    /// reserves bottom space for the sheet; landscape stays shallow to fit the short map).
+    static func target(for effect: MapUiEffectsUpdateCamera, isLandscape: Bool = false) -> Viewport {
         switch onEnum(of: effect.target) {
         case .center(let target):
             return .camera(
@@ -15,11 +17,12 @@ extension Viewport {
                 pitch: effect.pitch?.cgFloat ?? 0
             )
         case .bounds(let target):
+            let padding = effect.contentPadding?.edgeInsets(isLandscape: isLandscape) ?? .init()
             return .overview(
                 geometry: target.locations.lineString,
                 bearing: effect.bearing?.cgFloat ?? 0,
                 pitch: effect.pitch?.cgFloat ?? 0,
-                geometryPadding: effect.contentPadding?.edgeInsets ?? .init(),
+                geometryPadding: padding,
                 maxZoom: target.maxZoom?.doubleValue
             )
         }
