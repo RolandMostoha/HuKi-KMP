@@ -41,6 +41,73 @@ Route Planner, Support / Billing
 
 Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered.
 
+## iOS App Store Release
+
+### Apple foundations (App Store Connect + signing)
+
+| Status | Task                                                                                                       |
+|--------|------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Register Apple Developer Account                                                                           |
+| `[x]`  | Register App ID / bundle `hu.mostoha.mobile.ios.huki` + capabilities (Location)                            |
+| `[x]`  | Distribution certificate + App Store provisioning profile via Xcode                                        |
+| `[x]`  | Decide device family —> iPhone Portrait+Landscape AND iPad (drives screenshots + `TARGETED_DEVICE_FAMILY`) |
+| `[x]`  | Confirm Deployment Target (18.2)                                                                           |
+| `[x]`  | Confirm Release signing config                                                                             |
+| `[L]`  | Create app record in App Store Connect                                                                     |
+
+### Build / compliance
+
+| Status | Task                                                                                                            |
+|--------|-----------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Add `ITSAppUsesNonExemptEncryption=false` to `Info.plist` (HTTPS exempt, skips upload prompt)                   |
+| `[x]`  | Verify `INFOPLIST_PREPROCESS` works → `UIFileSharingEnabled`/`LSSupportsOpeningDocumentsInPlace` OFF in Release |
+| `[x]`  | LogLevel.ALL only in debug                                                                                      |
+| `[x]`  | Mapbox downloads (secret) token wired for archive/CI `.netrc`                                                   |
+| `[x]`  | dSYM upload to Crashlytics for Release symbolication                                                            |
+| `[x]`  | Archive smoke test on a real device -> Tested in TestFlight                                                     |
+
+### Store metadata (en-US + hu-HU)
+
+| Status | Task                                                                                                        |
+|--------|-------------------------------------------------------------------------------------------------------------|
+| `[L]`  | App name, subtitle, keywords                                                                                |
+| `[L]`  | Description + promotional text (both locales)                                                               |
+| `[L]`  | Primary/secondary category (Navigation / Sports)                                                            |
+| `[L]`  | Support URL + Marketing URL + copyright                                                                     |
+| `[L]`  | Age rating questionnaire                                                                                    |
+| `[L]`  | Privacy Nutrition Labels in ASC — must match `PrivacyInfo.xcprivacy` (location, crash, analytics, deviceID) |
+| `[L]`  | Privacy Policy URL entered (policy page exists — needs hosted URL)                                          |
+
+### Assets
+
+| Status | Task                                                          |
+|--------|---------------------------------------------------------------|
+| `[L]`  | App Store screenshots — per chosen device sizes, both locales |
+| `[ ]`  | 1024×1024 marketing icon present in appiconset, no alpha      |
+| `[ ]`  | Launch screen verified in Release                             |
+| `[-]`  | App preview video (optional)                                  |
+
+### Review readiness
+
+| Status | Task                                                                                                |
+|--------|-----------------------------------------------------------------------------------------------------|
+| `[x]`  | Verify Mapbox attribution + telemetry opt-out UI present (App Review requirement)                   |
+| `[x]`  | Review notes: when-in-use location rationale, no login, GPX import test steps, map data attribution |
+| `[ ]`  | EULA (default Apple vs custom)                                                                      |
+| `[x]`  | Landscape mode pass (cross-ref FEATURE: Landscape)                                                  |
+| `[x]`  | Tablet mode pass (cross-ref FEATURE: Landscape)                                                     |
+| `[ ]`  | Offline + dark mode + permission-denied paths sanity pass                                           |
+
+### TestFlight & CD
+
+| Status | Task                                                                                       |
+|--------|--------------------------------------------------------------------------------------------|
+| `[L]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                              |
+| `[L]`  | Feed changelog to store; bump from `version.properties` (reuse generated WhatsNew content) |
+| `[ ]`  | Internal TestFlight build + crash-free validation                                          |
+| `[-]`  | External TestFlight beta (optional, requires beta review)                                  |
+| `[ ]`  | CD on Apple Store — GitHub Actions → TestFlight/App Store upload                           |
+
 ## Backlog
 
 ### General / tech tasks
@@ -64,17 +131,6 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 
-### FEATURE: Release
-
-| Status | Feature                                                                  |
-|--------|--------------------------------------------------------------------------|
-| `[L]`  | Add App Store screenshots                                                |
-| `[x]`  | LogLevel.ALL only in debug                                               |
-| `[L]`  | Add fastlane to the project                                              |
-| `[L]`  | feed the changelog to the stores; adopt `version.properties` for bumping |
-| `[L]`  | Register Apple Developer Account                                         |
-| `[ ]`  | CD on Apple Store                                                        |
-
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                              |
@@ -96,6 +152,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | iOS: In Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)  |
 | `[ ]`  | In Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                         |
 | `[?]`  | In Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side |
+| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                  |
 
 ### FEATURE: My Location
 
@@ -358,3 +415,5 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | GPX Metadata   | Store GPX Metadata in a JSON                                 |
 | Place History  | Place History list view                                      |
 | Destinations   | Destinations with Popular, Ladnscapes, Nearby                |
+| WhatsNew       | Versioning, WhatsNew Sheet                                   |
+| Guides         | GPX Guide, Trail Symbols Guide                               |
