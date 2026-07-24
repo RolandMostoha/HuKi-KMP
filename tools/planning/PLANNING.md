@@ -69,7 +69,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | Status | Feature                                                                  |
 |--------|--------------------------------------------------------------------------|
 | `[L]`  | Add App Store screenshots                                                |
-| `[L]`  | LogLevel.ALL only in debug                                               |
+| `[x]`  | LogLevel.ALL only in debug                                               |
 | `[L]`  | Add fastlane to the project                                              |
 | `[L]`  | feed the changelog to the stores; adopt `version.properties` for bumping |
 | `[L]`  | Register Apple Developer Account                                         |
