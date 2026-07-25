@@ -1,0 +1,23 @@
+# App Store — App Review Information
+
+## Notes
+
+```
+HuKi is a hiking app for Hungarian landscapes, trails and destinations.
+No account or sign-in is required — all features are available immediately.
+
+TESTING TIP — SET LOCATION TO HUNGARY:
+The map data and points of interest are centered on Hungary. Please set the
+simulator/device location to a spot in Hungary.
+E.g.: 47.7183, 18.9089  (Dobogókő — a popular hiking area)
+With a location outside Hungary the map will not show relevant trail markers.
+
+LOCATION USAGE:
+Location is used only while the app is in foreground and is never tracked in the
+background (no "location" UIBackgroundMode, no allowsBackgroundLocationUpdates).
+The NSLocationAlwaysAndWhenInUseUsageDescription string exists only because a
+linked library includes that API symbol; at runtime the app requests
+When-In-Use only.
+
+The app is available in English and Hungarian, based on the device language.
+```
