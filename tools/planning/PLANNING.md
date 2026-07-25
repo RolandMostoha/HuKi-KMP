@@ -140,7 +140,8 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### FEATURE: Camera panel
 
-Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful, they can record their exact location / zoom level with a CROSS marker.
+Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful,
+they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Dark Mode
 
@@ -157,6 +158,7 @@ Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. Thi
 | `[ ]`  | In Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                         |
 | `[?]`  | In Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side |
 | `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                  |
+| `[ ]`  | iPad: Use overlay panels instead of Sheets -> they show up in the center of the screen                      |
 
 ### FEATURE: My Location
 
