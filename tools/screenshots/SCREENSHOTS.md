@@ -14,8 +14,10 @@ position for the location puck, plus the UI state (theme + open sheet) to show.
     - **Camera** → type the scene's `lat,lon,zoom` into the panel input and tap go
     - **Location** → `ios_fix_location.sh <lat,lon>` / `adb emu geo fix <lon> <lat>`
     - **Theme** → `ios_toggle_dark_mode.sh` / `android_toggle_dark_mode.sh`
-- File naming: [iOS/Android]_store_screenshot_[X]_[HU/EN].png
-- Location: tools/screenshots/[iOS/Android]/
+- File naming: [iOS/iPad/Android]_store_screenshot_[X]_[HU/EN].png
+- Location: tools/screenshots/[iOS/iPad/Android]/
+- iPad uses its own camera framing per scene (different aspect ratio than iPhone/Android) — see the
+  **Camera (iPad)** row per screenshot below.
 
 Two camera scenes are reused across the screenshots: **danube_bend** and **okt_15**.
 
@@ -26,10 +28,11 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 - light mode
 - default opened app state, no sheet
 
-|          | Lat/Long/Zoom           |
-|----------|-------------------------|
-| Camera   | 47.78055,18.93411,11.63 |
-| Location | 47.78995,18.93374       |
+|               | Lat/Long/Zoom           |
+|---------------|-------------------------|
+| Camera        | 47.78055,18.93411,11.63 |
+| Camera (iPad) | 47.78286,18.93539,12.63 |
+| Location      | 47.78995,18.93374       |
 
 ---
 
@@ -39,10 +42,11 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 - Base Map / GPX sheet open.
 - tools/gpx/okt_15.gpx opened
 
-|          | Lat/Long/Zoom           |
-|----------|-------------------------|
-| Camera   | 47.61895,18.94269,10.54 |
-| Location | 47.78995,18.93374       |
+|               | Lat/Long/Zoom           |
+|---------------|-------------------------|
+| Camera        | 47.61895,18.94269,10.54 |
+| Camera (iPad) | 47.54157,18.94180,10.49 |
+| Location      | 47.78995,18.93374       |
 
 ---
 
@@ -52,10 +56,11 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 - Base Map / Layers sheet open
 - Satellite layer selected.
 
-|          | Lat/Long/Zoom           |
-|----------|-------------------------|
-| Camera   | 47.71670,18.89799,15.55 |
-| Location | 47.718252,18.898026     |
+|               | Lat/Long/Zoom           |
+|---------------|-------------------------|
+| Camera        | 47.71670,18.89799,15.55 |
+| Camera (iPad) | 47.71608,18.89802,16.00 |
+| Location      | 47.718252,18.898026     |
 
 ---
 
