@@ -1,0 +1,1 @@
+túra,túrázás,magyar,térkép,gpx,útvonal,turistajelzés,hegy,kirándulás,navigáció,természetjárás

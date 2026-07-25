@@ -68,22 +68,22 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### Store metadata (en-US + hu-HU)
 
-| Status | Task                                                                                                        |
-|--------|-------------------------------------------------------------------------------------------------------------|
-| `[L]`  | App name, subtitle, keywords                                                                                |
-| `[L]`  | Description + promotional text (both locales)                                                               |
-| `[L]`  | Primary/secondary category (Navigation / Sports)                                                            |
-| `[L]`  | Support URL + Marketing URL + copyright                                                                     |
-| `[L]`  | Age rating questionnaire                                                                                    |
-| `[L]`  | Privacy Nutrition Labels in ASC — must match `PrivacyInfo.xcprivacy` (location, crash, analytics, deviceID) |
-| `[L]`  | Privacy Policy URL entered (policy page exists — needs hosted URL)                                          |
+| Status | Task                                                                              |
+|--------|-----------------------------------------------------------------------------------|
+| `[x]`  | App name, subtitle, keywords                                                      |
+| `[x]`  | Description + promotional text (both locales)                                     |
+| `[x]`  | Primary/secondary category (Navigation / Travel)                                  |
+| `[x]`  | Support URL + Marketing URL + copyright                                           |
+| `[x]`  | Age rating questionnaire                                                          |
+| `[x]`  | Privacy Policy ->  `PrivacyInfo.xcprivacy` (location, crash, analytics, deviceID) |
+| `[x]`  | Privacy Policy URL entered (policy page exists — needs hosted URL)                |
 
 ### Assets
 
 | Status | Task                                                          |
 |--------|---------------------------------------------------------------|
-| `[L]`  | App Store screenshots — per chosen device sizes, both locales |
-| `[ ]`  | 1024×1024 marketing icon present in appiconset, no alpha      |
+| `[x]`  | App Store screenshots — per chosen device sizes, both locales |
+| `[x]`  | 1024×1024 marketing icon present in appiconset, no alpha      |
 | `[ ]`  | Launch screen verified in Release                             |
 | `[ ]`  | App preview video (optional)                                  |
 
@@ -93,17 +93,15 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 |--------|-----------------------------------------------------------------------------------------------------|
 | `[x]`  | Verify Mapbox attribution + telemetry opt-out UI present (App Review requirement)                   |
 | `[x]`  | Review notes: when-in-use location rationale, no login, GPX import test steps, map data attribution |
-| `[ ]`  | EULA (default Apple vs custom)                                                                      |
 | `[x]`  | Landscape mode pass (cross-ref FEATURE: Landscape)                                                  |
 | `[x]`  | Tablet mode pass (cross-ref FEATURE: Landscape)                                                     |
-| `[ ]`  | Offline + dark mode + permission-denied paths sanity pass                                           |
 
 ### TestFlight & CD
 
 | Status | Task                                                                                       |
 |--------|--------------------------------------------------------------------------------------------|
-| `[L]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                              |
-| `[L]`  | Feed changelog to store; bump from `version.properties` (reuse generated WhatsNew content) |
+| `[ ]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                              |
+| `[ ]`  | Feed changelog to store; bump from `version.properties` (reuse generated WhatsNew content) |
 | `[ ]`  | Internal TestFlight build + crash-free validation                                          |
 | `[-]`  | External TestFlight beta (optional, requires beta review)                                  |
 | `[ ]`  | CD on Apple Store — GitHub Actions → TestFlight/App Store upload                           |

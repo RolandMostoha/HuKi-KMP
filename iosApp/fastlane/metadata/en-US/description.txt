@@ -1,0 +1,9 @@
+HuKi helps you discover Hungary. An interactive map shows the classic Hungarian trail markings, so you can follow waymarked routes with confidence.
+
+Features:
+• Interactive hiking map with classic Hungarian trail markings
+• GPS navigation
+• Map layers: Nature, Urban and Satellite
+• Search for Places and Destinations
+• GPX import, storage and loading
+• Curated list of destinations across Hungary
