@@ -138,6 +138,10 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 | `[ ]`  | Map   | Bug: GPX Menu -> Overview -> applies a big bottom padding, not necessary          |
 
+### FEATURE: Camera panel
+
+Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful, they can record their exact location / zoom level with a CROSS marker.
+
 ### FEATURE: Dark Mode
 
 | Status | Scope    | Bug                                                                                                                    |
