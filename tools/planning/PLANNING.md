@@ -53,7 +53,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[x]`  | Decide device family —> iPhone Portrait+Landscape AND iPad (drives screenshots + `TARGETED_DEVICE_FAMILY`) |
 | `[x]`  | Confirm Deployment Target (18.2)                                                                           |
 | `[x]`  | Confirm Release signing config                                                                             |
-| `[L]`  | Create app record in App Store Connect                                                                     |
+| `[x]`  | Create app record in App Store Connect                                                                     |
 
 ### Build / compliance
 
@@ -85,7 +85,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[L]`  | App Store screenshots — per chosen device sizes, both locales |
 | `[ ]`  | 1024×1024 marketing icon present in appiconset, no alpha      |
 | `[ ]`  | Launch screen verified in Release                             |
-| `[-]`  | App preview video (optional)                                  |
+| `[ ]`  | App preview video (optional)                                  |
 
 ### Review readiness
 
