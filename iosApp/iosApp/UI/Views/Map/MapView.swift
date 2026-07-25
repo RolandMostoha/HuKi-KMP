@@ -30,7 +30,10 @@ struct MapView: View {
     }
 
     @State private var cameraBearing: Double = 0
+    @State private var cameraZoom: Double = 0
+    @State private var cameraCenter = CLLocationCoordinate2D()
     @State private var isMapLandscape = false
+    @State private var isDebugCameraPanelVisible = true
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -48,6 +51,12 @@ struct MapView: View {
                             onDistanceInfoWindowDismissed()
                         }
                         return false
+                    }
+                    if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL {
+                        LongPressInteraction { _ in
+                            isDebugCameraPanelVisible = true
+                            return false
+                        }
                     }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: .heading)
@@ -171,6 +180,21 @@ struct MapView: View {
                         cameraBearing = newBearing
                     }
                 }
+                .task(id: proxy.map != nil) {
+                    guard FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL, let map = proxy.map else { return }
+                    cameraZoom = map.cameraState.zoom
+                    cameraCenter = map.cameraState.center
+                    let cameraChanges = AsyncStream<CameraState> { continuation in
+                        let cancelable = map.onCameraChanged.observe { event in
+                            continuation.yield(event.cameraState)
+                        }
+                        continuation.onTermination = { _ in cancelable.cancel() }
+                    }
+                    for await state in cameraChanges {
+                        cameraZoom = state.zoom
+                        cameraCenter = state.center
+                    }
+                }
                 .task(id: uiState.myLocationState.permissionState == PermissionState.granted) {
                     // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
                     guard uiState.myLocationState.permissionState == PermissionState.granted,
@@ -203,12 +227,33 @@ struct MapView: View {
                     .padding(.trailing, 16)
                     .transition(.opacity)
                 }
+                if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && isDebugCameraPanelVisible {
+                    MapCameraDebugOverlay(
+                        zoom: cameraZoom,
+                        center: cameraCenter,
+                        onMoveCamera: { position in
+                            updateCamera(MapUiEffectsUpdateCamera(
+                                target: CameraTargetCenter(
+                                    location: position.location,
+                                    zoom: KotlinDouble(value: position.zoom)
+                                ),
+                                bearing: KotlinDouble(value: position.bearing),
+                                pitch: KotlinDouble(value: position.pitch),
+                                contentPadding: nil
+                            ))
+                        },
+                        onClose: { isDebugCameraPanelVisible = false }
+                    )
+                }
             }
             .animation(.smooth(duration: 0.3), value: isCompassVisible)
         }
     }
 
-    private func handleMapEffects(_ effect: MapUiEffects, proxy: MapProxy) {
+}
+
+private extension MapView {
+    func handleMapEffects(_ effect: MapUiEffects, proxy: MapProxy) {
         switch onEnum(of: effect) {
         case .updateCamera(let effect):
             updateCamera(effect)
@@ -221,20 +266,20 @@ struct MapView: View {
         }
     }
 
-    private func resetBearing(proxy: MapProxy) {
+    func resetBearing(proxy: MapProxy) {
         guard let map = proxy.map else { return }
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
             viewport = .resetBearingTarget(cameraState: map.cameraState)
         }
     }
 
-    private func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
+    func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
             viewport = .target(for: effect, isLandscape: isMapLandscape)
         }
     }
 
-    private func showMyLocation(_ effect: MapUiEffectsShowMyLocation, proxy: MapProxy) {
+    func showMyLocation(_ effect: MapUiEffectsShowMyLocation, proxy: MapProxy) {
         guard let target = viewport.followLocationTarget(
             effect.myLocationStatus,
             cameraZoom: proxy.map?.cameraState.zoom
@@ -245,7 +290,7 @@ struct MapView: View {
         }
     }
 
-    private func zoom(_ effect: MapUiEffectsZoom, proxy: MapProxy) {
+    func zoom(_ effect: MapUiEffectsZoom, proxy: MapProxy) {
         guard let map = proxy.map else { return }
         let target = viewport.zoomTarget(effect, cameraState: map.cameraState)
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
