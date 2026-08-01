@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +39,7 @@ import com.mapbox.maps.MapboxDelicateApi
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.MapboxMapComposable
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
@@ -250,53 +252,12 @@ fun MapContent(
                 )
             }
             if (mapUiState.gpxLayerVisible) {
-                mapUiState.gpxDetails?.let { gpxDetails ->
-                    if (mapUiState.gpxRouteVisible) {
-                        val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
-                            lineMetrics = BooleanValue(true)
-                        }
-                        LaunchedEffect(key1 = gpxDetails.layerId) {
-                            geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
-                        }
-                        LineLayer(
-                            sourceState = geoJsonSource,
-                            layerId = gpxDetails.layerId,
-                        ) {
-                            lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
-                            lineColor = ColorValue(primaryOnMapColor)
-                            lineBorderColor = ColorValue(mapStrokeColor)
-                            lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
-                            lineCap = LineCapValue.ROUND
-                            lineJoin = LineJoinValue.ROUND
-                        }
-                    }
-
-                    gpxDetails.waypoints.forEach { waypoint ->
-                        val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
-                        PointAnnotation(waypoint.location.toPoint()) {
-                            interactionsState.onClicked {
-                                onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
-                                true
-                            }
-                            iconImage = rememberIconImage
-                            iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
-                                SharedDimens.GPX_WAYPOINT_MARKER_SCALE
-                            } else {
-                                SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
-                            }
-                        }
-                    }
-
-                    mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->
-                        key(distanceInfoWindowData.location) {
-                            DistanceInfoWindowAnnotation(
-                                info = distanceInfoWindowData,
-                                gpxDetails = gpxDetails,
-                                onEvent = onEvent,
-                            )
-                        }
-                    }
-                }
+                GpxLayer(
+                    mapUiState = mapUiState,
+                    onEvent = onEvent,
+                    routeColor = primaryOnMapColor,
+                    routeStrokeColor = mapStrokeColor,
+                )
             }
         }
         MapCameraDebugPanel(
@@ -306,6 +267,61 @@ fun MapContent(
             onMoveCamera = { position -> mapViewportState.setCameraOptions(position.toCameraOptions()) },
             onClose = { isCameraPanelVisible = false },
         )
+    }
+}
+
+@OptIn(MapboxDelicateApi::class)
+@Composable
+@MapboxMapComposable
+private fun GpxLayer(
+    mapUiState: MapUiState,
+    onEvent: (MainUiEvents) -> Unit,
+    routeColor: Color,
+    routeStrokeColor: Color,
+) {
+    val gpxDetails = mapUiState.gpxDetails ?: return
+    if (mapUiState.gpxRouteVisible) {
+        val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
+            lineMetrics = BooleanValue(true)
+        }
+        LaunchedEffect(key1 = gpxDetails.layerId) {
+            geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
+        }
+        LineLayer(
+            sourceState = geoJsonSource,
+            layerId = gpxDetails.layerId,
+        ) {
+            lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
+            lineColor = ColorValue(routeColor)
+            lineBorderColor = ColorValue(routeStrokeColor)
+            lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
+            lineCap = LineCapValue.ROUND
+            lineJoin = LineJoinValue.ROUND
+        }
+    }
+    gpxDetails.waypoints.forEach { waypoint ->
+        val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
+        PointAnnotation(waypoint.location.toPoint()) {
+            interactionsState.onClicked {
+                onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+                true
+            }
+            iconImage = rememberIconImage
+            iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
+                SharedDimens.GPX_WAYPOINT_MARKER_SCALE
+            } else {
+                SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
+            }
+        }
+    }
+    mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->
+        key(distanceInfoWindowData.location) {
+            DistanceInfoWindowAnnotation(
+                info = distanceInfoWindowData,
+                gpxDetails = gpxDetails,
+                onEvent = onEvent,
+            )
+        }
     }
 }
 
