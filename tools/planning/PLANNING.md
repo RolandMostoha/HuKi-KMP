@@ -5,7 +5,7 @@
 | Status | Meaning                     |
 |--------|-----------------------------|
 | `[ ]`  | Not started                 |
-| `[L]`  | Required for Go-Live        |
+| `[R]`  | Required for Next Release   |
 | `[~]`  | In progress                 |
 | `[x]`  | Done                        |
 | `[-]`  | Cancelled / deprioritized   |
@@ -41,70 +41,22 @@ Route Planner, Support / Billing
 
 Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered.
 
-## iOS App Store Release
-
-### Apple foundations (App Store Connect + signing)
-
-| Status | Task                                                                                                       |
-|--------|------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Register Apple Developer Account                                                                           |
-| `[x]`  | Register App ID / bundle `hu.mostoha.mobile.ios.huki` + capabilities (Location)                            |
-| `[x]`  | Distribution certificate + App Store provisioning profile via Xcode                                        |
-| `[x]`  | Decide device family —> iPhone Portrait+Landscape AND iPad (drives screenshots + `TARGETED_DEVICE_FAMILY`) |
-| `[x]`  | Confirm Deployment Target (18.2)                                                                           |
-| `[x]`  | Confirm Release signing config                                                                             |
-| `[x]`  | Create app record in App Store Connect                                                                     |
-
-### Build / compliance
-
-| Status | Task                                                                                                            |
-|--------|-----------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Add `ITSAppUsesNonExemptEncryption=false` to `Info.plist` (HTTPS exempt, skips upload prompt)                   |
-| `[x]`  | Verify `INFOPLIST_PREPROCESS` works → `UIFileSharingEnabled`/`LSSupportsOpeningDocumentsInPlace` OFF in Release |
-| `[x]`  | LogLevel.ALL only in debug                                                                                      |
-| `[x]`  | Mapbox downloads (secret) token wired for archive/CI `.netrc`                                                   |
-| `[x]`  | dSYM upload to Crashlytics for Release symbolication                                                            |
-| `[x]`  | Archive smoke test on a real device -> Tested in TestFlight                                                     |
-
-### Store metadata (en-US + hu-HU)
-
-| Status | Task                                                                              |
-|--------|-----------------------------------------------------------------------------------|
-| `[x]`  | App name, subtitle, keywords                                                      |
-| `[x]`  | Description + promotional text (both locales)                                     |
-| `[x]`  | Primary/secondary category (Navigation / Travel)                                  |
-| `[x]`  | Support URL + Marketing URL + copyright                                           |
-| `[x]`  | Age rating questionnaire                                                          |
-| `[x]`  | Privacy Policy ->  `PrivacyInfo.xcprivacy` (location, crash, analytics, deviceID) |
-| `[x]`  | Privacy Policy URL entered (policy page exists — needs hosted URL)                |
+## Release
 
 ### Assets
 
-| Status | Task                                                          |
-|--------|---------------------------------------------------------------|
-| `[x]`  | App Store screenshots — per chosen device sizes, both locales |
-| `[x]`  | 1024×1024 marketing icon present in appiconset, no alpha      |
-| `[ ]`  | Launch screen verified in Release                             |
-| `[ ]`  | App preview video (optional)                                  |
-
-### Review readiness
-
-| Status | Task                                                                                                |
-|--------|-----------------------------------------------------------------------------------------------------|
-| `[x]`  | Verify Mapbox attribution + telemetry opt-out UI present (App Review requirement)                   |
-| `[x]`  | Review notes: when-in-use location rationale, no login, GPX import test steps, map data attribution |
-| `[x]`  | Landscape mode pass (cross-ref FEATURE: Landscape)                                                  |
-| `[x]`  | Tablet mode pass (cross-ref FEATURE: Landscape)                                                     |
+| Status | Task                         |
+|--------|------------------------------|
+| `[ ]`  | App preview video (optional) |
 
 ### TestFlight & CD
 
-| Status | Task                                                                                       |
-|--------|--------------------------------------------------------------------------------------------|
-| `[ ]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                              |
-| `[ ]`  | Feed changelog to store; bump from `version.properties` (reuse generated WhatsNew content) |
-| `[ ]`  | Internal TestFlight build + crash-free validation                                          |
-| `[-]`  | External TestFlight beta (optional, requires beta review)                                  |
-| `[ ]`  | CD on Apple Store — GitHub Actions → TestFlight/App Store upload                           |
+| Status | Task                                                                                                                          |
+|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                                                                 |
+| `[R]`  | Feed changelog to store (potential script from base notes); bump from `version.properties` (reuse generated WhatsNew content) |
+| `[R]`  | Auto generate `version.properties` (reuse generated WhatsNew content)                                                         |
+| `[R]`  | CD on Apple Store — GitHub Actions → TestFlight/App Store upload                                                              |
 
 ## Backlog
 
@@ -113,8 +65,8 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | Status | Feature                                                                                          |
 |--------|--------------------------------------------------------------------------------------------------|
 | `[ ]`  | Launcher icon Android                                                                            |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
-| `[ ]`  | Update Kotlin + Gradle 9                                                                         |
+| `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
+| `[R]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
 | `[ ]`  | Check project against Swift agent skills in XCode                                                |
 | `[ ]`  | GitHub smart labels, E.g.: https://github.com/balazsgerlei/ScreenLit/blob/main/README.md?plain=1 |
@@ -123,6 +75,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Map        | Bug: LIQ rate limit wrong HTTP error code                                                                                                                                                                                                                                                                       |
 | `[ ]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top compared to Waypoint / Middle points (marker placement order issue)                                                                                                                                                                 |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
@@ -178,20 +131,11 @@ they can record their exact location / zoom level with a CROSS marker.
 | `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                           |
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
 
-#### Add Place History items to Search -> Autocomplete
-
-- Local DB: fire on every keystroke, no debounce — it's an instant indexed read, that's the whole
-  point.
-- clock or pin icon), remote results below
-- LocationIQ: debounced (~300ms) — don't spam the API mid-typing.
-- Dedupe, so results from Place History is not shown again.
-
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                                                                                               |
-|--------|--------------|--------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Destinations | Add Map based destinations with Landscapes                                                                         |
-| `[ ]`  | Destinations | Bug: not readable category label ![bug_destinations_category_darkmode.png](bug_destinations_category_darkmode.png) |
+| Status | Scope        | Task                                       |
+|--------|--------------|--------------------------------------------|
+| `[ ]`  | Destinations | Add Map based destinations with Landscapes |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -200,13 +144,6 @@ they can record their exact location / zoom level with a CROSS marker.
 | `[ ]`  | WhatsNew | In user pereferences save the user INSTALL date.                                                          |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                    |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list). |
-
-### FEATURE: Route Planner: Wandering mode
-
-Goal: Set a single starting point (e.g. parking), and show the straight line distance from the
-point.
-Works like a GPX with waypoints only, set a few points and leave the user to decide which route to
-follow.
 
 ### FEATURE: GPX Distance
 
@@ -220,9 +157,9 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
-| `[ ]`  | GPX   | Colored GPX                                                                       |
-| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
+| `[R]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
+| `[R]`  | GPX   | Colored GPX                                                                       |
+| `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                             |
 | `[ ]`  | GPX   | ? Display start and end location: "Around Bükk..." -> on import we can do geocode |
 
@@ -247,12 +184,12 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope        | Task                                                                      |
 |--------|--------------|---------------------------------------------------------------------------|
-| `[ ]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
-| `[ ]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
-| `[ ]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
-| `[ ]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
+| `[R]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
+| `[R]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
+| `[R]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
+| `[R]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
+| `[R]`  | PlaceDetails | Show Place Details with a marker for Destinations                         |
 | `[ ]`  | PlaceDetails | Search nearby button                                                      |
-| `[ ]`  | PlaceDetails | Show Place Details for Destinations                                       |
 
 ### FEATURE: Settings
 
@@ -277,15 +214,11 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 Goal: let users increase map **label/icon size** without enlarging the map graphics (roads, fills,
 casings) — a text-visibility + accessibility win for the #1 feature "Map, text visibility".
 
-Approach: Mapbox's **global scale factor**, exposed on Android Compose as
-`mapboxMap.symbolScaleBehavior` (set via `MapEffect`), with three modes:
-
-- `SymbolScaleBehavior.fixed(factor)` — manual multiplier, range **0.5×–3×**
-- `SymbolScaleBehavior.system` — auto-follows the OS font-scale accessibility setting (free win)
-- `SymbolScaleBehavior.system { fontScale -> ... }` — custom mapping/clamp of the OS font scale
-
 Only affects icons + text labels; map geometry stays the same and zoom interpolation is preserved
 by the renderer (no per-layer `text-size` expression juggling).
+
+Approach: Mapbox's **global scale factor**, exposed on Android Compose as
+`mapboxMap.symbolScaleBehavior` (set via `MapEffect`), with three modes:
 
 Blockers:
 
@@ -326,9 +259,15 @@ Refs:
 
 | Status | Scope        | Task                                                                                     |
 |--------|--------------|------------------------------------------------------------------------------------------|
-| `[ ]`  | RoutePlanner | Save created routes to `gpx/routeplanner/` (sibling of `gpx/external/`)                  |
-| `[ ]`  | RoutePlanner | Serialize a created route to `.gpx` (persist to collection sandbox or temp for share)    |
+| `[R]`  | RoutePlanner | Deploy Graphhopper RoutePlanner (HuKi-Routing) to AWS Lightsail.                         |
+| `[R]`  | RoutePlanner | Save created routes to `gpx/routeplanner/` (sibling of `gpx/external/`)                  |
+| `[R]`  | RoutePlanner | Serialize a created route to `.gpx` (persist to collection sandbox or temp for share)    |
 | `[ ]`  | RoutePlanner | Share created track via share sheet (iOS ShareLink / Android ACTION_SEND + FileProvider) |
+
+#### FEATURE: Route Planner: Wandering mode
+
+Goal: Set a single starting point (e.g. parking), and show the straight line distance from the point.
+Works like a GPX with waypoints only, set a few points and leave the user to decide which route to follow.
 
 ### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
 
@@ -400,6 +339,13 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | Status | Scope | Task                                                                                                                           |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | iOS: replace `ViewportObserver` + `proxy.viewport` observer with `.onChange(of: viewport)`; pan-test before deleting the class |
+
+
+### FEATURE: Hike Finder
+
+- Create a crawler for hiking collection websites (Term, AktivM etc.).
+- Create a DB based on the crawled info.
+- Build a search engine on top of it.
 
 ---
 
