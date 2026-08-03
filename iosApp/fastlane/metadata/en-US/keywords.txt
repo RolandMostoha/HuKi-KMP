@@ -1,0 +1,1 @@
+hiking,trail,hungary,gpx,map,outdoor,navigation,mountain,tourist,route,nature

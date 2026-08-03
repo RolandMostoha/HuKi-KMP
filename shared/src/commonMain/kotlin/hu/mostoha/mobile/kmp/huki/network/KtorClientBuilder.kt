@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.network
 
+import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,7 +15,7 @@ fun createHttpClient(engine: HttpClientEngine): HttpClient =
     HttpClient(engine) {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.ALL
+            level = if (isDebugBuild) LogLevel.ALL else LogLevel.NONE
         }
         install(ContentNegotiation) {
             json(

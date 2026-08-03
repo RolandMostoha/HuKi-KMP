@@ -124,7 +124,7 @@ struct MainView: View {
             case .success(let url):
                 viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
             case .failure(let error):
-                print(error)
+                logError(message: "Failed to import GPX file: \(error)")
             }
         }
     }
@@ -386,7 +386,7 @@ private extension MainView {
             viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
             navigationPath = NavigationPath()
         } catch {
-            print("Failed to copy incoming GPX file: \(error)")
+            logError(message: "Failed to copy incoming GPX file: \(error)")
         }
     }
 }
