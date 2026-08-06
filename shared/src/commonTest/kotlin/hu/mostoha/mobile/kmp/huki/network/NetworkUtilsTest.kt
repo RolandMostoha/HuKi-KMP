@@ -82,7 +82,7 @@ class NetworkUtilsTest {
     fun `Given rate limited response, When handleNetworkCall invoked, Then error result is RATE_LIMITED`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
-                createHttpClient(MockEngine { respond("", HttpStatusCode.Locked) })
+                createHttpClient(MockEngine { respond("", HttpStatusCode.TooManyRequests) })
                     .get("https://example.com")
             }
 
@@ -103,7 +103,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unexpected response, When handleNetworkCall invoked, Then error result is UNKNOWN`() {
+    fun `Given unexpected response, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.Found) })
@@ -111,6 +111,20 @@ class NetworkUtilsTest {
             }
 
             actual shouldBe NetworkResult.Error(NetworkError.UNKNOWN)
+            crashlyticsService.recordedExceptions shouldHaveSize 1
+        }
+    }
+
+    @Test
+    fun `Given unauthorized response, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
+        runTest {
+            val actual = handleNetworkCall<TestDto>(crashlyticsService) {
+                createHttpClient(MockEngine { respond("", HttpStatusCode.Unauthorized) })
+                    .get("https://example.com")
+            }
+
+            actual shouldBe NetworkResult.Error(NetworkError.UNKNOWN)
+            crashlyticsService.recordedExceptions shouldHaveSize 1
         }
     }
 

@@ -26,9 +26,14 @@ suspend inline fun <reified T> handleNetworkCall(
             400 -> NetworkResult.Error(NetworkError.BAD_REQUEST)
             404 -> NetworkResult.Error(NetworkError.NOT_FOUND)
             408 -> NetworkResult.Error(NetworkError.REQUEST_TIMEOUT)
-            423 -> NetworkResult.Error(NetworkError.RATE_LIMITED)
+            429 -> NetworkResult.Error(NetworkError.RATE_LIMITED)
             in 500..599 -> NetworkResult.Error(NetworkError.INTERNAL_SERVER_ERROR)
-            else -> NetworkResult.Error(NetworkError.UNKNOWN)
+            else -> {
+                val statusCode = response.status.value
+                Logger.e { "Network: Unexpected HTTP status $statusCode." }
+                crashlyticsService.recordException(IllegalStateException("Network: Unexpected HTTP status $statusCode"))
+                NetworkResult.Error(NetworkError.UNKNOWN)
+            }
         }
     } catch (exception: UnresolvedAddressException) {
         Logger.e(exception) { "Network: No internet." }
