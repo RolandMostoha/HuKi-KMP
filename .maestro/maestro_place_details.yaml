@@ -42,3 +42,12 @@ appId: ${APP_ID}
     id: PLACE_DETAILS_SHEET
 - assertVisible:
     id: MAIN_SEARCH_BAR
+
+# The reverse geocoded place is saved into Place History.
+- tapOn: "Search..."
+- extendedWaitUntil:
+    visible:
+      id: RECENT_PLACES_SECTION
+    timeout: 5000
+- assertVisible:
+    id: RECENT_PLACES_ITEM

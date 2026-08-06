@@ -292,6 +292,7 @@ class MainViewModel(
                     },
                 )
             _uiState.updateMapUiState { it.copy(placeDetails = placeDetails) }
+            place?.let { placeHistoryRepository.recordVisit(it) }
         }
     }
 

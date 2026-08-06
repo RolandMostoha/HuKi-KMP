@@ -194,10 +194,16 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[x]`  | PlaceDetails | Handle reverse geocode failure (offline / rate limit) in the sheet                   |
 | `[R]`  | PlaceDetails | Wire PlaceDetails into Search autocomplete selection to `PlaceDetails.Loaded(place)` |
 | `[R]`  | PlaceDetails | Wire PlaceDetails into Destinations                                                  |
-| `[R]`  | PlaceDetails | Wire LONG_TAP as PlaceSource and save it in place history                            |
+| `[x]`  | PlaceDetails | Wire LONG_TAP as PlaceSource and save it in place history                            |
 | `[R]`  | PlaceDetails | Wire the Route plan button to the Route Planner                                      |
 | `[ ]`  | PlaceDetails | Search nearby button                                                                 |
 | `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                    |
+
+### FEATURE: PlaceHistory
+
+| Status | Scope        | Task                                                                                |
+|--------|--------------|-------------------------------------------------------------------------------------|
+| `[ ]`  | PlaceHistory | Add the PlaceSource indicator (long-tap, destinations etc.) to place history screen |
 
 ### FEATURE: Route Planner
 

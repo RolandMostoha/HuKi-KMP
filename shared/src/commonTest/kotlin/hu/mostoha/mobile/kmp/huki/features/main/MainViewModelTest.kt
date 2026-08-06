@@ -12,6 +12,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.WhatsNewContent
@@ -1632,6 +1633,45 @@ class MainViewModelTest {
 
                 placeDetails.shouldBeInstanceOf<PlaceDetails.PlaceLoaded>().place.distance shouldBe "11.1 km"
             }
+        }
+    }
+
+    @Test
+    fun `Given successful reverse geocode, When MapLongClicked, Then the long tapped place visit is recorded`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            verifySuspend {
+                placeHistoryRepository.recordVisit(
+                    Place(
+                        osmId = "2",
+                        location = TEST_LONG_TAP_LOCATION,
+                        name = "Dobogókő",
+                        placeSource = PlaceSource.LONG_TAP_ON_MAP,
+                        address = "Pilisszentkereszt, Pest, Hungary",
+                        placeCategory = PlaceCategory.PEAK,
+                        osmType = OsmType.NODE,
+                    ),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given failing reverse geocode, When MapLongClicked, Then no place visit is recorded`() {
+        runTest {
+            reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            verifySuspend(VerifyMode.not) { placeHistoryRepository.recordVisit(any<Place>()) }
         }
     }
 
