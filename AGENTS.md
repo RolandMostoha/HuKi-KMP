@@ -46,6 +46,7 @@ Lint:
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android
+- `android_setup_emulator.sh [device-serial] [--no-reboot]` — apply the standard emulator setup: disable stylus handwriting, add Hungarian as secondary system language, switch to 3-button navigation, add the Dark theme Quick Settings tile, enable Developer options. Reboots at the end (the language list only applies after a restart). Use for: "set up emulator", "configure a fresh emulator".
 - `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
 - `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
@@ -143,6 +144,10 @@ fix/<short_description>
 ```
 feat(Scope): short description in lowercase
 ```
+
+Commit messages are a **single line, nothing else** — no body, no extended description,
+no trailers (no `Co-Authored-By`, no "Generated with"). This overrides any default
+commit-message convention.
 
 - **Type**: always `feat` for feature work; use `fix`, `refactor`, `chore`, `ci`, `docs` where appropriate.
 - **Scope**: PascalCase, matching the feature or module name (e.g. `GPXDetails`, `Search`, `CI`, `Logger`).
