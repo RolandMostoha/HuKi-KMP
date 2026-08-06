@@ -64,7 +64,8 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Feature                                                                                          |
 |--------|--------------------------------------------------------------------------------------------------|
-| `[ ]`  | Launcher icon Android                                                                            |
+| `[ ]`  | Change app icon in Google Play Store for Legacy HuKi                                             |
+| `[ ]`  | Change feature graphic in Google Play Store                                                      |
 | `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
 | `[R]`  | Update Kotlin + Gradle 9                                                                         |
 | `[ ]`  | Sonar? free for open source projects                                                             |
@@ -340,8 +341,34 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | iOS: replace `ViewportObserver` + `proxy.viewport` observer with `.onChange(of: viewport)`; pan-test before deleting the class |
 
-
 ### FEATURE: Hike Finder
+
+Goal: Create a search engine for hiking routes which have downloadable GPX files.
+The crawler parses the most important HU hiking sites:
+- termeszetjaro
+- aktivmagyarorszag
+- kirandulastippek
+- mozgasvilag
+
+Input: the user can search a route by
+- location / area
+- distance (e.g. routes around 10km)
+- difficulty
+Output: a list with links pointing to the route article inside the website.
+
+Example:
+Input: Dobogókő area, 10km, medium difficulty
+Output:
+- https://kirandulastippek.hu/budapest-kornyeke/dobogoko
+- https://www.mozgasvilag.hu/turazas/turautak/szep-kilatasos-pilisi-cukitura-dobogokore-es-vissza
+- https://www.termeszetjaro.hu/hu/tour/gyalogtura/dobogoko-ket-arca-az-eszaki-vadregenybol-a-deli-napos-oldalra/36765072/
+
+Keep in mind:
+- Comply with website terms and conditions
+- All websites should be asked to participate / allow after POC is done
+- Do not store the GPX files, or any legal/proprietary data
+- App just redirects the user to the link in a browser
+
 
 - Create a crawler for hiking collection websites (Term, AktivM etc.).
 - Create a DB based on the crawled info.

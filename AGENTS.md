@@ -305,6 +305,12 @@ val [actual] = operation(X)
 - **Show-once**: the sheet auto-shows on first launch after an update; `DefaultWhatsNewRepository` compares `currentVersion` against the `WHATS_NEW_LAST_SEEN_VERSION` DataStore key. `FeatureFlags.ALWAYS_SHOW_WHATSNEW` forces it for debugging (keep `false` on commit).
 - **E2E**: because the sheet auto-shows on a clean `clearState` launch, every Maestro flow except `maestro_whats_new.yaml` passes `arguments: { skipWhatsNew: true }` to `launchApp` to suppress it (`AppLaunchConfig.skipWhatsNew`, read from the intent extra on Android and `ProcessInfo.arguments` on iOS). Add this arg to any new flow.
 
+## App Icon
+
+- **Source of truth**: `tools/assets/huki_app_icon_v3.svg` — a flat SVG on a 1255 canvas with three named paths (`background` / `hill` / `tree`).
+- **Android** — adaptive icon only
+- **iOS** — `iosApp/HukiAppIcon.icon` - made by Apple Icon Composer
+
 ## Code Quality & Linting
 ### Android
 - **Formatting:** Use **ktlint**. Refer to `.editorconfig` in the root for specific formatting rules.
