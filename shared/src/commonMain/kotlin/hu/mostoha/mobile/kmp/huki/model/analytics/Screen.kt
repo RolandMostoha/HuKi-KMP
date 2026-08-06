@@ -5,6 +5,7 @@ enum class Screen(val value: String) {
     SEARCH("search"),
     LAYERS("layers"),
     GPX_DETAILS("gpx_details"),
+    PLACE_DETAILS("place_details"),
     WHATS_NEW("whats_new"),
     MENU("menu"),
     SETTINGS("settings"),

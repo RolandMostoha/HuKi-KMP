@@ -22,6 +22,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
@@ -36,13 +37,19 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
+import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
+import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
+import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
@@ -56,6 +63,7 @@ import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -89,6 +97,19 @@ class MainViewModelTest {
             name = "Budapest",
             placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
         )
+        private val TEST_LONG_TAP_LOCATION = Location(47.7181, 18.8948)
+        private val TEST_LOCATION_IQ_PLACE = LocationIqPlace(
+            placeId = "1",
+            osmId = "2",
+            osmType = "node",
+            licence = "LocationIQ",
+            lat = 47.7185,
+            lon = 18.8951,
+            displayName = "Dobogókő, Pilisszentkereszt, Pest, Hungary",
+            displayPlace = "Dobogókő",
+            displayAddress = "Pilisszentkereszt, Pest, Hungary",
+            type = "peak",
+        )
         private val TEST_PLACE_WITH_BOUNDING_BOX = TEST_PLACE.copy(
             boundingBox = BoundingBox(
                 north = 47.6131,
@@ -111,6 +132,12 @@ class MainViewModelTest {
     }
     private val analyticsService = FakeAnalyticsService()
     private val crashlyticsService = FakeCrashlyticsService()
+    private var reverseGeocodeResult: NetworkResult<LocationIqPlace?> = NetworkResult.Success(TEST_LOCATION_IQ_PLACE)
+    private val geocodingRepository = object : GeocodingRepository {
+        override suspend fun autocomplete(searchText: String) = NetworkResult.Success(emptyList<LocationIqPlace>())
+
+        override suspend fun reverseGeocode(location: Location): NetworkResult<LocationIqPlace?> = reverseGeocodeResult
+    }
 
     @BeforeTest
     fun setup() {
@@ -137,6 +164,7 @@ class MainViewModelTest {
             gpxRepository = gpxRepository,
             placeHistoryRepository = placeHistoryRepository,
             destinationRepository = destinationRepository,
+            geocodingRepository = geocodingRepository,
             locationMonitoringService = locationMonitoringService,
             settingsRepository = settingsRepository,
             whatsNewRepository = whatsNewRepository,
@@ -1549,6 +1577,196 @@ class MainViewModelTest {
             analyticsService.screenViews shouldBe listOf(
                 AnalyticsEvent.ScreenView(Screen.SEARCH),
                 AnalyticsEvent.ScreenView(Screen.SEARCH),
+            )
+        }
+    }
+
+    @Test
+    fun `When MapLongClicked, Then uiState has loading PlaceDetails, then the reverse geocoded place`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.PlaceDetails
+                    mapUiState.placeDetails shouldBe PlaceDetails.Loading(TEST_LONG_TAP_LOCATION)
+                }
+
+                advanceUntilIdle()
+
+                awaitItem().mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(
+                    Place(
+                        osmId = "2",
+                        location = TEST_LONG_TAP_LOCATION,
+                        name = "Dobogókő",
+                        placeSource = PlaceSource.LONG_TAP_ON_MAP,
+                        address = "Pilisszentkereszt, Pest, Hungary",
+                        placeCategory = PlaceCategory.PEAK,
+                        osmType = OsmType.NODE,
+                    ),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given last known location, When MapLongClicked, Then PlaceDetails has the straight line distance`() {
+        runTest {
+            val userLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
+            val viewModel = createViewModel(
+                grantedPermission = true,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+            )
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                val placeDetails = awaitItem().mapUiState.placeDetails
+
+                placeDetails.shouldBeInstanceOf<PlaceDetails.PlaceLoaded>().place.distance shouldBe "11.1 km"
+            }
+        }
+    }
+
+    @Test
+    fun `Given failing reverse geocode, When MapLongClicked, Then PlaceDetails is Unresolved with the location`() {
+        runTest {
+            reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.PlaceDetails
+                    mapUiState.placeDetails shouldBe PlaceDetails.Unresolved(TEST_LONG_TAP_LOCATION)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given failing reverse geocode and last known location, When MapLongClicked, Then distance is shown`() {
+        runTest {
+            reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
+            val userLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
+            val viewModel = createViewModel(
+                grantedPermission = true,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+            )
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                val placeDetails = awaitItem().mapUiState.placeDetails
+
+                placeDetails shouldBe PlaceDetails.Unresolved(TEST_LONG_TAP_LOCATION, distance = "11.1 km")
+            }
+        }
+    }
+
+    @Test
+    fun `Given Unresolved PlaceDetails, When PlaceDetailsMapsNavigationClicked, Then the tapped location opens`() {
+        runTest {
+            reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.PlaceDetailsMapsNavigationClicked)
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(TEST_LONG_TAP_LOCATION)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given shown PlaceDetails, When PlaceDetailsCloseClicked, Then sheet and marker are cleared`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsCloseClicked)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem()) {
+                    sheet shouldBe null
+                    mapUiState.placeDetails shouldBe null
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given shown PlaceDetails, When SearchClicked, Then the place marker is cleared`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchClicked)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.Search
+                    mapUiState.placeDetails shouldBe null
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given shown PlaceDetails, When PlaceDetailsMapsNavigationClicked, Then effect is OpenMapsNavigation`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.PlaceDetailsMapsNavigationClicked)
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(TEST_LONG_TAP_LOCATION)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `When MapLongClicked, Then place details analytics events are logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+            viewModel.onEvent(MainUiEvents.PlaceDetailsCloseClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP),
+                AnalyticsEvent.PlaceDetailsRoutePlanClicked,
+                AnalyticsEvent.PlaceDetailsClosed,
             )
         }
     }

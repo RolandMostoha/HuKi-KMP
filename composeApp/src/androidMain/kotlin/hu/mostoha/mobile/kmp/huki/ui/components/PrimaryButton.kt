@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import hu.mostoha.mobile.android.huki.R
-import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 
 @Composable
@@ -27,7 +26,6 @@ fun PrimaryButton(
         ),
         onClick = onClick,
         modifier = modifier,
-        verticalContentPadding = Dimens.Medium,
         contentDescription = contentDescription,
     )
 }

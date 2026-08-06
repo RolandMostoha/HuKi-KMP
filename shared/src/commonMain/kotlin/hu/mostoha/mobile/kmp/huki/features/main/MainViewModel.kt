@@ -14,6 +14,7 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
+import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
@@ -25,17 +26,22 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
+import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
@@ -45,11 +51,13 @@ import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,12 +75,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
     val permissionsController: PermissionsController,
     val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
     private val destinationRepository: DestinationRepository,
+    private val geocodingRepository: GeocodingRepository,
     private val locationMonitoringService: LocationMonitoringService,
     private val settingsRepository: SettingsRepository,
     private val whatsNewRepository: WhatsNewRepository,
@@ -90,6 +101,8 @@ class MainViewModel(
     val mapUiEffects: Flow<MapUiEffects> = _mapUiEffects.receiveAsFlow()
 
     private val selectedWaypoint = MutableStateFlow<GpxWaypoint?>(null)
+
+    private var reverseGeocodeJob: Job? = null
 
     init {
         initLogging()
@@ -115,6 +128,11 @@ class MainViewModel(
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
+            // Place Details events
+            is MainUiEvents.MapLongClicked -> showPlaceDetails(event.location)
+            MainUiEvents.PlaceDetailsCloseClicked -> closePlaceDetails()
+            MainUiEvents.PlaceDetailsRoutePlanClicked -> planRoute()
+            MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationReceived -> updateMyLocation()
@@ -147,11 +165,23 @@ class MainViewModel(
     }
 
     private fun showSheet(sheet: Sheet) {
-        _uiState.update { it.copy(sheet = sheet) }
+        reverseGeocodeJob?.cancel()
+        _uiState.update { uiState ->
+            uiState.copy(
+                sheet = sheet,
+                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+            )
+        }
     }
 
     private fun hideSheet() {
-        _uiState.update { it.copy(sheet = null) }
+        reverseGeocodeJob?.cancel()
+        _uiState.update { uiState ->
+            uiState.copy(
+                sheet = null,
+                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+            )
+        }
     }
 
     private fun dismissAlert() {
@@ -237,6 +267,59 @@ class MainViewModel(
         val destination = destinationRepository.requireDestination(osmId)
         analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
         showDestination(destination)
+    }
+
+    private fun showPlaceDetails(location: Location) {
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP))
+        reverseGeocodeJob?.cancel()
+
+        showPlaceDetailsSheet(PlaceDetails.Loading(location))
+
+        reverseGeocodeJob = viewModelScope.launch {
+            val result = geocodingRepository.reverseGeocode(location)
+            val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
+                locationMonitoringService.lastKnownLocation()
+            }
+            val place = (result as? NetworkResult.Success)?.data?.toReverseGeocodedPlace(location, userLocation)
+            if (place == null) {
+                analyticsService.logEvent(AnalyticsEvent.PlaceDetailsUnresolved)
+            }
+            val placeDetails = place?.let { PlaceDetails.PlaceLoaded(it) }
+                ?: PlaceDetails.Unresolved(
+                    location = location,
+                    distance = userLocation?.let {
+                        DistanceFormatter.formatDistance(it.distanceBetween(location))
+                    },
+                )
+            _uiState.updateMapUiState { it.copy(placeDetails = placeDetails) }
+        }
+    }
+
+    private fun showPlaceDetailsSheet(placeDetails: PlaceDetails) {
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.copy(placeDetails = placeDetails),
+                sheet = Sheet.PlaceDetails,
+            )
+        }
+    }
+
+    private fun closePlaceDetails() {
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsClosed)
+        hideSheet()
+    }
+
+    private fun openPlaceMapsNavigation() {
+        val placeDetails = _uiState.value.mapUiState.placeDetails ?: return
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsMapsNavigationOpened)
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenMapsNavigation(placeDetails.location))
+        }
+    }
+
+    private fun planRoute() {
+        if (_uiState.value.mapUiState.placeDetails == null) return
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsRoutePlanClicked)
     }
 
     private fun enableMyLocation() {
@@ -545,6 +628,7 @@ class MainViewModel(
                         uiState.copy(
                             mapUiState = uiState.mapUiState.copy(
                                 gpxDetails = gpxDetails,
+                                placeDetails = null,
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
                                 allDistancesVisible = false,
@@ -646,5 +730,9 @@ class MainViewModel(
         uiState
             .onEach { Logger.d { "MainState: ${it.toString().trimLongLists()}" } }
             .launchIn(viewModelScope)
+    }
+
+    private companion object {
+        val PLACE_DETAILS_LOCATION_TIMEOUT = 2.seconds
     }
 }

@@ -26,6 +26,8 @@ fun CameraPosition.toCameraOptions(): CameraOptions =
 
 fun Location.toPoint(): Point = Point.fromLngLat(longitude, latitude)
 
+fun Point.toLocation(): Location = Location(latitude = latitude(), longitude = longitude())
+
 fun List<Location>.toPoints(): List<Point> = map { it.toPoint() }
 
 fun List<Location>.toLineString(): LineString = LineString.fromLngLats(this.toPoints())

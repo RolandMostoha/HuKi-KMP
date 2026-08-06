@@ -20,7 +20,7 @@ struct GpxDetailsSheetView: View {
                 GpxStatsRowView(strings: strings, gpxDetails: gpxDetails)
                 VStack(spacing: 12) {
                     PrimaryButton(
-                        systemImage: "location.north.fill",
+                        icon: .system("location.north.fill"),
                         title: strings.get(id: SharedRes.strings().gpx_details_start),
                         action: onStartClick
                     )

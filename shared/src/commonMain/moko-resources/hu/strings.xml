@@ -65,6 +65,10 @@
     <string name="gpx_details_navigation_to_start">Maps navigáció a kezdéshez</string>
     <string name="gpx_details_navigation_to_end">Maps navigáció a végéhez</string>
 
+    <string name="place_details_loading">Hely keresése…</string>
+    <string name="place_details_route_plan">Útvonaltervezés</string>
+    <string name="place_details_maps_navigation">Maps navigáció</string>
+
     <string name="gpx_distance_info_window_a11y">Táv és idő a helyzetedtől eddig a pontig az útvonal mentén</string>
 
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>

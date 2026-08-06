@@ -5,7 +5,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +54,7 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
+import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -140,6 +141,7 @@ private fun MainContent(
     val standardSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = standardSheetState)
     var showModalBottomSheet by remember { mutableStateOf(false) }
     var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
+    var placeDetailsSheetPeekHeight by remember { mutableStateOf(300.dp) }
     val currentSheet by rememberUpdatedState(uiState.sheet)
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
@@ -155,7 +157,7 @@ private fun MainContent(
             .collect { value ->
                 val sheet = currentSheet ?: return@collect
                 if (!sheet.isStandard()) return@collect
-                val dismissed = if (sheet is Sheet.Gpx) {
+                val dismissed = if (sheet.isPeeking()) {
                     value == SheetValue.Hidden
                 } else {
                     value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden
@@ -177,7 +179,7 @@ private fun MainContent(
             sheet.isStandard() -> {
                 modalSheetState.hide()
                 showModalBottomSheet = false
-                if (sheet is Sheet.Gpx) {
+                if (sheet.isPeeking()) {
                     standardSheetState.partialExpand()
                 } else {
                     standardSheetState.expand()
@@ -197,90 +199,30 @@ private fun MainContent(
 
     BottomSheetScaffold(
         scaffoldState = standardSheetScaffoldState,
-        sheetPeekHeight = if (uiState.sheet is Sheet.Gpx) gpxSheetPeekHeight else 0.dp,
+        sheetPeekHeight = when (uiState.sheet) {
+            is Sheet.Gpx -> gpxSheetPeekHeight
+            is Sheet.PlaceDetails -> placeDetailsSheetPeekHeight
+            else -> 0.dp
+        },
         sheetDragHandle = null,
         sheetSwipeEnabled = true,
         sheetContainerColor = Color.Transparent,
         sheetShadowElevation = 0.dp,
         sheetContent = {
-            when (val sheet = uiState.sheet) {
-                is Sheet.Gpx -> {
-                    GpxDetailsBottomSheet(
-                        gpxDetails = sheet.gpxDetails,
-                        onStartClick = {
-                            onEvent(MainUiEvents.GpxStartNavigationClicked)
-                        },
-                        onNavigateToStart = {
-                            onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
-                        },
-                        onNavigateToEnd = {
-                            onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
-                        },
-                        onCloseClick = {
-                            coroutineScope.launch {
-                                standardSheetState.hide()
-                                onEvent(MainUiEvents.GpxCloseClicked)
-                            }
-                        },
-                        onCollapsedHeightMeasured = { gpxSheetPeekHeight = it },
-                    )
-                }
-                is Sheet.Search -> {
-                    CompositionLocalProvider(
-                        LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
-                    ) {
-                        SearchBottomSheet(
-                            onCloseClick = {
-                                coroutineScope.launch { standardSheetState.hide() }
-                            },
-                            onPlaceSelected = { place ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.SearchPlaceSelected(place))
-                                }
-                            },
-                            onRecentPlaceSelected = { place ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.SearchRecentPlaceSelected(place))
-                                }
-                            },
-                            onSearchPlaceHistorySelected = { place ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.SearchResultPlaceHistorySelected(place))
-                                }
-                            },
-                            onDestinationSelected = { destination ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.SearchDestinationSelected(destination))
-                                }
-                            },
-                            onSearchDestinationSelected = { destination ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.SearchResultDestinationSelected(destination))
-                                }
-                            },
-                            onGpxFileSelected = { fileUri ->
-                                coroutineScope.launch {
-                                    standardSheetState.hide()
-                                    onEvent(MainUiEvents.GpxFileReopened(fileUri))
-                                }
-                            },
-                            onSeeAllGpxClicked = onGpxCollectionClicked,
-                            onSeeAllPlacesClicked = onPlaceHistoryClicked,
-                            onSeeAllDestinationsClicked = onDestinationsClicked,
-                            onLocationIqClicked = onLocationIqClicked,
-                        )
-                    }
-                }
-                else -> Unit
-            }
+            MainStandardBottomSheet(
+                uiState = uiState,
+                sheetState = standardSheetState,
+                onEvent = onEvent,
+                onGpxCollectionClicked = onGpxCollectionClicked,
+                onPlaceHistoryClicked = onPlaceHistoryClicked,
+                onDestinationsClicked = onDestinationsClicked,
+                onLocationIqClicked = onLocationIqClicked,
+                onGpxPeekHeightMeasured = { gpxSheetPeekHeight = it },
+                onPlaceDetailsPeekHeightMeasured = { placeDetailsSheetPeekHeight = it },
+            )
         },
         containerColor = Color.Transparent,
-    ) { innerPadding ->
+    ) { _ ->
         Box(
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -290,7 +232,6 @@ private fun MainContent(
                 onEvent = onEvent,
             )
             FloatingActionContainer(
-                modifier = Modifier.padding(innerPadding),
                 mainUiState = uiState,
                 onSearchClicked = {
                     onEvent(MainUiEvents.SearchClicked)
@@ -361,6 +302,118 @@ private fun MainContent(
                 )
             }
         }
+    }
+}
+
+private fun Sheet.isPeeking(): Boolean = this is Sheet.Gpx || this is Sheet.PlaceDetails
+
+@Composable
+private fun MainStandardBottomSheet(
+    uiState: MainUiState,
+    sheetState: SheetState,
+    onEvent: (MainUiEvents) -> Unit,
+    onGpxCollectionClicked: () -> Unit,
+    onPlaceHistoryClicked: () -> Unit,
+    onDestinationsClicked: () -> Unit,
+    onLocationIqClicked: () -> Unit,
+    onGpxPeekHeightMeasured: (Dp) -> Unit,
+    onPlaceDetailsPeekHeightMeasured: (Dp) -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    when (val sheet = uiState.sheet) {
+        is Sheet.Gpx -> {
+            GpxDetailsBottomSheet(
+                gpxDetails = sheet.gpxDetails,
+                onStartClick = {
+                    onEvent(MainUiEvents.GpxStartNavigationClicked)
+                },
+                onNavigateToStart = {
+                    onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                },
+                onNavigateToEnd = {
+                    onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+                },
+                onCloseClick = {
+                    coroutineScope.launch {
+                        sheetState.hide()
+                        onEvent(MainUiEvents.GpxCloseClicked)
+                    }
+                },
+                onCollapsedHeightMeasured = onGpxPeekHeightMeasured,
+            )
+        }
+        is Sheet.PlaceDetails -> {
+            uiState.mapUiState.placeDetails?.let { placeDetails ->
+                PlaceDetailsBottomSheet(
+                    placeDetails = placeDetails,
+                    onRoutePlanClick = {
+                        onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+                    },
+                    onMapsNavigationClick = {
+                        onEvent(MainUiEvents.PlaceDetailsMapsNavigationClicked)
+                    },
+                    onCloseClick = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.PlaceDetailsCloseClicked)
+                        }
+                    },
+                    onHeightMeasured = onPlaceDetailsPeekHeightMeasured,
+                )
+            }
+        }
+        is Sheet.Search -> {
+            CompositionLocalProvider(
+                LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
+            ) {
+                SearchBottomSheet(
+                    onCloseClick = {
+                        coroutineScope.launch { sheetState.hide() }
+                    },
+                    onPlaceSelected = { place ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.SearchPlaceSelected(place))
+                        }
+                    },
+                    onRecentPlaceSelected = { place ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.SearchRecentPlaceSelected(place))
+                        }
+                    },
+                    onSearchPlaceHistorySelected = { place ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.SearchResultPlaceHistorySelected(place))
+                        }
+                    },
+                    onDestinationSelected = { destination ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.SearchDestinationSelected(destination))
+                        }
+                    },
+                    onSearchDestinationSelected = { destination ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.SearchResultDestinationSelected(destination))
+                        }
+                    },
+                    onGpxFileSelected = { fileUri ->
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(MainUiEvents.GpxFileReopened(fileUri))
+                        }
+                    },
+                    onSeeAllGpxClicked = onGpxCollectionClicked,
+                    onSeeAllPlacesClicked = onPlaceHistoryClicked,
+                    onSeeAllDestinationsClicked = onDestinationsClicked,
+                    onLocationIqClicked = onLocationIqClicked,
+                )
+            }
+        }
+        else -> Unit
     }
 }
 

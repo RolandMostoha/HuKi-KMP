@@ -2,17 +2,16 @@ import Shared
 import SwiftUI
 
 struct PrimaryButton: View {
-    let systemImage: String
+    let icon: Shared.ImageResource
     let title: String
     let action: () -> Void
 
     var body: some View {
         BaseButton(
-            systemImage: systemImage,
+            icon: icon,
             title: title,
             foregroundColor: SwiftUI.Color(SharedRes.colors().onPrimary.getUIColor()),
             backgroundColor: SwiftUI.Color(SharedRes.colors().primary.getUIColor()),
-            verticalPadding: 12,
             action: action
         )
     }
@@ -20,7 +19,7 @@ struct PrimaryButton: View {
 
 #Preview {
     PrimaryButton(
-        systemImage: "location.north.fill",
+        icon: .system("location.north.fill"),
         title: "Show on map",
         action: {}
     )

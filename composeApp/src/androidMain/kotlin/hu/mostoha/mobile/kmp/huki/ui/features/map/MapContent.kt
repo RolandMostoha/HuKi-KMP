@@ -57,9 +57,11 @@ import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -68,6 +70,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
@@ -78,6 +81,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.moveCamera
 import hu.mostoha.mobile.kmp.huki.model.mapper.resetBearing
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
+import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
@@ -149,6 +153,10 @@ fun MapContent(
                 } else {
                     false
                 }
+            },
+            onMapLongClickListener = OnMapLongClickListener { point ->
+                onEvent(MainUiEvents.MapLongClicked(point.toLocation()))
+                true
             },
             scaleBar = {
                 ScaleBar(
@@ -254,6 +262,9 @@ fun MapContent(
                     routeStrokeColor = mapStrokeColor,
                 )
             }
+            mapUiState.placeDetails?.let { placeDetails ->
+                PlaceMarker(location = placeDetails.location)
+            }
         }
         MapCameraDebugPanel(
             enabled = FeatureFlags.DEBUG_SHOW_CAMERA_PANEL,
@@ -263,6 +274,18 @@ fun MapContent(
             onOpen = { isCameraPanelVisible = true },
             onClose = { isCameraPanelVisible = false },
         )
+    }
+}
+
+@OptIn(MapboxDelicateApi::class)
+@Composable
+@MapboxMapComposable
+private fun PlaceMarker(location: Location) {
+    val markerImage = rememberIconImage(SharedRes.images.ic_marker_picker.drawableResId)
+    PointAnnotation(location.toPoint()) {
+        iconImage = markerImage
+        iconAnchor = IconAnchor.BOTTOM
+        iconSize = SharedDimens.PLACE_MARKER_SCALE
     }
 }
 

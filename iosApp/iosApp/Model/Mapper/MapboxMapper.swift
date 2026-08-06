@@ -11,6 +11,12 @@ extension Shared.Location {
     }
 }
 
+extension CLLocationCoordinate2D {
+    var location: Shared.Location {
+        Shared.Location(latitude: latitude, longitude: longitude, altitude: nil)
+    }
+}
+
 extension Shared.Location {
     var id: String {
         String(format: "%.6f,%.6f,%.2f", latitude, longitude, (altitude?.doubleValue ?? 0.0))

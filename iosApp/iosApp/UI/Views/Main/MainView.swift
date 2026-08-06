@@ -4,22 +4,23 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct MainView: View {
-    @State private var viewModel = KoinViewModelProvider.shared.getMainViewModel()
+    @State var viewModel = KoinViewModelProvider.shared.getMainViewModel()
+    @State var navigationPath = NavigationPath()
+    @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
+    @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State private var showFileImporter = false
     @State private var showAlert = false
-    @State private var navigationPath = NavigationPath()
-    @State private var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
 
-    private let strings = Strings()
+    let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
     private let searchBarHeight: CGFloat = 80
     private let mainActionGlassID: String = "main_action_glass_id"
 
-    @Environment(\.layoutMode) private var layoutMode
+    @Environment(\.layoutMode) var layoutMode
     @Namespace private var mainActionGlassNamespace
 
-    private var isLandscape: Bool { layoutMode.isLandscape }
-    private var isPad: Bool { layoutMode.isPad }
+    var isLandscape: Bool { layoutMode.isLandscape }
+    var isPad: Bool { layoutMode.isPad }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -51,6 +52,9 @@ struct MainView: View {
                     },
                     onDistanceInfoWindowDismissed: {
                         viewModel.onEvent(event: MainUiEventsDistanceInfoWindowDismissed.shared)
+                    },
+                    onMapLongClicked: { location in
+                        viewModel.onEvent(event: MainUiEventsMapLongClicked(location: location))
                     },
                     mapUiEffects: viewModel.mapUiEffects
                 )
@@ -183,156 +187,6 @@ private extension MainView {
             .navigationDestination(for: TrailSymbolsGuideRoute.self) { _ in
                 TrailSymbolsGuideView()
             }
-    }
-
-    @ViewBuilder
-    func sheetContent(for sheet: Sheet, uiState: MainUiState) -> some View {
-        switch onEnum(of: sheet) {
-        case .search:
-            searchSheet()
-        case .layers:
-            layersSheet(uiState: uiState)
-        case .gpx:
-            gpxSheet(uiState: uiState)
-        case .whatsNew(let sheet):
-            whatsNewSheet(whatsNew: sheet.whatsNew)
-        }
-    }
-
-    func whatsNewSheet(whatsNew: WhatsNew) -> some View {
-        let detentHeight = whatsNew.message != nil
-            ? Dimens.whatsNewDetentHeightWithMessage
-            : Dimens.whatsNewDetentHeight
-        return WhatsNewSheetView(
-            strings: strings,
-            whatsNew: whatsNew,
-            onDismissRequest: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-            }
-        )
-        .presentationDetents([.height(detentHeight)])
-        .presentationDragIndicator(.hidden)
-    }
-
-    func searchSheet() -> some View {
-        SearchSheetView(
-            strings: strings,
-            onDismiss: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-            },
-            onPlaceSelected: { place in
-                viewModel.onEvent(event: MainUiEventsSearchPlaceSelected(place: place))
-            },
-            onRecentPlaceSelected: { place in
-                viewModel.onEvent(event: MainUiEventsSearchRecentPlaceSelected(place: place))
-            },
-            onSearchPlaceHistorySelected: { place in
-                viewModel.onEvent(event: MainUiEventsSearchResultPlaceHistorySelected(place: place))
-            },
-            onDestinationSelected: { destination in
-                let event = MainUiEventsSearchDestinationSelected(destination: destination)
-                viewModel.onEvent(event: event)
-            },
-            onSearchDestinationSelected: { destination in
-                let event = MainUiEventsSearchResultDestinationSelected(destination: destination)
-                viewModel.onEvent(event: event)
-            },
-            onGpxFileSelected: { uri in
-                viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
-            },
-            onSeeAllGpxClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(GpxCollectionRoute.gpxCollection)
-            },
-            onSeeAllPlacesClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(PlaceHistoryRoute.placeHistory)
-            },
-            onSeeAllDestinationsClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(DestinationsRoute.destinations)
-            },
-            onLocationIqClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(LocationIqRoute.locationIq)
-            }
-        )
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
-        .presentationCompactAdaptation(.sheet)
-    }
-
-    func layersSheet(uiState: MainUiState) -> some View {
-        LayersSheetView(
-            strings: strings,
-            selectedBaseLayer: uiState.mapUiState.baseLayer,
-            isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
-            isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
-            onBaseLayerSelected: { baseLayer in
-                viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
-            },
-            onHikingLayerSelected: {
-                viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
-            },
-            onGpxLayerSelected: {
-                viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
-            },
-            onDismissRequest: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-            }
-        )
-        .presentationDetents([layersDetent])
-        .presentationDragIndicator(.hidden)
-    }
-
-    private var layersDetent: PresentationDetent {
-        if isPad {
-            return .height(400)
-        }
-        return isLandscape ? .large : .height(360)
-    }
-
-    private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
-        let hasEnd = gpxDetails.waypoints.contains { $0.type == .end }
-        return .height(Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isPad: isPad))
-    }
-
-    @ViewBuilder
-    func gpxSheet(uiState: MainUiState) -> some View {
-        if let gpxDetails = uiState.mapUiState.gpxDetails {
-            GpxDetailsSheetView(
-                strings: strings,
-                gpxDetails: gpxDetails,
-                onStartClick: {
-                    viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
-                },
-                onNavigateToStart: {
-                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .start))
-                },
-                onNavigateToEnd: {
-                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .end))
-                },
-                onDismissRequest: {
-                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
-                }
-            )
-            .presentationDetents(
-                isPad
-                    ? [gpxExpandedDetent(gpxDetails)]
-                    : [.height(Dimens.gpxDetailsCollapsedDetentHeight), gpxExpandedDetent(gpxDetails)],
-                selection: $gpxDetent
-            )
-            .presentationDragIndicator(isPad ? .hidden : .visible)
-            .presentationBackgroundInteraction(.enabled)
-            .presentationContentInteraction(.resizes)
-            .onChange(of: gpxDetails.fileUri, initial: true) {
-                gpxDetent = isPad
-                    ? gpxExpandedDetent(gpxDetails)
-                    : .height(Dimens.gpxDetailsCollapsedDetentHeight)
-            }
-        } else {
-            EmptyView()
-        }
     }
 
     @ViewBuilder

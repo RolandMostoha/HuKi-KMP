@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 
 @Composable
@@ -26,7 +25,6 @@ fun BaseButton(
     colors: ButtonColors,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    verticalContentPadding: Dp = Dimens.Medium,
     contentDescription: String? = null,
 ) {
     Button(
@@ -34,7 +32,7 @@ fun BaseButton(
         modifier = modifier,
         shape = RoundedCornerShape(percent = 50),
         colors = colors,
-        contentPadding = PaddingValues(horizontal = Dimens.ExtraLarge, vertical = verticalContentPadding),
+        contentPadding = PaddingValues(horizontal = Dimens.ExtraLarge, vertical = Dimens.Medium),
     ) {
         Icon(
             modifier = Modifier.size(Dimens.IconSmall),

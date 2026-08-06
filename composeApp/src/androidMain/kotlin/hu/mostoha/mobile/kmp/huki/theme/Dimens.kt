@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.theme
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 object Dimens {
     val ExtraSmall = 3.dp
@@ -13,6 +14,7 @@ object Dimens {
     val ExtraLarge = 24.dp
     val Huge = 30.dp
 
+    val IconExtraSmall = 16.dp
     val IconSmall = 22.dp
     val IconMedium = 24.dp
     val IconContainer = 40.dp
@@ -31,6 +33,8 @@ object Dimens {
     val SectionHeaderSpacing = 8.dp
 
     val GpxNavButtonPeek = 16.dp
+
+    val PlaceDetailsTitleMinFontSize = 13.sp
 
     val SearchBarLandscapeWidth = 350.dp
 

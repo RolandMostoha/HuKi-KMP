@@ -38,6 +38,8 @@ enum Dimens {
         return hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight
     }
 
+    static let placeDetailsDetentHeight: CGFloat = 215
+
     static let whatsNewDetentHeight: CGFloat = 350
     static let whatsNewDetentHeightWithMessage: CGFloat = 400
 }

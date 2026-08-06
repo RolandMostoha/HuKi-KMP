@@ -70,7 +70,10 @@ val appModule = module {
 
 val viewModelModule = module {
     viewModel {
-        MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        MainViewModel(
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(named(Dispatcher.Default)),
+        )
     }
     viewModel {
         PlaceFinderViewModel(get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))

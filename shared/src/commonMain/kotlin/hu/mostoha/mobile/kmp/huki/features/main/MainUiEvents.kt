@@ -5,6 +5,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 
@@ -29,6 +30,14 @@ sealed interface MainUiEvents {
         val osmType: OsmType,
         val osmId: String,
     ) : MainUiEvents
+
+    /**
+     * Place Details events
+     */
+    data class MapLongClicked(val location: Location) : MainUiEvents
+    data object PlaceDetailsCloseClicked : MainUiEvents
+    data object PlaceDetailsRoutePlanClicked : MainUiEvents
+    data object PlaceDetailsMapsNavigationClicked : MainUiEvents
 
     /**
      * My location events

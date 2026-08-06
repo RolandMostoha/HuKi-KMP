@@ -204,8 +204,8 @@
         <dark>#E91E62</dark>
     </color>
     <color name="colorPlaceCategoryFallback">
-        <light>#757575</light>
-        <dark>#9E9E9E</dark>
+        <light>#1565C0</light>
+        <dark>#64B5F6</dark>
     </color>
     <color name="colorPlaceCategoryNationalPark">
         <light>#2E7D32</light>

@@ -9,6 +9,7 @@ struct MapView: View {
     let onCompassClicked: () -> Void
     let onWaypointClicked: (GpxWaypoint) -> Void
     let onDistanceInfoWindowDismissed: () -> Void
+    let onMapLongClicked: (Shared.Location) -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
 
     private let viewportObserver = ViewportObserver()
@@ -52,14 +53,12 @@ struct MapView: View {
                         }
                         return false
                     }
-                    if uiState.myLocationState.permissionState == PermissionState.granted {
-                        Puck2D(bearing: PuckBearingSource.puck)
-                            .showsAccuracyRing(true)
-                            .accuracyRingColor(SharedRes.colors().accuracyRingOnMap.getUIColor())
-                            .pulsing(.init(color: SharedRes.colors().primaryLightOnMap.getUIColor()))
-                            .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
-                            .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
-                            .scale(1.2)
+                    LongPressInteraction { context in
+                        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL {
+                            isDebugCameraPanelVisible = true
+                        }
+                        onMapLongClicked(context.coordinate.location)
+                        return true
                     }
                     if uiState.mapUiState.hikingLayerVisible {
                         RasterSource(id: OverlayLayer.turistautak.layerId)
@@ -68,6 +67,21 @@ struct MapView: View {
                             .minzoom(Double(OverlayLayer.turistautak.minZoom))
                             .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
                         RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
+                    }
+                    if let placeDetails = uiState.mapUiState.placeDetails {
+                        PointAnnotation(coordinate: placeDetails.location.coordinate)
+                            .image(SharedRes.images().ic_marker_picker.annotationImage)
+                            .iconAnchor(.bottom)
+                            .iconSize(SharedDimens.shared.PLACE_MARKER_SCALE)
+                    }
+                    if uiState.myLocationState.permissionState == PermissionState.granted {
+                        Puck2D(bearing: PuckBearingSource.puck)
+                            .showsAccuracyRing(true)
+                            .accuracyRingColor(SharedRes.colors().accuracyRingOnMap.getUIColor())
+                            .pulsing(.init(color: SharedRes.colors().primaryLightOnMap.getUIColor()))
+                            .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
+                            .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
+                            .scale(1.2)
                     }
                     if uiState.mapUiState.gpxLayerVisible {
                         if let gpxDetails = uiState.mapUiState.gpxDetails {

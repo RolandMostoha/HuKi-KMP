@@ -114,6 +114,26 @@ sealed interface AnalyticsEvent {
         override val name = "gpx_deleted"
     }
 
+    data class PlaceDetailsOpened(val source: PlaceDetailsSource) : AnalyticsEvent {
+        override val name = "place_details_opened_${source.value}"
+    }
+
+    data object PlaceDetailsUnresolved : AnalyticsEvent {
+        override val name = "place_details_unresolved"
+    }
+
+    data object PlaceDetailsClosed : AnalyticsEvent {
+        override val name = "place_details_closed"
+    }
+
+    data object PlaceDetailsMapsNavigationOpened : AnalyticsEvent {
+        override val name = "place_details_maps_navigation_opened"
+    }
+
+    data object PlaceDetailsRoutePlanClicked : AnalyticsEvent {
+        override val name = "place_details_route_plan_clicked"
+    }
+
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {
         override val name = "menu_link_${link.value}"
     }

@@ -19,11 +19,16 @@ sealed class Sheet {
     data class Gpx(val gpxDetails: GpxDetails) : Sheet()
 
     /**
+     * Place Details Standard Sheet is shown.
+     */
+    data object PlaceDetails : Sheet()
+
+    /**
      * WhatsNew Modal Sheet is shown after the app is updated.
      */
     data class WhatsNew(val whatsNew: WhatsNewModel) : Sheet()
 }
 
-fun Sheet.isStandard(): Boolean = this is Sheet.Gpx || this is Sheet.Search
+fun Sheet.isStandard(): Boolean = this is Sheet.Gpx || this is Sheet.Search || this is Sheet.PlaceDetails
 
 fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew

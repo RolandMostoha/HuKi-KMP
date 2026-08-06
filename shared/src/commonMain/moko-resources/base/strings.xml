@@ -65,6 +65,10 @@
     <string name="gpx_details_navigation_to_start">Maps navigation to start</string>
     <string name="gpx_details_navigation_to_end">Maps navigation to end</string>
 
+    <string name="place_details_loading">Looking up this place…</string>
+    <string name="place_details_route_plan">Route plan</string>
+    <string name="place_details_maps_navigation">Maps navigation</string>
+
     <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>

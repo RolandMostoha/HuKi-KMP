@@ -25,6 +25,7 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
     private var locationDelegate: CLLocationManagerDelegateProtocol? = null
 
     override suspend fun lastKnownLocation(): Location? {
+        locationUpdates.replayCache.lastOrNull()?.let { return it }
         if (!locationManager.isAuthorized()) {
             return null
         }

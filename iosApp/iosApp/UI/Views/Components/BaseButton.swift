@@ -2,12 +2,14 @@ import Shared
 import SwiftUI
 
 struct BaseButton: View {
-    let systemImage: String
+    let icon: Shared.ImageResource
     let title: String
     let foregroundColor: SwiftUI.Color
     let backgroundColor: SwiftUI.Color
-    var verticalPadding: CGFloat = 12
     let action: () -> Void
+
+    private let verticalPadding: CGFloat = 14
+    private let iconSize: CGFloat = 20
 
     var body: some View {
         Button(action: action) {
@@ -17,8 +19,11 @@ struct BaseButton: View {
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
                 .overlay(alignment: .leading) {
-                    Image(systemName: systemImage)
-                        .font(.system(size: 15, weight: .semibold))
+                    icon.swiftUIImage
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: iconSize, height: iconSize)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, verticalPadding)

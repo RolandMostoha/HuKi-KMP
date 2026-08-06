@@ -6,6 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.network.LocationIqAddress
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -15,6 +16,31 @@ const val LOCATION_IQ_BB_NORTH_INDEX = 1
 const val LOCATION_IQ_BB_EAST_INDEX = 3
 const val LOCATION_IQ_BB_SOUTH_INDEX = 0
 const val LOCATION_IQ_BB_WEST_INDEX = 2
+
+fun LocationIqPlace.toReverseGeocodedPlace(location: Location, userLocation: Location? = null): Place =
+    Place(
+        osmId = osmId,
+        name = displayPlace ?: address?.toPlaceName() ?: displayName,
+        placeSource = PlaceSource.LONG_TAP_ON_MAP,
+        address = displayAddress ?: address?.toAddressLine() ?: displayName,
+        location = location,
+        placeCategory = PlaceCategory.fromString(type),
+        osmType = OsmType.fromString(osmType),
+        distance = userLocation?.let {
+            DistanceFormatter.formatDistance(it.distanceBetween(location))
+        },
+    )
+
+private fun LocationIqAddress.toPlaceName(): String? =
+    name ?: listOfNotNull(road, houseNumber)
+        .takeIf { it.isNotEmpty() }
+        ?.joinToString(" ")
+
+private fun LocationIqAddress.toAddressLine(): String? =
+    listOfNotNull(postcode, city, county)
+        .distinct()
+        .takeIf { it.isNotEmpty() }
+        ?.joinToString(", ")
 
 fun LocationIqPlace.toPlaceSearchResult(userLocation: Location? = null): Place {
     val location = Location(lat, lon)

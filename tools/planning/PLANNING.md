@@ -45,9 +45,10 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### Assets
 
-| Status | Task                         |
-|--------|------------------------------|
-| `[ ]`  | App preview video (optional) |
+| Status | Task                                      |
+|--------|-------------------------------------------|
+| `[ ]`  | App store preview video (optional)        |
+| `[ ]`  | App store header picture/video (optional) |
 
 ### TestFlight & CD
 
@@ -62,21 +63,22 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### General / tech tasks
 
-| Status | Feature                                                                                          |
-|--------|--------------------------------------------------------------------------------------------------|
+| Status | Feature                                                                                                                                            |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Change app icon in Google Play Store for Legacy HuKi                                             |
-| `[ ]`  | Change feature graphic in Google Play Store                                                      |
-| `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                           |
-| `[R]`  | Update Kotlin + Gradle 9                                                                         |
-| `[ ]`  | Sonar? free for open source projects                                                             |
-| `[ ]`  | Check project against Swift agent skills in XCode                                                |
-| `[ ]`  | GitHub smart labels, E.g.: https://github.com/balazsgerlei/ScreenLit/blob/main/README.md?plain=1 |
+| `[ ]`  | Change feature graphic in Google Play Store                                                                                                                              |
+| `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                             |
+| `[R]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
+| `[R]`  | Update Kotlin + Gradle 9                                                                                                                           |
+| `[ ]`  | Sonar? free for open source projects                                                                                                               |
+| `[ ]`  | Check project against Swift agent skills in XCode                                                                                                  |
+| `[ ]`  | GitHub smart labels, E.g.: https://github.com/balazsgerlei/ScreenLit/blob/main/README.md?plain=1                                                   |
 
 ### Bugs
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Map        | Bug: LIQ rate limit wrong HTTP error code                                                                                                                                                                                                                                                                       |
+| `[R]`  | Network    | Bug: LIQ rate limit wrong HTTP error code                                                                                                                                                                                                                                                                       |
 | `[R]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top compared to Waypoint / Middle points (marker placement order issue)                                                                                                                                                                 |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
@@ -183,14 +185,32 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Place Details (from Search + Long Tap)
 
-| Status | Scope        | Task                                                                      |
-|--------|--------------|---------------------------------------------------------------------------|
-| `[R]`  | PlaceDetails | On long click show a PlacePicker marker with (CheckMark: done, X: cancel) |
-| `[R]`  | PlaceDetails | On CheckMark: done show PlaceDetails sheet                                |
-| `[R]`  | PlaceDetails | Reverse geocode with LocationIQ                                           |
-| `[R]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model        |
-| `[R]`  | PlaceDetails | Show Place Details with a marker for Destinations                         |
-| `[ ]`  | PlaceDetails | Search nearby button                                                      |
+| Status | Scope        | Task                                                                                 |
+|--------|--------------|--------------------------------------------------------------------------------------|
+| `[x]`  | PlaceDetails | On long click show a PlacePicker marker                                              |
+| `[x]`  | PlaceDetails | Also how PlaceDetails sheet                                                          |
+| `[x]`  | PlaceDetails | Reverse geocode with LocationIQ                                                      |
+| `[x]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model                   |
+| `[x]`  | PlaceDetails | Handle reverse geocode failure (offline / rate limit) in the sheet                   |
+| `[R]`  | PlaceDetails | Wire PlaceDetails into Search autocomplete selection to `PlaceDetails.Loaded(place)` |
+| `[R]`  | PlaceDetails | Wire PlaceDetails into Destinations                                                  |
+| `[R]`  | PlaceDetails | Wire LONG_TAP as PlaceSource and save it in place history                            |
+| `[R]`  | PlaceDetails | Wire the Route plan button to the Route Planner                                      |
+| `[ ]`  | PlaceDetails | Search nearby button                                                                 |
+| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                    |
+
+### FEATURE: Route Planner
+
+- Graphhopper API
+- Most of the code can be reused from legacy HuKi
+- Storage: `gpx/routeplanner/` (sibling of `gpx/external/`)
+
+| Status | Scope        | Task                                                                                     |
+|--------|--------------|------------------------------------------------------------------------------------------|
+| `[R]`  | RoutePlanner | Deploy Graphhopper RoutePlanner (HuKi-Routing) to AWS Lightsail.                         |
+| `[R]`  | RoutePlanner | Save created routes to `gpx/routeplanner/` (sibling of `gpx/external/`)                  |
+| `[R]`  | RoutePlanner | Serialize a created route to `.gpx` (persist to collection sandbox or temp for share)    |
+| `[ ]`  | RoutePlanner | Share created track via share sheet (iOS ShareLink / Android ACTION_SEND + FileProvider) |
 
 ### FEATURE: Settings
 
@@ -252,19 +272,6 @@ Refs:
 - The benefit of supporting is just visual: showing the supporter animal in various places (e.g.
   WhatsNew)
 
-### FEATURE: Route Planner
-
-- Graphhopper API
-- Most of the code can be reused from legacy HuKi
-- Storage: `gpx/routeplanner/` (sibling of `gpx/external/`)
-
-| Status | Scope        | Task                                                                                     |
-|--------|--------------|------------------------------------------------------------------------------------------|
-| `[R]`  | RoutePlanner | Deploy Graphhopper RoutePlanner (HuKi-Routing) to AWS Lightsail.                         |
-| `[R]`  | RoutePlanner | Save created routes to `gpx/routeplanner/` (sibling of `gpx/external/`)                  |
-| `[R]`  | RoutePlanner | Serialize a created route to `.gpx` (persist to collection sandbox or temp for share)    |
-| `[ ]`  | RoutePlanner | Share created track via share sheet (iOS ShareLink / Android ACTION_SEND + FileProvider) |
-
 #### FEATURE: Route Planner: Wandering mode
 
 Goal: Set a single starting point (e.g. parking), and show the straight line distance from the point.
@@ -306,6 +313,7 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | Status | Scope  | Task                                      |
 |--------|--------|-------------------------------------------|
 | `[ ]`  | Guides | Add "Problem on route" to Guides section. |
+| `[ ]`  | Guides | Route Planner                             |
 
 #### Guides: Report problem on route
 

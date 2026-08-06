@@ -27,5 +27,6 @@ fun Sheet?.toScreen(): Screen =
         Sheet.Search -> Screen.SEARCH
         Sheet.Layers -> Screen.LAYERS
         is Sheet.Gpx -> Screen.GPX_DETAILS
+        Sheet.PlaceDetails -> Screen.PLACE_DETAILS
         is Sheet.WhatsNew -> Screen.WHATS_NEW
     }
