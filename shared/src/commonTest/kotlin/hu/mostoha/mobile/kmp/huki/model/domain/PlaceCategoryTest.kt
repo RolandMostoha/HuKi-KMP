@@ -6,9 +6,9 @@ import kotlin.test.Test
 class PlaceCategoryTest {
 
     @Test
-    fun `Given OSM type, When fromString, Then expected PlaceCategory returns`() {
+    fun `Given OSM tag, When fromString, Then expected PlaceCategory returns`() {
         testCases().forEach { testCase ->
-            val actual = PlaceCategory.fromString(testCase.input)
+            val actual = PlaceCategory.fromString(testCase.input, testCase.classInput)
 
             actual shouldBe testCase.result
         }
@@ -39,11 +39,17 @@ class PlaceCategoryTest {
                 TestCase(input = "farmyard", result = PlaceCategory.FARM),
                 TestCase(input = null, result = null),
                 TestCase(input = "unmapped_tag", result = null),
+                TestCase(input = "fishing", classInput = "shop", result = PlaceCategory.SHOP),
+                TestCase(input = "city_gate", classInput = "historic", result = PlaceCategory.HISTORIC),
+                TestCase(input = "peak", classInput = "shop", result = PlaceCategory.PEAK),
+                TestCase(input = null, classInput = "shop", result = PlaceCategory.SHOP),
+                TestCase(input = "unmapped_tag", classInput = "unmapped_class", result = null),
             )
     }
 
     data class TestCase(
         val input: String?,
+        val classInput: String? = null,
         val result: PlaceCategory?,
     )
 }

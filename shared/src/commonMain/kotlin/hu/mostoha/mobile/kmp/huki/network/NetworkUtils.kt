@@ -8,6 +8,7 @@ import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
 @Suppress("MagicNumber")
@@ -35,6 +36,8 @@ suspend inline fun <reified T> handleNetworkCall(
                 NetworkResult.Error(NetworkError.UNKNOWN)
             }
         }
+    } catch (exception: CancellationException) {
+        throw exception
     } catch (exception: UnresolvedAddressException) {
         Logger.e(exception) { "Network: No internet." }
         NetworkResult.Error(NetworkError.NO_INTERNET)

@@ -32,3 +32,18 @@ appId: ${APP_ID}
     index: 0
 - assertVisible:
     id: MAP_MAPBOX
+
+# Selecting a result raises the Place Details sheet with the already known place,
+# so no loading state is shown.
+- assertVisible:
+    id: PLACE_DETAILS_SHEET
+- assertVisible:
+    id: PLACE_DETAILS_TITLE
+- assertNotVisible:
+    id: PLACE_DETAILS_LOADING
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+- assertNotVisible:
+    id: PLACE_DETAILS_SHEET
+- assertVisible:
+    id: MAIN_SEARCH_BAR

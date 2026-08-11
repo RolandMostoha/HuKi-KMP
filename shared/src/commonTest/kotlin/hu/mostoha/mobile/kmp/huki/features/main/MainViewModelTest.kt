@@ -1239,6 +1239,113 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given swiped sheet is still the current one, When SheetSwipeDismissed, Then the sheet is hidden`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.SearchClicked)
+
+                awaitItem().sheet shouldBe Sheet.Search
+
+                viewModel.onEvent(MainUiEvents.SheetSwipeDismissed(Sheet.Search))
+
+                awaitItem().sheet shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `Given sheet already replaced, When SheetSwipeDismissed of the previous sheet, Then it is ignored`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.SearchClicked)
+
+                awaitItem().sheet shouldBe Sheet.Search
+
+                viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+
+                awaitItem().sheet shouldBe Sheet.PlaceDetails
+
+                // The outgoing Search sheet collapses like a swipe, but it is no longer the current sheet.
+                viewModel.onEvent(MainUiEvents.SheetSwipeDismissed(Sheet.Search))
+
+                expectNoEvents()
+                viewModel.uiState.value.sheet shouldBe Sheet.PlaceDetails
+                viewModel.uiState.value.mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(TEST_PLACE)
+            }
+        }
+    }
+
+    @Test
+    fun `Given place from search, When SearchPlaceSelected, Then Place Details sheet shows the loaded place`() {
+        runTest {
+            val place = TEST_PLACE.copy(placeCategory = PlaceCategory.PEAK, osmType = OsmType.NODE)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.SearchPlaceSelected(place))
+
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.PlaceDetails
+                    mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(place)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given recent place from search, When SearchRecentPlaceSelected, Then Place Details sheet is shown`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.SearchRecentPlaceSelected(TEST_PLACE))
+
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.PlaceDetails
+                    mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(TEST_PLACE)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given history place, When HistoryPlaceSelected, Then Place Details sheet is shown`() {
+        runTest {
+            val historyPlace = TEST_PLACE.copy(placeSource = PlaceSource.DESTINATIONS)
+            everySuspend { placeHistoryRepository.getPlace(any(), any()) } returns historyPlace
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.HistoryPlaceSelected(OsmType.NODE, historyPlace.osmId))
+
+                with(awaitItem()) {
+                    sheet shouldBe Sheet.PlaceDetails
+                    mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(historyPlace)
+                }
+            }
+        }
+    }
+
+    @Test
     fun `Given history place, When HistoryPlaceSelected, Then visit is re-recorded keeping its original source`() {
         runTest {
             val historyPlace = TEST_PLACE.copy(placeSource = PlaceSource.DESTINATIONS)
@@ -1334,7 +1441,10 @@ class MainViewModelTest {
 
             viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
 
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchPlaceSelected)
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.SearchPlaceSelected,
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.SEARCH),
+            )
         }
     }
 
@@ -1346,7 +1456,10 @@ class MainViewModelTest {
 
             viewModel.onEvent(MainUiEvents.SearchRecentPlaceSelected(TEST_PLACE))
 
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HistoryPlaceSelected)
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.HistoryPlaceSelected,
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.HISTORY),
+            )
         }
     }
 
@@ -1370,7 +1483,10 @@ class MainViewModelTest {
 
             viewModel.onEvent(MainUiEvents.SearchResultPlaceHistorySelected(TEST_PLACE))
 
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchPlaceHistorySelected)
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.SearchPlaceHistorySelected,
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.HISTORY),
+            )
         }
     }
 

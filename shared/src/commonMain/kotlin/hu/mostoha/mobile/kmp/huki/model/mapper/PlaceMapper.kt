@@ -24,7 +24,7 @@ fun LocationIqPlace.toReverseGeocodedPlace(location: Location, userLocation: Loc
         placeSource = PlaceSource.LONG_TAP_ON_MAP,
         address = displayAddress ?: address?.toAddressLine() ?: displayName,
         location = location,
-        placeCategory = PlaceCategory.fromString(type),
+        placeCategory = PlaceCategory.fromString(osmTag = type, osmClass = classType),
         osmType = OsmType.fromString(osmType),
         distance = userLocation?.let {
             DistanceFormatter.formatDistance(it.distanceBetween(location))
@@ -50,7 +50,7 @@ fun LocationIqPlace.toPlaceSearchResult(userLocation: Location? = null): Place {
         placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
         address = displayAddress,
         location = location,
-        placeCategory = PlaceCategory.fromString(type),
+        placeCategory = PlaceCategory.fromString(osmTag = type, osmClass = classType),
         osmType = OsmType.fromString(osmType),
         distance = userLocation?.let {
             DistanceFormatter.formatRoundedDistance(it.distanceBetween(location))

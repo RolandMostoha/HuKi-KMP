@@ -141,7 +141,6 @@ private fun MainContent(
     val standardSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = standardSheetState)
     var showModalBottomSheet by remember { mutableStateOf(false) }
     var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
-    var placeDetailsSheetPeekHeight by remember { mutableStateOf(300.dp) }
     val currentSheet by rememberUpdatedState(uiState.sheet)
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
@@ -163,7 +162,7 @@ private fun MainContent(
                     value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden
                 }
                 if (dismissed) {
-                    onEvent(MainUiEvents.SheetDismissed)
+                    onEvent(MainUiEvents.SheetSwipeDismissed(sheet))
                 }
             }
     }
@@ -201,7 +200,6 @@ private fun MainContent(
         scaffoldState = standardSheetScaffoldState,
         sheetPeekHeight = when (uiState.sheet) {
             is Sheet.Gpx -> gpxSheetPeekHeight
-            is Sheet.PlaceDetails -> placeDetailsSheetPeekHeight
             else -> 0.dp
         },
         sheetDragHandle = null,
@@ -218,7 +216,6 @@ private fun MainContent(
                 onDestinationsClicked = onDestinationsClicked,
                 onLocationIqClicked = onLocationIqClicked,
                 onGpxPeekHeightMeasured = { gpxSheetPeekHeight = it },
-                onPlaceDetailsPeekHeightMeasured = { placeDetailsSheetPeekHeight = it },
             )
         },
         containerColor = Color.Transparent,
@@ -305,7 +302,7 @@ private fun MainContent(
     }
 }
 
-private fun Sheet.isPeeking(): Boolean = this is Sheet.Gpx || this is Sheet.PlaceDetails
+private fun Sheet.isPeeking(): Boolean = this is Sheet.Gpx
 
 @Composable
 private fun MainStandardBottomSheet(
@@ -317,7 +314,6 @@ private fun MainStandardBottomSheet(
     onDestinationsClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxPeekHeightMeasured: (Dp) -> Unit,
-    onPlaceDetailsPeekHeightMeasured: (Dp) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     when (val sheet = uiState.sheet) {
@@ -358,7 +354,6 @@ private fun MainStandardBottomSheet(
                             onEvent(MainUiEvents.PlaceDetailsCloseClicked)
                         }
                     },
-                    onHeightMeasured = onPlaceDetailsPeekHeightMeasured,
                 )
             }
         }

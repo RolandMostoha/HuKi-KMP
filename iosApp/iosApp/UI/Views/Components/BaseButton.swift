@@ -6,9 +6,9 @@ struct BaseButton: View {
     let title: String
     let foregroundColor: SwiftUI.Color
     let backgroundColor: SwiftUI.Color
+    var verticalPadding: CGFloat = 14
     let action: () -> Void
 
-    private let verticalPadding: CGFloat = 14
     private let iconSize: CGFloat = 20
 
     var body: some View {

@@ -12,6 +12,7 @@ enum class PlaceCategory(
     val title: StringResource,
     val iconRes: ImageResource,
     val categoryColorRes: ColorResource,
+    val osmClasses: List<String> = emptyList(),
 ) {
     PEAK(
         osmTags = listOf(
@@ -128,6 +129,7 @@ enum class PlaceCategory(
         categoryColorRes = SharedRes.colors.colorPlaceCategoryCastle,
     ),
     HISTORIC(
+        osmClasses = listOf("historic"),
         osmTags = listOf(
             "monument",
             "memorial",
@@ -165,6 +167,7 @@ enum class PlaceCategory(
         categoryColorRes = SharedRes.colors.colorPlaceCategoryMuseum,
     ),
     SHOP(
+        osmClasses = listOf("shop"),
         osmTags = listOf(
             "supermarket",
             "convenience",
@@ -414,11 +417,17 @@ enum class PlaceCategory(
     companion object {
         private val warnedTypes = mutableSetOf<String>()
 
-        fun fromString(type: String?): PlaceCategory? {
-            if (type == null) return null
-            val category = entries.firstOrNull { type in it.osmTags }
-            if (category == null && warnedTypes.add(type)) {
-                Logger.w { "PlaceCategory: unmapped OSM type '$type'" }
+        /**
+         * Resolves from the [osmTag] of a place ("peak" of `natural=peak`), falling back to its
+         * broader [osmClass] ("shop" of `shop=fishing`) when the tag itself is unmapped.
+         */
+        fun fromString(osmTag: String?, osmClass: String? = null): PlaceCategory? {
+            if (osmTag == null && osmClass == null) return null
+            val tagCategory = entries.firstOrNull { osmTag != null && osmTag in it.osmTags }
+            val category = tagCategory ?: entries.firstOrNull { osmClass != null && osmClass in it.osmClasses }
+            if (tagCategory == null && osmTag != null && warnedTypes.add(osmTag)) {
+                val fallback = category?.let { " (fell back to $it)" }.orEmpty()
+                Logger.w { "PlaceCategory: unmapped OSM tag '$osmClass=$osmTag'$fallback" }
             }
             return category
         }

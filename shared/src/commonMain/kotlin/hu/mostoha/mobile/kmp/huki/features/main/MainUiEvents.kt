@@ -8,12 +8,14 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 
 sealed interface MainUiEvents {
     /**
      * General events
      */
     data object SheetDismissed : MainUiEvents
+    data class SheetSwipeDismissed(val sheet: Sheet) : MainUiEvents
     data object AlertDismissed : MainUiEvents
 
     /**

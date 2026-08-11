@@ -8,6 +8,7 @@ struct MainView: View {
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
+    @State private var presentedSheet: Sheet?
     @State private var showFileImporter = false
     @State private var showAlert = false
 
@@ -92,13 +93,15 @@ struct MainView: View {
                         item: Binding(
                             get: { uiState.sheet },
                             set: { newValue in
-                                if newValue == nil {
-                                    viewModel.onEvent(event: MainUiEventsSheetDismissed())
+                                if newValue == nil, let dismissed = presentedSheet {
+                                    presentedSheet = nil
+                                    viewModel.onEvent(event: MainUiEventsSheetSwipeDismissed(sheet: dismissed))
                                 }
                             }
                         )
                     ) { sheet in
                         sheetContent(for: sheet, uiState: uiState)
+                            .onAppear { presentedSheet = sheet }
                     }
                 .alert(
                     uiState.alert.map { strings.get(id: $0.title) } ?? "",

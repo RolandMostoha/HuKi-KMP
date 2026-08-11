@@ -33,14 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -69,9 +66,7 @@ fun PlaceDetailsBottomSheet(
     onMapsNavigationClick: () -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onHeightMeasured: (Dp) -> Unit = {},
 ) {
-    val density = LocalDensity.current
     val navBarInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     Card(
         modifier = modifier
@@ -90,11 +85,7 @@ fun PlaceDetailsBottomSheet(
         ),
     ) {
         Column(
-            modifier = Modifier
-                .padding(top = Dimens.Small)
-                .onGloballyPositioned {
-                    onHeightMeasured(with(density) { it.size.height.toDp() })
-                },
+            modifier = Modifier.padding(top = Dimens.Small),
         ) {
             DragHandle(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -289,7 +280,7 @@ private fun PlaceHeaderContent(
                 ) {
                     Icon(
                         modifier = Modifier.size(Dimens.IconExtraSmall),
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_ruler),
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_place_circle),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

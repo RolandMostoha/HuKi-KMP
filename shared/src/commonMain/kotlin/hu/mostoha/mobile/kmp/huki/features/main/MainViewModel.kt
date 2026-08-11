@@ -102,7 +102,7 @@ class MainViewModel(
 
     private val selectedWaypoint = MutableStateFlow<GpxWaypoint?>(null)
 
-    private var reverseGeocodeJob: Job? = null
+    private var placeDetailsJob: Job? = null
 
     init {
         initLogging()
@@ -118,6 +118,7 @@ class MainViewModel(
         when (event) {
             // General events
             MainUiEvents.SheetDismissed -> hideSheet()
+            is MainUiEvents.SheetSwipeDismissed -> hideSheet(event.sheet)
             MainUiEvents.AlertDismissed -> dismissAlert()
             // Search events
             MainUiEvents.SearchClicked -> showSearch()
@@ -165,7 +166,7 @@ class MainViewModel(
     }
 
     private fun showSheet(sheet: Sheet) {
-        reverseGeocodeJob?.cancel()
+        placeDetailsJob?.cancel()
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = sheet,
@@ -174,8 +175,10 @@ class MainViewModel(
         }
     }
 
-    private fun hideSheet() {
-        reverseGeocodeJob?.cancel()
+    // A [swipedSheet] that is no longer the current one was already replaced, so its dismissal is stale.
+    private fun hideSheet(swipedSheet: Sheet? = null) {
+        if (swipedSheet != null && _uiState.value.sheet != swipedSheet) return
+        placeDetailsJob?.cancel()
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = null,
@@ -194,22 +197,23 @@ class MainViewModel(
 
     private fun showSearchPlace(place: Place) {
         analyticsService.logEvent(AnalyticsEvent.SearchPlaceSelected)
-        showPlace(place)
+        showPlace(place, PlaceDetailsSource.SEARCH)
     }
 
     private fun showRecentPlace(place: Place) {
         analyticsService.logEvent(AnalyticsEvent.HistoryPlaceSelected)
-        showPlace(place)
+        showPlace(place, PlaceDetailsSource.HISTORY)
     }
 
     private fun showSearchResultPlaceHistory(place: Place) {
         analyticsService.logEvent(AnalyticsEvent.SearchPlaceHistorySelected)
-        showPlace(place)
+        showPlace(place, PlaceDetailsSource.HISTORY)
     }
 
-    private fun showPlace(place: Place) {
+    private fun showPlace(place: Place, source: PlaceDetailsSource) {
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
+        showPlaceDetailsSheet(PlaceDetails.PlaceLoaded(place))
         viewModelScope.launch {
-            hideSheet()
             val boundingBox = place.boundingBox
             sendEffect(
                 if (boundingBox != null) {
@@ -235,7 +239,7 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.HistoryPlaceSelected)
         viewModelScope.launch {
             val place = placeHistoryRepository.getPlace(osmType, osmId) ?: return@launch
-            showPlace(place)
+            showPlace(place, PlaceDetailsSource.HISTORY)
         }
     }
 
@@ -271,11 +275,9 @@ class MainViewModel(
 
     private fun showPlaceDetails(location: Location) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP))
-        reverseGeocodeJob?.cancel()
-
         showPlaceDetailsSheet(PlaceDetails.Loading(location))
 
-        reverseGeocodeJob = viewModelScope.launch {
+        placeDetailsJob = viewModelScope.launch {
             val result = geocodingRepository.reverseGeocode(location)
             val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
                 locationMonitoringService.lastKnownLocation()
@@ -297,6 +299,7 @@ class MainViewModel(
     }
 
     private fun showPlaceDetailsSheet(placeDetails: PlaceDetails) {
+        placeDetailsJob?.cancel()
         _uiState.update { uiState ->
             uiState.copy(
                 mapUiState = uiState.mapUiState.copy(placeDetails = placeDetails),
@@ -593,11 +596,13 @@ class MainViewModel(
     private fun closeGpx() {
         analyticsService.logEvent(AnalyticsEvent.GpxClosed)
         selectedWaypoint.value = null
+        placeDetailsJob?.cancel()
         viewModelScope.launch {
             _uiState.update { uiState ->
                 uiState.copy(
                     mapUiState = uiState.mapUiState.copy(
                         gpxDetails = null,
+                        placeDetails = null,
                         gpxLayerVisible = false,
                         gpxRouteVisible = true,
                         allDistancesVisible = false,
@@ -614,6 +619,7 @@ class MainViewModel(
     }
 
     private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent) {
+        placeDetailsJob?.cancel()
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -651,27 +657,28 @@ class MainViewModel(
                         ),
                     )
                 }
-                .onFailure { exception ->
-                    Logger.e(exception) { "Failed to import GPX file." }
-                    analyticsService.logEvent(AnalyticsEvent.GpxImportFailed)
-                    // NonGpx/Empty are expected user errors (wrong file picked); record the rest as real defects.
-                    if (exception !is NonGpxFileException && exception !is EmptyGpxContentException) {
-                        crashlyticsService.recordException(exception)
-                    }
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            alert = Alert(
-                                title = SharedRes.strings.gpx_import_error_title,
-                                message = if (exception is DomainException) {
-                                    exception.stringResource
-                                } else {
-                                    SharedRes.strings.error_unknown
-                                },
-                            ),
-                            isGpxLoading = false,
-                        )
-                    }
-                }
+                .onFailure { exception -> onGpxImportFailed(exception) }
+        }
+    }
+
+    private fun onGpxImportFailed(exception: Throwable) {
+        Logger.e(exception) { "Failed to import GPX file." }
+        analyticsService.logEvent(AnalyticsEvent.GpxImportFailed)
+        if (exception !is NonGpxFileException && exception !is EmptyGpxContentException) {
+            crashlyticsService.recordException(exception)
+        }
+        _uiState.update { uiState ->
+            uiState.copy(
+                alert = Alert(
+                    title = SharedRes.strings.gpx_import_error_title,
+                    message = if (exception is DomainException) {
+                        exception.stringResource
+                    } else {
+                        SharedRes.strings.error_unknown
+                    },
+                ),
+                isGpxLoading = false,
+            )
         }
     }
 

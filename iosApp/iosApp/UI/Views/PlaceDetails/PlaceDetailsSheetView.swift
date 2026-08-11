@@ -12,7 +12,7 @@ struct PlaceDetailsSheetView: View {
     var body: some View {
         VStack(spacing: 20) {
             header
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 PrimaryButton(
                     icon: .system("point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"),
                     title: strings.get(id: SharedRes.strings().place_details_route_plan),
@@ -26,9 +26,9 @@ struct PlaceDetailsSheetView: View {
                 )
                 .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_MAPS_NAVIGATION_BUTTON)
             }
+            .padding(.horizontal, 24)
         }
         .padding(.top, 24)
-        .padding(.horizontal, 16)
         .padding(.bottom, 8)
         .fixedSize(horizontal: false, vertical: true)
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
@@ -56,6 +56,8 @@ struct PlaceDetailsSheetView: View {
             .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
             .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_CLOSE_BUTTON)
         }
+        .padding(.leading, 24)
+        .padding(.trailing, 16)
         .animation(.smooth(duration: 0.3), value: placeDetails)
     }
 
@@ -139,7 +141,7 @@ struct PlaceDetailsSheetView: View {
                 }
                 if let distance, !distance.isEmpty {
                     HStack(spacing: 5) {
-                        Image(systemName: "ruler")
+                        Image(systemName: "mappin.and.ellipse")
                             .font(.system(size: 14))
                         Text(distance)
                             .font(.system(size: 14))

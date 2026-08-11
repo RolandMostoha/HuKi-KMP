@@ -12,6 +12,7 @@ struct PrimaryButton: View {
             title: title,
             foregroundColor: SwiftUI.Color(SharedRes.colors().onPrimary.getUIColor()),
             backgroundColor: SwiftUI.Color(SharedRes.colors().primary.getUIColor()),
+            verticalPadding: 12,
             action: action
         )
     }

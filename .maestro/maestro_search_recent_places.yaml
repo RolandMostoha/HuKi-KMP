@@ -27,6 +27,8 @@ appId: ${APP_ID}
     index: 0
 - assertVisible:
     id: MAP_MAPBOX
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
 
 # Re-open Search with an empty query: the Recent Places section is shown.
 - assertVisible: "Search..."
@@ -39,13 +41,17 @@ appId: ${APP_ID}
 - assertVisible:
     id: RECENT_PLACES_ITEM
 
-# Tapping a recent place re-opens it on the map and dismisses the search sheet.
+# Tapping a recent place re-opens it in the Place Details sheet and dismisses the search sheet.
 - tapOn:
     id: RECENT_PLACES_ITEM
 - assertVisible:
     id: MAP_MAPBOX
 - assertNotVisible:
     id: RECENT_PLACES_SECTION
+- assertVisible:
+    id: PLACE_DETAILS_SHEET
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
 
 # "See all" navigates from Recent Places to the Place History screen.
 - assertVisible: "Search..."

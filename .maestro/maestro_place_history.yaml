@@ -54,6 +54,8 @@ appId: ${APP_ID}
     index: 0
 - assertVisible:
     id: MAP_MAPBOX
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
 
 # Open Place History again — the visited place is listed under the "Today" section.
 - tapOn: "Menu"
@@ -68,8 +70,12 @@ appId: ${APP_ID}
 - assertVisible:
     id: PLACE_HISTORY_ITEM
 
-# Tapping the place re-opens it on the map (MainViewModel.showPlace).
+# Tapping the place re-opens it in the Place Details sheet (MainViewModel.showPlace).
 - tapOn:
     id: PLACE_HISTORY_ITEM
 - assertVisible:
     id: MAP_MAPBOX
+- assertVisible:
+    id: PLACE_DETAILS_SHEET
+- assertVisible:
+    id: PLACE_DETAILS_TITLE

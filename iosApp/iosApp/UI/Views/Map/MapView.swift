@@ -235,47 +235,51 @@ struct MapView: View {
                     .padding(.trailing, 16)
                     .transition(.opacity)
                 }
-                if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && !isDebugCameraPanelVisible {
-                    // DEBUG only: opens the debug camera panel
-                    Button(
-                        action: { isDebugCameraPanelVisible = true },
-                        label: {
-                            Color.clear
-                                .frame(width: 200, height: 32)
-                                .contentShape(Rectangle())
-                        }
-                    )
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier(TestTags.shared.MAP_DEBUG_CAMERA_PANEL)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.leading, 16)
-                }
-                if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && isDebugCameraPanelVisible {
-                    MapCameraDebugOverlay(
-                        zoom: cameraZoom,
-                        center: cameraCenter,
-                        onMoveCamera: { position in
-                            updateCamera(MapUiEffectsUpdateCamera(
-                                target: CameraTargetCenter(
-                                    location: position.location,
-                                    zoom: KotlinDouble(value: position.zoom)
-                                ),
-                                bearing: KotlinDouble(value: position.bearing),
-                                pitch: KotlinDouble(value: position.pitch),
-                                contentPadding: nil
-                            ))
-                        },
-                        onClose: { isDebugCameraPanelVisible = false }
-                    )
-                }
+                debugCameraPanel
             }
             .animation(.smooth(duration: 0.3), value: isCompassVisible)
         }
     }
-
 }
 
 private extension MapView {
+    @ViewBuilder
+    var debugCameraPanel: some View {
+        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && !isDebugCameraPanelVisible {
+            // DEBUG only: opens the debug camera panel
+            Button(
+                action: { isDebugCameraPanelVisible = true },
+                label: {
+                    Color.clear
+                        .frame(width: 200, height: 32)
+                        .contentShape(Rectangle())
+                }
+            )
+            .buttonStyle(.plain)
+            .accessibilityIdentifier(TestTags.shared.MAP_DEBUG_CAMERA_PANEL)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.leading, 16)
+        }
+        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && isDebugCameraPanelVisible {
+            MapCameraDebugOverlay(
+                zoom: cameraZoom,
+                center: cameraCenter,
+                onMoveCamera: { position in
+                    updateCamera(MapUiEffectsUpdateCamera(
+                        target: CameraTargetCenter(
+                            location: position.location,
+                            zoom: KotlinDouble(value: position.zoom)
+                        ),
+                        bearing: KotlinDouble(value: position.bearing),
+                        pitch: KotlinDouble(value: position.pitch),
+                        contentPadding: nil
+                    ))
+                },
+                onClose: { isDebugCameraPanelVisible = false }
+            )
+        }
+    }
+
     func handleMapEffects(_ effect: MapUiEffects, proxy: MapProxy) {
         switch onEnum(of: effect) {
         case .updateCamera(let effect):

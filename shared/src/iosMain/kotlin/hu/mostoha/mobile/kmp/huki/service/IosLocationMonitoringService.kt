@@ -25,10 +25,10 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
     private var locationDelegate: CLLocationManagerDelegateProtocol? = null
 
     override suspend fun lastKnownLocation(): Location? {
-        locationUpdates.replayCache.lastOrNull()?.let { return it }
         if (!locationManager.isAuthorized()) {
             return null
         }
+        locationUpdates.replayCache.lastOrNull()?.let { return it }
         val clLocation = locationManager.location ?: return null
         return Location(
             latitude = clLocation.coordinate.useContents { latitude },
