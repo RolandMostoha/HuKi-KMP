@@ -77,7 +77,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[R]`  | Map        | Bug: LIQ rate limit wrong HTTP error code                                                                                                                                                                                                                                                                       |
-| `[ ]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top compared to Waypoint / Middle points (marker placement order issue)                                                                                                                                                                 |
+| `[R]`  | Map        | Bug: The GPX route on map, Start / End destinations should be always on top compared to Waypoint / Middle points (marker placement order issue)                                                                                                                                                                 |
 | `[ ]`  | CI         | Bug: iOS Simulator 18 is used (preferred: 26) and only smoke test suite is runnable on CI                                                                                                                                                                                                                       |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search     | UI Bug: Android. In GpxCollection + Settings, it use group dividers as separators, it's more like iOS design, it should be transparent sapces instead. (cmt: latest Android SDK shows no spaces, as iOS...)                                                                                                     |
@@ -345,25 +345,29 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 Goal: Create a search engine for hiking routes which have downloadable GPX files.
 The crawler parses the most important HU hiking sites:
+
 - termeszetjaro
 - aktivmagyarorszag
 - kirandulastippek
 - mozgasvilag
 
 Input: the user can search a route by
+
 - location / area
 - distance (e.g. routes around 10km)
 - difficulty
-Output: a list with links pointing to the route article inside the website.
+  Output: a list with links pointing to the route article inside the website.
 
 Example:
 Input: Dobogókő area, 10km, medium difficulty
 Output:
+
 - https://kirandulastippek.hu/budapest-kornyeke/dobogoko
 - https://www.mozgasvilag.hu/turazas/turautak/szep-kilatasos-pilisi-cukitura-dobogokore-es-vissza
 - https://www.termeszetjaro.hu/hu/tour/gyalogtura/dobogoko-ket-arca-az-eszaki-vadregenybol-a-deli-napos-oldalra/36765072/
 
 Keep in mind:
+
 - Comply with website terms and conditions
 - All websites should be asked to participate / allow after POC is done
 - Do not store the GPX files, or any legal/proprietary data

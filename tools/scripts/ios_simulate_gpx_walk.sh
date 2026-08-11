@@ -1,21 +1,25 @@
 #!/bin/bash
-# Simulates "walking" along a GPX track on the booted iOS simulator by stepping
-# the location through each <trkpt> with a delay between points.
+# Simulates "walking" along a GPX track on the booted iOS simulator by feeding its
+# <trkpt> points to `simctl location start`, which interpolates between waypoints and
+# emits location updates carrying course + speed — so the compass / bearing puck works.
 #
-# Usage: ios_simulate_gpx_walk.sh <path-to.gpx> [delay-seconds] [step]
-#   delay-seconds : pause between points (default 3)
-#   step          : use every Nth trackpoint to speed up dense tracks (default 1)
+# Usage: ios_simulate_gpx_walk.sh <path-to.gpx> [speed-mps] [step]
+#   speed-mps : travel speed in meters/sec (default 1.4 ≈ walking)
+#   step      : use every Nth trackpoint to thin out dense tracks (default 1)
 #
-# Example: ios_simulate_gpx_walk.sh tools/gpx/gpx_test_with_comments.gpx 5 10
+# Example: ios_simulate_gpx_walk.sh tools/gpx/okt_15.gpx 15 10
+#
+# Runs in the background on the simulator; stop it with:
+#   xcrun simctl location booted clear
 
 set -euo pipefail
 
 GPX_FILE="${1:-}"
-DELAY="${2:-3}"
+SPEED="${2:-1.4}"
 STEP="${3:-1}"
 
 if [ -z "$GPX_FILE" ] || [ ! -f "$GPX_FILE" ]; then
-    echo "Usage: ios_simulate_gpx_walk.sh <path-to.gpx> [delay-seconds] [step]"
+    echo "Usage: ios_simulate_gpx_walk.sh <path-to.gpx> [speed-mps] [step]"
     exit 1
 fi
 
@@ -28,25 +32,17 @@ fi
 
 # Extract "lat,lon" from every <trkpt lat="..." lon="..."> in document order.
 COORDS=$(grep -oE '<trkpt[^>]*lat="[^"]*"[^>]*lon="[^"]*"' "$GPX_FILE" \
-    | sed -E 's/.*lat="([^"]*)".*lon="([^"]*)".*/\1,\2/')
+    | sed -E 's/.*lat="([^"]*)".*lon="([^"]*)".*/\1,\2/' \
+    | awk -v step="$STEP" 'NR % step == 1 || step == 1')
 
-if [ -z "$COORDS" ]; then
-    echo "No <trkpt> points found in $GPX_FILE."
+TOTAL=$(echo "$COORDS" | grep -c . || true)
+
+if [ "$TOTAL" -lt 2 ]; then
+    echo "Need at least 2 <trkpt> points in $GPX_FILE (found $TOTAL after step $STEP)."
     exit 1
 fi
 
-TOTAL=$(echo "$COORDS" | wc -l | tr -d ' ')
-echo "Walking $BOOTED_DEVICE_ID along $GPX_FILE ($TOTAL points, step $STEP, ${DELAY}s delay). Ctrl-C to stop."
+echo "Walking $BOOTED_DEVICE_ID along $GPX_FILE ($TOTAL waypoints, step $STEP, ${SPEED} m/s)."
+echo "Stop with: xcrun simctl location $BOOTED_DEVICE_ID clear"
 
-i=0
-echo "$COORDS" | while IFS= read -r point; do
-    i=$((i + 1))
-    if [ $(( (i - 1) % STEP )) -ne 0 ]; then
-        continue
-    fi
-    xcrun simctl location "$BOOTED_DEVICE_ID" set "$point"
-    echo "[$i/$TOTAL] set $point"
-    sleep "$DELAY"
-done
-
-echo "Done."
+echo "$COORDS" | xcrun simctl location "$BOOTED_DEVICE_ID" start --speed="$SPEED" --interval=1 -

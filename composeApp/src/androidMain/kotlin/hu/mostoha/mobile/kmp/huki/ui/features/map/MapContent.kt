@@ -60,7 +60,6 @@ import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterS
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
-import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -150,10 +149,6 @@ fun MapContent(
                 } else {
                     false
                 }
-            },
-            onMapLongClickListener = OnMapLongClickListener {
-                if (FeatureFlags.DEBUG_SHOW_CAMERA_PANEL) isCameraPanelVisible = true
-                false
             },
             scaleBar = {
                 ScaleBar(
@@ -265,6 +260,7 @@ fun MapContent(
             visible = isCameraPanelVisible,
             cameraState = if (FeatureFlags.DEBUG_SHOW_CAMERA_PANEL) mapViewportState.cameraState else null,
             onMoveCamera = { position -> mapViewportState.setCameraOptions(position.toCameraOptions()) },
+            onOpen = { isCameraPanelVisible = true },
             onClose = { isCameraPanelVisible = false },
         )
     }

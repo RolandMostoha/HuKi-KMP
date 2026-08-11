@@ -4,11 +4,24 @@ HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
 
 The app helps you plan trips and discover the hiking trails of Hungary.
 
-The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform the app to support both platforms.
+The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform the app
+to support both platforms.
 
-HuKi (legacy) is a live Android app:
+**HuKi-iOS** is released and available in App Store: https://apps.apple.com/app/id6794327609
+
+**HuKi-Android v2.0 (KMP-based)** is not a live Android app, it will only replace "legacy" HuKi if the feature set comes
+close to the legacy app.
+
+**HuKi-Android v1.x (legacy)** is a live Android app:
+
 - Implemented under: https://github.com/RolandMostoha/HuKi-Android
 - Published on Google Play: https://play.google.com/store/apps/details?id=hu.mostoha.mobile.android.huki
+
+## Screenshots
+
+|                                   iOS                                   |                                   Android                                   |
+|:-----------------------------------------------------------------------:|:---------------------------------------------------------------------------:|
+| <img src="tools/assets/huki_readme_ios.webp" width="367" height="750"/> | <img src="tools/assets/huki_readme_android.webp" width="357" height="750"/> |
 
 ## Goals
 
@@ -19,6 +32,7 @@ The project was born for the following reasons:
 3. Learn and improve
 
 ## Project Overview
+
 - **Domain**: Hiking application for Hungarian landscapes, trails, destinations.
 - **Type**: Kotlin Multiplatform (KMP).
 - **Target Platforms**: Android, iOS.
@@ -31,9 +45,6 @@ The project was born for the following reasons:
     - `:composeApp`: Android native code.
     - `:iosApp`: iOS native code.
     - `:shared`: Shared kotlin code.
-        - `:shared:commonMain`: Common code.
-        - `:shared:androidMain`: Android specific shared code.
-        - `:shared:iosMain`: iOS specific shared code.
 - **Supported app languages**: English, Hungarian.
 
 ## Plan board
@@ -48,12 +59,14 @@ Refer to [AGENTS.md](AGENTS.md). It's the best place for humans too.
 
 <img src="shared/src/commonMain/moko-resources/images/ic_location_iq_logo%403x.png" alt="LocationIQ" width="200"/>
 
-LocationIQ gives HuKi a very generous free plan to its Autocomplete and Geocoding APIs. 
+LocationIQ gives HuKi a very generous free plan to its Autocomplete and Geocoding APIs.
 
 Huge thanks to the Location IQ team for the opportunity!
 
 Services Used:
-- Autocomplete API – Powers place search suggestions throughout the application, helping users quickly find destinations and POIs.
+
+- Autocomplete API – Powers place search suggestions throughout the application, helping users quickly find destinations
+  and POIs.
 - Forward Geocoding API – Converts place names, addresses, and search queries into coordinates.
 - Reverse Geocoding API – Powers features where converting coordinates into place information is necessary.
 
@@ -80,6 +93,7 @@ The following steps are running on the CI server on `main` push:
 ```
 
 ### iOS
+
 1. SwiftLint - Enforces Swift style and conventions, warnings fail the build (`--strict`)
 2. Xcode build
 3. iOS E2E UI tests - Using `Maestro`
@@ -95,7 +109,7 @@ I'm a big fan of testing so the aim is to be fairly covered with Unit, Instrumen
 ### Test types
 
 1. Unit tests
-2. Android Instrumentation tests - on-device tests without UI (e.g. Repository tests) 
+2. Android Instrumentation tests - on-device tests without UI (e.g. Repository tests)
 3. E2E tests with Maestro - on-device test with UI
 
 ### Unit tests
@@ -124,7 +138,8 @@ E.g.: Repository tests for DB, networking, files etc.
 
 E2E UI tests require emulator/simulator and UI enabled.
 
-Using `Maestro`, the goal here is "written-once, test both": wherever possible, one UI test case `yaml` is written for both Android/iOS.
+Using `Maestro`, the goal here is "written-once, test both": wherever possible, one UI test case `yaml` is written for
+both Android/iOS.
 
 UI test cases are created under: `./.maestro/*.yml`
 
@@ -138,7 +153,7 @@ maestro test
 
 ### Shared secrets
 
-Shared API keys live in `secrets.properties` at the repo root (gitignored). 
+Shared API keys live in `secrets.properties` at the repo root (gitignored).
 
 The `GenerateSecretsTask` Gradle task pastes property into a generated `Secrets.kt` object as `const val` declarations.
 
@@ -152,11 +167,11 @@ Unquoted values will produce a `Secrets.kt` that fails to compile.
 
 ### MapBox
 
-Personal `MapBox` access token is required to test the app's map related features.  
+Personal `MapBox` access token is required to test the app's map related features.
 
 The key is stored in an XML under `composeApp/src/androidMain/res/values/mapbox_access_token.xml`.
 
-The XML token is converted to GitHub secret with: 
+The XML token is converted to GitHub secret with:
 
 ```shell
 cat composeApp/src/androidMain/res/values/mapbox_access_token.xml | base64

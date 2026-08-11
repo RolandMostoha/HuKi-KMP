@@ -2,6 +2,26 @@
 import Shared
 import SwiftUI
 
+/// The Simulator has no magnetometer, heading updates never arrive —> course is movement based
+enum PuckBearingSource {
+
+    private static var isHeadingAvailable: Bool {
+        #if targetEnvironment(simulator)
+        return false
+        #else
+        return true
+        #endif
+    }
+
+    static var puck: PuckBearing {
+        isHeadingAvailable ? .heading : .course
+    }
+
+    static var viewport: FollowPuckViewportStateBearing {
+        isHeadingAvailable ? .heading : .course
+    }
+}
+
 extension Viewport {
 
     /// Camera target for an `updateCamera` effect: a single centered point or a route fitted to bounds.
@@ -57,7 +77,7 @@ extension Viewport {
         case .followingLiveCompass:
             return .followPuck(
                 zoom: zoom,
-                bearing: .heading,
+                bearing: PuckBearingSource.viewport,
                 pitch: MapConstants.shared.FOLLOW_LOCATION_LIVE_COMPASS_PITCH
             )
         default:

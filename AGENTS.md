@@ -37,7 +37,7 @@ Lint:
 - `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
 - `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
 - `ios_fix_location.sh [lat,lon]` — fix a wedged location (defaults to Dobogókő). Use when the simulator loses GPS signal.
-- `ios_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the booted simulator's location through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Use for: "simulate walking a route", "move location along GPX".
+- `ios_simulate_gpx_walk.sh <path.gpx> [speed-mps] [step]` — simulate "walking" along a GPX track by feeding its `<trkpt>` points to `simctl location start`, which interpolates between them and emits updates carrying **course + speed**, so the bearing puck and live compass work. Use `step` to thin dense tracks. Runs in the background; stop with `xcrun simctl location booted clear`. Use for: "simulate walking a route", "move location along GPX".
 - `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
 - `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
@@ -47,7 +47,7 @@ Lint:
 
 ### Android
 - `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
-- `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode on the connected device (clean status bar: 9:41, full Wi-Fi/mobile, 100% battery, no notifications). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
+- `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
 - `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
 - `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
@@ -288,6 +288,7 @@ val [actual] = operation(X)
 - Prefer icons from the official Apple SF Symbols icon set: https://developer.apple.com/sf-symbols/.
 - Prefer official SwiftUi components instead of custom views
 - Whenever makes sense, extract UI components to separate classes → E.g. `struct DestinationPreviewCard: View`
+- Comment marks: `///` for non-private declarations (Quick Help / DocC surface), `//` for private ones and for notes inside function bodies.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.

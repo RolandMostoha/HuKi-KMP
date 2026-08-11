@@ -14,8 +14,8 @@ struct MapView: View {
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
 
-    /// Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
-    /// otherwise only once the camera is rotated away from north.
+    // Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
+    // otherwise only once the camera is rotated away from north.
     private var isCompassVisible: Bool {
         if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
             return true
@@ -52,14 +52,8 @@ struct MapView: View {
                         }
                         return false
                     }
-                    if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL {
-                        LongPressInteraction { _ in
-                            isDebugCameraPanelVisible = true
-                            return false
-                        }
-                    }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
-                        Puck2D(bearing: .heading)
+                        Puck2D(bearing: PuckBearingSource.puck)
                             .showsAccuracyRing(true)
                             .accuracyRingColor(SharedRes.colors().accuracyRingOnMap.getUIColor())
                             .pulsing(.init(color: SharedRes.colors().primaryLightOnMap.getUIColor()))
@@ -226,6 +220,21 @@ struct MapView: View {
                     .padding(.top, CGFloat(SharedDimens.shared.MAP_COMPASS_TOP_PADDING))
                     .padding(.trailing, 16)
                     .transition(.opacity)
+                }
+                if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && !isDebugCameraPanelVisible {
+                    // DEBUG only: opens the debug camera panel
+                    Button(
+                        action: { isDebugCameraPanelVisible = true },
+                        label: {
+                            Color.clear
+                                .frame(width: 200, height: 32)
+                                .contentShape(Rectangle())
+                        }
+                    )
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(TestTags.shared.MAP_DEBUG_CAMERA_PANEL)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.leading, 16)
                 }
                 if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && isDebugCameraPanelVisible {
                     MapCameraDebugOverlay(

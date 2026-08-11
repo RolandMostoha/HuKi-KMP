@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -38,6 +40,7 @@ import com.mapbox.maps.CameraState
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.util.CameraTargetParser
+import hu.mostoha.mobile.kmp.huki.util.TestTags
 import java.util.Locale
 
 @Composable
@@ -46,13 +49,35 @@ fun MapCameraDebugPanel(
     visible: Boolean,
     cameraState: CameraState?,
     onMoveCamera: (CameraPosition) -> Unit,
+    onOpen: () -> Unit,
     onClose: () -> Unit,
 ) {
-    if (enabled && visible) {
+    if (!enabled) {
+        return
+    }
+    if (visible) {
         MapCameraDebugOverlay(
             cameraState = cameraState,
             onMoveCamera = onMoveCamera,
             onClose = onClose,
+        )
+    } else {
+        MapCameraDebugOpenArea(onOpen = onOpen)
+    }
+}
+
+@Composable
+private fun MapCameraDebugOpenArea(onOpen: () -> Unit, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        // DEBUG only: opens the debug camera panel
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(start = 16.dp)
+                .size(width = 200.dp, height = 32.dp)
+                .testTag(TestTags.MAP_DEBUG_CAMERA_PANEL)
+                .clickable(onClick = onOpen),
         )
     }
 }

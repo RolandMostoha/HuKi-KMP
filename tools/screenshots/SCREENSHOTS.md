@@ -32,7 +32,7 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 |---------------|-------------------------|
 | Camera        | 47.78055,18.93411,11.63 |
 | Camera (iPad) | 47.78286,18.93539,12.63 |
-| Location      | 47.78995,18.93374       |
+| Location      | 47.78951,18.93471       |
 
 ---
 
@@ -72,3 +72,14 @@ Light mode. Destinations view.
 |----------|---------------|
 | Camera   | TBD           |
 | Location | TBD           |
+
+## Video demo
+
+Pre-requisites:
+
+- DEBUG_SHOW_CAMERA_PANEL = true
+- MAP_FOLLOW_ANIM_DURATION: Duration = 1000.milliseconds
+- Scene #1 is set
+- No debug panel is shown
+- Dark mode is ON
+- Julianus_kilátótorony.gpx is imported so it's available from recents
