@@ -50,4 +50,16 @@ object Dimens {
         bottom = 60.dp,
         end = 60.dp,
     )
+    val PlaceDetailsContentPaddingPortrait = PaddingValues(
+        top = 150.dp,
+        start = 60.dp,
+        bottom = 280.dp,
+        end = 60.dp,
+    )
+    val PlaceDetailsContentPaddingLandscape = PaddingValues(
+        top = 70.dp,
+        start = 60.dp,
+        bottom = 60.dp,
+        end = 60.dp,
+    )
 }

@@ -1,13 +1,13 @@
 import SwiftUI
 import UIKit
 
+private let darkBrightnessBoost: CGFloat = 0.30
+private let darkSaturationDrop: CGFloat = 0.12
+private let lightBrightnessDrop: CGFloat = 0.18
+
 extension UIColor {
-    /// Brightens on dark (near-black) backgrounds, and darkens on light (near-white) backgrounds.
-    func adaptiveTint(
-        darkBrightnessBoost: CGFloat = 0.30,
-        darkSaturationDrop: CGFloat = 0.12,
-        lightBrightnessDrop: CGFloat = 0.18
-    ) -> UIColor {
+    /// Place category colors: light-only Mapbox vs light AND dark in UI components
+    func categoryTint() -> UIColor {
         UIColor { traits in
             let base = self.resolvedColor(with: traits)
             var hue: CGFloat = 0

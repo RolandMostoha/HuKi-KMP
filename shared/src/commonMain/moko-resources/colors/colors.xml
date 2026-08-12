@@ -108,140 +108,140 @@
 
     <!-- Place Category -->
     <color name="colorPlaceCategoryPeak">
-        <light>#593217</light>
-        <dark>#593217</dark>
+        <light>#A8683C</light>
+        <dark>#A8683C</dark>
     </color>
     <color name="colorPlaceCategoryForest">
-        <light>#01796B</light>
-        <dark>#01796B</dark>
+        <light>#018C7C</light>
+        <dark>#018C7C</dark>
     </color>
     <color name="colorPlaceCategoryRiver">
-        <light>#2096F3</light>
-        <dark>#2096F3</dark>
+        <light>#2D82C4</light>
+        <dark>#2D82C4</dark>
     </color>
     <color name="colorPlaceCategoryWaterfall">
-        <light>#0D47A0</light>
-        <dark>#0D47A0</dark>
+        <light>#205AB2</light>
+        <dark>#205AB2</dark>
     </color>
     <color name="colorPlaceCategoryLake">
-        <light>#1565C0</light>
-        <dark>#1565C0</dark>
+        <light>#286FBF</light>
+        <dark>#286FBF</dark>
     </color>
     <color name="colorPlaceCategorySpring">
-        <light>#00ACC1</light>
-        <dark>#00ACC1</dark>
+        <light>#0F8896</light>
+        <dark>#0F8896</dark>
     </color>
     <color name="colorPlaceCategoryCave">
-        <light>#424242</light>
-        <dark>#424242</dark>
+        <light>#8E4F8E</light>
+        <dark>#8E4F8E</dark>
     </color>
     <color name="colorPlaceCategoryRock">
-        <light>#9E9E9E</light>
-        <dark>#9E9E9E</dark>
+        <light>#7D7A3D</light>
+        <dark>#7D7A3D</dark>
     </color>
     <color name="colorPlaceCategoryViewpoint">
-        <light>#FF8F00</light>
-        <dark>#FF8F00</dark>
+        <light>#B26809</light>
+        <dark>#B26809</dark>
     </color>
     <color name="colorPlaceCategoryCastle">
-        <light>#7E6B5A</light>
-        <dark>#7E6B5A</dark>
+        <light>#82756A</light>
+        <dark>#82756A</dark>
     </color>
     <color name="colorPlaceCategoryHistoric">
-        <light>#673AB6</light>
-        <dark>#673AB6</dark>
+        <light>#724CB5</light>
+        <dark>#724CB5</dark>
     </color>
     <color name="colorPlaceCategoryChurch">
-        <light>#F6B005</light>
-        <dark>#F6B005</dark>
+        <light>#9C7413</light>
+        <dark>#9C7413</dark>
     </color>
     <color name="colorPlaceCategoryMuseum">
-        <light>#283593</light>
-        <dark>#283593</dark>
+        <light>#4250B2</light>
+        <dark>#4250B2</dark>
     </color>
     <color name="colorPlaceCategoryShop">
-        <light>#388E3C</light>
-        <dark>#388E3C</dark>
+        <light>#448A47</light>
+        <dark>#448A47</dark>
     </color>
     <color name="colorPlaceCategoryRestaurant">
-        <light>#F47C01</light>
-        <dark>#F47C01</dark>
+        <light>#B86613</light>
+        <dark>#B86613</dark>
     </color>
     <color name="colorPlaceCategoryPharmacy">
-        <light>#EE534F</light>
-        <dark>#EE534F</dark>
+        <light>#C75956</light>
+        <dark>#C75956</dark>
     </color>
     <color name="colorPlaceCategoryParking">
-        <light>#015398</light>
-        <dark>#015398</dark>
+        <light>#136AB2</light>
+        <dark>#136AB2</dark>
     </color>
     <color name="colorPlaceCategoryPublicTransport">
-        <light>#F0B800</light>
-        <dark>#F0B800</dark>
+        <light>#96770F</light>
+        <dark>#96770F</dark>
     </color>
     <color name="colorPlaceCategorySettlement">
-        <light>#546E7A</light>
-        <dark>#546E7A</dark>
+        <light>#697C85</light>
+        <dark>#697C85</dark>
     </color>
     <color name="colorPlaceCategoryDrinkingWater">
-        <light>#0170CD</light>
-        <dark>#0170CD</dark>
+        <light>#1579CC</light>
+        <dark>#1579CC</dark>
     </color>
     <color name="colorPlaceCategoryFireplace">
-        <light>#D50001</light>
-        <dark>#D50001</dark>
+        <light>#D61516</light>
+        <dark>#D61516</dark>
     </color>
     <color name="colorPlaceCategoryCampSite">
-        <light>#5D4037</light>
-        <dark>#5D4037</dark>
+        <light>#916F64</light>
+        <dark>#916F64</dark>
     </color>
     <color name="colorPlaceCategoryGuidepost">
-        <light>#FBC02D</light>
-        <dark>#FBC02D</dark>
+        <light>#947529</light>
+        <dark>#947529</dark>
     </color>
     <color name="colorPlaceCategoryToilet">
-        <light>#E91E62</light>
-        <dark>#E91E62</dark>
+        <light>#E83571</light>
+        <dark>#E83571</dark>
     </color>
     <color name="colorPlaceCategoryFallback">
-        <light>#1565C0</light>
-        <dark>#64B5F6</dark>
+        <light>#286FBF</light>
+        <dark>#286FBF</dark>
     </color>
     <color name="colorPlaceCategoryNationalPark">
-        <light>#2E7D32</light>
-        <dark>#2E7D32</dark>
+        <light>#408A44</light>
+        <dark>#408A44</dark>
     </color>
     <color name="colorPlaceCategoryValley">
-        <light>#33691E</light>
-        <dark>#33691E</dark>
+        <light>#4D8A35</light>
+        <dark>#4D8A35</dark>
     </color>
     <color name="colorPlaceCategoryPlateau">
-        <light>#795548</light>
-        <dark>#795548</dark>
+        <light>#8F6F63</light>
+        <dark>#8F6F63</dark>
     </color>
     <color name="colorPlaceCategoryIsland">
-        <light>#0288D1</light>
-        <dark>#0288D1</dark>
+        <light>#1583BF</light>
+        <dark>#1583BF</dark>
     </color>
     <color name="colorPlaceCategoryMeadow">
-        <light>#7CB342</light>
-        <dark>#7CB342</dark>
+        <light>#62853E</light>
+        <dark>#62853E</dark>
     </color>
     <color name="colorPlaceCategoryGarden">
-        <light>#C2185B</light>
-        <dark>#C2185B</dark>
+        <light>#C22B67</light>
+        <dark>#C22B67</dark>
     </color>
     <color name="colorPlaceCategoryWildlifePark">
-        <light>#BF360C</light>
-        <dark>#BF360C</dark>
+        <light>#BF451F</light>
+        <dark>#BF451F</dark>
     </color>
     <color name="colorPlaceCategoryObservatory">
-        <light>#4527A0</light>
-        <dark>#4527A0</dark>
+        <light>#5A3DB2</light>
+        <dark>#5A3DB2</dark>
     </color>
     <color name="colorPlaceCategoryFarm">
-        <light>#8D6E63</light>
-        <dark>#8D6E63</dark>
+        <light>#85716A</light>
+        <dark>#85716A</dark>
     </color>
 
     <!-- OKT -->

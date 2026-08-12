@@ -46,6 +46,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -58,6 +59,7 @@ import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
@@ -1125,7 +1127,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When SearchDestinationSelected, Then sheet is hidden`() {
+    fun `When SearchDestinationSelected, Then PlaceDetails sheet is shown with the destination place`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1138,7 +1140,9 @@ class MainViewModelTest {
 
                 viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
-                awaitItem().sheet shouldBe null
+                val uiState = awaitItem()
+                uiState.sheet shouldBe Sheet.PlaceDetails
+                uiState.mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(TEST_DESTINATION.toPlace())
             }
         }
     }
@@ -1180,7 +1184,7 @@ class MainViewModelTest {
                 ensureAllEventsConsumed()
             }
             advanceUntilIdle()
-            verifySuspend { placeHistoryRepository.recordVisit(TEST_DESTINATION) }
+            verifySuspend { placeHistoryRepository.recordVisit(TEST_DESTINATION.toPlace()) }
         }
     }
 
@@ -1219,6 +1223,7 @@ class MainViewModelTest {
                         locations = TEST_PLACE_WITH_BOUNDING_BOX.boundingBox!!.toLocations(),
                         maxZoom = 16.0,
                     ),
+                    contentPadding = ContentPadding.MAP_PLACE_DETAILS,
                 )
                 ensureAllEventsConsumed()
             }
@@ -1235,6 +1240,30 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             verifySuspend { placeHistoryRepository.recordVisit(TEST_PLACE) }
+        }
+    }
+
+    @Test
+    fun `Given place without distance, When SearchRecentPlaceSelected, Then PlaceDetails shows distance from last location`() {
+        runTest {
+            val userLocation = Location(47.7181, 18.8948)
+            val viewModel = createViewModel(
+                grantedPermission = true,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+            )
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchRecentPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            val placeDetails = viewModel.uiState.value.mapUiState.placeDetails
+            placeDetails shouldBe PlaceDetails.PlaceLoaded(
+                TEST_PLACE.copy(
+                    distance = DistanceFormatter.formatDistance(
+                        userLocation.distanceBetween(TEST_PLACE.location),
+                    ),
+                ),
+            )
         }
     }
 
@@ -1471,7 +1500,10 @@ class MainViewModelTest {
 
             viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.DestinationSelected(TEST_DESTINATION.name))
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
+            )
         }
     }
 
@@ -1500,6 +1532,7 @@ class MainViewModelTest {
 
             analyticsService.loggedEvents shouldBe listOf(
                 AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
             )
         }
     }

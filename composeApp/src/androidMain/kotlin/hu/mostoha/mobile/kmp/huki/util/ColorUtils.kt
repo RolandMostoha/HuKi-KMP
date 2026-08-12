@@ -13,11 +13,12 @@ private const val DARK_SATURATION_DROP = 0.12f
 private const val LIGHT_BRIGHTNESS_DROP = 0.18f
 
 /**
- * Brightens on a dark (near-black), darkens on a light (near-white) surface.
+ * Place category colors are map marker colors on a light basemap, so they need adjusting
+ * wherever they are drawn on a themed surface: brightened on a dark, darkened on a light one.
  */
 @Composable
 @ReadOnlyComposable
-fun Color.adaptiveTint(): Color {
+fun Color.categoryTint(): Color {
     val onDarkSurface = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     return if (onDarkSurface) {
         adjustHsv(saturationDelta = -DARK_SATURATION_DROP, valueDelta = DARK_BRIGHTNESS_BOOST)

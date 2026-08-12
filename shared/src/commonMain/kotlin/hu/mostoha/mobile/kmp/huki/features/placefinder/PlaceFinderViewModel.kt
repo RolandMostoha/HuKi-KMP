@@ -3,8 +3,10 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlaceSearchResult
+import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
@@ -89,9 +91,7 @@ class PlaceFinderViewModel(
 
     private fun loadTopDestinations() {
         viewModelScope.launch {
-            val location = withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
-                locationMonitoringService.lastKnownLocation()
-            }
+            val location = lastKnownLocation()
             val destinations = withContext(defaultDispatcher) {
                 destinationRepository.getTopDestinations(location)
             }
@@ -101,10 +101,17 @@ class PlaceFinderViewModel(
 
     private fun loadRecentPlaces() {
         viewModelScope.launch {
-            val recentPlaces = placeHistoryRepository.getRecentPlaces(RECENT_PLACES_LIMIT)
+            val places = placeHistoryRepository.getRecentPlaces(RECENT_PLACES_LIMIT)
+            val userLocation = lastKnownLocation()
+            val recentPlaces = places.map { it.withDistanceFrom(userLocation) }
             _uiState.update { uiState -> uiState.copy(recentPlaces = recentPlaces) }
         }
     }
+
+    private suspend fun lastKnownLocation(): Location? =
+        withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
+            locationMonitoringService.lastKnownLocation()
+        }
 
     private fun loadRecentGpxFiles() {
         viewModelScope.launch {
@@ -149,7 +156,9 @@ class PlaceFinderViewModel(
             }
             return
         }
-        val recentPlaces = placeHistoryRepository.searchPlaces(query, SEARCH_RECENT_PLACES_LIMIT)
+        val places = placeHistoryRepository.searchPlaces(query, SEARCH_RECENT_PLACES_LIMIT)
+        val userLocation = lastKnownLocation()
+        val recentPlaces = places.map { it.withDistanceFrom(userLocation) }
         val destinations = withContext(defaultDispatcher) {
             destinationRepository.searchDestinations(query, SEARCH_DESTINATIONS_LIMIT)
         }
@@ -162,9 +171,7 @@ class PlaceFinderViewModel(
     }
 
     private suspend fun searchPlaces(query: String) {
-        val currentLocation = withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
-            locationMonitoringService.lastKnownLocation()
-        }
+        val currentLocation = lastKnownLocation()
 
         when (val result = geocodingRepository.autocomplete(query)) {
             is NetworkResult.Success -> {

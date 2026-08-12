@@ -65,8 +65,8 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Feature                                                                                                                                            |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Change app icon in Google Play Store for Legacy HuKi                                             |
-| `[ ]`  | Change feature graphic in Google Play Store                                                                                                                              |
+| `[ ]`  | Change app icon in Google Play Store for Legacy HuKi                                                                                               |
+| `[ ]`  | Change feature graphic in Google Play Store                                                                                                        |
 | `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                             |
 | `[R]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
 | `[R]`  | Update Kotlin + Gradle 9                                                                                                                           |
@@ -139,6 +139,7 @@ they can record their exact location / zoom level with a CROSS marker.
 | Status | Scope        | Task                                       |
 |--------|--------------|--------------------------------------------|
 | `[ ]`  | Destinations | Add Map based destinations with Landscapes |
+| `[ ]`  | Destinations | Improve destinations descriptions          |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -185,20 +186,21 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Place Details (from Search + Long Tap)
 
-| Status | Scope        | Task                                                                                 |
-|--------|--------------|--------------------------------------------------------------------------------------|
-| `[x]`  | PlaceDetails | On long click show a PlacePicker marker                                              |
-| `[x]`  | PlaceDetails | Also how PlaceDetails sheet                                                          |
-| `[x]`  | PlaceDetails | Reverse geocode with LocationIQ                                                      |
-| `[x]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model                   |
-| `[x]`  | PlaceDetails | Handle reverse geocode failure (offline / rate limit) in the sheet                   |
-| `[x]`  | PlaceDetails | Wire LONG_TAP as PlaceSource and save it in place history                            |
-| `[x]`  | PlaceDetails | Wire PlaceDetails into Search autocomplete selection to `PlaceDetails.Loaded(place)` |
-| `[R]`  | PlaceDetails | Ruler icon is not good for "distance". It might suggest the place's diameter.        |
-| `[R]`  | PlaceDetails | Wire PlaceDetails into Destinations                                                  |
-| `[R]`  | PlaceDetails | Wire the Route plan button to the Route Planner                                      |
-| `[ ]`  | PlaceDetails | Search nearby button                                                                 |
-| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                    |
+| Status | Scope        | Task                                                                                                                                                    |
+|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | PlaceDetails | On long click show a PlacePicker marker                                                                                                                 |
+| `[x]`  | PlaceDetails | Also how PlaceDetails sheet                                                                                                                             |
+| `[x]`  | PlaceDetails | Reverse geocode with LocationIQ                                                                                                                         |
+| `[x]`  | PlaceDetails | Show content what is already shown with autocomplete: @Place model                                                                                      |
+| `[x]`  | PlaceDetails | Handle reverse geocode failure (offline / rate limit) in the sheet                                                                                      |
+| `[x]`  | PlaceDetails | Wire LONG_TAP as PlaceSource and save it in place history                                                                                               |
+| `[x]`  | PlaceDetails | Wire PlaceDetails into Search autocomplete selection to `PlaceDetails.Loaded(place)`                                                                    |
+| `[x]`  | PlaceDetails | If PlaceDetails opened from autocomplete and bounding box, the sheet can overlap with the marker. Need Sheet based Map bottom offset as in GPX Details. |
+| `[x]`  | PlaceDetails | Wire PlaceDetails into Destinations                                                                                                                     |
+| `[R]`  | PlaceDetails | Wire the Route plan button to the Route Planner                                                                                                         |
+| `[ ]`  | PlaceDetails | Search nearby button                                                                                                                                    |
+| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                       |
+| `[ ]`  | PlaceDetails | Add Destinations' descriptions and category to Place Details                                                                                            |
 
 ### FEATURE: PlaceHistory
 
@@ -211,6 +213,16 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 - Graphhopper API
 - Most of the code can be reused from legacy HuKi
 - Storage: `gpx/routeplanner/` (sibling of `gpx/external/`)
+
+ios light mode only first.Create a route planner feature for Huki.
+- it starts from a bottom sheet
+- it has title + X close- segmented control with options: "On Trails", "Any route", "Bike"
+- add a waypoint section which shows the start/end/mid waypoints. It has a drag handle to re organize the waypoints.
+- in the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return" to create a roundtrip
+- add a section with the route time duration, distance, incline, decline
+- add a button to "Save Route"
+  n the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return" to create a roundtrip
+- attached apple maps example 
 
 | Status | Scope        | Task                                                                                     |
 |--------|--------------|------------------------------------------------------------------------------------------|

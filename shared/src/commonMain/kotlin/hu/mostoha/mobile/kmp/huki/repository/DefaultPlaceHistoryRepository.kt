@@ -1,7 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.database.PlaceHistoryDao
-import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryItem
@@ -18,10 +17,6 @@ class DefaultPlaceHistoryRepository(
 ) : PlaceHistoryRepository {
     override suspend fun recordVisit(place: Place) {
         placeHistoryDao.upsert(place.toPlaceHistoryEntity(clock.now().toEpochMilliseconds()))
-    }
-
-    override suspend fun recordVisit(destination: Destination) {
-        placeHistoryDao.upsert(destination.toPlaceHistoryEntity(clock.now().toEpochMilliseconds()))
     }
 
     override suspend fun getRecentPlaces(limit: Int): List<Place> =

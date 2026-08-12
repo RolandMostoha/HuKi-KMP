@@ -52,7 +52,8 @@ appId: ${APP_ID}
 - assertVisible:
     id: DESTINATIONS_TAB_BAR
 
-# "Show on map" closes the Destinations screen and focuses the destination on the map.
+# "Show on map" closes the Destinations screen and focuses the destination on the map,
+# raising the Place Details sheet for it.
 - tapOn:
     id: DESTINATIONS_ITEM
     index: 0
@@ -66,6 +67,16 @@ appId: ${APP_ID}
     visible:
       id: MAP_MAPBOX
     timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_TITLE
+    timeout: 15000
+
+# Closing the Place Details sheet reveals the Menu entry again.
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+- assertNotVisible:
+    id: PLACE_DETAILS_SHEET
 
 # Re-open Destinations from the Menu to continue verifying the remaining tabs.
 - tapOn: "Menu"

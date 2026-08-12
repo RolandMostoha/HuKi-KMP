@@ -54,6 +54,11 @@ fun ContentPadding.toEdgeInset(density: Density, isLandscape: Boolean): EdgeInse
         } else {
             Dimens.GpxContentPaddingPortrait
         }.toEdgeInset(density)
+        ContentPadding.MAP_PLACE_DETAILS -> if (isLandscape) {
+            Dimens.PlaceDetailsContentPaddingLandscape
+        } else {
+            Dimens.PlaceDetailsContentPaddingPortrait
+        }.toEdgeInset(density)
     }
 
 private fun PaddingValues.toEdgeInset(density: Density): EdgeInsets =

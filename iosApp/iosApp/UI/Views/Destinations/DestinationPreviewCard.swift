@@ -105,7 +105,7 @@ struct DestinationPreviewCard: View {
     }
 
     private var chipTint: SwiftUI.Color {
-        SwiftUI.Color(destination.type.colorRes.getUIColor().adaptiveTint())
+        SwiftUI.Color(destination.type.colorRes.getUIColor().categoryTint())
     }
 
     private var gradientOverlay: some View {

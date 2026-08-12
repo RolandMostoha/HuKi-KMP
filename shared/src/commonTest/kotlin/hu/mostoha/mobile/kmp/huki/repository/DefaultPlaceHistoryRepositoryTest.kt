@@ -17,6 +17,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryItem
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -65,7 +66,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given destination, When recordVisit, Then dao upsert is called with the mapped entity`() {
+    fun `Given destination place, When recordVisit, Then dao upsert is called with the mapped entity`() {
         runTest {
             val destination = Destination(
                 osmId = "456",
@@ -77,7 +78,7 @@ class DefaultPlaceHistoryRepositoryTest {
                 popularity = 10,
             )
 
-            repository.recordVisit(destination)
+            repository.recordVisit(destination.toPlace())
 
             verifySuspend {
                 dao.upsert(
