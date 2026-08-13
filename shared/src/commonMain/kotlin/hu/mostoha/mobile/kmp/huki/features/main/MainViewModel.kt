@@ -37,8 +37,10 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
+import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
@@ -166,7 +168,7 @@ class MainViewModel(
     }
 
     private fun showSheet(sheet: Sheet) {
-        placeDetailsJob?.cancel()
+        cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = sheet,
@@ -175,10 +177,9 @@ class MainViewModel(
         }
     }
 
-    // A [swipedSheet] that is no longer the current one was already replaced, so its dismissal is stale.
     private fun hideSheet(swipedSheet: Sheet? = null) {
         if (swipedSheet != null && _uiState.value.sheet != swipedSheet) return
-        placeDetailsJob?.cancel()
+        cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = null,
@@ -213,6 +214,7 @@ class MainViewModel(
     private fun showPlace(place: Place, source: PlaceDetailsSource) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
         showPlaceDetailsSheet(PlaceDetails.PlaceLoaded(place))
+        fillPlaceDistance(place)
         viewModelScope.launch {
             val boundingBox = place.boundingBox
             sendEffect(
@@ -222,6 +224,7 @@ class MainViewModel(
                             locations = boundingBox.toLocations(),
                             maxZoom = PLACE_DEFAULT_CAMERA_ZOOM,
                         ),
+                        contentPadding = ContentPadding.MAP_PLACE_DETAILS,
                     )
                 } else {
                     MapUiEffects.UpdateCamera(
@@ -254,17 +257,7 @@ class MainViewModel(
     }
 
     private fun showDestination(destination: Destination) {
-        viewModelScope.launch {
-            hideSheet()
-            sendEffect(
-                MapUiEffects.UpdateCamera(
-                    target = CameraTarget.Center(destination.location, zoom = PLACE_DEFAULT_CAMERA_ZOOM),
-                ),
-            )
-        }
-        viewModelScope.launch {
-            placeHistoryRepository.recordVisit(destination)
-        }
+        showPlace(destination.toPlace(), PlaceDetailsSource.DESTINATION)
     }
 
     private fun showDestinationById(osmId: String) {
@@ -277,7 +270,7 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP))
         showPlaceDetailsSheet(PlaceDetails.Loading(location))
 
-        placeDetailsJob = viewModelScope.launch {
+        launchPlaceDetailsLoad {
             val result = geocodingRepository.reverseGeocode(location)
             val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
                 locationMonitoringService.lastKnownLocation()
@@ -298,14 +291,37 @@ class MainViewModel(
         }
     }
 
+    private fun fillPlaceDistance(place: Place) {
+        if (place.distance != null) return
+
+        launchPlaceDetailsLoad {
+            val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
+                locationMonitoringService.lastKnownLocation()
+            } ?: return@launchPlaceDetailsLoad
+            _uiState.updateMapUiState {
+                it.copy(placeDetails = PlaceDetails.PlaceLoaded(place.withDistanceFrom(userLocation)))
+            }
+        }
+    }
+
     private fun showPlaceDetailsSheet(placeDetails: PlaceDetails) {
-        placeDetailsJob?.cancel()
+        cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
                 mapUiState = uiState.mapUiState.copy(placeDetails = placeDetails),
                 sheet = Sheet.PlaceDetails,
             )
         }
+    }
+
+    private fun launchPlaceDetailsLoad(block: suspend () -> Unit) {
+        cancelPlaceDetailsLoad()
+        placeDetailsJob = viewModelScope.launch { block() }
+    }
+
+    private fun cancelPlaceDetailsLoad() {
+        placeDetailsJob?.cancel()
+        placeDetailsJob = null
     }
 
     private fun closePlaceDetails() {
@@ -345,7 +361,6 @@ class MainViewModel(
                             myLocationStatus = newStatus,
                         ),
                         isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
-                        isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
                     )
                 }
                 sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
@@ -363,11 +378,8 @@ class MainViewModel(
     }
 
     private fun disableFollowing() {
-        _uiState.update {
-            it.copy(
-                myLocationState = it.myLocationState.copy(myLocationStatus = MyLocationStatus.Default),
-                isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, MyLocationStatus.Default),
-            )
+        _uiState.updateMyLocationState {
+            it.copy(myLocationStatus = MyLocationStatus.Default)
         }
     }
 
@@ -377,21 +389,12 @@ class MainViewModel(
         }
     }
 
-    /**
-     * Recenters north-up on the puck while following, otherwise only rotates the camera back to north,
-     * so browsing the map away from the current location is not interrupted.
-     */
     private fun resetCameraToNorth() {
         viewModelScope.launch {
             when (_uiState.value.myLocationState.myLocationStatus) {
                 MyLocationStatus.Following, MyLocationStatus.FollowingLiveCompass -> {
                     val newStatus = MyLocationStatus.Following
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            myLocationState = uiState.myLocationState.copy(myLocationStatus = newStatus),
-                            isSearchBarVisible = shouldShowSearchBar(uiState.mapUiState.gpxLayerVisible, newStatus),
-                        )
-                    }
+                    _uiState.updateMyLocationState { it.copy(myLocationStatus = newStatus) }
                     sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
                 }
                 MyLocationStatus.Default, MyLocationStatus.NotAvailable -> sendEffect(MapUiEffects.ResetBearing)
@@ -522,9 +525,6 @@ class MainViewModel(
             }
     }
 
-    private fun shouldShowSearchBar(gpxLayerVisible: Boolean, myLocationStatus: MyLocationStatus): Boolean =
-        !gpxLayerVisible && myLocationStatus != MyLocationStatus.FollowingLiveCompass
-
     private fun selectBaseLayer(baseLayer: BaseLayer) {
         analyticsService.logEvent(AnalyticsEvent.LayerSelected(baseLayer.toLayer()))
         _uiState.updateMapUiState {
@@ -544,12 +544,8 @@ class MainViewModel(
         if (gpxDetails == null) {
             showGpxFilePicker()
         } else {
-            _uiState.update {
-                val gpxLayerVisible = it.mapUiState.gpxLayerVisible.not()
-                it.copy(
-                    mapUiState = it.mapUiState.copy(gpxLayerVisible = gpxLayerVisible),
-                    isSearchBarVisible = shouldShowSearchBar(gpxLayerVisible, it.myLocationState.myLocationStatus),
-                )
+            _uiState.updateMapUiState {
+                it.copy(gpxLayerVisible = it.gpxLayerVisible.not())
             }
         }
     }
@@ -567,7 +563,6 @@ class MainViewModel(
                             myLocationStatus = targetStatus,
                         ),
                         isMyLocationLoading = !it.myLocationState.hasLocationFix,
-                        isSearchBarVisible = shouldShowSearchBar(it.mapUiState.gpxLayerVisible, targetStatus),
                     )
                 }
                 sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
@@ -596,7 +591,7 @@ class MainViewModel(
     private fun closeGpx() {
         analyticsService.logEvent(AnalyticsEvent.GpxClosed)
         selectedWaypoint.value = null
-        placeDetailsJob?.cancel()
+        cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update { uiState ->
                 uiState.copy(
@@ -609,17 +604,13 @@ class MainViewModel(
                         distanceInfoWindows = emptyList(),
                     ),
                     sheet = null,
-                    isSearchBarVisible = shouldShowSearchBar(
-                        gpxLayerVisible = false,
-                        myLocationStatus = uiState.myLocationState.myLocationStatus,
-                    ),
                 )
             }
         }
     }
 
     private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent) {
-        placeDetailsJob?.cancel()
+        cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -644,10 +635,6 @@ class MainViewModel(
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
                             isGpxLoading = false,
-                            isSearchBarVisible = shouldShowSearchBar(
-                                gpxLayerVisible = true,
-                                myLocationStatus = uiState.myLocationState.myLocationStatus,
-                            ),
                         )
                     }
                     sendEffect(

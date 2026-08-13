@@ -175,6 +175,40 @@ class PlaceFinderViewModelTest {
         }
     }
 
+    @Test
+    fun `Given known last location, When recent places are loaded, Then they show distance from that location`() {
+        runTest {
+            val userLocation = Location(47.4979, 19.0402)
+            val placeLocation = Location(46.2530, 20.1414)
+            val expectedDistance = DistanceFormatter.formatDistance(
+                userLocation.distanceBetween(placeLocation),
+            )
+            everySuspend { placeHistoryRepository.getRecentPlaces(any()) } returns listOf(
+                Place(
+                    osmId = "1",
+                    name = "Szeged",
+                    placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                    address = "Hungary",
+                    location = placeLocation,
+                    osmType = OsmType.NODE,
+                ),
+            )
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = userLocation),
+                destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
+                analyticsService = analyticsService,
+                defaultDispatcher = testDispatcher,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.recentPlaces.single().distance shouldBe expectedDistance
+        }
+    }
+
     private fun gpxFileItem(fileName: String): GpxFileItem =
         GpxFileItem(
             fileName = fileName,
@@ -243,7 +277,7 @@ class PlaceFinderViewModelTest {
         runTest {
             val userLocation = Location(47.4979, 19.0402)
             val placeLocation = Location(46.2530, 20.1414)
-            val expectedDistance = DistanceFormatter.formatRoundedDistance(
+            val expectedDistance = DistanceFormatter.formatDistance(
                 userLocation.distanceBetween(placeLocation),
             )
 

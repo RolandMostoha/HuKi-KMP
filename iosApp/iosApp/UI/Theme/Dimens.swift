@@ -25,6 +25,19 @@ enum Dimens {
         trailing: 60
     )
 
+    static let placeDetailsContentPaddingPortrait = EdgeInsets(
+        top: 120,
+        leading: 60,
+        bottom: 260,
+        trailing: 60
+    )
+    static let placeDetailsContentPaddingLandscape = EdgeInsets(
+        top: 60,
+        leading: 60,
+        bottom: 60,
+        trailing: 60
+    )
+
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
     static let gpxDetailsExpandedDetentHeight: CGFloat = 320
     static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 350

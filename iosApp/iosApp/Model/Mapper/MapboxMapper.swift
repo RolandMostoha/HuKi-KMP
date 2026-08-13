@@ -40,6 +40,10 @@ extension Shared.ContentPadding {
         switch self {
         case .mapGpx:
             return isLandscape ? Dimens.gpxContentPaddingLandscape : Dimens.gpxContentPaddingPortrait
+        case .mapPlaceDetails:
+            return isLandscape
+                ? Dimens.placeDetailsContentPaddingLandscape
+                : Dimens.placeDetailsContentPaddingPortrait
         }
     }
 }

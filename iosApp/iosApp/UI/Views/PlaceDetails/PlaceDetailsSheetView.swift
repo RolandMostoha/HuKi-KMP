@@ -90,7 +90,7 @@ struct PlaceDetailsSheetView: View {
         headerContent(
             title: CoordinateFormatter.shared.formatCoordinates(location: unresolved.location),
             icon: OsmTypeMapperKt.toPlaceIconRes(osmType: nil).toUIImage()!,
-            iconBackgroundColor: SwiftUI.Color(SharedRes.colors().colorPlaceCategoryFallback.getUIColor()),
+            iconBackgroundColor: SharedRes.colors().colorPlaceCategoryFallback.getUIColor(),
             address: nil,
             distance: unresolved.distance
         )
@@ -109,21 +109,32 @@ struct PlaceDetailsSheetView: View {
     private func headerContent(
         title: String,
         icon: UIImage,
-        iconBackgroundColor: SwiftUI.Color,
+        iconBackgroundColor: UIColor,
         address: String?,
         distance: String?
     ) -> some View {
         HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(iconBackgroundColor)
-                    .frame(width: 40, height: 40)
-                Image(uiImage: icon)
-                    .renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-                    .foregroundStyle(.white)
+            VStack(spacing: 3) {
+                ZStack {
+                    Circle()
+                        .fill(SwiftUI.Color(iconBackgroundColor))
+                        .frame(width: 40, height: 40)
+                    Image(uiImage: icon)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                        .foregroundStyle(.white)
+                }
+                if let distance, !distance.isEmpty {
+                    Text(distance)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(SwiftUI.Color(iconBackgroundColor.categoryTint()))
+                        .lineLimit(1)
+                        .padding(.top, 2)
+                        .fixedSize()
+                        .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_DISTANCE)
+                }
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
@@ -139,27 +150,15 @@ struct PlaceDetailsSheetView: View {
                         .lineLimit(2)
                         .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_ADDRESS)
                 }
-                if let distance, !distance.isEmpty {
-                    HStack(spacing: 5) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .font(.system(size: 14))
-                        Text(distance)
-                            .font(.system(size: 14))
-                            .lineLimit(1)
-                            .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_DISTANCE)
-                    }
-                    .padding(.top, 2)
-                    .foregroundStyle(Color(.secondaryLabel))
-                }
             }
         }
     }
 
-    private func backgroundColor(for place: Place) -> SwiftUI.Color {
+    private func backgroundColor(for place: Place) -> UIColor {
         if let category = place.placeCategory {
-            return SwiftUI.Color(category.categoryColorRes.getUIColor())
+            return category.categoryColorRes.getUIColor()
         }
-        return SwiftUI.Color(SharedRes.colors().colorPlaceCategoryFallback.getUIColor())
+        return SharedRes.colors().colorPlaceCategoryFallback.getUIColor()
     }
 
     private func iconImage(for place: Place) -> UIImage {

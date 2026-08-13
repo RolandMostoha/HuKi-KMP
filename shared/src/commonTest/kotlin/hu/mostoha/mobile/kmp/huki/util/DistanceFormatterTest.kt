@@ -27,21 +27,30 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given long distance with fraction, When formatting rounded, Then whole kilometers are shown`() {
+    fun `Given long distance with fraction, When formatting, Then one decimal is shown`() {
+        val input = 12.44.kilometers
+
+        val actual = DistanceFormatter.formatDistance(input)
+
+        actual shouldBe "12.4 km"
+    }
+
+    @Test
+    fun `Given distance above hundred kilometers, When formatting, Then whole kilometers are shown`() {
         val input = 220.1.kilometers
 
-        val actual = DistanceFormatter.formatRoundedDistance(input)
+        val actual = DistanceFormatter.formatDistance(input)
 
         actual shouldBe "220 km"
     }
 
     @Test
-    fun `Given short distance, When formatting rounded, Then meters are shown`() {
-        val input = 850.meters
+    fun `Given distance just below hundred kilometers, When formatting, Then no trailing decimal is shown`() {
+        val input = 99.96.kilometers
 
-        val actual = DistanceFormatter.formatRoundedDistance(input)
+        val actual = DistanceFormatter.formatDistance(input)
 
-        actual shouldBe "850 m"
+        actual shouldBe "100 km"
     }
 
     @Test

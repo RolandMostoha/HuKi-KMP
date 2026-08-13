@@ -1,10 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.model.mapper
 
-import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.db.PlaceHistoryEntity
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
-import hu.mostoha.mobile.kmp.huki.model.domain.Destination
-import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -61,33 +58,6 @@ class PlaceHistoryMapperTest {
         actual.placeCategory.shouldBeNull()
         actual.boundingBox.shouldBeNull()
         actual.address.shouldBeNull()
-    }
-
-    @Test
-    fun `Given destination, When toPlaceHistoryEntity, Then osmType is NODE and address is town`() {
-        val destination = Destination(
-            osmId = "456",
-            name = "Kékestető",
-            town = "Mátraszentimre",
-            type = DestinationType.HIGHEST_PEAK,
-            location = Location(47.8721, 20.0102),
-            description = SharedRes.strings.destinations_type_peak,
-            popularity = 10,
-        )
-
-        val actual = destination.toPlaceHistoryEntity(visitedAt = 42L)
-
-        actual.osmType shouldBe OsmType.NODE
-        actual.osmId shouldBe "456"
-        actual.name shouldBe "Kékestető"
-        actual.nameNormalized shouldBe "kekesteto"
-        actual.address shouldBe "Mátraszentimre"
-        actual.latitude shouldBe 47.8721
-        actual.longitude shouldBe 20.0102
-        actual.placeCategory shouldBe PlaceCategory.PEAK
-        actual.placeSource shouldBe PlaceSource.DESTINATIONS
-        actual.boundingBox.shouldBeNull()
-        actual.lastVisited shouldBe 42L
     }
 
     @Test

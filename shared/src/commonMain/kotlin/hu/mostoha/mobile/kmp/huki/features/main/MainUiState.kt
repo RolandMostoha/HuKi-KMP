@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.features.main
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
+import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,12 +13,15 @@ data class MainUiState(
     val mapUiState: MapUiState = MapUiState.Default,
     val myLocationState: MyLocationState = MyLocationState.Default,
     val sheet: Sheet? = null,
-    val isSearchBarVisible: Boolean = true,
     val isGpxLoading: Boolean = false,
     val isMyLocationLoading: Boolean = false,
     val mapZoomControlsAlwaysVisible: Boolean = UserPreferences.DEFAULTS.mapZoomControlsVisible,
     val alert: Alert? = null,
 ) {
+    val isSearchBarVisible: Boolean
+        get() = !mapUiState.gpxLayerVisible &&
+            myLocationState.myLocationStatus != MyLocationStatus.FollowingLiveCompass
+
     companion object {
         val Default = MainUiState()
     }

@@ -27,7 +27,8 @@ appId: ${APP_ID}
     id: DESTINATION_CARD
     index: 0
 
-# Selecting a destination dismisses the sheet and moves the map camera
+# Selecting a destination dismisses the Search sheet, moves the map camera and
+# raises the Place Details sheet for it.
 - tapOn:
     id: DESTINATION_CARD
     index: 0
@@ -35,3 +36,17 @@ appId: ${APP_ID}
     id: MAP_MAPBOX
 - assertNotVisible:
     id: DESTINATIONS_SECTION
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_TITLE
+    timeout: 15000
+- assertVisible:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+
+# Closing the Place Details sheet lands back on the map.
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+- assertNotVisible:
+    id: PLACE_DETAILS_SHEET
+- assertVisible:
+    id: MAP_MAPBOX

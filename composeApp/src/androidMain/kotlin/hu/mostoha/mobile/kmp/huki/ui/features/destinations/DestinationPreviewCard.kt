@@ -34,7 +34,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
-import hu.mostoha.mobile.kmp.huki.util.adaptiveTint
+import hu.mostoha.mobile.kmp.huki.util.categoryTint
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -50,7 +50,7 @@ fun DestinationPreviewCard(
     distanceText: String? = null,
 ) {
     val typeColor = mokoColor(destination.type.colorRes)
-    val chipTint = typeColor.adaptiveTint()
+    val chipTint = typeColor.categoryTint()
     val subtitle = landscapeText?.let { "${destination.town} · $it" } ?: destination.town
     Box(
         modifier = modifier

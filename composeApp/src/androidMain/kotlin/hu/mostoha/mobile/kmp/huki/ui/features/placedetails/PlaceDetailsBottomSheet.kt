@@ -38,7 +38,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
@@ -54,6 +53,7 @@ import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
 import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
 import hu.mostoha.mobile.kmp.huki.ui.components.SecondaryButton
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.categoryTint
 import hu.mostoha.mobile.kmp.huki.util.formatter.CoordinateFormatter
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
@@ -236,19 +236,33 @@ private fun PlaceHeaderContent(
         horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(Dimens.IconContainer)
-                .clip(CircleShape)
-                .background(iconBackgroundColor),
-            contentAlignment = Alignment.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
         ) {
-            Icon(
-                modifier = Modifier.size(Dimens.IconMedium),
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.White,
-            )
+            Box(
+                modifier = Modifier
+                    .size(Dimens.IconContainer)
+                    .clip(CircleShape)
+                    .background(iconBackgroundColor),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    modifier = Modifier.size(Dimens.IconMedium),
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                )
+            }
+            if (!distance.isNullOrBlank()) {
+                Text(
+                    text = distance,
+                    modifier = Modifier.testTag(TestTags.PLACE_DETAILS_DISTANCE),
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                    color = iconBackgroundColor.categoryTint(),
+                    maxLines = 1,
+                )
+            }
         }
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall)) {
             Text(
@@ -271,27 +285,6 @@ private fun PlaceHeaderContent(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
-            }
-            if (!distance.isNullOrBlank()) {
-                Row(
-                    modifier = Modifier.padding(top = 1.dp),
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        modifier = Modifier.size(Dimens.IconExtraSmall),
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_place_circle),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        text = distance,
-                        modifier = Modifier.testTag(TestTags.PLACE_DETAILS_DISTANCE),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                    )
-                }
             }
         }
     }

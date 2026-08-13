@@ -31,6 +31,13 @@ fun LocationIqPlace.toReverseGeocodedPlace(location: Location, userLocation: Loc
         },
     )
 
+fun Place.withDistanceFrom(userLocation: Location?): Place =
+    if (distance != null || userLocation == null) {
+        this
+    } else {
+        copy(distance = DistanceFormatter.formatDistance(userLocation.distanceBetween(location)))
+    }
+
 private fun LocationIqAddress.toPlaceName(): String? =
     name ?: listOfNotNull(road, houseNumber)
         .takeIf { it.isNotEmpty() }
@@ -53,7 +60,7 @@ fun LocationIqPlace.toPlaceSearchResult(userLocation: Location? = null): Place {
         placeCategory = PlaceCategory.fromString(osmTag = type, osmClass = classType),
         osmType = OsmType.fromString(osmType),
         distance = userLocation?.let {
-            DistanceFormatter.formatRoundedDistance(it.distanceBetween(location))
+            DistanceFormatter.formatDistance(it.distanceBetween(location))
         },
         boundingBox = boundingBox?.takeIf { it.size == LOCATION_IQ_BB_SIZE }?.let { doubles ->
             BoundingBox(
