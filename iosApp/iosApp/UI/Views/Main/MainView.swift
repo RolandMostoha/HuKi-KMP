@@ -8,7 +8,16 @@ struct MainView: View {
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
+    @State var routePlannerHeights = RoutePlannerSheetHeights(
+        expanded: Dimens.routePlannerDetentHeight,
+        minimized: Dimens.routePlannerMinimizedDetentHeight
+    )
+    @State var routePlannerDetent: RoutePlannerDetent = .expanded
+    @State var routePlannerPick: RoutePlannerPick?
+    @State var routePlannerViewModel = KoinViewModelProvider.shared.getRoutePlannerViewModel()
+    @State var gpxShareItem: ShareItem?
     @State private var presentedSheet: Sheet?
+    @State private var isRoutePlannerPresented = false
     @State private var showFileImporter = false
     @State private var showAlert = false
 
@@ -22,6 +31,10 @@ struct MainView: View {
 
     var isLandscape: Bool { layoutMode.isLandscape }
     var isPad: Bool { layoutMode.isPad }
+
+    var routePlannerSheetHeight: CGFloat {
+        routePlannerDetent == .minimized ? routePlannerHeights.minimized : routePlannerHeights.expanded
+    }
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -57,7 +70,12 @@ struct MainView: View {
                     onMapLongClicked: { location in
                         viewModel.onEvent(event: MainUiEventsMapLongClicked(location: location))
                     },
-                    mapUiEffects: viewModel.mapUiEffects
+                    onMapCameraChanged: { cameraPosition in
+                        viewModel.onEvent(event: MainUiEventsMapCameraChanged(cameraPosition: cameraPosition))
+                    },
+                    mapUiEffects: viewModel.mapUiEffects,
+                    routePlannerDetent: routePlannerDetent,
+                    routePlannerSheetHeight: routePlannerSheetHeight
                 )
                 VStack {
                     Spacer()
@@ -101,10 +119,16 @@ struct MainView: View {
                                     viewModel.onEvent(event: MainUiEventsSheetSwipeDismissed(sheet: dismissed))
                                 }
                             }
-                        )
+                        ),
+                        onDismiss: handleSheetDismiss
                     ) { sheet in
                         sheetContent(for: sheet, uiState: uiState)
-                            .onAppear { presentedSheet = sheet }
+                            .onAppear {
+                                presentedSheet = sheet
+                                if case .routePlanner = onEnum(of: sheet) {
+                                    isRoutePlannerPresented = true
+                                }
+                            }
                     }
                 .alert(
                     uiState.alert.map { strings.get(id: $0.title) } ?? "",
@@ -145,15 +169,7 @@ private extension MainView {
     func navigationDestinations<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
             .navigationDestination(for: MenuRoute.self) { _ in
-                MenuView(
-                    onSettingsClicked: { navigationPath.append(SettingsRoute.settings) },
-                    onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
-                    onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
-                    onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) },
-                    onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },
-                    onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
-                    onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
-                )
+                menuDestination
             }
             .navigationDestination(for: SettingsRoute.self) { _ in
                 SettingsView()
@@ -195,6 +211,22 @@ private extension MainView {
             }
     }
 
+    var menuDestination: some View {
+        MenuView(
+            onSettingsClicked: { navigationPath.append(SettingsRoute.settings) },
+            onRoutePlannerClicked: {
+                viewModel.onEvent(event: MainUiEventsRoutePlannerClicked.shared)
+                navigationPath = NavigationPath()
+            },
+            onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
+            onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
+            onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) },
+            onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },
+            onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
+            onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+        )
+    }
+
     @ViewBuilder
     func gpxControlMenu(uiState: MainUiState) -> some View {
         if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil, uiState.mapUiState.gpxLayerVisible {
@@ -230,7 +262,21 @@ private extension MainView {
             showFileImporter = true
         case .openMapsNavigation(let effect):
             MapsNavigator.openDirections(to: effect.location)
+        case .routePlannerLocationPicked(let effect):
+            routePlannerPick = RoutePlannerPick(location: effect.location)
+        case .shareGpxFile(let effect):
+            gpxShareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
         }
+    }
+
+    // onCleared never runs on iOS, so a planner ViewModel leaks per open unless it is cleared here.
+    // clear() cancels the scope irreversibly, so the instance must be replaced, not reused.
+    func handleSheetDismiss() {
+        guard isRoutePlannerPresented else { return }
+        isRoutePlannerPresented = false
+        routePlannerViewModel.clear()
+        routePlannerViewModel = KoinViewModelProvider.shared.getRoutePlannerViewModel()
+        routePlannerPick = nil
     }
 
     func handleIncomingGpx(_ url: URL) {

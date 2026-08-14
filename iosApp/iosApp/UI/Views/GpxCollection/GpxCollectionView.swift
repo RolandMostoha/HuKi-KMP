@@ -7,6 +7,7 @@ struct GpxCollectionView: View {
 
     @State private var viewModel = KoinViewModelProvider.shared.getGpxCollectionViewModel()
     @State private var showDeleteConfirm = false
+    @State private var shareItem: ShareItem?
     @Environment(\.dismiss) private var dismiss
 
     private let strings = Strings()
@@ -59,6 +60,9 @@ struct GpxCollectionView: View {
             }
             .onChange(of: uiState.pendingDelete != nil) { _, newValue in
                 showDeleteConfirm = newValue
+            }
+            .sheet(item: $shareItem) { item in
+                ShareSheetView(url: item.url)
             }
         }
     }
@@ -125,7 +129,9 @@ struct GpxCollectionView: View {
                             viewModel.onEvent(event: GpxCollectionUiEventsFileClicked(file: file))
                         },
                         onRename: {},
-                        onShare: {},
+                        onShare: {
+                            viewModel.onEvent(event: GpxCollectionUiEventsShareClicked(file: file))
+                        },
                         onDelete: {
                             viewModel.onEvent(event: GpxCollectionUiEventsDeleteClicked(file: file))
                         }
@@ -200,6 +206,8 @@ struct GpxCollectionView: View {
             onOpenTutorial()
         case .openGpx(let effect):
             onOpenGpx(effect.fileUri)
+        case .shareGpx(let effect):
+            shareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
         }
     }
 }

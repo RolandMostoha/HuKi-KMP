@@ -10,7 +10,7 @@ struct SectionHeaderView: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title)
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             if let actionText, let onActionClick {

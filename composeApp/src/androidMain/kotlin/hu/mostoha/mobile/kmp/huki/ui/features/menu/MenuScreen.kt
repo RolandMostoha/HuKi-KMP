@@ -66,6 +66,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MenuScreen(
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onRoutePlannerClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -81,6 +82,7 @@ fun MenuScreen(
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onSettingsClicked = onSettingsClicked,
+        onRoutePlannerClicked = onRoutePlannerClicked,
         onDestinationsClicked = onDestinationsClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onGpxGuideClicked = onGpxGuideClicked,
@@ -97,6 +99,7 @@ private fun MenuContent(
     onEvent: (MenuUiEvents) -> Unit,
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onRoutePlannerClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -110,6 +113,7 @@ private fun MenuContent(
             when (effect) {
                 MenuUiEffects.NavigateBack -> onBack()
                 MenuUiEffects.NavigateToSettings -> onSettingsClicked()
+                MenuUiEffects.NavigateToRoutePlanner -> onRoutePlannerClicked()
                 MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
                 MenuUiEffects.NavigateToGpxGuide -> onGpxGuideClicked()
@@ -165,6 +169,21 @@ private fun MenuContent(
                 ) {
                     TintedRowIcon(
                         drawableResId = R.drawable.ic_settings,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_route_planner),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_route_planner),
+                    testTag = TestTags.MENU_ROW_ROUTE_PLANNER,
+                    onClick = { onEvent(MenuUiEvents.RoutePlannerClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_route_planner_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_route,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -489,6 +508,7 @@ private fun MenuContentPreview() {
             onEvent = {},
             onBack = {},
             onSettingsClicked = {},
+            onRoutePlannerClicked = {},
             onDestinationsClicked = {},
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},

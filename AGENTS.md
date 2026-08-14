@@ -187,6 +187,7 @@ commit-message convention.
   - **PII rule**: never put free text (search queries), precise coordinates, place names
 - Firebase Crashlytics: crash + non-fatal reporting, wired natively per platform like Analytics.
 - Ktor: Networking, Rest APIs.
+- **Routing**: GraphHopper hosted API (`https://graphhopper.com/api/1/route`, `GRAPHHOPPER_API_KEY` in `secrets.properties`) — used by the Route Planner.
 - kotlin-serialization: Serialization. 
 - Spatial K
   - `:gpx` GPX parsing 
@@ -222,11 +223,35 @@ UI → UiEvent → ViewModel → UiState
 - Don't fight the framework → use the native side best practices, avoid platform anti-patterns
 - Common First: Business logic must reside in `commonMain` whenever possible.
 - Prefer official + community KMP libraries for wrapping platform-specific code
-- Use comments only if necessary. If necessary, preferred: 1 line, max: 2 lines. If need more than 3 lines: ask.
-- Don't use comments for Composables/SwiftUI views. Previews are much better than comments.
-- Dark mode: Mapbox doesn't have dark modes for its layers (Outdoors, Satellite etc.) so we use light mode what we draw on map (markers, routes etc.)
-- ViewModels
-  - fun onEvent(event: [X]UiEvents) should contain 1 liner actions. Extract to a dedicated function if more complex than 1 line.
+- Dark mode: Mapbox doesn't have dark modes for its layers (Outdoors, Satellite etc.) so we use light mode only for the map (markers, routes etc.)
+
+### Comments
+
+Before writing a comment, **both** must hold. If either fails, delete it.
+
+1. **It says something the code cannot.** A *why*, an invariant, a constraint, a workaround, a
+   non-obvious external fact. If it paraphrases the declaration's name, signature or fields, it is noise.
+2. **It stays true when the code around it changes.** A comment naming callers, usage sites,
+   platforms or file locations is correct only on the day it is written, and nothing forces an update.
+
+**Banned, no exceptions:**
+- **Restating the declaration.** `/** Aggregated numbers of a route */` above
+  `data class RouteStats(travelTime, distance, incline, decline)` adds nothing to the signature.
+- **Naming usage sites.** `... shown in GPX Details and Route Planner` becomes a lie, and a
+  maintenance chore, the day a third screen uses it.
+- **Cross-platform referrals.** "We did this on Android, that on iOS".
+- **Doc comments on Composables / SwiftUI views.** Go straight from `import` to
+  `struct X: View` / `@Composable fun X()`. Add a `@Preview` / `#Preview` instead.
+
+**Length:**
+- Preferred: none, or 1 line.
+- 2–3 lines is the hard maximum, and must be called out in the task summary with the reason it was
+  needed. If it isn't worth justifying there, don't write it.
+
+**Style:**
+- Kotlin: use a plain `//` for one-line comments on members inside a class, interface or object —
+  never KDoc `/** */`. Reserve KDoc for the top-level declaration, or complex public functions.
+- Swift: follow the comment-marks rule in **SwiftUI - iOS**.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
@@ -236,6 +261,8 @@ UI → UiEvent → ViewModel → UiState
 - Use `kotlin.time.Duration` for duration.
 - Resources: Use the `shared/src/commonMain/moko-resources` (Moko-resources) for shared strings, colors, fonts.
 - SharedDimens: dimension values which shared as a 1-1 mapping with Android DP vs iOS Point
+- ViewModels
+  - fun onEvent(event: [X]UiEvents) should contain 1 liner actions. Extract to a dedicated function if more complex than 1 line.
 
 ### Mappers
 - Type mappers between layers (data↔domain, domain↔domain, platform↔domain) are **top-level extension functions** named `to<Target>()`, grouped by the domain concept they map in `model/mapper/<Concept>Mapper.kt` (e.g. `GpxMapper.kt`, `MapboxMapper.kt`).
@@ -295,7 +322,7 @@ val [actual] = operation(X)
 - Prefer icons from the official Apple SF Symbols icon set: https://developer.apple.com/sf-symbols/.
 - Prefer official SwiftUi components instead of custom views
 - Whenever makes sense, extract UI components to separate classes → E.g. `struct DestinationPreviewCard: View`
-- Comment marks: `///` for non-private declarations (Quick Help / DocC surface), `//` for private ones and for notes inside function bodies.
+- Comment marks: formatting only, for comments that already passed **Comments** — `///` for non-private declarations (Quick Help / DocC surface), `//` for private ones and for notes inside function bodies. Not a licence to document non-private declarations.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.

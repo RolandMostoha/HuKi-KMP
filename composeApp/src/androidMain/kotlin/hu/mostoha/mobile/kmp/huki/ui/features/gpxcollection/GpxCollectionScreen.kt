@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +43,7 @@ import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
@@ -51,6 +53,7 @@ import hu.mostoha.mobile.kmp.huki.ui.components.GpxFileCard
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -87,12 +90,14 @@ private fun GpxCollectionContent(
     onOpenTutorial: () -> Unit,
     onOpenGpx: (String) -> Unit,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(uiEffects) {
         uiEffects.collect { effect ->
             when (effect) {
                 GpxCollectionUiEffects.NavigateBack -> onBack()
                 GpxCollectionUiEffects.NavigateToTutorial -> onOpenTutorial()
                 is GpxCollectionUiEffects.OpenGpx -> onOpenGpx(effect.fileUri)
+                is GpxCollectionUiEffects.ShareGpx -> context.shareGpxFile(effect.fileUri, effect.fileName)
             }
         }
     }
@@ -174,6 +179,9 @@ private fun GpxCollectionContent(
                             onFileClick = { file ->
                                 onEvent(GpxCollectionUiEvents.FileClicked(file))
                             },
+                            onShareClick = { file ->
+                                onEvent(GpxCollectionUiEvents.ShareClicked(file))
+                            },
                             onDeleteClick = { file ->
                                 onEvent(GpxCollectionUiEvents.DeleteClicked(file))
                             },
@@ -235,6 +243,7 @@ private fun GpxSectionHeader(header: GpxFileHeader) {
 private fun GpxFileSectionCard(
     section: GpxFileSection,
     onFileClick: (GpxFileItem) -> Unit,
+    onShareClick: (GpxFileItem) -> Unit,
     onDeleteClick: (GpxFileItem) -> Unit,
 ) {
     Surface(
@@ -249,7 +258,7 @@ private fun GpxFileSectionCard(
                     file = file,
                     onClick = { onFileClick(file) },
                     onRenameClick = {}, // Rename not wired yet
-                    onShareClick = {}, // Share not wired yet
+                    onShareClick = { onShareClick(file) },
                     onDeleteClick = { onDeleteClick(file) },
                     modifier = Modifier.testTag(TestTags.GPX_COLLECTION_ITEM),
                 )
@@ -280,6 +289,7 @@ private fun GpxCollectionContentPreview() {
         decline = 1642,
         lastModified = now,
         lastOpened = now,
+        origin = GpxOrigin.EXTERNAL,
     )
     val sampleToday2 = sampleToday.copy(
         fileName = "pilis-korte.gpx",

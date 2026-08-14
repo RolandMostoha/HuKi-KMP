@@ -56,7 +56,7 @@ struct OnlineResultsSectionView: View {
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(strings.get(id: SharedRes.strings().search_online_title))
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             Button(action: onLocationIqClicked) {

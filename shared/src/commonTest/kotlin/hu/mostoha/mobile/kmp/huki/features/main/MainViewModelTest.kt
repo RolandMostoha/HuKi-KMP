@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_WAY_CLOSED
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
@@ -41,15 +42,19 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
+import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxWaypoints
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -59,10 +64,12 @@ import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -77,9 +84,11 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.maplibre.spatialk.units.extensions.meters
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.hours
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -113,6 +122,16 @@ class MainViewModelTest {
             displayAddress = "Pilisszentkereszt, Pest, Hungary",
             type = "peak",
         )
+        private val TEST_ROUTE_PLAN = RoutePlan(
+            waypoints = listOf(Location(47.5, 19.0), Location(47.7, 18.9)),
+            locations = listOf(Location(47.5, 19.0, 300.0), Location(47.7, 18.9, 420.0)),
+            routeStats = RouteStats(
+                travelTime = 1.hours,
+                distance = 8500.meters,
+                incline = 240,
+                decline = 120,
+            ),
+        )
         private val TEST_PLACE_WITH_BOUNDING_BOX = TEST_PLACE.copy(
             boundingBox = BoundingBox(
                 north = 47.6131,
@@ -130,6 +149,7 @@ class MainViewModelTest {
     private val settingsRepository = mock<SettingsRepository>(MockMode.autoUnit) {
         every { settings } returns flowOf(UserPreferences.DEFAULTS)
     }
+    private val mapCameraStore = DefaultMapCameraStore()
     private val whatsNewRepository = mock<WhatsNewRepository>(MockMode.autoUnit) {
         everySuspend { shouldShowWhatsNew() } returns false
     }
@@ -170,6 +190,7 @@ class MainViewModelTest {
             geocodingRepository = geocodingRepository,
             locationMonitoringService = locationMonitoringService,
             settingsRepository = settingsRepository,
+            mapCameraStore = mapCameraStore,
             whatsNewRepository = whatsNewRepository,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
@@ -947,6 +968,132 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `When RoutePlanUpdated, Then the route is drawn and the camera frames it`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+
+                skipItems(1)
+                viewModel.uiState.value.mapUiState.routePlan shouldBe TEST_ROUTE_PLAN
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Bounds(TEST_ROUTE_PLAN.locations + TEST_ROUTE_PLAN.waypoints),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a drawn route, When the sheet is dismissed, Then the route is removed from the map`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+
+            viewModel.onEvent(MainUiEvents.SheetDismissed)
+
+            val mapUiState = viewModel.uiState.value.mapUiState
+            mapUiState.routePlan shouldBe null
+            mapUiState.routePlanMarkers.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given a drawn route, When a saved plan is reopened as GPX, Then the route overlay is removed`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+
+            viewModel.onEvent(MainUiEvents.RoutePlanGpxSaved("uri"))
+            advanceUntilIdle()
+
+            val mapUiState = viewModel.uiState.value.mapUiState
+            mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            mapUiState.routePlan shouldBe null
+            mapUiState.routePlanMarkers.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given a saved plan is reopened, When onEvent, Then no gpx import analytics event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.RoutePlanGpxSaved("uri"))
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given a drawn route, When only its waypoints change, Then the camera is not reframed`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+                advanceUntilIdle()
+                expectMostRecentItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Bounds(TEST_ROUTE_PLAN.locations + TEST_ROUTE_PLAN.waypoints),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+
+                viewModel.onEvent(
+                    MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints().dropLast(1)),
+                )
+                advanceUntilIdle()
+
+                viewModel.uiState.value.mapUiState.routePlanWaypoints shouldBe TEST_ROUTE_PLAN.toGpxWaypoints().dropLast(1)
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a single waypoint, When RoutePlanUpdated, Then only its marker is drawn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val marker = GpxWaypoint(TEST_ROUTE_PLAN.waypoints.first(), WaypointType.END)
+
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(routePlan = null, markers = listOf(marker)))
+
+            val mapUiState = viewModel.uiState.value.mapUiState
+            mapUiState.routePlan shouldBe null
+            mapUiState.routePlanMarkers shouldBe listOf(marker)
+        }
+    }
+
+    @Test
+    fun `Given no route can be planned, When a single waypoint is drawn, Then the camera frames it`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val marker = GpxWaypoint(TEST_ROUTE_PLAN.waypoints.first(), WaypointType.END)
+
+            viewModel.mapUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(routePlan = null, markers = listOf(marker)))
+                advanceUntilIdle()
+
+                expectMostRecentItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Bounds(listOf(marker.location), maxZoom = MapConstants.PLACE_DEFAULT_CAMERA_ZOOM),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+            }
+        }
+    }
+
+    @Test
     fun `When GpxFileSelected, Then uiState sheet is Gpx`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
@@ -1074,6 +1221,43 @@ class MainViewModelTest {
 
             viewModel.mainUiEffects.test {
                 viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given loaded GPX, When GpxShareClicked, Then effect is ShareGpxFile with the sandbox file`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxShareClicked)
+
+                awaitItem() shouldBe MainUiEffects.ShareGpxFile(
+                    fileUri = TEST_GPX_DETAILS.fileUri,
+                    fileName = TEST_GPX_DETAILS.fileName,
+                )
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given no loaded GPX, When GpxShareClicked, Then no effect is emitted`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.GpxShareClicked)
                 advanceUntilIdle()
 
                 expectNoEvents()
@@ -1603,6 +1787,26 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given loaded GPX, When GpxShareClicked, Then gpx shared details analytics event is logged`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxShareClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.GpxImported(GpxSource.FILES),
+                AnalyticsEvent.GpxShared(GpxShareSource.DETAILS),
+            )
+        }
+    }
+
+    @Test
     fun `Given saved GPX reopened, When onEvent, Then history gpx selected analytics event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
@@ -1764,6 +1968,22 @@ class MainViewModelTest {
                 AnalyticsEvent.ScreenView(Screen.SEARCH),
                 AnalyticsEvent.ScreenView(Screen.SEARCH),
             )
+        }
+    }
+
+    @Test
+    fun `When MapCameraChanged, Then the camera is kept in the map camera store`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val cameraPosition = MapConstants.HUNGARY_CAMERA_POSITION.copy(
+                location = TEST_LONG_TAP_LOCATION,
+                zoom = 12.0,
+            )
+
+            viewModel.onEvent(MainUiEvents.MapCameraChanged(cameraPosition))
+
+            mapCameraStore.cameraPosition shouldBe cameraPosition
         }
     }
 
@@ -1955,6 +2175,46 @@ class MainViewModelTest {
                     sheet shouldBe Sheet.Search
                     mapUiState.placeDetails shouldBe null
                 }
+            }
+        }
+    }
+
+    @Test
+    fun `Given shown PlaceDetails, When PlaceDetailsRoutePlanClicked, Then the place marker is removed`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                mapUiState.placeDetails shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner, When MapLongClicked, Then the location is emitted instead of PlaceDetails`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+                advanceUntilIdle()
+
+                awaitItem() shouldBe MainUiEffects.RoutePlannerLocationPicked(TEST_LONG_TAP_LOCATION)
+            }
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                mapUiState.placeDetails shouldBe null
             }
         }
     }

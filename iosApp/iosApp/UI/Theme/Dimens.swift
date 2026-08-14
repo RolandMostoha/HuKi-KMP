@@ -38,11 +38,26 @@ enum Dimens {
         trailing: 60
     )
 
+    static func routePlannerContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
+        EdgeInsets(
+            top: 100,
+            leading: 60,
+            bottom: sheetHeight + 20,
+            trailing: 60
+        )
+    }
+    static let routePlannerContentPaddingLandscape = EdgeInsets(
+        top: 60,
+        leading: 60,
+        bottom: 60,
+        trailing: 60
+    )
+
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
-    static let gpxDetailsExpandedDetentHeight: CGFloat = 320
-    static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 350
-    static let gpxDetailsPadExpandedDetentHeight: CGFloat = 320
-    static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 380
+    static let gpxDetailsExpandedDetentHeight: CGFloat = 382
+    static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 412
+    static let gpxDetailsPadExpandedDetentHeight: CGFloat = 382
+    static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 442
 
     static func gpxDetailsExpandedHeight(hasEnd: Bool, isPad: Bool) -> CGFloat {
         if isPad {
@@ -52,6 +67,9 @@ enum Dimens {
     }
 
     static let placeDetailsDetentHeight: CGFloat = 215
+
+    static let routePlannerDetentHeight: CGFloat = 520
+    static let routePlannerMinimizedDetentHeight: CGFloat = 190
 
     static let whatsNewDetentHeight: CGFloat = 350
     static let whatsNewDetentHeightWithMessage: CGFloat = 400

@@ -80,3 +80,5 @@ appId: ${APP_ID}
     id: GPX_DETAILS_NAV_START_BUTTON
 - assertVisible:
     id: GPX_DETAILS_NAV_END_BUTTON
+- assertVisible:
+    id: GPX_DETAILS_SHARE_BUTTON

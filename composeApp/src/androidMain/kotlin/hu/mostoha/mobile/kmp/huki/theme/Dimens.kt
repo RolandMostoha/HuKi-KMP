@@ -35,6 +35,14 @@ object Dimens {
 
     val GpxNavButtonPeek = 16.dp
 
+    val RoutePlannerPeekHeight = 200.dp
+    val RoutePlannerRowHeight = 52.dp
+    val RoutePlannerRowHeightExpanded = 56.dp
+    val RoutePlannerListMaxHeight = 400.dp
+    val RoutePlannerWaypointIconColumnWidth = 20.dp
+    val RoutePlannerConnectorWidth = 2.dp
+    val RoutePlannerCameraBottomOffset = 20.dp
+
     val PlaceDetailsTitleMinFontSize = 13.sp
 
     val SearchBarLandscapeWidth = 350.dp
@@ -59,6 +67,18 @@ object Dimens {
     )
     val PlaceDetailsContentPaddingLandscape = PaddingValues(
         top = 70.dp,
+        start = 60.dp,
+        bottom = 60.dp,
+        end = 60.dp,
+    )
+    val RoutePlannerContentPaddingPortrait = PaddingValues(
+        top = 100.dp,
+        start = 60.dp,
+        bottom = 340.dp,
+        end = 60.dp,
+    )
+    val RoutePlannerContentPaddingLandscape = PaddingValues(
+        top = 60.dp,
         start = 60.dp,
         bottom = 60.dp,
         end = 60.dp,

@@ -26,6 +26,7 @@ fun DestinationsSection(
     destinations: List<Destination>,
     onDestinationSelected: (Destination) -> Unit,
     modifier: Modifier = Modifier,
+    title: String = mokoString(SharedRes.strings.destinations_section_title),
     topPadding: Dp = Dimens.SectionSpacing,
     onSeeAllClick: (() -> Unit)? = null,
 ) {
@@ -36,7 +37,7 @@ fun DestinationsSection(
         verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
     ) {
         SectionHeader(
-            title = mokoString(SharedRes.strings.destinations_section_title),
+            title = title,
             actionText = onSeeAllClick?.let { mokoString(SharedRes.strings.see_all) },
             onActionClick = onSeeAllClick,
             actionModifier = Modifier.testTag(TestTags.DESTINATIONS_SEE_ALL_BUTTON),

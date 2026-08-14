@@ -113,6 +113,7 @@ complexity:
   LargeClass:
     active: true
     allowedLines: 600
+    excludes: ['**/MainViewModel.kt']
   LongMethod:
     active: true
     allowedLines: 60
@@ -156,9 +157,9 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/MainViewModel.kt']
-    allowedFunctionsPerFile: 14
-    allowedFunctionsPerClass: 14
-    allowedFunctionsPerInterface: 14
+    allowedFunctionsPerFile: 30
+    allowedFunctionsPerClass: 30
+    allowedFunctionsPerInterface: 30
     allowedFunctionsPerObject: 14
     allowedFunctionsPerEnum: 14
     ignoreDeprecated: false

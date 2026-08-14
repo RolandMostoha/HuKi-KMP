@@ -22,19 +22,8 @@ struct LayersSheetView: View {
 
                     HStack {
                         Spacer()
-                        Button(action: onDismissRequest) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.primary)
-                                .padding(12)
-                                .background(
-                                    Circle().fill(Color(.systemGray5))
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .contentShape(Circle())
-                        .padding(.trailing, 8)
-                        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
+                        CloseButton(action: onDismissRequest)
+                            .padding(.trailing, 8)
                     }
                 }
                 .padding(.top, 26)

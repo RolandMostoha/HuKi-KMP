@@ -13,6 +13,8 @@ extension MainView {
             gpxSheet(uiState: uiState)
         case .placeDetails:
             placeDetailsSheet(uiState: uiState)
+        case .routePlanner(let sheet):
+            routePlannerSheet(place: sheet.place)
         case .whatsNew(let sheet):
             whatsNewSheet(whatsNew: sheet.whatsNew)
         }
@@ -131,10 +133,16 @@ extension MainView {
                 onNavigateToEnd: {
                     viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .end))
                 },
+                onShareClick: {
+                    viewModel.onEvent(event: MainUiEventsGpxShareClicked())
+                },
                 onDismissRequest: {
                     viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
                 }
             )
+            .sheet(item: $gpxShareItem) { item in
+                ShareSheetView(url: item.url)
+            }
             .presentationDetents(
                 isPad
                     ? [gpxExpandedDetent(gpxDetails)]
@@ -152,6 +160,72 @@ extension MainView {
         } else {
             EmptyView()
         }
+    }
+
+    func routePlannerSheet(place: Place?) -> some View {
+        RoutePlannerSheetView(
+            strings: strings,
+            viewModel: routePlannerViewModel,
+            place: place,
+            pick: routePlannerPick,
+            onRoutePlanUpdated: { routePlan, markers in
+                viewModel.onEvent(
+                    event: MainUiEventsRoutePlanUpdated(routePlan: routePlan, markers: markers)
+                )
+            },
+            onRoutePlanSaved: { fileUri in
+                viewModel.onEvent(event: MainUiEventsRoutePlanGpxSaved(uri: fileUri))
+            },
+            onDismissRequest: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            },
+            detent: routePlannerDetent,
+            onExpandRequest: { routePlannerDetent = .fullScreen },
+            onHeightsChange: { heights in
+                routePlannerHeights = heights
+            },
+            onMinimizeRequest: { routePlannerDetent = .minimized },
+            onExpandAfterPickRequest: { routePlannerDetent = .expanded },
+            onInitialAppear: { routePlannerDetent = .expanded }
+        )
+        .presentationDetents(routePlannerDetents, selection: routePlannerDetentSelection)
+        .presentationDragIndicator(.visible)
+        .presentationBackgroundInteraction(.enabled)
+        .interactiveDismissDisabled()
+    }
+
+    private var routePlannerDetents: Set<PresentationDetent> {
+        [
+            presentationDetent(for: .minimized),
+            presentationDetent(for: .expanded),
+            presentationDetent(for: .fullScreen)
+        ]
+    }
+
+    private func presentationDetent(for detent: RoutePlannerDetent) -> PresentationDetent {
+        switch detent {
+        case .minimized:
+            return .height(routePlannerHeights.minimized)
+        case .expanded:
+            return .height(routePlannerHeights.expanded)
+        case .fullScreen:
+            return .large
+        }
+    }
+
+    private var routePlannerDetentSelection: Binding<PresentationDetent> {
+        Binding(
+            get: { presentationDetent(for: routePlannerDetent) },
+            set: { newValue in
+                if newValue == .large {
+                    routePlannerDetent = .fullScreen
+                } else if newValue == .height(routePlannerHeights.minimized) {
+                    routePlannerDetent = .minimized
+                } else {
+                    routePlannerDetent = .expanded
+                }
+            }
+        )
     }
 
     @ViewBuilder

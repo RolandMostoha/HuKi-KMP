@@ -40,9 +40,8 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
 import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
+import hu.mostoha.mobile.kmp.huki.ui.components.RouteStatsRow
 import hu.mostoha.mobile.kmp.huki.ui.components.SecondaryButton
-import hu.mostoha.mobile.kmp.huki.ui.components.StatChip
-import hu.mostoha.mobile.kmp.huki.ui.components.StatChipStyle
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -57,6 +56,7 @@ fun GpxDetailsBottomSheet(
     onStartClick: () -> Unit,
     onNavigateToStart: () -> Unit,
     onNavigateToEnd: () -> Unit,
+    onShareClick: () -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
     onCollapsedHeightMeasured: (Dp) -> Unit = {},
@@ -142,43 +142,17 @@ fun GpxDetailsBottomSheet(
                         )
                     }
                 }
-                Row(
+                RouteStatsRow(
+                    travelTime = mokoString(TravelTimeFormatter.formatTravelTime(gpxDetails.travelTime)),
+                    distance = DistanceFormatter.formatDistance(gpxDetails.totalDistance),
+                    incline = DistanceFormatter.formatMeters(gpxDetails.incline),
+                    decline = DistanceFormatter.formatMeters(gpxDetails.decline),
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .fillMaxWidth(0.82f)
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .padding(top = Dimens.ExtraSmall),
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-                ) {
-                    StatChip(
-                        iconResId = R.drawable.ic_clock,
-                        value = mokoString(TravelTimeFormatter.formatTravelTime(gpxDetails.travelTime)),
-                        label = mokoString(SharedRes.strings.gpx_details_travel_time),
-                        style = StatChipStyle.Large,
-                        modifier = Modifier.weight(1f),
-                    )
-                    StatChip(
-                        iconResId = R.drawable.ic_place_circle,
-                        value = DistanceFormatter.formatDistance(gpxDetails.totalDistance),
-                        label = mokoString(SharedRes.strings.gpx_details_distance),
-                        style = StatChipStyle.Large,
-                        modifier = Modifier.weight(1f),
-                    )
-                    StatChip(
-                        iconResId = R.drawable.ic_up_double,
-                        value = DistanceFormatter.formatMeters(gpxDetails.incline),
-                        label = mokoString(SharedRes.strings.gpx_details_incline),
-                        style = StatChipStyle.Large,
-                        modifier = Modifier.weight(1f),
-                    )
-                    StatChip(
-                        iconResId = R.drawable.ic_down_double,
-                        value = DistanceFormatter.formatMeters(gpxDetails.decline),
-                        label = mokoString(SharedRes.strings.gpx_details_decline),
-                        style = StatChipStyle.Large,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                )
                 PrimaryButton(
                     iconResId = R.drawable.ic_fab_my_location_live_compass,
                     text = mokoString(SharedRes.strings.gpx_details_start),
@@ -222,6 +196,14 @@ fun GpxDetailsBottomSheet(
                             .testTag(TestTags.GPX_DETAILS_NAV_END_BUTTON),
                     )
                 }
+                SecondaryButton(
+                    iconResId = SharedRes.images.ic_share.drawableResId,
+                    text = mokoString(SharedRes.strings.gpx_details_share),
+                    onClick = onShareClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(TestTags.GPX_DETAILS_SHARE_BUTTON),
+                )
             }
         }
     }
@@ -251,6 +233,7 @@ private fun GpxDetailsBottomSheetPreview() {
             onStartClick = {},
             onNavigateToStart = {},
             onNavigateToEnd = {},
+            onShareClick = {},
             onCloseClick = {},
         )
     }

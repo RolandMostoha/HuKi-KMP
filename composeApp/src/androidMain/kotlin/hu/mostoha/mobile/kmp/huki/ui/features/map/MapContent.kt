@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.touchlab.kermit.Logger
@@ -40,19 +43,15 @@ import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.MapboxMapComposable
+import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
-import com.mapbox.maps.extension.compose.style.ColorValue
-import com.mapbox.maps.extension.compose.style.DoubleValue
 import com.mapbox.maps.extension.compose.style.LongValue
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.extension.compose.style.StringListValue
-import com.mapbox.maps.extension.compose.style.layers.generated.LineCapValue
-import com.mapbox.maps.extension.compose.style.layers.generated.LineJoinValue
-import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
@@ -70,9 +69,10 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
-import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
 import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
 import hu.mostoha.mobile.kmp.huki.model.mapper.isIdle
@@ -80,6 +80,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.isOverview
 import hu.mostoha.mobile.kmp.huki.model.mapper.moveCamera
 import hu.mostoha.mobile.kmp.huki.model.mapper.resetBearing
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
+import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
@@ -95,7 +96,9 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.toComposeColor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
 
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
@@ -107,6 +110,7 @@ fun MapContent(
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
     modifier: Modifier = Modifier,
+    routePlannerBottomInset: Dp? = null,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -122,20 +126,37 @@ fun MapContent(
     }
     val mapLoaded = remember { CompletableDeferred<Unit>() }
     var isCameraPanelVisible by remember { mutableStateOf(true) }
+    var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
+    val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
+
+    LaunchedEffect(mapViewportState) {
+        snapshotFlow { mapViewportState.cameraState }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .collect { onEvent(MainUiEvents.MapCameraChanged(it.toCameraPosition())) }
+    }
 
     LaunchedEffect(mapUiEffects) {
         // suspend until map is ready
         mapLoaded.await()
         mapUiEffects.collect { effect ->
-            when (effect) {
-                is MapUiEffects.UpdateCamera -> mapViewportState.moveCamera(density, effect, isLandscape)
-                is MapUiEffects.ShowMyLocation -> {
-                    mapViewportState.followLocation(effect.myLocationStatus, effect.animated)
-                }
-                is MapUiEffects.Zoom -> mapViewportState.zoom(effect.zoomIn)
-                is MapUiEffects.ResetBearing -> mapViewportState.resetBearing()
+            if (effect is MapUiEffects.UpdateCamera && effect.contentPadding == ContentPadding.MAP_ROUTE_PLANNER) {
+                lastRoutePlannerCamera = effect
             }
+            mapViewportState.handleMapEffect(effect, density, isLandscape, currentRoutePlannerInset)
         }
+    }
+
+    LaunchedEffect(mapUiState.routePlan) {
+        if (mapUiState.routePlan == null) {
+            lastRoutePlannerCamera = null
+        }
+    }
+
+    LaunchedEffect(routePlannerBottomInset) {
+        val effect = lastRoutePlannerCamera ?: return@LaunchedEffect
+        if (routePlannerBottomInset == null) return@LaunchedEffect
+        mapViewportState.moveCamera(density, effect, isLandscape, routePlannerBottomInset)
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -262,6 +283,14 @@ fun MapContent(
                     routeStrokeColor = mapStrokeColor,
                 )
             }
+            if (mapUiState.routePlan != null || mapUiState.routePlanMarkers.isNotEmpty()) {
+                RoutePlanLayer(
+                    routePlan = mapUiState.routePlan,
+                    markers = mapUiState.routePlanMarkers,
+                    routeColor = primaryOnMapColor,
+                    routeStrokeColor = mapStrokeColor,
+                )
+            }
             mapUiState.placeDetails?.let { placeDetails ->
                 PlaceMarker(location = placeDetails.location)
             }
@@ -274,6 +303,20 @@ fun MapContent(
             onOpen = { isCameraPanelVisible = true },
             onClose = { isCameraPanelVisible = false },
         )
+    }
+}
+
+private fun MapViewportState.handleMapEffect(
+    effect: MapUiEffects,
+    density: Density,
+    isLandscape: Boolean,
+    routePlannerBottomInset: Dp?,
+) {
+    when (effect) {
+        is MapUiEffects.UpdateCamera -> moveCamera(density, effect, isLandscape, routePlannerBottomInset)
+        is MapUiEffects.ShowMyLocation -> followLocation(effect.myLocationStatus, effect.animated)
+        is MapUiEffects.Zoom -> zoom(effect.zoomIn)
+        is MapUiEffects.ResetBearing -> resetBearing()
     }
 }
 
@@ -306,19 +349,14 @@ private fun GpxLayer(
         LaunchedEffect(key1 = gpxDetails.layerId) {
             geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
         }
-        LineLayer(
+        RouteLineLayer(
             sourceState = geoJsonSource,
             layerId = gpxDetails.layerId,
-        ) {
-            lineWidth = DoubleValue(SharedDimens.GPX_LINE_WIDTH)
-            lineColor = ColorValue(routeColor)
-            lineBorderColor = ColorValue(routeStrokeColor)
-            lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
-            lineCap = LineCapValue.ROUND
-            lineJoin = LineJoinValue.ROUND
-        }
+            routeColor = routeColor,
+            routeStrokeColor = routeStrokeColor,
+        )
     }
-    gpxDetails.waypoints.forEach { waypoint ->
+    WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->
         val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {
@@ -326,11 +364,7 @@ private fun GpxLayer(
                 true
             }
             iconImage = rememberIconImage
-            iconSize = if (waypoint.type == WaypointType.INTERMEDIATE) {
-                SharedDimens.GPX_WAYPOINT_MARKER_SCALE
-            } else {
-                SharedDimens.GPX_EDGE_LOCATION_MARKER_SCALE
-            }
+            iconSize = waypoint.type.markerScale
         }
     }
     mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->

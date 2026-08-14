@@ -18,6 +18,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
+import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
@@ -73,6 +74,7 @@ object KoinViewModelProvider : KoinComponent {
     fun getTrailSymbolsGuideViewModel(): TrailSymbolsGuideViewModel = get()
     fun getLocationIqViewModel(): LocationIqViewModel = get()
     fun getPlaceHistoryViewModel(): PlaceHistoryViewModel = get()
+    fun getRoutePlannerViewModel(): RoutePlannerViewModel = get()
     fun getSettingsViewModel(): SettingsViewModel = get()
     fun getDestinationsViewModel(): DestinationsViewModel = get()
 }

@@ -3,6 +3,8 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
+import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.util.toInstantFromIsoOffset
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import org.maplibre.spatialk.units.extensions.inMeters
@@ -22,6 +24,15 @@ fun GpxDetails.toGpxFileItem(trackId: String, lastModified: Instant, lastOpened:
         decline = decline,
         lastModified = lastModified,
         lastOpened = lastOpened,
+        origin = GpxOrigin.fromPath(fileUri),
+    )
+
+fun GpxDetails.toRouteStats(): RouteStats =
+    RouteStats(
+        travelTime = travelTime,
+        distance = totalDistance,
+        incline = incline,
+        decline = decline,
     )
 
 fun GpxDetails.toMetadataEntry(trackId: String, lastModified: Instant, openedAt: Instant): GpxMetadataEntry =
@@ -50,5 +61,6 @@ fun GpxMetadataEntry.toGpxFileItem(fileUri: String): GpxFileItem? {
         decline = decline,
         lastModified = lastModified.toInstantFromIsoOffset() ?: openedAt,
         lastOpened = openedAt,
+        origin = GpxOrigin.fromPath(fileUri),
     )
 }

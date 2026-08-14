@@ -16,6 +16,7 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    enabled: Boolean = true,
 ) {
     BaseButton(
         iconResId = iconResId,
@@ -27,6 +28,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier,
         contentDescription = contentDescription,
+        enabled = enabled,
     )
 }
 

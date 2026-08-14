@@ -7,10 +7,12 @@ import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
@@ -68,6 +70,7 @@ class GpxCollectionViewModelTest {
             decline = 100,
             lastModified = lastModified,
             lastOpened = lastOpened,
+            origin = GpxOrigin.EXTERNAL,
         )
 
     @Test
@@ -163,7 +166,7 @@ class GpxCollectionViewModelTest {
         val file = gpxFileItem("today.gpx", now)
         var files = listOf(file)
         everySuspend { gpxRepository.getGpxFiles() } returnsBy { files }
-        everySuspend { gpxRepository.deleteGpxFile("today.gpx") } returns Unit
+        everySuspend { gpxRepository.deleteGpxFile("uri/today.gpx", "track-today.gpx") } returns Unit
 
         runTest {
             val viewModel = createViewModel()
@@ -173,7 +176,8 @@ class GpxCollectionViewModelTest {
             viewModel.onEvent(GpxCollectionUiEvents.DeleteConfirmed)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            verifySuspend { gpxRepository.deleteGpxFile("today.gpx") }
+            // Keyed on the uri and trackId, since a file name can repeat across origins.
+            verifySuspend { gpxRepository.deleteGpxFile("uri/today.gpx", "track-today.gpx") }
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxDeleted)
             val uiState = viewModel.uiState.value
             uiState.pendingDelete shouldBe null
@@ -209,6 +213,28 @@ class GpxCollectionViewModelTest {
                 viewModel.onEvent(GpxCollectionUiEvents.FileClicked(file))
 
                 awaitItem() shouldBe GpxCollectionUiEffects.OpenGpx(file.fileUri)
+            }
+        }
+    }
+
+    @Test
+    fun `Given a file, When ShareClicked event, Then ShareGpx effect is emitted and analytics is logged`() {
+        val file = gpxFileItem("today.gpx", now)
+        everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(GpxCollectionUiEvents.ShareClicked(file))
+
+                awaitItem() shouldBe GpxCollectionUiEffects.ShareGpx(
+                    fileUri = file.fileUri,
+                    fileName = file.fileName,
+                )
+                analyticsService.loggedEvents shouldBe listOf(
+                    AnalyticsEvent.GpxShared(GpxShareSource.COLLECTION),
+                )
             }
         }
     }

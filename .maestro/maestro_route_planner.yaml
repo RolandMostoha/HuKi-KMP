@@ -1,0 +1,150 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open a destination from Search, then plan a route to it
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Dobog"
+- tapOn: "Dobogókő"
+- assertVisible:
+    id: PLACE_DETAILS_SHEET
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- assertVisible:
+    id: ROUTE_PLANNER_SHEET
+- assertVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+
+# Add a second stop through the stacked search sheet
+- tapOn:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+- assertVisible:
+    id: ROUTE_PLANNER_SEARCH_SCREEN
+- tapOn:
+    id: ROUTE_PLANNER_SEARCH_FIELD
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- assertVisible:
+    id: ROUTE_PLANNER_SHEET
+
+# Graphhopper answers with a plan, so the stats replace the loading state
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- assertNotVisible:
+    id: ROUTE_PLANNER_LOADING
+- assertNotVisible:
+    id: ROUTE_PLANNER_ERROR
+- assertVisible:
+    id: ROUTE_PLANNER_SAVE_BUTTON
+
+# Closing returns to the map
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET
+- assertVisible:
+    id: MAIN_SEARCH_BAR
+
+# A plan started after the device moved must use the new position, not a cached one
+- setLocation:
+    latitude: 47.7193911
+    longitude: 18.8961602
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- copyTextFrom:
+    text: "Distance, .*"
+- evalScript: ${output.firstDistance = maestro.copiedText}
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+
+# Same destination, ~20 km further away, so a stale start would repeat the first distance
+- setLocation:
+    latitude: 47.7895100
+    longitude: 18.9347100
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- copyTextFrom:
+    text: "Distance, .*"
+- assertTrue: ${maestro.copiedText != output.firstDistance}
+
+# Past a few stops the list collapses, and the "more stops" row opens the full screen stage
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          id: ROUTE_PLANNER_ADD_STOP_ROW
+      - tapOn:
+          id: ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON
+      - assertVisible:
+          id: ROUTE_PLANNER_SHEET
+- assertVisible:
+    id: ROUTE_PLANNER_MORE_STOPS_ROW
+- tapOn:
+    id: ROUTE_PLANNER_MORE_STOPS_ROW
+- extendedWaitUntil:
+    notVisible:
+      id: ROUTE_PLANNER_MORE_STOPS_ROW
+    timeout: 5000
+- assertVisible:
+    id: ROUTE_PLANNER_WAYPOINT_LIST
+- assertVisible:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+- assertVisible:
+    id: ROUTE_PLANNER_SAVE_BUTTON
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET
+
+# A destination beyond the 25 km my-location range clears the start, so no plan is requested
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Szeged"
+- tapOn: "Sirály tanösvény"
+- assertVisible:
+    id: PLACE_DETAILS_SHEET
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- assertVisible:
+    id: ROUTE_PLANNER_SHEET
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_EMPTY_STOP_ROW_0
+    timeout: 10000
+- assertNotVisible:
+    id: ROUTE_PLANNER_STATS
+- assertNotVisible:
+    id: ROUTE_PLANNER_LOADING
+- assertVisible:
+    id: ROUTE_PLANNER_SAVE_BUTTON
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET

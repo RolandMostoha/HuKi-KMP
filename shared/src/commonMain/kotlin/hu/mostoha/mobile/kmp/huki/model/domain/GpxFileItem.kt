@@ -15,4 +15,5 @@ data class GpxFileItem(
     val decline: Int,
     val lastModified: Instant,
     val lastOpened: Instant?,
+    val origin: GpxOrigin,
 )

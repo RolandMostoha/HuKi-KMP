@@ -14,6 +14,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
+import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
@@ -21,6 +22,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
+import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultSettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultWhatsNewRepository
@@ -29,8 +31,11 @@ import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
+import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
+import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.RoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
@@ -51,6 +56,7 @@ val appModule = module {
     single<GpxMetadataStore> { DefaultGpxMetadataStore(get()) }
     single<GpxRepository> { DefaultGpxRepository(get(), get(), get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
+    single<MapCameraStore> { DefaultMapCameraStore() }
     single {
         get<RoomDatabase.Builder<HukiDatabase>>()
             .setDriver(BundledSQLiteDriver())
@@ -71,12 +77,12 @@ val appModule = module {
 val viewModelModule = module {
     viewModel {
         MainViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
             get(named(Dispatcher.Default)),
         )
     }
     viewModel {
-        PlaceFinderViewModel(get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
+        PlaceFinderViewModel(get(), get(), get(), get(), get(), get(), get(), get(named(Dispatcher.Default)))
     }
     viewModelOf(::MenuViewModel)
     viewModelOf(::GpxCollectionViewModel)
@@ -84,6 +90,7 @@ val viewModelModule = module {
     viewModelOf(::TrailSymbolsGuideViewModel)
     viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
+    viewModelOf(::RoutePlannerViewModel)
     viewModelOf(::SettingsViewModel)
     viewModel {
         DestinationsViewModel(get(), get(), get(named(Dispatcher.Default)), get(), get())
@@ -93,6 +100,7 @@ val viewModelModule = module {
 val networkModule = module {
     single<HttpClient> { createHttpClient(get()) }
     single<GeocodingRepository> { LocationIqGeocodingRepository(get(), get()) }
+    single<RoutePlannerRepository> { GraphhopperRoutePlannerRepository(get(), get()) }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

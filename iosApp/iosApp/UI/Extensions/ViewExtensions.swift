@@ -132,3 +132,15 @@ extension View {
         modifier(FloatingButtonPadding(type: type))
     }
 }
+
+extension View {
+    // Keeps SwiftUI's own identity when no test tag applies, rather than stamping an empty one.
+    @ViewBuilder
+    func identifier(_ identifier: String?) -> some View {
+        if let identifier {
+            accessibilityIdentifier(identifier)
+        } else {
+            self
+        }
+    }
+}

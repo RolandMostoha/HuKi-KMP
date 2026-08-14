@@ -28,8 +28,7 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
         if (!locationManager.isAuthorized()) {
             return null
         }
-        locationUpdates.replayCache.lastOrNull()?.let { return it }
-        val clLocation = locationManager.location ?: return null
+        val clLocation = locationManager.location ?: return locationUpdates.replayCache.lastOrNull()
         return Location(
             latitude = clLocation.coordinate.useContents { latitude },
             longitude = clLocation.coordinate.useContents { longitude },

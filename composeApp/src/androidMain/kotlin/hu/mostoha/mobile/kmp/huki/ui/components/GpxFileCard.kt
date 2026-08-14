@@ -1,21 +1,33 @@
 package hu.mostoha.mobile.kmp.huki.ui.components
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import dev.icerock.moko.resources.StringResource
 import hu.mostoha.mobile.android.huki.R
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -74,6 +86,10 @@ fun GpxFileCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
+                GpxFileOriginChip(
+                    origin = file.origin,
+                    modifier = Modifier.padding(top = Dimens.ExtraSmall),
+                )
             }
             GpxFileOptionsMenu(
                 onRenameClick = onRenameClick,
@@ -81,14 +97,55 @@ fun GpxFileCard(
                 onDeleteClick = onDeleteClick,
             )
         }
-        GpxFileStatsRow(file = file)
+        GpxFileStatsRow(
+            file = file,
+            modifier = Modifier.padding(top = Dimens.ExtraSmall),
+        )
     }
 }
 
 @Composable
-private fun GpxFileStatsRow(file: GpxFileItem) {
+private fun GpxFileOriginChip(origin: GpxOrigin, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
+        modifier = modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(horizontal = Dimens.Medium, vertical = Dimens.ExtraSmall),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(origin.iconResId),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSecondary,
+            modifier = Modifier.size(Dimens.IconExtraSmall),
+        )
+        Text(
+            text = mokoString(origin.label),
+            style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSecondary,
+        )
+    }
+}
+
+@get:DrawableRes
+private val GpxOrigin.iconResId: Int
+    get() = when (this) {
+        GpxOrigin.EXTERNAL -> R.drawable.ic_download
+        GpxOrigin.ROUTE_PLANNER -> R.drawable.ic_touch_long
+    }
+
+private val GpxOrigin.label: StringResource
+    get() = when (this) {
+        GpxOrigin.EXTERNAL -> SharedRes.strings.gpx_collection_origin_external
+        GpxOrigin.ROUTE_PLANNER -> SharedRes.strings.gpx_collection_origin_route_planner
+    }
+
+@Composable
+private fun GpxFileStatsRow(file: GpxFileItem, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
             .fillMaxWidth()
             .padding(
                 start = Dimens.Large,
@@ -123,23 +180,36 @@ private fun GpxFileStatsRow(file: GpxFileItem) {
 @Composable
 private fun GpxFileCardPreview() {
     HuKiTheme {
-        GpxFileCard(
-            file = GpxFileItem(
-                fileName = "okt15.gpx",
-                fileUri = "uri/okt15.gpx",
-                trackId = "okt15",
-                title = "OKT-15 Rozália téglagyár – Dobogókő",
-                totalDistance = 22.6.kilometers,
-                travelTime = 7.hours.plus(28.minutes),
-                incline = 1986,
-                decline = 1642,
-                lastModified = Clock.System.now(),
-                lastOpened = Clock.System.now(),
-            ),
-            onClick = {},
-            onRenameClick = {},
-            onShareClick = {},
-            onDeleteClick = {},
-        )
+        Column {
+            GpxFileCard(
+                file = previewFile(GpxOrigin.EXTERNAL),
+                onClick = {},
+                onRenameClick = {},
+                onShareClick = {},
+                onDeleteClick = {},
+            )
+            GpxFileCard(
+                file = previewFile(GpxOrigin.ROUTE_PLANNER),
+                onClick = {},
+                onRenameClick = {},
+                onShareClick = {},
+                onDeleteClick = {},
+            )
+        }
     }
 }
+
+private fun previewFile(origin: GpxOrigin) =
+    GpxFileItem(
+        fileName = "okt15.gpx",
+        fileUri = "uri/okt15.gpx",
+        trackId = "okt15",
+        title = "OKT-15 Rozália téglagyár – Dobogókő",
+        totalDistance = 22.6.kilometers,
+        travelTime = 7.hours.plus(28.minutes),
+        incline = 1986,
+        decline = 1642,
+        lastModified = Clock.System.now(),
+        lastOpened = Clock.System.now(),
+        origin = origin,
+    )

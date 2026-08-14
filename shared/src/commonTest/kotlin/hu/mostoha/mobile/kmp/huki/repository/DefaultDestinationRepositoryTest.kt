@@ -1,20 +1,23 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.data.ALL_DESTINATIONS
-import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.comparables.shouldBeLessThan
+import io.kotest.matchers.doubles.shouldBeGreaterThan
+import io.kotest.matchers.doubles.shouldBeLessThanOrEqual
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.maplibre.spatialk.units.extensions.inMeters
+import org.maplibre.spatialk.units.extensions.kilometers
 import kotlin.random.Random
 import kotlin.test.Test
 
@@ -50,38 +53,11 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a user location, When getTopDestinations, Then nearby destinations are favoured`() {
-        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
-        val withLocationRepository = DefaultDestinationRepository(random = Random(SEED))
-        val noLocationRepository = DefaultDestinationRepository(random = Random(SEED))
+    fun `Given the same repository, When getTopDestinations twice, Then the ranking is re-rolled`() {
+        val first = repository.getTopDestinations()
+        val second = repository.getTopDestinations()
 
-        val withLocation = withLocationRepository.getTopDestinations(location = location)
-        val noLocation = noLocationRepository.getTopDestinations()
-
-        val withLocationAvgKm = withLocation.averageDistanceKm(location)
-        val noLocationAvgKm = noLocation.averageDistanceKm(location)
-
-        withLocationAvgKm shouldBeLessThan noLocationAvgKm
-    }
-
-    @Test
-    fun `Given a location was available, When getTopDestinations is called again, Then the order is stable`() {
-        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
-
-        val first = repository.getTopDestinations(location = location)
-        val second = repository.getTopDestinations(location = location)
-
-        second shouldBe first
-    }
-
-    @Test
-    fun `Given no location yet, When location becomes available, Then ranking is recomputed with distance`() {
-        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
-
-        val withoutLocation = repository.getTopDestinations()
-        val withLocation = repository.getTopDestinations(location = location)
-
-        withLocation.averageDistanceKm(location) shouldBeLessThan withoutLocation.averageDistanceKm(location)
+        second shouldNotBe first
     }
 
     @Test
@@ -113,6 +89,37 @@ class DefaultDestinationRepositoryTest {
         actual.size shouldBe ALL_DESTINATIONS.size
         val distances = actual.map { location.distanceBetween(it.location).inMeters }
         distances shouldBe distances.sorted()
+    }
+
+    @Test
+    fun `Given a radius, When getNearbyDestinations, Then only destinations inside it are returned`() {
+        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
+        val radius = 30.kilometers
+
+        val actual = repository.getNearbyDestinations(location, radius = radius)
+
+        actual.shouldNotBeEmpty()
+        actual.size shouldBeLessThan ALL_DESTINATIONS.size
+        actual.forEach { location.distanceBetween(it.location).inMeters shouldBeLessThanOrEqual radius.inMeters }
+        val excluded = ALL_DESTINATIONS - actual.toSet()
+        excluded.forEach { location.distanceBetween(it.location).inMeters shouldBeGreaterThan radius.inMeters }
+    }
+
+    @Test
+    fun `Given a limit, When getNearbyDestinations, Then the closest ones are returned in order`() {
+        val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
+
+        val actual = repository.getNearbyDestinations(location, limit = 5)
+
+        actual.size shouldBe 5
+        actual shouldBe repository.getNearbyDestinations(location).take(5)
+    }
+
+    @Test
+    fun `Given a radius with no destination inside, When getNearbyDestinations, Then nothing is returned`() {
+        val actual = repository.getNearbyDestinations(NORTH_POLE, radius = 30.kilometers)
+
+        actual.shouldBeEmpty()
     }
 
     @Test
@@ -195,12 +202,11 @@ class DefaultDestinationRepositoryTest {
         actual.forEach { it.destinations.shouldNotBeEmpty() }
     }
 
-    private fun List<Destination>.averageDistanceKm(location: Location): Double = map { location.distanceBetween(it.location).inMeters }.average() / 1000.0
-
     private companion object {
         const val SEED = 42L
         const val MIN_DISTINCT_TYPES = 6
         const val BUDAPEST_LATITUDE = 47.4979
         const val BUDAPEST_LONGITUDE = 19.0402
+        val NORTH_POLE = Location(90.0, 0.0)
     }
 }

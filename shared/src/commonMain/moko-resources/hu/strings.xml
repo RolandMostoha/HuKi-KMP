@@ -64,6 +64,34 @@
     <string name="gpx_details_start">Útvonal kezdése</string>
     <string name="gpx_details_navigation_to_start">Maps navigáció a kezdéshez</string>
     <string name="gpx_details_navigation_to_end">Maps navigáció a végéhez</string>
+    <string name="gpx_details_share">GPX fájl megosztása</string>
+
+    <string name="route_planner_title">Útvonaltervező</string>
+    <string name="route_planner_profile_on_trails">Túraútvonalakon</string>
+    <string name="route_planner_profile_shortest_route">Legrövidebb úton</string>
+    <string name="route_planner_profile_bike">Kerékpár</string>
+    <string name="route_planner_my_location">Saját pozíció</string>
+    <string name="route_planner_waypoint_empty">Válassz helyet</string>
+    <string name="route_planner_add_waypoint">Megálló hozzáadása</string>
+    <string name="route_planner_round_trip">Körtúra</string>
+    <string name="route_planner_more_stops">még %d megálló</string>
+    <string name="route_planner_max_stops_reached">Elérted a megállók maximális számát (%d)</string>
+    <string name="route_planner_save">Útvonal mentése</string>
+    <string name="route_planner_loading">Útvonal tervezése…</string>
+    <string name="route_planner_error_retry">Újrapróbálás</string>
+    <string name="route_planner_save_error_title">Nem sikerült menteni az útvonalat</string>
+    <string name="route_planner_save_error_message">Az útvonaltervet nem sikerült az eszközre írni. Kérlek próbáld újra.</string>
+    <string name="route_planner_daily_limit_error_title">Napi limit elérve</string>
+    <string name="route_planner_daily_limit_error_message">Elértük az útvonaltervező szolgáltatás napi limitjét. Kérlek próbáld meg holnap.</string>
+    <string name="route_planner_add_stop_title">Új megálló</string>
+    <string name="route_planner_pick_my_location">Aktuális pozícióm</string>
+    <string name="route_planner_pick_on_map">Térképen hosszú klikkel</string>
+    <string name="route_planner_a11y_profiles">Útvonal típusa</string>
+    <string name="route_planner_a11y_add_stop">Új megálló hozzáadása</string>
+    <string name="route_planner_a11y_round_trip">Körtúra készítése</string>
+    <string name="route_planner_a11y_delete_stop">Megálló törlése</string>
+    <string name="route_planner_a11y_move_up">Megálló mozgatása felfelé</string>
+    <string name="route_planner_a11y_move_down">Megálló mozgatása lefelé</string>
 
     <string name="place_details_loading">Hely keresése…</string>
     <string name="place_details_route_plan">Útvonaltervezés</string>
@@ -97,6 +125,9 @@
     <string name="menu_item_settings">Beállítások</string>
     <string name="menu_item_settings_description">Alkalmazás beállításai</string>
     <string name="menu_a11y_open_settings">Beállítások megnyitása</string>
+    <string name="menu_item_route_planner">Útvonaltervező</string>
+    <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
+    <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
     <string name="menu_item_destinations">Kirándulóhelyek</string>
     <string name="menu_item_destinations_description">Népszerű kirándulóhelyek országszerte</string>
     <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
@@ -155,6 +186,8 @@
     <string name="gpx_collection_a11y_back">Vissza</string>
     <string name="gpx_collection_a11y_help">GPX útmutató</string>
     <string name="gpx_collection_a11y_options">További lehetőségek</string>
+    <string name="gpx_collection_origin_external">Importált</string>
+    <string name="gpx_collection_origin_route_planner">Útvonaltervező</string>
     <string name="gpx_collection_action_rename">Átnevezés</string>
     <string name="gpx_collection_action_share">Megosztás</string>
     <string name="gpx_collection_action_delete">Törlés</string>
@@ -269,6 +302,7 @@
     <string name="place_category_farm">Tanya</string>
 
     <string name="destinations_section_title">Kirándulóhelyek</string>
+    <string name="destinations_section_nearby_title">Közeli kirándulóhelyek</string>
     <string name="destinations_a11y_info">Leírás megjelenítése</string>
     <string name="destinations_title">Kirándulóhelyek</string>
     <string name="destinations_subtitle_pattern">%d kirándulóhely</string>

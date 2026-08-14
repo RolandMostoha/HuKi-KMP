@@ -114,6 +114,10 @@ sealed interface AnalyticsEvent {
         override val name = "gpx_deleted"
     }
 
+    data class GpxShared(val source: GpxShareSource) : AnalyticsEvent {
+        override val name = "gpx_shared_${source.value}"
+    }
+
     data class PlaceDetailsOpened(val source: PlaceDetailsSource) : AnalyticsEvent {
         override val name = "place_details_opened_${source.value}"
     }
@@ -132,6 +136,58 @@ sealed interface AnalyticsEvent {
 
     data object PlaceDetailsRoutePlanClicked : AnalyticsEvent {
         override val name = "place_details_route_plan_clicked"
+    }
+
+    data object MenuRoutePlanClicked : AnalyticsEvent {
+        override val name = "menu_route_plan_clicked"
+    }
+
+    data class RoutePlanCreated(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "route_plan_created_${routeProfile.value}"
+    }
+
+    data class RoutePlanSaved(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "route_plan_saved_${routeProfile.value}"
+    }
+
+    data object RoutePlanSaveFailed : AnalyticsEvent {
+        override val name = "route_plan_save_failed"
+    }
+
+    data object RoutePlanFailed : AnalyticsEvent {
+        override val name = "route_plan_failed"
+    }
+
+    data object RoutePlanNoInternet : AnalyticsEvent {
+        override val name = "route_plan_no_internet"
+    }
+
+    data object RoutePlanDailyLimitReached : AnalyticsEvent {
+        override val name = "route_plan_daily_limit_reached"
+    }
+
+    data object RoutePlanAddStopFromSearchClicked : AnalyticsEvent {
+        override val name = "route_plan_add_stop_from_search_clicked"
+    }
+
+    data object RoutePlanStopAddedFromSearch : AnalyticsEvent {
+        override val name = "route_plan_stop_added_from_search"
+    }
+
+    data object RoutePlanMyLocationAdded : AnalyticsEvent {
+        override val name = "route_plan_my_location_added"
+    }
+
+    data object RoutePlanPickOnMapClicked : AnalyticsEvent {
+        override val name = "route_plan_pick_on_map_clicked"
+    }
+
+    data object RoutePlanWaypointLongTapped : AnalyticsEvent {
+        override val name = "route_plan_waypoint_long_tapped"
+    }
+
+    data object RoutePlanWaypointRemoved : AnalyticsEvent {
+        override val name = "route_plan_waypoint_removed"
     }
 
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {

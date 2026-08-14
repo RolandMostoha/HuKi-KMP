@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
@@ -51,10 +52,16 @@ class GpxCollectionViewModel(
             GpxCollectionUiEvents.BackClicked -> sendEffect(GpxCollectionUiEffects.NavigateBack)
             GpxCollectionUiEvents.HelpClicked -> openTutorial()
             is GpxCollectionUiEvents.FileClicked -> sendEffect(GpxCollectionUiEffects.OpenGpx(event.file.fileUri))
+            is GpxCollectionUiEvents.ShareClicked -> shareGpx(event.file)
             is GpxCollectionUiEvents.DeleteClicked -> _uiState.update { it.copy(pendingDelete = event.file) }
             GpxCollectionUiEvents.DeleteDismissed -> _uiState.update { it.copy(pendingDelete = null) }
             GpxCollectionUiEvents.DeleteConfirmed -> deletePendingFile()
         }
+    }
+
+    private fun shareGpx(file: GpxFileItem) {
+        analyticsService.logEvent(AnalyticsEvent.GpxShared(GpxShareSource.COLLECTION))
+        sendEffect(GpxCollectionUiEffects.ShareGpx(fileUri = file.fileUri, fileName = file.fileName))
     }
 
     private fun openTutorial() {
@@ -69,7 +76,7 @@ class GpxCollectionViewModel(
         val file = _uiState.value.pendingDelete ?: return
         analyticsService.logEvent(AnalyticsEvent.GpxDeleted)
         viewModelScope.launch {
-            gpxRepository.deleteGpxFile(file.fileName)
+            gpxRepository.deleteGpxFile(file.fileUri, file.trackId)
             refreshFiles()
         }
     }

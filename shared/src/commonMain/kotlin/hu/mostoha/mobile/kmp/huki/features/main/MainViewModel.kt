@@ -13,6 +13,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
@@ -32,6 +33,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
@@ -45,6 +47,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
@@ -88,6 +91,7 @@ class MainViewModel(
     private val geocodingRepository: GeocodingRepository,
     private val locationMonitoringService: LocationMonitoringService,
     private val settingsRepository: SettingsRepository,
+    private val mapCameraStore: MapCameraStore,
     private val whatsNewRepository: WhatsNewRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
@@ -116,7 +120,7 @@ class MainViewModel(
     }
 
     fun onEvent(event: MainUiEvents) {
-        Logger.d { "MainEvent: $event" }
+        logEventChanges(event)
         when (event) {
             // General events
             MainUiEvents.SheetDismissed -> hideSheet()
@@ -131,11 +135,16 @@ class MainViewModel(
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
+            // Map events
+            is MainUiEvents.MapCameraChanged -> mapCameraStore.update(event.cameraPosition)
             // Place Details events
-            is MainUiEvents.MapLongClicked -> showPlaceDetails(event.location)
+            is MainUiEvents.MapLongClicked -> handleMapLongClick(event.location)
             MainUiEvents.PlaceDetailsCloseClicked -> closePlaceDetails()
             MainUiEvents.PlaceDetailsRoutePlanClicked -> planRoute()
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
+            // Route Planner events
+            MainUiEvents.RoutePlannerClicked -> showSheet(Sheet.RoutePlanner(place = null))
+            is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers)
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -153,8 +162,10 @@ class MainViewModel(
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
             is MainUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
             MainUiEvents.GpxCloseClicked -> closeGpx()
+            MainUiEvents.GpxShareClicked -> shareGpx()
             is MainUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
             is MainUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
+            is MainUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
             MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
@@ -173,7 +184,11 @@ class MainViewModel(
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = sheet,
-                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+                mapUiState = uiState.mapUiState.copy(
+                    placeDetails = null,
+                    routePlan = null,
+                    routePlanWaypoints = emptyList(),
+                ),
             )
         }
     }
@@ -184,7 +199,11 @@ class MainViewModel(
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = null,
-                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+                mapUiState = uiState.mapUiState.copy(
+                    placeDetails = null,
+                    routePlan = null,
+                    routePlanWaypoints = emptyList(),
+                ),
             )
         }
     }
@@ -267,6 +286,15 @@ class MainViewModel(
         showDestination(destination)
     }
 
+    private fun handleMapLongClick(location: Location) {
+        when (_uiState.value.sheet) {
+            is Sheet.RoutePlanner -> viewModelScope.launch {
+                sendEffect(MainUiEffects.RoutePlannerLocationPicked(location))
+            }
+            else -> showPlaceDetails(location)
+        }
+    }
+
     private fun showPlaceDetails(location: Location) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP))
         showPlaceDetailsSheet(PlaceDetails.Loading(location))
@@ -339,8 +367,46 @@ class MainViewModel(
     }
 
     private fun planRoute() {
-        if (_uiState.value.mapUiState.placeDetails == null) return
+        val placeDetails = _uiState.value.mapUiState.placeDetails ?: return
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsRoutePlanClicked)
+        val place = (placeDetails as? PlaceDetails.PlaceLoaded)?.place
+        cancelPlaceDetailsLoad()
+        _uiState.update { uiState ->
+            uiState.copy(
+                sheet = Sheet.RoutePlanner(place),
+                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+            )
+        }
+    }
+
+    private fun showRoutePlan(routePlan: RoutePlan?, markers: List<GpxWaypoint>) {
+        val mapUiState = _uiState.value.mapUiState
+        val isNewPlan = mapUiState.routePlan != routePlan
+        val hasNewStops = mapUiState.routePlanWaypoints != markers
+        _uiState.updateMapUiState { it.copy(routePlan = routePlan, routePlanWaypoints = markers) }
+
+        if (routePlan != null) {
+            if (!isNewPlan) return
+            viewModelScope.launch {
+                fitCameraTo(routePlan.locations + routePlan.waypoints, ContentPadding.MAP_ROUTE_PLANNER)
+            }
+            return
+        }
+
+        if (!hasNewStops) return
+        val stopLocations = markers.map { it.location }.ifEmpty { return }
+        viewModelScope.launch {
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Bounds(stopLocations, maxZoom = PLACE_DEFAULT_CAMERA_ZOOM),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                ),
+            )
+        }
+    }
+
+    private suspend fun fitCameraTo(bounds: List<Location>, contentPadding: ContentPadding) {
+        sendEffect(MapUiEffects.UpdateCamera(CameraTarget.Bounds(bounds), contentPadding = contentPadding))
     }
 
     private fun enableMyLocation(targetStatus: MyLocationStatus? = null) {
@@ -589,6 +655,14 @@ class MainViewModel(
         }
     }
 
+    private fun shareGpx() {
+        val gpxDetails = _uiState.value.mapUiState.gpxDetails ?: return
+        analyticsService.logEvent(AnalyticsEvent.GpxShared(GpxShareSource.DETAILS))
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.ShareGpxFile(fileUri = gpxDetails.fileUri, fileName = gpxDetails.fileName))
+        }
+    }
+
     private fun closeGpx() {
         analyticsService.logEvent(AnalyticsEvent.GpxClosed)
         selectedWaypoint.value = null
@@ -610,7 +684,7 @@ class MainViewModel(
         }
     }
 
-    private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent) {
+    private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent?) {
         cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update {
@@ -621,13 +695,15 @@ class MainViewModel(
             }
             runCatching { gpxRepository.readGpxFile(uri) }
                 .onSuccess { gpxDetails ->
-                    analyticsService.logEvent(analyticsEvent)
+                    analyticsEvent?.let { analyticsService.logEvent(it) }
                     selectedWaypoint.value = null
                     _uiState.update { uiState ->
                         uiState.copy(
                             mapUiState = uiState.mapUiState.copy(
                                 gpxDetails = gpxDetails,
                                 placeDetails = null,
+                                routePlan = null,
+                                routePlanWaypoints = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
                                 allDistancesVisible = false,
@@ -638,12 +714,7 @@ class MainViewModel(
                             isGpxLoading = false,
                         )
                     }
-                    sendEffect(
-                        MapUiEffects.UpdateCamera(
-                            target = CameraTarget.Bounds(gpxDetails.bounds),
-                            contentPadding = ContentPadding.MAP_GPX,
-                        ),
-                    )
+                    fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
                 }
                 .onFailure { exception -> onGpxImportFailed(exception) }
         }
@@ -689,12 +760,7 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.GpxOverviewClicked)
         viewModelScope.launch {
             val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
-            sendEffect(
-                MapUiEffects.UpdateCamera(
-                    target = CameraTarget.Bounds(gpxDetails.bounds),
-                    contentPadding = ContentPadding.MAP_GPX,
-                ),
-            )
+            fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
         }
     }
 
@@ -726,6 +792,13 @@ class MainViewModel(
         uiState
             .onEach { Logger.d { "MainState: ${it.toString().trimLongLists()}" } }
             .launchIn(viewModelScope)
+    }
+
+    private fun logEventChanges(event: MainUiEvents) {
+        // Camera changes arrive on every frame of a pan
+        if (event !is MainUiEvents.MapCameraChanged) {
+            Logger.d { "MainEvent: $event" }
+        }
     }
 
     private companion object {

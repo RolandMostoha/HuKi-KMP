@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -35,6 +36,20 @@ class GpxMapperTest {
         actual.decline shouldBe details.decline
         actual.lastModified shouldBe lastModified
         actual.lastOpened shouldBe lastOpened
+        actual.origin shouldBe GpxOrigin.EXTERNAL
+    }
+
+    @Test
+    fun `Given route planner gpx details, When toGpxFileItem, Then origin is resolved from the sandbox path`() {
+        val details = TEST_GPX_DETAILS.copy(fileUri = "/files/gpx/routeplanner/dobogoko.gpx")
+
+        val actual = details.toGpxFileItem(
+            trackId = "track-1",
+            lastModified = Instant.fromEpochSeconds(1_700_000_000),
+            lastOpened = null,
+        )
+
+        actual.origin shouldBe GpxOrigin.ROUTE_PLANNER
     }
 
     @Test
@@ -82,6 +97,7 @@ class GpxMapperTest {
         actual.decline shouldBe entry.decline
         actual.lastModified shouldBe lastModified
         actual.lastOpened shouldBe lastOpened
+        actual.origin shouldBe GpxOrigin.EXTERNAL
     }
 
     @Test
