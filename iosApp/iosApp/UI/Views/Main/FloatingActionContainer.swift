@@ -1,5 +1,6 @@
 import Shared
 import SwiftUI
+import UIKit
 
 struct FloatingActionContainer: View {
     let strings: Strings
@@ -8,6 +9,7 @@ struct FloatingActionContainer: View {
     let mainActionGlassNamespace: Namespace.ID
     let onLayersClicked: () -> Void
     let onMyLocationClicked: () -> Void
+    let onMyLocationLongClicked: () -> Void
     let onZoomInClicked: () -> Void
     let onZoomOutClicked: () -> Void
     let onSearchTap: () -> Void
@@ -131,6 +133,13 @@ struct FloatingActionContainer: View {
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
                     .disabled(uiState.isMyLocationLoading)
+                    .highPriorityGesture(
+                        LongPressGesture().onEnded { _ in
+                            guard !uiState.isMyLocationLoading else { return }
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            onMyLocationLongClicked()
+                        }
+                    )
                     .accessibilityIdentifier(TestTags.shared.MAIN_FAB_MY_LOCATION_BUTTON)
                     .accessibilityLabel(strings.get(id: uiState.myLocationState.myLocationStatus.a11yId))
             }

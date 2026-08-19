@@ -72,6 +72,9 @@ struct MainView: View {
                         onMyLocationClicked: {
                             viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
                         },
+                        onMyLocationLongClicked: {
+                            viewModel.onEvent(event: MainUiEventsMyLocationLongClicked.shared)
+                        },
                         onZoomInClicked: {
                             viewModel.onEvent(event: MainUiEventsZoomInClicked.shared)
                         },

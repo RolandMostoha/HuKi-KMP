@@ -138,6 +138,7 @@ class MainViewModel(
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
+            MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
             MainUiEvents.MyLocationReceived -> updateMyLocation()
             MainUiEvents.FollowingDisabled -> disableFollowing()
             MainUiEvents.CompassClicked -> resetCameraToNorth()
@@ -342,10 +343,10 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsRoutePlanClicked)
     }
 
-    private fun enableMyLocation() {
+    private fun enableMyLocation(targetStatus: MyLocationStatus? = null) {
         viewModelScope.launch {
             withLocationPermission {
-                val newStatus = when (uiState.value.myLocationState.myLocationStatus) {
+                val newStatus = targetStatus ?: when (uiState.value.myLocationState.myLocationStatus) {
                     MyLocationStatus.Default -> MyLocationStatus.Following
                     MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
                     MyLocationStatus.FollowingLiveCompass -> MyLocationStatus.Following

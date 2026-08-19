@@ -283,6 +283,42 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given FollowingLiveCompass my location, When MyLocationLongClicked, Then it stays FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+
+                viewModel.onEvent(MainUiEvents.MyLocationLongClicked)
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given Default my location, When MyLocationLongClicked, Then uiState has FollowingLiveCompass`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem()
+                viewModel.onEvent(MainUiEvents.FollowingDisabled)
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
+
+                viewModel.onEvent(MainUiEvents.MyLocationLongClicked)
+
+                awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
+            }
+        }
+    }
+
+    @Test
     fun `Given FollowingLiveCompass, When CompassClicked, Then uiState has Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

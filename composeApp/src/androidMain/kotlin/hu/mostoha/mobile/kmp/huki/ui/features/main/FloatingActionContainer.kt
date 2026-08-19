@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ fun FloatingActionContainer(
     onSearchClicked: () -> Unit,
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
+    onMyLocationLongClicked: () -> Unit,
     onZoomInClicked: () -> Unit,
     onZoomOutClicked: () -> Unit,
     onGpxToggleLineClicked: () -> Unit,
@@ -108,6 +110,7 @@ fun FloatingActionContainer(
                 mainUiState = mainUiState,
                 onLayersClicked = onLayersClicked,
                 onMyLocationClicked = onMyLocationClicked,
+                onMyLocationLongClicked = onMyLocationLongClicked,
                 onZoomInClicked = onZoomInClicked,
                 onZoomOutClicked = onZoomOutClicked,
             )
@@ -127,6 +130,7 @@ fun FloatingActionContainer(
                     mainUiState = mainUiState,
                     onLayersClicked = onLayersClicked,
                     onMyLocationClicked = onMyLocationClicked,
+                    onMyLocationLongClicked = onMyLocationLongClicked,
                     onZoomInClicked = onZoomInClicked,
                     onZoomOutClicked = onZoomOutClicked,
                 )
@@ -146,6 +150,7 @@ private fun FabColumnAction(
     mainUiState: MainUiState,
     onLayersClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
+    onMyLocationLongClicked: () -> Unit,
     onZoomInClicked: () -> Unit,
     onZoomOutClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -208,11 +213,7 @@ private fun FabColumnAction(
                     defaultElevation = Dimens.FloatingActionElevation,
                 ),
                 shape = CircleShape,
-                onClick = {
-                    if (!mainUiState.isMyLocationLoading) {
-                        onMyLocationClicked()
-                    }
-                },
+                onClick = {},
             ) {
                 val myLocationIconRes = when (myLocationStatus) {
                     MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
@@ -220,16 +221,29 @@ private fun FabColumnAction(
                     MyLocationStatus.FollowingLiveCompass -> R.drawable.ic_fab_my_location_live_compass
                     MyLocationStatus.NotAvailable -> R.drawable.ic_fab_my_location_default
                 }
-                if (mainUiState.isMyLocationLoading) {
-                    LoadingIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                } else {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(myLocationIconRes),
-                        contentDescription = mokoString(myLocationStatus.a11yId),
-                    )
+                Box(
+                    modifier = Modifier
+                        .size(Dimens.FloatingActionSize)
+                        .combinedClickable(
+                            enabled = !mainUiState.isMyLocationLoading,
+                            onClick = onMyLocationClicked,
+                            onLongClick = onMyLocationLongClicked,
+                            onClickLabel = mokoString(myLocationStatus.a11yId),
+                            onLongClickLabel = mokoString(SharedRes.strings.my_location_a11y_live_compass),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (mainUiState.isMyLocationLoading) {
+                        LoadingIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    } else {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(myLocationIconRes),
+                            contentDescription = mokoString(myLocationStatus.a11yId),
+                        )
+                    }
                 }
             }
         }
@@ -267,6 +281,7 @@ private fun MainContentPreview() {
             onSearchClicked = {},
             onLayersClicked = {},
             onMyLocationClicked = {},
+            onMyLocationLongClicked = {},
             onZoomInClicked = {},
             onZoomOutClicked = {},
             onGpxToggleLineClicked = {},

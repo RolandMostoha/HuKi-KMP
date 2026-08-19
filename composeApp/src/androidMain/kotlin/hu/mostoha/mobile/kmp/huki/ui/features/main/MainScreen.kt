@@ -239,6 +239,9 @@ private fun MainContent(
                 onMyLocationClicked = {
                     onEvent(MainUiEvents.MyLocationClicked)
                 },
+                onMyLocationLongClicked = {
+                    onEvent(MainUiEvents.MyLocationLongClicked)
+                },
                 onZoomInClicked = {
                     onEvent(MainUiEvents.ZoomInClicked)
                 },
