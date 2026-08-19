@@ -50,14 +50,83 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | App store preview video (optional)        |
 | `[ ]`  | App store header picture/video (optional) |
 
-### TestFlight & CD
+### TestFlight & CD (R2: switch from manual App Store Connect to fastlane)
 
-| Status | Task                                                                                                                          |
-|--------|-------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Add fastlane (`gym`/`pilot`/`deliver`/`match`) to the project                                                                 |
-| `[R]`  | Feed changelog to store (potential script from base notes); bump from `version.properties` (reuse generated WhatsNew content) |
-| `[R]`  | Auto generate `version.properties` (reuse generated WhatsNew content)                                                         |
-| `[R]`  | CD on Apple Store — GitHub Actions → TestFlight/App Store upload                                                              |
+R1 was shipped entirely by hand (upload, metadata, screenshots). R2 automates it.
+**Scope: iOS only** — Android stays manual until Android go-live (`composeApp` already reads
+`versionCode`/`versionName` from `version.properties`, but there is no release signing config and no
+`supply` metadata; both are go-live tasks, not R2).
+
+**Already in place**: `version.properties` as the single version source; `:shared:generateVersionXcconfig`
+→ `iosApp/Configuration/Version.xcconfig` (gitignored, `#include?`d from `Config.xcconfig`);
+`iosApp/fastlane/metadata/` fully populated in `deliver` layout (`en-US` + `hu`).
+
+**Signing — `.p12` in GitHub secrets + App Store Connect API key (not `match`).**
+Certificates are capped (3 Apple Distribution per team) but provisioning profiles are not, and
+GitHub-hosted runners are ephemeral: plain `-allowProvisioningUpdates` on an empty keychain mints a
+**new certificate every run** and wedges the team after ~3 releases. Importing the distribution `.p12`
+into the runner's keychain makes automatic signing reuse it, so the Mac and CI share **one**
+certificate, the pbxproj keeps `CODE_SIGN_STYLE = Automatic`, and no certs repo is needed.
+`match` solves the same problem with better housekeeping (encrypted certs repo, `match nuke` renewal)
+at the cost of a second repo, `MATCH_PASSWORD`, and a switch to manual signing — adopt it only when a
+second developer/signing machine appears, or when the yearly `.p12` re-export becomes annoying.
+
+R1 shipped via Xcode Organizer's cloud-managed distribution signing (Apple holds the private key), so
+there was no local distribution identity to export — one had to be created for CI. Current cert:
+`Apple Distribution: Roland Mostoha (8PF8GK99M6)`, **expires 2027-08-20**.
+
+#### Phase 1 — Headless-build prerequisites ✅ done
+
+| Status | Task                                                                                                                                                                                                                                                                              |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Shared the `iosApp` scheme → `iosApp.xcodeproj/xcshareddata/xcschemes/iosApp.xcscheme` (Archive action already targets Release; `.gitignore` already whitelisted the path)                                                                                                        |
+| `[x]`  | Release device archive verified: `ARCHIVE SUCCEEDED`, arm64, `CFBundleShortVersionString=1.0` / `CFBundleVersion=4` — proves the version.properties → Version.xcconfig chain works in a Release archive                                                                           |
+| `[x]`  | Ruby via `brew install ruby` → **4.0.6** (not 3.x); fastlane 2.238.0 runs on it. Gems install to `iosApp/vendor/bundle` via committed `iosApp/.bundle/config` (the shared Homebrew gem dir is not writable). Needs `export PATH="/opt/homebrew/opt/ruby/bin:$PATH"` in `~/.zshrc` |
+| `[x]`  | `.gitignore`: `iosApp/vendor/`, `fastlane/report.xml`, `fastlane/README.md`, `fastlane/.env*`, `fastlane/screenshots/`, `metadata/*/release_notes.txt`, `*.ipa`, `*.dSYM.zip`, `*.xcarchive`, plus signing material (`*.p12`, `*.p8`, `*.cer`, `*.mobileprovision`)               |
+
+#### Phase 2 — fastlane core (`gym` + `pilot` + `deliver`)
+
+| Status | Task                                                                                                                                                                                                                                                                                                  |
+|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | `iosApp/fastlane/Appfile` — `app_identifier` + `team_id 8PF8GK99M6`. No `apple_id`: auth is API-key only, so no interactive Apple ID login path exists                                                                                                                                                |
+| `[x]`  | App Store Connect API key created (`.p8`, App Manager role); stored as `IOS_ASC_KEY_P8_BASE64` / `IOS_ASC_KEY_ID` / `IOS_ASC_ISSUER_ID`                                                                                                                                                               |
+| `[x]`  | Apple Distribution certificate created in Xcode (Settings → Accounts → Manage Certificates), exported as `.p12` with private key, stored as `IOS_DIST_CERT_P12_BASE64` / `IOS_DIST_CERT_PASSWORD`                                                                                                     |
+| `[x]`  | Fastfile lane `beta`: API key → What's New guard → cert install (CI only, `is_ci`) → bump build number from TestFlight → `generateVersionXcconfig` → `build_app` (Release, `-allowProvisioningUpdates -skipPackagePluginValidation`, export `app-store`) → `upload_to_testflight` → Crashlytics dSYMs |
+| `[x]`  | Fastfile lane `release`: `deliver` with `skip_binary_upload`, `force: true`, `submit_for_review`, `add_id_info_uses_idfa: false` (the IDFA question — correct for Firebase Analytics without ad attribution). **Blocked until Phase 3**: needs `release_notes.txt` + `fastlane/screenshots/`          |
+| `[x]`  | `derived_data_path` pinned to `iosApp/build/DerivedData` so Crashlytics' SPM `upload-symbols` binary has a deterministic path                                                                                                                                                                         |
+| `[R]`  | `iosApp/fastlane/.env` (gitignored) with the five env vars, for running lanes locally                                                                                                                                                                                                                 |
+| `[R]`  | Smoke-test the API key read-only: `bundle exec fastlane run latest_testflight_build_number version:1.0`                                                                                                                                                                                               |
+| `[R]`  | First real `fastlane beta` run → TestFlight (the end-to-end proof)                                                                                                                                                                                                                                    |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                                                                                                                        |
+
+#### Phase 3 — Version + changelog automation (kills the manual store data entry)
+
+| Status | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Gradle task `generateStoreReleaseNotes` (`buildSrc`) renders `whatsnew-en-US.md` → `fastlane/metadata/en-US/release_notes.txt` and `whatsnew-hu-HU.md` → `metadata/hu/release_notes.txt`, strips the `-`/`*` bullet markers exactly like `WhatsNewMapper` and re-emits them as `•`, validates the 4000-char App Store cap. Standalone (not wired into compilation) — the `release` lane invokes it. Declares the two files as `@OutputFile`s rather than the metadata dir as `@OutputDirectory`, so Gradle stale-output cleanup can never delete the hand-written metadata |
+| `[x]`  | **No sync script needed** — `tools/screenshots/{iOS,iPad13}/` moved into `iosApp/fastlane/screenshots/en-US/` + `hu/`, so the committed files *are* the store assets. Both sizes are in `deliver`'s supported list (iPhone 6.3" `1206x2622`, iPad 13" `2064x2752`); it infers device class from pixel size and orders by filename. AppMockUp sources stay in `tools/screenshots/appmockup/`                                                                                                                                                                                |
+| `[x]`  | Fastfile `version_property` reads root `version.properties`; `preflight_version` validates it against App Store Connect. The `verify` lane runs the same check read-only as a dry run                                                                                                                                                                                                                                                                                                                                                                                      |
+| `[x]`  | `beta` lane guard: fails fast if `tools/release/whatsnew/v<appVersion>/` is missing (before a 20-min archive)                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `[x]`  | `metadata/review_information/notes.txt` — the fenced block from `tools/release/app_review_notes.md` moved here (that staging file is deleted; `deliver` reads this one). Global dir, not per-locale. The six contact/demo files (`first_name`, `last_name`, `phone_number`, `email_address`, `demo_user`, `demo_password`) are **gitignored** — the repo is public and those values already live in App Store Connect; `deliver` leaves a field untouched when its file is absent                                                                                          |
+
+#### Phase 4 — CD on GitHub Actions
+
+| Status | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | `.github/workflows/github-workflow-ios-release.yml` — `push: tags: ['ios/v*']` + `workflow_dispatch`, `concurrency: cancel-in-progress: false` (never kill a release mid-upload), reuses `checkout-with-secrets/ios`                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `[x]`  | Repo secrets: `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD`, `IOS_ASC_KEY_P8_BASE64`, `IOS_ASC_KEY_ID`, `IOS_ASC_ISSUER_ID`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `[x]`  | Job: tag↔`appVersion` guard → Xcode/Java/Gradle → `ruby/setup-ruby` 4.0 with `bundler-cache` (`working-directory: iosApp`) → `fastlane beta` (upload, internal TestFlight, no review) → `fastlane release` (metadata **staged**, `submit_for_review: false`) → `.ipa`/`.dSYM` artifacts (30d), gym logs on failure                                                                                                                                                                                                                                                                                                   |
+| `[x]`  | `upload_symbols_to_crashlytics` wired into the `beta` lane — otherwise R2 crash reports arrive unsymbolicated                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `[R]`  | Verify on the first CI run: the `upload-symbols` SPM path resolves, and `import_certificate` works on an ephemeral runner (both only exercised when `is_ci` is true)                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `[x]`  | **Decided — `version.properties` is the source of truth; fastlane reads it and never writes it.** `preflight_version` validates both things App Store Connect would reject, in ~2s before the archive: `appVersion` must exceed the live App Store version (`get_live_app_store_version`), and `iosBuildNumber` must exceed `latest_testflight_build_number` for that version. Bumping both is a manual release step. No file mutation → clean working tree, no CI write-back, same commit always ships the same version. The live-version lookup degrades to a warning if it fails, so it can never block a release |
+
+#### Phase 5 — Docs
+
+| Status | Task                                                                                                                        |
+|--------|-----------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | `AGENTS.md`: Release section (`bundle exec fastlane beta` / `release`, secrets, Ruby/PATH setup, version bump flow)         |
+| `[ ]`  | `iosApp/fastlane/metadata/README.md`: TODO list is stale (URLs/categories are filled); point screenshots at the sync script |
+| `[ ]`  | `tools/screenshots/SCREENSHOTS.md`: reference `ios_sync_store_screenshots.sh`                                               |
 
 ## Backlog
 
@@ -215,14 +284,17 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 - Storage: `gpx/routeplanner/` (sibling of `gpx/external/`)
 
 ios light mode only first.Create a route planner feature for Huki.
+
 - it starts from a bottom sheet
 - it has title + X close- segmented control with options: "On Trails", "Any route", "Bike"
 - add a waypoint section which shows the start/end/mid waypoints. It has a drag handle to re organize the waypoints.
-- in the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return" to create a roundtrip
+- in the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return"
+  to create a roundtrip
 - add a section with the route time duration, distance, incline, decline
 - add a button to "Save Route"
-  n the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return" to create a roundtrip
-- attached apple maps example 
+  n the bottom of the WP section add a toolbar with 3 icons "+" to add waypoint, "eye" to show/hide the route, "return"
+  to create a roundtrip
+- attached apple maps example
 
 | Status | Scope        | Task                                                                                     |
 |--------|--------------|------------------------------------------------------------------------------------------|

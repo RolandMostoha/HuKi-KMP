@@ -5,3 +5,5 @@ excluded:
   - build
   - iosApp/build
   - DerivedData
+  # E.g. Fastlane
+  - vendor

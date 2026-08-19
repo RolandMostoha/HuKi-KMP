@@ -1,0 +1,177 @@
+require "base64"
+require "shellwords"
+require "tmpdir"
+
+REPO_ROOT = File.expand_path("../..", __dir__)
+IOS_DIR = File.expand_path("..", __dir__)
+XCODE_PROJECT = File.join(IOS_DIR, "iosApp.xcodeproj")
+DERIVED_DATA = File.join(IOS_DIR, "build/DerivedData")
+OUTPUT_DIR = File.join(IOS_DIR, "build")
+VERSION_FILE = File.join(REPO_ROOT, "version.properties")
+WHATSNEW_DIR = File.join(REPO_ROOT, "tools/release/whatsnew")
+UPLOAD_SYMBOLS = File.join(DERIVED_DATA, "SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols")
+GOOGLE_SERVICE_PLIST = File.join(IOS_DIR, "iosApp/GoogleService-Info.plist")
+SCHEME = "iosApp"
+
+opt_out_usage
+default_platform(:ios)
+
+platform :ios do
+  desc "Read-only check of the credentials and of what version.properties would ship"
+  lane :verify do
+    preflight_version(connect_api_key)
+  end
+
+  desc "Archive the current version and upload it to TestFlight"
+  lane :beta do
+    api_key = connect_api_key
+    ensure_whatsnew_exists
+    preflight_version(api_key)
+    install_distribution_certificate
+    archive_release
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false
+    )
+    upload_crashlytics_symbols
+  end
+
+  desc "Push store metadata, screenshots and release notes, then submit for review"
+  lane :release do
+    ensure_whatsnew_exists
+    gradlew_task(":shared:generateStoreReleaseNotes")
+    deliver(
+      api_key: connect_api_key,
+      # Pin the build version.properties describes; deliver would otherwise submit "the latest".
+      build_number: version_property("iosBuildNumber"),
+      app_version: version_property("appVersion"),
+      skip_binary_upload: true,
+      overwrite_screenshots: true,
+      force: true,
+      # Staged, not submitted: App Review is started by a human in App Store Connect.
+      submit_for_review: false,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false,
+      submission_information: { add_id_info_uses_idfa: false }
+    )
+  end
+end
+
+def connect_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("IOS_ASC_KEY_ID"),
+    issuer_id: ENV.fetch("IOS_ASC_ISSUER_ID"),
+    key_content: ENV.fetch("IOS_ASC_KEY_P8_BASE64"),
+    is_key_content_base64: true
+  )
+end
+
+# Fail before a 20-minute archive if the release notes the What's New sheet needs are missing.
+def ensure_whatsnew_exists
+  version = version_property("appVersion")
+  directory = File.join(WHATSNEW_DIR, "v#{version}")
+  UI.user_error!("No What's New content for appVersion=#{version} (expected #{directory})") unless Dir.exist?(directory)
+end
+
+# Locally the distribution identity is already in the login keychain; CI gets it from the secret.
+def install_distribution_certificate
+  return unless is_ci
+
+  setup_ci
+  certificate = File.join(Dir.tmpdir, "ios_distribution.p12")
+  File.binwrite(certificate, Base64.decode64(ENV.fetch("IOS_DIST_CERT_P12_BASE64")))
+  import_certificate(
+    certificate_path: certificate,
+    certificate_password: ENV.fetch("IOS_DIST_CERT_PASSWORD"),
+    keychain_name: ENV.fetch("MATCH_KEYCHAIN_NAME", "fastlane_tmp_keychain"),
+    keychain_password: ENV.fetch("MATCH_KEYCHAIN_PASSWORD", "")
+  )
+ensure
+  File.delete(certificate) if certificate && File.exist?(certificate)
+end
+
+# version.properties is the source of truth. Both mistakes App Store Connect would reject are caught
+# here in seconds instead of after a ~6 minute archive.
+def preflight_version(api_key)
+  version = version_property("appVersion")
+  build = version_property("iosBuildNumber").to_i
+
+  live = live_app_store_version(api_key)
+  if live && Gem::Version.new(version) <= Gem::Version.new(live)
+    UI.user_error!(
+      "version.properties: appVersion #{version} is not higher than the released App Store version #{live}. " \
+      "Bump appVersion (and add tools/release/whatsnew/v<version>/)."
+    )
+  end
+
+  latest = latest_testflight_build_number(api_key: api_key, version: version, initial_build_number: 0)
+  if build <= latest
+    UI.user_error!(
+      "version.properties: iosBuildNumber #{build} is already used for #{version} on TestFlight " \
+      "(latest is #{latest}). Bump iosBuildNumber to #{latest + 1}."
+    )
+  end
+
+  UI.success("Version: #{version} (#{build}) — live App Store version #{live || 'none'}, latest TestFlight build #{latest}")
+end
+
+def live_app_store_version(api_key)
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+  app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+  Spaceship::ConnectAPI::App.find(app_identifier)&.get_live_app_store_version&.version_string
+rescue StandardError => error
+  UI.important("Could not read the live App Store version (#{error.message}) — skipping that check")
+  nil
+end
+
+def archive_release
+  gradlew_task(":shared:generateVersionXcconfig")
+  key_path = write_connect_api_key_file
+  signing_args = [
+    "-allowProvisioningUpdates",
+    "-authenticationKeyPath", key_path.shellescape,
+    "-authenticationKeyID", ENV.fetch("IOS_ASC_KEY_ID"),
+    "-authenticationKeyIssuerID", ENV.fetch("IOS_ASC_ISSUER_ID")
+  ].join(" ")
+  build_app(
+    project: XCODE_PROJECT,
+    scheme: SCHEME,
+    configuration: "Release",
+    export_method: "app-store",
+    derived_data_path: DERIVED_DATA,
+    output_directory: OUTPUT_DIR,
+    output_name: "HuKi.ipa",
+    xcargs: "#{signing_args} -skipPackagePluginValidation",
+    export_xcargs: signing_args,
+    export_options: { signingStyle: "automatic" }
+  )
+ensure
+  File.delete(key_path) if key_path && File.exist?(key_path)
+end
+
+# gym never forwards the API key to xcodebuild, hand xcodebuild the key itself.
+def write_connect_api_key_file
+  path = File.join(Dir.tmpdir, "AuthKey_#{ENV.fetch('IOS_ASC_KEY_ID')}.p8")
+  File.binwrite(path, Base64.decode64(ENV.fetch("IOS_ASC_KEY_P8_BASE64")))
+  path
+end
+
+def upload_crashlytics_symbols
+  upload_symbols_to_crashlytics(
+    dsym_path: lane_context[SharedValues::DSYM_OUTPUT_PATH],
+    gsp_path: GOOGLE_SERVICE_PLIST,
+    binary_path: UPLOAD_SYMBOLS
+  )
+end
+
+def gradlew_task(task)
+  sh("cd #{REPO_ROOT.shellescape} && ./gradlew #{task}")
+end
+
+def version_property(key)
+  match = File.read(VERSION_FILE).match(/^#{key}=(.*)$/)
+  UI.user_error!("version.properties: '#{key}' is missing") if match.nil?
+  match[1].strip
+end
+

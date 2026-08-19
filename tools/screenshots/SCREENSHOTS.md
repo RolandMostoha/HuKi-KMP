@@ -15,7 +15,12 @@ position for the location puck, plus the UI state (theme + open sheet) to show.
     - **Location** → `ios_fix_location.sh <lat,lon>` / `adb emu geo fix <lon> <lat>`
     - **Theme** → `ios_toggle_dark_mode.sh` / `android_toggle_dark_mode.sh`
 - File naming: [iOS/iPad/Android]_store_screenshot_[X]_[HU/EN].png
-- Location: tools/screenshots/[iOS/iPad/Android]/
+- Location (iOS): `iosApp/fastlane/screenshots/en-US/` and `iosApp/fastlane/screenshots/hu/` — this is
+  the `deliver` layout, so these files ARE the App Store assets; there is no copy/sync step. `deliver`
+  infers the device class from pixel size (iPhone 6.3" = 1206x2622, iPad 13" = 2064x2752) and orders
+  screenshots by filename, so keep the numeric prefix.
+- The AppMockUp project files in `tools/screenshots/appmockup/` stay here as the design sources that
+  produce those PNGs.
 - iPad uses its own camera framing per scene (different aspect ratio than iPhone/Android) — see the
   **Camera (iPad)** row per screenshot below.
 

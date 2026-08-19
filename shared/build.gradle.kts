@@ -29,6 +29,18 @@ val generateWhatsNew = tasks.register<GenerateWhatsNewTask>("generateWhatsNew") 
     huStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/hu/strings_whatsnew.xml"))
 }
 
+// Not wired into compilation: only `fastlane deliver` consumes these files.
+tasks.register<GenerateStoreReleaseNotesTask>("generateStoreReleaseNotes") {
+    versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
+    whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew"))
+    enReleaseNotesFile.set(
+        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/en-US/release_notes.txt")
+    )
+    huReleaseNotesFile.set(
+        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/hu/release_notes.txt")
+    )
+}
+
 kotlin {
     androidTarget {
         compilerOptions {

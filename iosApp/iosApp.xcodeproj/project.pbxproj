@@ -34,6 +34,11 @@
 			path = Scripts;
 			sourceTree = "<group>";
 		};
+		30FA57E12F4A100000A60BF0 /* fastlane */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = fastlane;
+			sourceTree = "<group>";
+		};
 		4E05C4AB383E64F4131B52E6 /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -76,6 +81,7 @@
 			children = (
 				305BDE9F2F11585000A60BF0 /* Scripts */,
 				A8795A49EAC062F4C5704EFF /* Configuration */,
+				30FA57E12F4A100000A60BF0 /* fastlane */,
 				4E05C4AB383E64F4131B52E6 /* iosApp */,
 				2F0795DE8B4FD8C854FA6817 /* Products */,
 				308875FC30011C9700924526 /* HukiAppIcon.icon */,

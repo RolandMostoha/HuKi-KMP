@@ -1,5 +1,3 @@
-A HuKi segít felfedezni Magyarországot. Interaktív térkép a klasszikus magyar turistajelzésekkel, így magabiztosan követheted a túraútvonalakat.
-
 Funkciók:
 • Interaktív túratérkép a klasszikus magyar turistajelzésekkel
 • GPS navigáció

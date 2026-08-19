@@ -42,3 +42,27 @@ GoogleService-Info.plist
 
 # Maestro
 .maestro/tests
+
+# Signing material — never commit
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.mobileprovision
+
+# fastlane / Ruby
+iosApp/vendor/
+iosApp/fastlane/report.xml
+iosApp/fastlane/.env*
+iosApp/fastlane/README.md
+iosApp/fastlane/metadata/*/release_notes.txt
+# Review contact details / demo credentials — public repo, keep them in App Store Connect only
+iosApp/fastlane/metadata/review_information/first_name.txt
+iosApp/fastlane/metadata/review_information/last_name.txt
+iosApp/fastlane/metadata/review_information/phone_number.txt
+iosApp/fastlane/metadata/review_information/email_address.txt
+iosApp/fastlane/metadata/review_information/demo_user.txt
+iosApp/fastlane/metadata/review_information/demo_password.txt
+*.ipa
+*.dSYM.zip
+*.xcarchive

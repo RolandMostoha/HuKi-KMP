@@ -1,0 +1,110 @@
+name: iOS Release
+
+on:
+  push:
+    tags:
+      - "ios/v*"
+  workflow_dispatch:
+
+# Never cancel a release in flight: a killed run can leave a half-finished upload.
+concurrency:
+  group: ios-release
+  cancel-in-progress: false
+
+jobs:
+  app_store:
+    name: TestFlight & App Store metadata
+    runs-on: [ macos-latest ]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/ios
+        with:
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+          LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+
+      # A mistagged commit or a stray manual run fails here in seconds, before any build cost.
+      # Tag format: ios/v<appVersion>, e.g. ios/v1.1 — move the tag to re-release the same version.
+      - name: Verify release ref
+        run: |
+          APP_VERSION="$(grep '^appVersion=' version.properties | cut -d= -f2)"
+          APP_BUILD="$(grep '^iosBuildNumber=' version.properties | cut -d= -f2)"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            if [[ ! "$GITHUB_REF_NAME" =~ ^ios/v([0-9]+(\.[0-9]+)*)$ ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME is not of the form ios/v<version>"
+              exit 1
+            fi
+            if [ "${BASH_REMATCH[1]}" != "$APP_VERSION" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match appVersion=$APP_VERSION in version.properties"
+              exit 1
+            fi
+          elif [ "$GITHUB_REF_NAME" != "main" ]; then
+            # A manual run uploads and stages store content, so never let it ship a feature branch.
+            echo "::error::Manual runs are only allowed from main (got $GITHUB_REF_NAME)"
+            exit 1
+          fi
+          echo "Releasing $GITHUB_REF_NAME (appVersion=$APP_VERSION, iosBuildNumber=$APP_BUILD)"
+
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "latest"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: iosApp
+
+      - name: Upload to TestFlight
+        working-directory: iosApp
+        env:
+          IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
+          IOS_ASC_ISSUER_ID: ${{ secrets.IOS_ASC_ISSUER_ID }}
+          IOS_ASC_KEY_P8_BASE64: ${{ secrets.IOS_ASC_KEY_P8_BASE64 }}
+          IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+        run: bundle exec fastlane beta
+
+      # Staged only — App Review is started by a human in App Store Connect.
+      - name: Push App Store metadata
+        working-directory: iosApp
+        env:
+          IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
+          IOS_ASC_ISSUER_ID: ${{ secrets.IOS_ASC_ISSUER_ID }}
+          IOS_ASC_KEY_P8_BASE64: ${{ secrets.IOS_ASC_KEY_P8_BASE64 }}
+        run: bundle exec fastlane release
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: huki-ios-release
+          path: iosApp/build/HuKi.app.dSYM.zip
+          retention-days: 30
+
+      # upload-artifact does not expand `~`, so stage the logs at a known path first.
+      - name: Collect fastlane logs
+        if: failure()
+        run: cp -R "$HOME/Library/Logs/gym" fastlane-logs || true
+
+      - name: Upload fastlane logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fastlane-logs
+          path: fastlane-logs
+          if-no-files-found: warn
+          retention-days: 7

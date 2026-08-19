@@ -152,11 +152,13 @@ commit-message convention.
 - **Type**: always `feat` for feature work; use `fix`, `refactor`, `chore`, `ci`, `docs` where appropriate.
 - **Scope**: PascalCase, matching the feature or module name (e.g. `GPXDetails`, `Search`, `CI`, `Logger`).
 - **Description**: lowercase, imperative mood, no trailing period.
+- **Release commits** are the one exception: type `release`, scope is the version — `release(v1.1)`.
 - Examples:
     - `feat(Search): add LocationIQ autocomplete with Ktor`
     - `feat(GPX): add GPX Details bottom sheet`
     - `fix(Logger): trim long lists from UiState logging`
     - `ci(CI): cancel previous in-progress GitHub workflows`
+    - `release(v1.1): update store content, versioning`
 
 ### KMP multiplatform libraries 
 - SKIE - Swift - Kotlin interop tools
@@ -310,6 +312,25 @@ val [actual] = operation(X)
 - **Generation**: the `generateWhatsNew` Gradle task (in `:shared`, runs before compile) generates `WhatsNewContent.kt` (with `currentVersion`) and the moko `strings_whatsnew.xml` files. Both are generated — do not edit by hand.
 - **Show-once**: the sheet auto-shows on first launch after an update; `DefaultWhatsNewRepository` compares `currentVersion` against the `WHATS_NEW_LAST_SEEN_VERSION` DataStore key. `FeatureFlags.ALWAYS_SHOW_WHATSNEW` forces it for debugging (keep `false` on commit).
 - **E2E**: because the sheet auto-shows on a clean `clearState` launch, every Maestro flow except `maestro_whats_new.yaml` passes `arguments: { skipWhatsNew: true }` to `launchApp` to suppress it (`AppLaunchConfig.skipWhatsNew`, read from the intent extra on Android and `ProcessInfo.arguments` on iOS). Add this arg to any new flow.
+
+### Release runbook (iOS)
+
+Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) and is delivered by fastlane.
+
+1. One release commit on `main` (`release(v<X>): update store content, versioning`):
+    - `version.properties` — bump `appVersion` and `iosBuildNumber`
+    - `tools/release/whatsnew/v<X>/` — EN + HU notes and `metadata.json
+    - `iosApp/fastlane/metadata/` — (if changed) description, promo text, keywords
+    - `iosApp/fastlane/screenshots/` — (if changed)
+2. `bundle exec fastlane verify` — read-only; checks App Store Connect agrees with `version.properties`.
+3. Tag that commit: `git tag ios/v<X> && git push origin ios/v<X>`.
+4. The tag runs `.github/workflows/github-workflow-ios-release.yml`: uploads to TestFlight and stages
+   all store content. Nothing is submitted for review.
+5. Test the TestFlight build, then in App Store Connect select the build and press **Add for Review**.
+
+- `version.properties` is the single source of truth — fastlane reads it, never writes it.
+- Ad-hoc internal TestFlight builds: `bundle exec fastlane beta` locally (never reviewed).
+- **Tagging convention**: `ios/v<appVersion>`
 
 ## App Icon
 
