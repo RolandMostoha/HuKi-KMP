@@ -316,59 +316,15 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | iOS: replace `ViewportObserver` + `proxy.viewport` observer with `.onChange(of: viewport)`; pan-test before deleting the class |
 
-### TECH: Kotlin/Native unit tests in CI (`iosSimulatorArm64Test`)
-
-`commonTest` has never run on Kotlin/Native. The Android workflow runs the JVM side
-(`:shared:testAndroidHostTest`); no workflow runs `:shared:iosSimulatorArm64Test`. For any test that
-touches an `expect` declaration that means only the **Android `actual`** is verified — the suite goes
-green while half of it is untested.
-
-- **Not currently mis-reporting.** No `commonTest` crosses an `expect`/`actual` boundary today
-  (verified against all four: `Strings`, `LocalizedDateFormatter`, `HukiDatabaseConstructor`,
-  `isDebugBuild`). The suite stops *at* the seam on purpose — e.g. `TravelTimeFormatterTest` asserts
-  which `StringResource` + args were selected, never the rendered string. The risk is the next test
-  someone writes, not the ones that exist.
-- **The uncovered seam that motivates this:** `LocalizedDateFormatter` runs
-  `java.time.DateTimeFormatter.ofPattern("MMMM")` on Android and `NSDateFormatter` on iOS — two
-  independent CLDR consumers that disagree on standalone-vs-formatting month forms in several
-  locales. Written as a `commonTest`, it is only meaningful if both targets run it.
-- **Blocker — `:shared:iosSimulatorArm64Test` does not compile.** All **398** `commonTest` functions
-  use the AGENTS.md convention `Given X, When Y, Then Z`, and Kotlin/Native rejects `,` in a
-  backticked name (`Name contains illegal characters: ","`) — 779 commas across the suite. Probed the
-  alternatives: `-` and `—` are legal, `|` is **not**. So the rename is a prerequisite, and the
-  convention has to change with it or the next test breaks the iOS job.
-- **Where to run it:** `github-workflow-ios.yml` already runs on `macos-latest` — add the task there.
-  Prefer `:shared:iosSimulatorArm64Test` over `allTests`, which would re-run the JVM tests Ubuntu just
-  did. Do **not** move the Android jobs to macOS: two of the three need KVM for the emulator, and
-  they are already the flaky ones.
-- **Out of reach from `commonTest`:** `Strings` cannot be tested there at all — the Android `actual`
-  takes a `Context`, the iOS one takes nothing, so there is no common constructor. It needs
-  per-platform tests. Worth doing: `travel_time_hours_minutes_pattern` is `%sh %sm` — two
-  non-positional `%s` — which Android renders via `java.util.Formatter` and iOS via NSString
-  formatting (where `%s` means a C string). Android Lint already warns on it at every build.
-- **Unknown, resolves on first run:** whether `SharedRes.strings` resolves inside a Native test
-  binary. `generateMRiosSimulatorArm64Test` is in the task graph and `moko-resources-test` is on
-  `commonTest`, but moko's iOS lookup goes through `NSBundle` and test binaries bundle resources
-  differently from apps. If it fails, several ViewModel tests break on Native for reasons unrelated
-  to the code under test.
-
-| Status | Scope | Task                                                                                                          |
-|--------|-------|-----------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Tests | Rename all 398 `commonTest` functions: `, ` → ` - ` inside backticked `fun` names (mechanical, one regex)     |
-| `[ ]`  | Docs  | AGENTS.md: convention becomes `Given X - When Y - Then Z`, with a note that `,` is illegal on Kotlin/Native   |
-| `[ ]`  | CI    | Add `:shared:iosSimulatorArm64Test` to the iOS workflow's `Verify & Build` job                                |
-| `[ ]`  | Tests | Write the `LocalizedDateFormatter` `commonTest` — the first test that actually cashes in the above            |
-| `[ ]`  | Tests | Per-platform tests for `Strings.get` with args, covering the non-positional `%sh %sm` format on iOS           |
-
 ### FEATURE: Hike Finder
 
 Goal: Create a search engine for hiking routes which have downloadable GPX files.
 The crawler parses the most important HU hiking sites:
 
-- termeszetjaro
 - aktivmagyarorszag
 - kirandulastippek
 - mozgasvilag
+- termeszetjaro
 
 Input: the user can search a route by
 

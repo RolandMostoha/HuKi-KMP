@@ -14,7 +14,7 @@ import kotlin.test.Test
 class PlaceHistoryMapperTest {
 
     @Test
-    fun `Given place with bounding box, When toPlaceHistoryEntity, Then all fields are mapped`() {
+    fun `Given place with bounding box - When toPlaceHistoryEntity - Then all fields are mapped`() {
         val boundingBox = BoundingBox(north = 47.72, east = 18.90, south = 47.71, west = 18.88)
         val place = Place(
             osmId = "123",
@@ -43,7 +43,7 @@ class PlaceHistoryMapperTest {
     }
 
     @Test
-    fun `Given place without osmType or bounding box, When toPlaceHistoryEntity, Then osmType falls back to NODE`() {
+    fun `Given place without osmType or bounding box - When toPlaceHistoryEntity - Then osmType falls back to NODE`() {
         val place = Place(
             osmId = "1",
             location = Location(47.0, 19.0),
@@ -61,7 +61,7 @@ class PlaceHistoryMapperTest {
     }
 
     @Test
-    fun `Given entity, When toPlace, Then domain place fields are mapped`() {
+    fun `Given entity - When toPlace - Then domain place fields are mapped`() {
         val boundingBox = BoundingBox(north = 47.72, east = 18.90, south = 47.71, west = 18.88)
         val entity = PlaceHistoryEntity(
             osmType = OsmType.RELATION,

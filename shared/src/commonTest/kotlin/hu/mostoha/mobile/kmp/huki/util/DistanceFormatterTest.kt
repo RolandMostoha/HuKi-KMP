@@ -9,7 +9,7 @@ import kotlin.test.Test
 class DistanceFormatterTest {
 
     @Test
-    fun `Given short distance, When formatting, Then meters are shown`() {
+    fun `Given short distance - When formatting - Then meters are shown`() {
         val input = 850.meters
 
         val actual = DistanceFormatter.formatDistance(input)
@@ -18,7 +18,7 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given long distance, When formatting, Then kilometers are shown`() {
+    fun `Given long distance - When formatting - Then kilometers are shown`() {
         val input = 15.kilometers
 
         val actual = DistanceFormatter.formatDistance(input)
@@ -27,7 +27,7 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given long distance with fraction, When formatting, Then one decimal is shown`() {
+    fun `Given long distance with fraction - When formatting - Then one decimal is shown`() {
         val input = 12.44.kilometers
 
         val actual = DistanceFormatter.formatDistance(input)
@@ -36,7 +36,7 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given distance above hundred kilometers, When formatting, Then whole kilometers are shown`() {
+    fun `Given distance above hundred kilometers - When formatting - Then whole kilometers are shown`() {
         val input = 220.1.kilometers
 
         val actual = DistanceFormatter.formatDistance(input)
@@ -45,7 +45,7 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given distance just below hundred kilometers, When formatting, Then no trailing decimal is shown`() {
+    fun `Given distance just below hundred kilometers - When formatting - Then no trailing decimal is shown`() {
         val input = 99.96.kilometers
 
         val actual = DistanceFormatter.formatDistance(input)
@@ -54,7 +54,7 @@ class DistanceFormatterTest {
     }
 
     @Test
-    fun `Given elevation value, When formatting, Then meters are shown`() {
+    fun `Given elevation value - When formatting - Then meters are shown`() {
         val input = 500
 
         val actual = DistanceFormatter.formatMeters(input)

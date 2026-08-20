@@ -30,7 +30,9 @@ Lint:
 
 ### Shared
 - Build: `./gradlew :shared:compileKotlinIosArm64`
-- Tests: `./gradlew :shared:testAndroidHostTest`
+- Tests (JVM / Android actuals): `./gradlew :shared:testAndroidHostTest`
+- Tests (Kotlin/Native / iOS actuals): `./gradlew :shared:iosSimulatorArm64Test`
+- Both at once (macOS only): `./gradlew :shared:allTests`
 
 ## Utility Scripts
 
@@ -275,7 +277,7 @@ Before writing a comment, **both** must hold. If either fails, delete it.
 - Use an injectable Mapper **class** (Koin) only when the mapping needs a dependency (formatter, locale, clock, resource provider).
 
 ### Unit tests
-- Use `Given X, When Y, Then Z`
+- Use `Given X - When Y - Then Z`
 - Use test functions like:
 ```
 val [input] = X

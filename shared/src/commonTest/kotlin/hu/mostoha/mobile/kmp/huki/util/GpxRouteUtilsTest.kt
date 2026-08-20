@@ -32,7 +32,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given full track, When from start to end, Then distance equals total track distance`() {
+    fun `Given full track - When from start to end - Then distance equals total track distance`() {
         val expected = LINE_TRACK.calculateTotalDistance().inMeters
 
         val progress = LINE_TRACK.routeProgressTo(
@@ -46,7 +46,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given full track, When from start to intermediate point, Then distance is partial`() {
+    fun `Given full track - When from start to intermediate point - Then distance is partial`() {
         val expected = LINE_TRACK.subList(0, 3).calculateTotalDistance().inMeters
 
         val progress = LINE_TRACK.routeProgressTo(
@@ -59,7 +59,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given full track, When target is behind on a linear route, Then distance is measured backward`() {
+    fun `Given full track - When target is behind on a linear route - Then distance is measured backward`() {
         val expected = LINE_TRACK.calculateTotalDistance().inMeters
 
         val progress = LINE_TRACK.routeProgressTo(
@@ -73,7 +73,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given round trip, When target is ahead, Then distance is measured forward without wrapping`() {
+    fun `Given round trip - When target is ahead - Then distance is measured forward without wrapping`() {
         val expected = LOOP_TRACK[0].distanceBetween(LOOP_TRACK[1]).inMeters
 
         val progress = LOOP_TRACK.routeProgressTo(
@@ -86,7 +86,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given round trip, When target is behind, Then distance wraps forward around the loop`() {
+    fun `Given round trip - When target is behind - Then distance wraps forward around the loop`() {
         val total = LOOP_TRACK.calculateTotalDistance().inMeters
         val firstSegment = LOOP_TRACK[0].distanceBetween(LOOP_TRACK[1]).inMeters
 
@@ -101,7 +101,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given location beside the track, When computing progress, Then it snaps onto the track`() {
+    fun `Given location beside the track - When computing progress - Then it snaps onto the track`() {
         val besideStart = Location(47.5000, 19.0010, 100.0)
         val expected = LINE_TRACK.calculateTotalDistance().inMeters
 
@@ -115,7 +115,7 @@ class GpxRouteUtilsTest {
     }
 
     @Test
-    fun `Given single point track, When computing progress, Then falls back to straight-line distance`() {
+    fun `Given single point track - When computing progress - Then falls back to straight-line distance`() {
         val single = listOf(Location(47.5000, 19.0000, 100.0))
         val target = Location(47.5100, 19.0000, 120.0)
 

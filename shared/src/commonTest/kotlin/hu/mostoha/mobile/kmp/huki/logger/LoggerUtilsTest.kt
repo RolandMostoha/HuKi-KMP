@@ -6,7 +6,7 @@ import kotlin.test.Test
 class LoggerUtilsTest {
 
     @Test
-    fun `Given a list within limit, When trimming, Then it remains unchanged`() {
+    fun `Given a list within limit - When trimming - Then it remains unchanged`() {
         val input = "Data(items=[1, 2, 3])"
 
         val actual = input.trimLongLists(limit = 5)
@@ -15,7 +15,7 @@ class LoggerUtilsTest {
     }
 
     @Test
-    fun `Given a list exactly at limit, When trimming, Then it remains unchanged`() {
+    fun `Given a list exactly at limit - When trimming - Then it remains unchanged`() {
         val input = "Data(items=[1, 2, 3])"
 
         val actual = input.trimLongLists(limit = 3)
@@ -24,7 +24,7 @@ class LoggerUtilsTest {
     }
 
     @Test
-    fun `Given a list above limit, When trimming, Then it is truncated`() {
+    fun `Given a list above limit - When trimming - Then it is truncated`() {
         val input = "Data(items=[1, 2, 3, 4])"
 
         val actual = input.trimLongLists(limit = 2)
@@ -33,7 +33,7 @@ class LoggerUtilsTest {
     }
 
     @Test
-    fun `Given multiple lists, When trimming, Then all are processed`() {
+    fun `Given multiple lists - When trimming - Then all are processed`() {
         val input = "Data(a=[1, 2, 3], b=[4, 5, 6, 7])"
 
         val actual = input.trimLongLists(limit = 2)
@@ -42,7 +42,7 @@ class LoggerUtilsTest {
     }
 
     @Test
-    fun `Given no lists, When trimming, Then it remains unchanged`() {
+    fun `Given no lists - When trimming - Then it remains unchanged`() {
         val input = "Data(a=1, b=2)"
 
         val actual = input.trimLongLists(limit = 5)
@@ -51,7 +51,7 @@ class LoggerUtilsTest {
     }
 
     @Test
-    fun `Given empty list, When trimming, Then it remains unchanged`() {
+    fun `Given empty list - When trimming - Then it remains unchanged`() {
         val input = "Data(items=[])"
 
         val actual = input.trimLongLists(limit = 5)

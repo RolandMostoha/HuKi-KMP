@@ -16,7 +16,7 @@ class UiFormatterTest {
     }
 
     @Test
-    fun `Given compact travel time, When formatting stat value, Then pair spacing is preserved`() {
+    fun `Given compact travel time - When formatting stat value - Then pair spacing is preserved`() {
         val actual = UiFormatter.formatStatValue("7h28m", TEST_STYLE)
 
         actual.text shouldBe "7h28m"
@@ -28,7 +28,7 @@ class UiFormatterTest {
     }
 
     @Test
-    fun `Given spaced travel time, When formatting stat value, Then original whitespace is kept`() {
+    fun `Given spaced travel time - When formatting stat value - Then original whitespace is kept`() {
         val actual = UiFormatter.formatStatValue("7h 28m", TEST_STYLE)
 
         actual.text shouldBe "7h 28m"
@@ -40,7 +40,7 @@ class UiFormatterTest {
     }
 
     @Test
-    fun `Given spaced distance, When formatting stat value, Then original whitespace is kept`() {
+    fun `Given spaced distance - When formatting stat value - Then original whitespace is kept`() {
         val actual = UiFormatter.formatStatValue("22.6 km", TEST_STYLE)
 
         actual.text shouldBe "22.6 km"
@@ -50,7 +50,7 @@ class UiFormatterTest {
     }
 
     @Test
-    fun `Given spaced elevation, When formatting stat value, Then original whitespace is kept`() {
+    fun `Given spaced elevation - When formatting stat value - Then original whitespace is kept`() {
         val actual = UiFormatter.formatStatValue("1088 m", TEST_STYLE)
 
         actual.text shouldBe "1088 m"

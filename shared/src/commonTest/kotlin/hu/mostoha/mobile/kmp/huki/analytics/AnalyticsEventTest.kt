@@ -12,7 +12,7 @@ import kotlin.test.Test
 class AnalyticsEventTest {
 
     @Test
-    fun `Given analytics event, When read, Then it has expected name and params`() {
+    fun `Given analytics event - When read - Then it has expected name and params`() {
         testCases().forEach { testCase ->
             testCase.event.name shouldBe testCase.name
             testCase.event.params shouldBe testCase.params
@@ -20,7 +20,7 @@ class AnalyticsEventTest {
     }
 
     @Test
-    fun `Given analytics event, When read, Then name and params obey Firebase limits`() {
+    fun `Given analytics event - When read - Then name and params obey Firebase limits`() {
         testCases().forEach { testCase ->
             val event = testCase.event
             (event.name.length <= EVENT_NAME_MAX_LENGTH) shouldBe true

@@ -15,7 +15,7 @@ class CrashlyticsDecoratorServiceTest {
     private val service = CrashlyticsDecoratorService(delegate, crashlyticsService)
 
     @Test
-    fun `Given ScreenView event, when logEvent, then screen breadcrumb and custom key are recorded`() {
+    fun `Given ScreenView event - when logEvent - then screen breadcrumb and custom key are recorded`() {
         val event = AnalyticsEvent.ScreenView(Screen.DESTINATIONS)
 
         service.logEvent(event)
@@ -27,7 +27,7 @@ class CrashlyticsDecoratorServiceTest {
     }
 
     @Test
-    fun `Given ScreenView event, when logEvent, then event is forwarded to the delegate`() {
+    fun `Given ScreenView event - when logEvent - then event is forwarded to the delegate`() {
         val event = AnalyticsEvent.ScreenView(Screen.SETTINGS)
 
         service.logEvent(event)
@@ -36,7 +36,7 @@ class CrashlyticsDecoratorServiceTest {
     }
 
     @Test
-    fun `Given non-ScreenView event, when logEvent, then no breadcrumb is recorded but event is forwarded`() {
+    fun `Given non-ScreenView event - when logEvent - then no breadcrumb is recorded but event is forwarded`() {
         val event = AnalyticsEvent.SearchOpened
 
         service.logEvent(event)

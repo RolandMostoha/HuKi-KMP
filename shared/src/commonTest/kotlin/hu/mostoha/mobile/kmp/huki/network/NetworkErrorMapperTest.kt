@@ -11,7 +11,7 @@ import kotlin.test.Test
 class NetworkErrorMapperTest {
 
     @Test
-    fun `Given network error, When mapped, Then it returns shared error info view data`() {
+    fun `Given network error - When mapped - Then it returns shared error info view data`() {
         testCases().forEach { testCase ->
             val actual = testCase.input.toInfoViewData()
 

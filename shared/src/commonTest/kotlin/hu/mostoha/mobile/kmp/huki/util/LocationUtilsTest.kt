@@ -8,7 +8,7 @@ import kotlin.test.Test
 class LocationUtilsTest {
 
     @Test
-    fun `Given two locations, when distanceBetween, then distance returns`() {
+    fun `Given two locations - when distanceBetween - then distance returns`() {
         val from = Location(47.123, 19.234)
         val to = Location(46.567, 19.345)
 
@@ -18,7 +18,7 @@ class LocationUtilsTest {
     }
 
     @Test
-    fun `Given list of locations, when calculateDistance, then the total distance returns`() {
+    fun `Given list of locations - when calculateDistance - then the total distance returns`() {
         val from = Location(47.123, 19.234)
         val to = Location(46.567, 19.345)
         val locations = listOf(from, to, from, to)
@@ -29,7 +29,7 @@ class LocationUtilsTest {
     }
 
     @Test
-    fun `Given list of locations, when calculateCenter, then the center location returns`() {
+    fun `Given list of locations - when calculateCenter - then the center location returns`() {
         val location1 = Location(47.123, 19.234)
         val location2 = Location(46.567, 19.345)
         val locations = listOf(location1, location2)
@@ -43,7 +43,7 @@ class LocationUtilsTest {
     }
 
     @Test
-    fun `Given list of locations, when calculateIncline, then the total incline of locations returns`() {
+    fun `Given list of locations - when calculateIncline - then the total incline of locations returns`() {
         val locations = listOf(
             Location(47.123, 19.234, 90.0),
             Location(47.123, 19.234, 100.0),
@@ -59,7 +59,7 @@ class LocationUtilsTest {
     }
 
     @Test
-    fun `Given list of locations, when calculateDecline, then the total decline of locations returns`() {
+    fun `Given list of locations - when calculateDecline - then the total decline of locations returns`() {
         val locations = listOf(
             Location(47.123, 19.234, 90.0),
             Location(47.123, 19.234, 100.0),

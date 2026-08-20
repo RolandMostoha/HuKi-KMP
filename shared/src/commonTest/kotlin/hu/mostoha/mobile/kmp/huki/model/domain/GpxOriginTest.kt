@@ -6,7 +6,7 @@ import kotlin.test.Test
 class GpxOriginTest {
 
     @Test
-    fun `Given a sandbox path, When fromPath, Then the origin of the holding directory returns`() {
+    fun `Given a sandbox path - When fromPath - Then the origin of the holding directory returns`() {
         testCases().forEach { (path, expected) ->
             GpxOrigin.fromPath(path) shouldBe expected
         }

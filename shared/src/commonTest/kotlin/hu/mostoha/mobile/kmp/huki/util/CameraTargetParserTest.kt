@@ -8,7 +8,7 @@ import kotlin.test.Test
 class CameraTargetParserTest {
 
     @Test
-    fun `Given camera target string, When parsed, Then it returns the matching camera position`() {
+    fun `Given camera target string - When parsed - Then it returns the matching camera position`() {
         testCases().forEach { testCase ->
             val actual = CameraTargetParser.parse(testCase.input)
 

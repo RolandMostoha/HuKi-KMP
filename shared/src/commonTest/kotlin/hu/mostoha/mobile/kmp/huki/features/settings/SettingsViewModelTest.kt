@@ -47,7 +47,7 @@ class SettingsViewModelTest {
     private fun createViewModel() = SettingsViewModel(settingsRepository, analyticsService)
 
     @Test
-    fun `Given default preferences, When observed, Then uiState is default`() {
+    fun `Given default preferences - When observed - Then uiState is default`() {
         runTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
@@ -57,7 +57,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given stored map zoom controls flag, When observed, Then uiState reflects the flag`() {
+    fun `Given stored map zoom controls flag - When observed - Then uiState reflects the flag`() {
         runTest {
             every { settingsRepository.settings } returns
                 flowOf(UserPreferences.DEFAULTS.copy(mapZoomControlsVisible = true))
@@ -69,7 +69,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given default state, When MapZoomControlsToggled event, Then repository stores the flag`() {
+    fun `Given default state - When MapZoomControlsToggled event - Then repository stores the flag`() {
         runTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
@@ -83,7 +83,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
+    fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         runTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
@@ -99,7 +99,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When created, Then settings screen view is logged`() {
+    fun `Given view model init - When created - Then settings screen view is logged`() {
         runTest {
             createViewModel()
             advanceUntilIdle()

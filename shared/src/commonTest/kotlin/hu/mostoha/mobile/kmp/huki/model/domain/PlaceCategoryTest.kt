@@ -6,7 +6,7 @@ import kotlin.test.Test
 class PlaceCategoryTest {
 
     @Test
-    fun `Given OSM tag, When fromString, Then expected PlaceCategory returns`() {
+    fun `Given OSM tag - When fromString - Then expected PlaceCategory returns`() {
         testCases().forEach { testCase ->
             val actual = PlaceCategory.fromString(testCase.input, testCase.classInput)
 

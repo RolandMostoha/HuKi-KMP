@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.hours
 class RoutePlanMapperTest {
 
     @Test
-    fun `Given on trails profile, When toRouteRequest, Then hike profile with the trail custom model is used`() {
+    fun `Given on trails profile - When toRouteRequest - Then hike profile with the trail custom model is used`() {
         val actual = RoutePlannerProfile.ON_TRAILS.toRouteRequest(WAYPOINTS)
 
         actual.profile shouldBe GraphhopperProfile.HIKE
@@ -35,7 +35,7 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given shortest route profile, When toRouteRequest, Then hike profile without a custom model is used`() {
+    fun `Given shortest route profile - When toRouteRequest - Then hike profile without a custom model is used`() {
         val actual = RoutePlannerProfile.SHORTEST_ROUTE.toRouteRequest(WAYPOINTS)
 
         actual.profile shouldBe GraphhopperProfile.HIKE
@@ -44,7 +44,7 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given bike profile, When toRouteRequest, Then bike profile is used`() {
+    fun `Given bike profile - When toRouteRequest - Then bike profile is used`() {
         val actual = RoutePlannerProfile.BIKE.toRouteRequest(WAYPOINTS)
 
         actual.profile shouldBe GraphhopperProfile.BIKE
@@ -52,14 +52,14 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given waypoints, When toRouteRequest, Then points are sent as longitude latitude pairs`() {
+    fun `Given waypoints - When toRouteRequest - Then points are sent as longitude latitude pairs`() {
         val actual = RoutePlannerProfile.ON_TRAILS.toRouteRequest(WAYPOINTS)
 
         actual.points shouldBe listOf(listOf(18.9, 47.7), listOf(19.0, 47.8))
     }
 
     @Test
-    fun `Given a route response, When toRoutePlan, Then locations and stats are mapped`() {
+    fun `Given a route response - When toRoutePlan - Then locations and stats are mapped`() {
         val response = routeResponse()
 
         val actual = response.toRoutePlan()!!
@@ -80,19 +80,19 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given a response without paths, When toRoutePlan, Then null is returned`() {
+    fun `Given a response without paths - When toRoutePlan - Then null is returned`() {
         GraphhopperRouteResponse().toRoutePlan().shouldBeNull()
     }
 
     @Test
-    fun `Given a path without points, When toRoutePlan, Then null is returned`() {
+    fun `Given a path without points - When toRoutePlan - Then null is returned`() {
         val response = routeResponse(points = emptyList())
 
         response.toRoutePlan().shouldBeNull()
     }
 
     @Test
-    fun `Given a route plan with distinct edges, When toGpxWaypoints, Then start and end waypoints are mapped`() {
+    fun `Given a route plan with distinct edges - When toGpxWaypoints - Then start and end waypoints are mapped`() {
         val routePlan = routePlan(
             waypoints = listOf(
                 Location(latitude = 47.7, longitude = 18.9),
@@ -111,7 +111,7 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given a round trip route plan, When toGpxWaypoints, Then a single round trip waypoint is mapped`() {
+    fun `Given a round trip route plan - When toGpxWaypoints - Then a single round trip waypoint is mapped`() {
         val routePlan = routePlan(
             waypoints = listOf(
                 Location(latitude = 47.7, longitude = 18.9),
@@ -162,7 +162,7 @@ class RoutePlanMapperTest {
     )
 
     @Test
-    fun `Given rate limited error, When toRoutePlanInfoViewData, Then the daily limit info is returned`() {
+    fun `Given rate limited error - When toRoutePlanInfoViewData - Then the daily limit info is returned`() {
         val actual = NetworkError.RATE_LIMITED.toRoutePlanInfoViewData()
 
         actual.title shouldBe SharedRes.strings.route_planner_daily_limit_error_title
@@ -170,7 +170,7 @@ class RoutePlanMapperTest {
     }
 
     @Test
-    fun `Given any other error, When toRoutePlanInfoViewData, Then the generic network info is returned`() {
+    fun `Given any other error - When toRoutePlanInfoViewData - Then the generic network info is returned`() {
         NetworkError.entries
             .filterNot { error -> error == NetworkError.RATE_LIMITED }
             .forEach { error ->

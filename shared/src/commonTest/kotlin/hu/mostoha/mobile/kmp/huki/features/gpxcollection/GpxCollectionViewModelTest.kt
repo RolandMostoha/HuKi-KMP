@@ -74,7 +74,7 @@ class GpxCollectionViewModelTest {
         )
 
     @Test
-    fun `Given no gpx files, When view model init, Then uiState is empty and not loading`() {
+    fun `Given no gpx files - When view model init - Then uiState is empty and not loading`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 
         runTest {
@@ -89,7 +89,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given gpx files from different days, When view model init, Then sections are grouped by date descending`() {
+    fun `Given gpx files from different days - When view model init - Then sections are grouped by date descending`() {
         val todayFile = gpxFileItem("today.gpx", now)
         val yesterdayFile = gpxFileItem("yesterday.gpx", now.minus(1.days))
         val olderFile = gpxFileItem("older.gpx", now.minus(5.days))
@@ -116,7 +116,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given files on the same day, When view model init, Then files are sorted by last modified descending`() {
+    fun `Given files on the same day - When view model init - Then files are sorted by last modified descending`() {
         val earlier = gpxFileItem("earlier.gpx", now.minus(3.hours))
         val later = gpxFileItem("later.gpx", now)
 
@@ -133,7 +133,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given a file, When DeleteClicked event, Then pendingDelete is set`() {
+    fun `Given a file - When DeleteClicked event - Then pendingDelete is set`() {
         val file = gpxFileItem("today.gpx", now)
         everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
 
@@ -147,7 +147,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given pending delete, When DeleteDismissed event, Then pendingDelete is cleared`() {
+    fun `Given pending delete - When DeleteDismissed event - Then pendingDelete is cleared`() {
         val file = gpxFileItem("today.gpx", now)
         everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
 
@@ -162,7 +162,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given pending delete, When DeleteConfirmed event, Then file is deleted and list refreshes`() {
+    fun `Given pending delete - When DeleteConfirmed event - Then file is deleted and list refreshes`() {
         val file = gpxFileItem("today.gpx", now)
         var files = listOf(file)
         everySuspend { gpxRepository.getGpxFiles() } returnsBy { files }
@@ -187,7 +187,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
+    fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 
         runTest {
@@ -202,7 +202,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given a file, When FileClicked event, Then OpenGpx effect with file uri is emitted`() {
+    fun `Given a file - When FileClicked event - Then OpenGpx effect with file uri is emitted`() {
         val file = gpxFileItem("today.gpx", now)
         everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
 
@@ -218,7 +218,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given a file, When ShareClicked event, Then ShareGpx effect is emitted and analytics is logged`() {
+    fun `Given a file - When ShareClicked event - Then ShareGpx effect is emitted and analytics is logged`() {
         val file = gpxFileItem("today.gpx", now)
         everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
 
@@ -240,7 +240,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given default state, When HelpClicked event, Then NavigateToTutorial effect is emitted`() {
+    fun `Given default state - When HelpClicked event - Then NavigateToTutorial effect is emitted`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 
         runTest {
@@ -256,7 +256,7 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When created, Then gpx history screen view is logged`() {
+    fun `Given view model init - When created - Then gpx history screen view is logged`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 
         runTest {

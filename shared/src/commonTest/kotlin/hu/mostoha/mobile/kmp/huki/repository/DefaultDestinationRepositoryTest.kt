@@ -26,7 +26,7 @@ class DefaultDestinationRepositoryTest {
     private val repository = DefaultDestinationRepository(random = Random(SEED))
 
     @Test
-    fun `Given default limit, When getTopDestinations, Then returns 20 distinct known destinations`() {
+    fun `Given default limit - When getTopDestinations - Then returns 20 distinct known destinations`() {
         val actual = repository.getTopDestinations()
 
         actual.size shouldBe 20
@@ -35,7 +35,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given custom limit, When getTopDestinations, Then returns exactly that many destinations`() {
+    fun `Given custom limit - When getTopDestinations - Then returns exactly that many destinations`() {
         val limit = 5
 
         val actual = repository.getTopDestinations(limit = limit)
@@ -44,7 +44,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given default limit, When getTopDestinations, Then top destinations cover varied types`() {
+    fun `Given default limit - When getTopDestinations - Then top destinations cover varied types`() {
         val actual = repository.getTopDestinations()
 
         val distinctTypes = actual.map { it.type }.toSet()
@@ -53,7 +53,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given the same repository, When getTopDestinations twice, Then the ranking is re-rolled`() {
+    fun `Given the same repository - When getTopDestinations twice - Then the ranking is re-rolled`() {
         val first = repository.getTopDestinations()
         val second = repository.getTopDestinations()
 
@@ -61,7 +61,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given different random seeds, When getTopDestinations, Then orderings differ`() {
+    fun `Given different random seeds - When getTopDestinations - Then orderings differ`() {
         val firstRepository = DefaultDestinationRepository(random = Random(SEED))
         val secondRepository = DefaultDestinationRepository(random = Random(SEED + 1))
 
@@ -72,7 +72,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `When getPopularDestinations, Then all destinations are returned sorted by popularity descending`() {
+    fun `When getPopularDestinations - Then all destinations are returned sorted by popularity descending`() {
         val actual = repository.getPopularDestinations()
 
         actual.size shouldBe ALL_DESTINATIONS.size
@@ -81,7 +81,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a location, When getNearbyDestinations, Then all destinations returned sorted by distance ascending`() {
+    fun `Given a location - When getNearbyDestinations - Then all destinations returned sorted by distance ascending`() {
         val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
 
         val actual = repository.getNearbyDestinations(location)
@@ -92,7 +92,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a radius, When getNearbyDestinations, Then only destinations inside it are returned`() {
+    fun `Given a radius - When getNearbyDestinations - Then only destinations inside it are returned`() {
         val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
         val radius = 30.kilometers
 
@@ -106,7 +106,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a limit, When getNearbyDestinations, Then the closest ones are returned in order`() {
+    fun `Given a limit - When getNearbyDestinations - Then the closest ones are returned in order`() {
         val location = Location(BUDAPEST_LATITUDE, BUDAPEST_LONGITUDE)
 
         val actual = repository.getNearbyDestinations(location, limit = 5)
@@ -116,14 +116,14 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a radius with no destination inside, When getNearbyDestinations, Then nothing is returned`() {
+    fun `Given a radius with no destination inside - When getNearbyDestinations - Then nothing is returned`() {
         val actual = repository.getNearbyDestinations(NORTH_POLE, radius = 30.kilometers)
 
         actual.shouldBeEmpty()
     }
 
     @Test
-    fun `Given an existing osmId, When requireDestination, Then the matching destination is returned`() {
+    fun `Given an existing osmId - When requireDestination - Then the matching destination is returned`() {
         val expected = ALL_DESTINATIONS.first()
 
         val actual = repository.requireDestination(expected.osmId)
@@ -132,28 +132,28 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given an unknown osmId, When requireDestination, Then NoSuchElementException is thrown`() {
+    fun `Given an unknown osmId - When requireDestination - Then NoSuchElementException is thrown`() {
         shouldThrow<NoSuchElementException> {
             repository.requireDestination("unknown_osm_id")
         }
     }
 
     @Test
-    fun `Given an ascii query, When searchDestinations, Then diacritic destination names match`() {
+    fun `Given an ascii query - When searchDestinations - Then diacritic destination names match`() {
         val actual = repository.searchDestinations(query = "dobogoko", limit = 10)
 
         actual.map { it.name } shouldContain "Dobogókő"
     }
 
     @Test
-    fun `Given a query with diacritics and uppercase, When searchDestinations, Then it still matches`() {
+    fun `Given a query with diacritics and uppercase - When searchDestinations - Then it still matches`() {
         val actual = repository.searchDestinations(query = "DOBOGÓKŐ", limit = 10)
 
         actual.map { it.name } shouldContain "Dobogókő"
     }
 
     @Test
-    fun `Given a town query, When searchDestinations, Then destinations in that town match`() {
+    fun `Given a town query - When searchDestinations - Then destinations in that town match`() {
         val actual = repository.searchDestinations(query = "lillafured", limit = 20)
 
         actual.shouldNotBeEmpty()
@@ -165,7 +165,7 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given a limit, When searchDestinations, Then at most that many results are returned`() {
+    fun `Given a limit - When searchDestinations - Then at most that many results are returned`() {
         val limit = 3
 
         val actual = repository.searchDestinations(query = "k", limit = limit)
@@ -174,28 +174,28 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `When searchDestinations, Then results are sorted by popularity descending`() {
+    fun `When searchDestinations - Then results are sorted by popularity descending`() {
         val actual = repository.searchDestinations(query = "k", limit = 10)
 
         actual.map { it.popularity } shouldBe actual.map { it.popularity }.sortedDescending()
     }
 
     @Test
-    fun `Given a query with no match, When searchDestinations, Then an empty list is returned`() {
+    fun `Given a query with no match - When searchDestinations - Then an empty list is returned`() {
         val actual = repository.searchDestinations(query = "zzqxnomatch", limit = 10)
 
         actual shouldBe emptyList()
     }
 
     @Test
-    fun `Given a blank query, When searchDestinations, Then an empty list is returned`() {
+    fun `Given a blank query - When searchDestinations - Then an empty list is returned`() {
         val actual = repository.searchDestinations(query = "   ", limit = 10)
 
         actual shouldBe emptyList()
     }
 
     @Test
-    fun `When getLandscapes, Then all landscapes are returned and each has destinations`() {
+    fun `When getLandscapes - Then all landscapes are returned and each has destinations`() {
         val actual = repository.getLandscapes()
 
         actual.shouldNotBeEmpty()

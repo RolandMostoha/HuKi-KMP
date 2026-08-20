@@ -11,7 +11,7 @@ class LocationIqViewModelTest {
     private val analyticsService = FakeAnalyticsService()
 
     @Test
-    fun `Given view model init, When created, Then location iq screen view is logged`() {
+    fun `Given view model init - When created - Then location iq screen view is logged`() {
         LocationIqViewModel(analyticsService)
 
         analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.LOCATION_IQ))

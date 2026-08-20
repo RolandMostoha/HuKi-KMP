@@ -8,7 +8,7 @@ import kotlin.test.Test
 class CoordinateFormatterTest {
 
     @Test
-    fun `Given location, When formatting coordinates, Then lat lon is shown in parentheses`() {
+    fun `Given location - When formatting coordinates - Then lat lon is shown in parentheses`() {
         testCases().forEach { testCase ->
             val actual = CoordinateFormatter.formatCoordinates(testCase.input)
 

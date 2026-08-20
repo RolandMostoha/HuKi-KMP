@@ -15,7 +15,7 @@ import kotlin.time.Instant
 class GpxMapperTest {
 
     @Test
-    fun `Given gpx details, When toGpxFileItem, Then attributes and recency fields are mapped`() {
+    fun `Given gpx details - When toGpxFileItem - Then attributes and recency fields are mapped`() {
         val details = TEST_GPX_DETAILS
         val lastModified = Instant.fromEpochSeconds(1_700_000_000)
         val lastOpened = Instant.fromEpochSeconds(1_700_086_400)
@@ -40,7 +40,7 @@ class GpxMapperTest {
     }
 
     @Test
-    fun `Given route planner gpx details, When toGpxFileItem, Then origin is resolved from the sandbox path`() {
+    fun `Given route planner gpx details - When toGpxFileItem - Then origin is resolved from the sandbox path`() {
         val details = TEST_GPX_DETAILS.copy(fileUri = "/files/gpx/routeplanner/dobogoko.gpx")
 
         val actual = details.toGpxFileItem(
@@ -53,7 +53,7 @@ class GpxMapperTest {
     }
 
     @Test
-    fun `Given gpx details, When toMetadataEntry, Then attributes are serialized to the cache entry`() {
+    fun `Given gpx details - When toMetadataEntry - Then attributes are serialized to the cache entry`() {
         val details = TEST_GPX_DETAILS
         val lastModified = Instant.fromEpochSeconds(1_700_000_000)
         val openedAt = Instant.fromEpochSeconds(1_700_086_400)
@@ -76,7 +76,7 @@ class GpxMapperTest {
     }
 
     @Test
-    fun `Given valid metadata entry, When toGpxFileItem, Then it maps back to a gpx file item`() {
+    fun `Given valid metadata entry - When toGpxFileItem - Then it maps back to a gpx file item`() {
         val lastModified = Instant.fromEpochSeconds(1_700_000_000)
         val lastOpened = Instant.fromEpochSeconds(1_700_086_400)
         val entry = metadataEntry(
@@ -101,7 +101,7 @@ class GpxMapperTest {
     }
 
     @Test
-    fun `Given metadata entry with malformed lastOpened, When toGpxFileItem, Then null returns`() {
+    fun `Given metadata entry with malformed lastOpened - When toGpxFileItem - Then null returns`() {
         val entry = metadataEntry(
             lastOpened = "not-a-date",
             lastModified = Instant.fromEpochSeconds(1_700_000_000).toIsoOffsetString(),
@@ -111,7 +111,7 @@ class GpxMapperTest {
     }
 
     @Test
-    fun `Given malformed lastModified, When toGpxFileItem, Then lastModified falls back to lastOpened`() {
+    fun `Given malformed lastModified - When toGpxFileItem - Then lastModified falls back to lastOpened`() {
         val lastOpened = Instant.fromEpochSeconds(1_700_086_400)
         val entry = metadataEntry(
             lastOpened = lastOpened.toIsoOffsetString(),

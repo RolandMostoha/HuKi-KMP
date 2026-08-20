@@ -8,7 +8,7 @@ import kotlin.test.Test
 class GpxFormatterTest {
 
     @Test
-    fun `Given metadata name, When formatting title, Then metadata name is returned`() {
+    fun `Given metadata name - When formatting title - Then metadata name is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -25,7 +25,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given track name only, When formatting title, Then track name is returned`() {
+    fun `Given track name only - When formatting title - Then track name is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -42,7 +42,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given short track name and description, When formatting title, Then both are returned`() {
+    fun `Given short track name and description - When formatting title - Then both are returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -60,7 +60,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given long track name and description, When formatting title, Then only name is returned`() {
+    fun `Given long track name and description - When formatting title - Then only name is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -78,7 +78,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given route name only, When formatting title, Then route name is returned`() {
+    fun `Given route name only - When formatting title - Then route name is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -95,7 +95,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given short route name and description, When formatting title, Then both are returned`() {
+    fun `Given short route name and description - When formatting title - Then both are returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -113,7 +113,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given blank metadata and track values, When formatting title, Then blank values are ignored`() {
+    fun `Given blank metadata and track values - When formatting title - Then blank values are ignored`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -134,7 +134,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given blank metadata track and route values, When formatting title, Then null is returned`() {
+    fun `Given blank metadata track and route values - When formatting title - Then null is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1">
@@ -159,7 +159,7 @@ class GpxFormatterTest {
     }
 
     @Test
-    fun `Given no metadata tracks or routes, When formatting title, Then null is returned`() {
+    fun `Given no metadata tracks or routes - When formatting title - Then null is returned`() {
         val input = decodeGpx(
             """
             <gpx version="1.1" creator="test" xmlns="http://www.topografix.com/GPX/1/1" />

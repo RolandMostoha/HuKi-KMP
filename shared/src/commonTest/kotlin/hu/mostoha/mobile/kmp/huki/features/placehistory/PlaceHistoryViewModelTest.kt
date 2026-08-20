@@ -82,7 +82,7 @@ class PlaceHistoryViewModelTest {
         )
 
     @Test
-    fun `Given no places, When view model init, Then uiState is empty and not loading`() {
+    fun `Given no places - When view model init - Then uiState is empty and not loading`() {
         everySuspend { placeHistoryRepository.getPlaceHistory() } returns emptyList()
 
         runTest {
@@ -97,7 +97,7 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given places from different days, When view model init, Then sections are grouped by date descending`() {
+    fun `Given places from different days - When view model init - Then sections are grouped by date descending`() {
         val todayItem = placeHistoryItem("1", now)
         val yesterdayItem = placeHistoryItem("2", now.minus(1.days))
         val olderItem = placeHistoryItem("3", now.minus(5.days))
@@ -125,7 +125,7 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given items on the same day, When view model init, Then items are sorted by last visited descending`() {
+    fun `Given items on the same day - When view model init - Then items are sorted by last visited descending`() {
         val earlier = placeHistoryItem("1", now.minus(3.hours))
         val later = placeHistoryItem("2", now)
 
@@ -142,7 +142,7 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
+    fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         everySuspend { placeHistoryRepository.getPlaceHistory() } returns emptyList()
 
         runTest {
@@ -157,7 +157,7 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given a place, When PlaceClicked event, Then OpenPlace effect with osm key is emitted`() {
+    fun `Given a place - When PlaceClicked event - Then OpenPlace effect with osm key is emitted`() {
         val item = placeHistoryItem("123", now)
         everySuspend { placeHistoryRepository.getPlaceHistory() } returns listOf(item)
 
@@ -173,7 +173,7 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When created, Then place history screen view is logged`() {
+    fun `Given view model init - When created - Then place history screen view is logged`() {
         everySuspend { placeHistoryRepository.getPlaceHistory() } returns emptyList()
 
         runTest {

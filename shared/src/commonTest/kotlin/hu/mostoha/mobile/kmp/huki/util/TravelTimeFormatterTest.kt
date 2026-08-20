@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.seconds
 class TravelTimeFormatterTest {
 
     @Test
-    fun `Given sub hour travel time in english, When formatting, Then time is shown with hour minute suffixes`() {
+    fun `Given sub hour travel time in english - When formatting - Then time is shown with hour minute suffixes`() {
         val input = 45.minutes
 
         val actual = TravelTimeFormatter.selectTemplate(input)
@@ -20,7 +20,7 @@ class TravelTimeFormatterTest {
     }
 
     @Test
-    fun `Given sub minute travel time in english, When formatting, Then time rounds up to one minute`() {
+    fun `Given sub minute travel time in english - When formatting - Then time rounds up to one minute`() {
         val input = 1.seconds
 
         val actual = TravelTimeFormatter.selectTemplate(input)
@@ -30,7 +30,7 @@ class TravelTimeFormatterTest {
     }
 
     @Test
-    fun `Given multi hour travel time in english, When formatting, Then time is shown with hour minute suffixes`() {
+    fun `Given multi hour travel time in english - When formatting - Then time is shown with hour minute suffixes`() {
         val input = 135.minutes
 
         val actual = TravelTimeFormatter.selectTemplate(input)
@@ -40,7 +40,7 @@ class TravelTimeFormatterTest {
     }
 
     @Test
-    fun `Given exact multi hour travel time, When formatting, Then hour only template is selected`() {
+    fun `Given exact multi hour travel time - When formatting - Then hour only template is selected`() {
         val input = 420.minutes
 
         val actual = TravelTimeFormatter.selectTemplate(input)
