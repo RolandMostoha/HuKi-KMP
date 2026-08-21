@@ -34,10 +34,10 @@ tasks.register<GenerateStoreReleaseNotesTask>("generateStoreReleaseNotes") {
     versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
     whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew"))
     enReleaseNotesFile.set(
-        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/en-US/release_notes.txt")
+        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/en-US/release_notes.txt"),
     )
     huReleaseNotesFile.set(
-        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/hu/release_notes.txt")
+        rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/hu/release_notes.txt"),
     )
 }
 
