@@ -23,6 +23,7 @@ jobs:
         with:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
+          GRAPHHOPPER_API_KEY: ${{ secrets.GRAPHHOPPER_API_KEY }}
           GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
 
       - name: Setup Java

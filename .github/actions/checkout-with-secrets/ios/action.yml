@@ -7,6 +7,9 @@ inputs:
   LOCATION_IQ_API_KEY:
     description: "LocationIQ API Key"
     required: true
+  GRAPHHOPPER_API_KEY:
+    description: "GraphHopper API Key"
+    required: true
   GOOGLE_SERVICE_INFO_PLIST_BASE64:
     description: "Firebase GoogleService-Info.plist as Base64 string"
     required: true
@@ -29,6 +32,10 @@ runs:
     - name: Copy LOCATION_IQ_API_KEY to secrets.properties
       shell: bash
       run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties
+
+    - name: Copy GRAPHHOPPER_API_KEY to secrets.properties
+      shell: bash
+      run: echo "GRAPHHOPPER_API_KEY=\"${{ inputs.GRAPHHOPPER_API_KEY }}\"" >> ./secrets.properties
 
     - name: Create GoogleService-Info.plist
       shell: bash
