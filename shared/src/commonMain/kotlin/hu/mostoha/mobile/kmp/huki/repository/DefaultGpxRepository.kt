@@ -1,18 +1,26 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import co.touchlab.kermit.Logger
+import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.UnreadableGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.mapper.randomFileNameToken
+import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxDocument
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMetadataEntry
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanFileName
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanTitle
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
@@ -46,7 +54,8 @@ open class DefaultGpxRepository(
         withContext(Dispatchers.IO) {
             val source = runCatching { gpxStorage.readGpx(uri) }.getOrElse { throw UnreadableGpxFileException(it) }
             val gpx = validateGpx(source.content.decodeToString())
-            val file = gpxStorage.saveToSandbox(source)
+            val file = gpxStorage.resolveSandboxFile(uri)
+                ?: gpxStorage.saveToSandbox(source, GpxOrigin.EXTERNAL)
             val details = mapGpxDetails(file.name, file.path, gpx)
 
             metadataStore.recordOpened(
@@ -76,7 +85,7 @@ open class DefaultGpxRepository(
                 .mapNotNull { entry ->
                     val file = gpxStorage.resolveGpxFile(entry.fileName)
                     if (file == null) {
-                        metadataStore.remove(entry.fileName)
+                        metadataStore.removeByTrackId(entry.trackId)
                         return@mapNotNull null
                     }
                     entry.toGpxFileItem(fileUri = file.path)
@@ -85,9 +94,30 @@ open class DefaultGpxRepository(
                 .take(limit)
         }
 
-    override suspend fun deleteGpxFile(fileName: String) {
-        gpxStorage.delete(fileName)
-        metadataStore.remove(fileName)
+    override suspend fun saveRoutePlan(
+        routePlan: RoutePlan,
+        stopPlaceNames: List<String?>,
+        routeProfile: RoutePlannerProfile,
+    ): String =
+        withContext(Dispatchers.IO) {
+            val createdAt = Clock.System.now()
+            val document = routePlan.toGpxDocument(
+                stopPlaceNames.toRoutePlanTitle(),
+                stopPlaceNames,
+                routeProfile,
+                createdAt,
+            )
+            val source = GpxFileSource(
+                fileName = stopPlaceNames.toRoutePlanFileName(randomFileNameToken()),
+                content = Gpx.encodeToString(document).encodeToByteArray(),
+            )
+
+            gpxStorage.saveToSandbox(source, GpxOrigin.ROUTE_PLANNER).path
+        }
+
+    override suspend fun deleteGpxFile(fileUri: String, trackId: String) {
+        gpxStorage.delete(fileUri)
+        metadataStore.removeByTrackId(trackId)
     }
 
     /**
@@ -97,7 +127,7 @@ open class DefaultGpxRepository(
         val bytes = runCatching { file.readBytes() }.getOrElse { throwable ->
             Logger.e(throwable) { "Gpx: failed to read ${file.name}, deleting" }
             crashlyticsService.recordException(throwable)
-            gpxStorage.delete(file.name)
+            gpxStorage.delete(file.path)
             return null
         }
         val trackId = bytes.toGpxTrackId()
@@ -110,7 +140,7 @@ open class DefaultGpxRepository(
         }.onFailure { throwable ->
             Logger.e(throwable) { "Gpx: failed to parse ${file.name}, deleting" }
             crashlyticsService.recordException(throwable)
-            gpxStorage.delete(file.name)
+            gpxStorage.delete(file.path)
         }.getOrNull()
     }
 

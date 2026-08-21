@@ -13,37 +13,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -59,6 +49,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.SearchField
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -118,7 +109,7 @@ private fun SearchBottomSheetContent(
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
     val errorInfo = uiState.error
-    val hasDiscoveryContent = uiState.topDestinations.isNotEmpty() ||
+    val hasDiscoveryContent = uiState.destinations.isNotEmpty() ||
         uiState.recentPlaces.isNotEmpty() ||
         uiState.recentGpxFiles.isNotEmpty()
     val navigationBarBottomPadding = with(density) {
@@ -164,51 +155,11 @@ private fun SearchBottomSheetContent(
                         contentDescription = mokoString(SharedRes.strings.a11y_close),
                     )
                 }
-                OutlinedTextField(
+                SearchField(
                     value = uiState.searchText,
                     onValueChange = { onEvent(PlaceFinderUiEvents.SearchTextChanged(it)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 1.dp,
-                            shape = RoundedCornerShape(32.dp),
-                            clip = false,
-                        )
-                        .focusRequester(focusRequester),
-                    placeholder = {
-                        Text(text = mokoString(SharedRes.strings.search_input_placeholder))
-                    },
-                    leadingIcon = {
-                        Icon(
-                            modifier = Modifier.padding(start = Dimens.Small),
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_search),
-                            contentDescription = null,
-                        )
-                    },
-                    trailingIcon = {
-                        if (uiState.searchText.isNotEmpty()) {
-                            IconButton(
-                                modifier = Modifier.padding(end = Dimens.Small),
-                                onClick = { onEvent(PlaceFinderUiEvents.SearchTextChanged("")) },
-                            ) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_clear),
-                                    contentDescription = mokoString(SharedRes.strings.a11y_clear_text),
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    shape = CircleShape,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Search,
-                        keyboardType = KeyboardType.Text,
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = MaterialTheme.colorScheme.surface,
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    ),
+                    focusRequester = focusRequester,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
             Spacer(modifier = Modifier.width(Dimens.Small))
@@ -315,10 +266,11 @@ private fun SearchDiscoveryContent(
                 onSeeAllClicked = onSeeAllGpxClicked,
             )
         }
-        if (uiState.topDestinations.isNotEmpty()) {
+        if (uiState.destinations.isNotEmpty()) {
             DestinationsSection(
-                destinations = uiState.topDestinations,
+                destinations = uiState.destinations,
                 onDestinationSelected = onDestinationSelected,
+                title = mokoString(uiState.destinationsTitle),
                 onSeeAllClick = onSeeAllDestinationsClicked,
             )
         }
@@ -424,7 +376,7 @@ private fun SearchBottomSheetDestinationsStatePreview() {
     HuKiTheme {
         SearchBottomSheetContent(
             uiState = PlaceFinderUiState(
-                topDestinations = listOf(
+                destinations = listOf(
                     Destination(
                         osmId = "1",
                         name = "Dobogókő",

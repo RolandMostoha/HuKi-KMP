@@ -36,6 +36,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
         when (event) {
             MenuUiEvents.BackClicked -> sendEffect(MenuUiEffects.NavigateBack)
             MenuUiEvents.SettingsClicked -> sendEffect(MenuUiEffects.NavigateToSettings)
+            MenuUiEvents.RoutePlannerClicked -> openRoutePlanner()
             MenuUiEvents.DestinationsClicked -> sendEffect(MenuUiEffects.NavigateToDestinations)
             MenuUiEvents.PlaceHistoryClicked -> sendEffect(MenuUiEffects.NavigateToPlaceHistory)
             MenuUiEvents.GpxCollectionClicked -> sendEffect(MenuUiEffects.NavigateToGpxCollection)
@@ -47,6 +48,11 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
         }
+    }
+
+    private fun openRoutePlanner() {
+        analyticsService.logEvent(AnalyticsEvent.MenuRoutePlanClicked)
+        sendEffect(MenuUiEffects.NavigateToRoutePlanner)
     }
 
     private fun openEmail() {

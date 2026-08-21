@@ -15,4 +15,5 @@ enum class Screen(val value: String) {
     TRAIL_SYMBOLS_GUIDE("trail_symbols_guide"),
     PLACE_HISTORY("place_history"),
     LOCATION_IQ("location_iq"),
+    ROUTE_PLANNER("route_planner"),
 }

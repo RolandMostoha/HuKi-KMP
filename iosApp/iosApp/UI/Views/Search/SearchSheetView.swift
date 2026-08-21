@@ -46,7 +46,7 @@ struct SearchSheetView: View {
         if isSearching && (hasAnyResults || hasOnlineActivity) {
             groupedResults(uiState: uiState)
         } else if !isSearching &&
-            (!uiState.topDestinations.isEmpty || !uiState.recentPlaces.isEmpty || !uiState.recentGpxFiles.isEmpty) {
+            (!uiState.destinations.isEmpty || !uiState.recentPlaces.isEmpty || !uiState.recentGpxFiles.isEmpty) {
             discoveryList(uiState: uiState)
         } else {
             Color.clear
@@ -130,14 +130,15 @@ struct SearchSheetView: View {
                         }
                     )
                 }
-                if !uiState.topDestinations.isEmpty {
+                if !uiState.destinations.isEmpty {
                     DestinationsSectionView(
                         strings: strings,
-                        destinations: uiState.topDestinations,
+                        destinations: uiState.destinations,
                         onDestinationSelected: { destination in
                             isSearchFieldFocused = false
                             onDestinationSelected(destination)
                         },
+                        title: strings.get(id: uiState.destinationsTitle),
                         onSeeAllClicked: {
                             isSearchFieldFocused = false
                             onSeeAllDestinationsClicked()
@@ -181,71 +182,22 @@ private extension SearchSheetView {
 
     @ViewBuilder
     private func searchTextField(uiState: PlaceFinderUiState) -> some View {
-        let queryBinding = Binding<String>(
-            get: { uiState.searchText },
-            set: { viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: $0)) }
+        SearchFieldView(
+            strings: strings,
+            text: Binding<String>(
+                get: { uiState.searchText },
+                set: { viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: $0)) }
+            ),
+            isFocused: $isSearchFieldFocused
         )
-
-        TextField(
-            "",
-            text: queryBinding,
-            prompt: Text(strings.get(id: SharedRes.strings().search_input_placeholder))
-                .foregroundStyle(Color(.secondaryLabel))
-        )
-        .font(.system(size: 18, weight: .regular))
-        .foregroundStyle(.secondary)
-        .submitLabel(.search)
-        .textContentType(.fullStreetAddress)
-        .focused($isSearchFieldFocused)
-        .tint(Color(SharedRes.colors().primary.getUIColor()))
-        .padding(.leading, 48)
-        .padding(.trailing, uiState.searchText.isEmpty ? 16 : 44)
-        .padding(.vertical, 14)
-        .glassBackground()
-        .overlay(alignment: .leading) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(.primary)
-                .padding(.leading, 18)
-        }
-        .overlay(alignment: .trailing) {
-            if !uiState.searchText.isEmpty {
-                clearButton
-            }
-        }
-        .contentShape(Capsule())
-        .onTapGesture {
-            isSearchFieldFocused = true
-        }
-    }
-
-    @ViewBuilder
-    private var clearButton: some View {
-        Button(action: {
-            viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: ""))
-        }, label: {
-            Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 20))
-                .foregroundStyle(.primary)
-                .padding(.trailing, 14)
-        })
-        .buttonStyle(.plain)
-        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_clear_text))
     }
 
     @ViewBuilder
     private var closeButton: some View {
-        Button(action: {
+        CloseButton(action: {
             isSearchFieldFocused = false
             viewModel.onEvent(event: PlaceFinderUiEventsSearchTextChanged(searchText: ""))
             onDismiss()
-        }, label: {
-            Image(systemName: "xmark")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.primary)
-                .padding(12)
-                .glassBackground()
         })
-        .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
     }
 }

@@ -24,11 +24,17 @@ sealed class Sheet {
     data object PlaceDetails : Sheet()
 
     /**
+     * Route Planner Standard Sheet is shown.
+     */
+    data class RoutePlanner(val place: Place?) : Sheet()
+
+    /**
      * WhatsNew Modal Sheet is shown after the app is updated.
      */
     data class WhatsNew(val whatsNew: WhatsNewModel) : Sheet()
 }
 
-fun Sheet.isStandard(): Boolean = this is Sheet.Gpx || this is Sheet.Search || this is Sheet.PlaceDetails
+fun Sheet.isStandard(): Boolean =
+    this is Sheet.Gpx || this is Sheet.Search || this is Sheet.PlaceDetails || this is Sheet.RoutePlanner
 
 fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew

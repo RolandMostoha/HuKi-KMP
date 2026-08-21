@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.features.placefinder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
@@ -12,9 +13,11 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.MapConstants.NEARBY_DESTINATIONS_MIN_ZOOM
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
@@ -40,6 +43,7 @@ class PlaceFinderViewModel(
     private val destinationRepository: DestinationRepository,
     private val gpxRepository: GpxRepository,
     private val placeHistoryRepository: PlaceHistoryRepository,
+    private val mapCameraStore: MapCameraStore,
     private val analyticsService: AnalyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -51,6 +55,7 @@ class PlaceFinderViewModel(
         private const val RECENT_PLACES_LIMIT = 3
         private const val SEARCH_RECENT_PLACES_LIMIT = 5
         private const val SEARCH_DESTINATIONS_LIMIT = 20
+        private const val DESTINATIONS_LIMIT = 20
     }
 
     private val _uiState = MutableStateFlow(PlaceFinderUiState.Default)
@@ -62,7 +67,7 @@ class PlaceFinderViewModel(
     )
 
     init {
-        loadTopDestinations()
+        loadDestinations()
         loadRecentPlaces()
         loadRecentGpxFiles()
 
@@ -89,13 +94,31 @@ class PlaceFinderViewModel(
         viewModelScope.cancel()
     }
 
-    private fun loadTopDestinations() {
+    private fun loadDestinations() {
+        val cameraPosition = mapCameraStore.cameraPosition
+        val isNearby = cameraPosition.zoom >= NEARBY_DESTINATIONS_MIN_ZOOM
+
         viewModelScope.launch {
-            val location = lastKnownLocation()
             val destinations = withContext(defaultDispatcher) {
-                destinationRepository.getTopDestinations(location)
+                if (isNearby) {
+                    destinationRepository.getNearbyDestinations(
+                        location = cameraPosition.location,
+                        limit = DESTINATIONS_LIMIT,
+                    )
+                } else {
+                    destinationRepository.getTopDestinations(DESTINATIONS_LIMIT)
+                }
             }
-            _uiState.update { uiState -> uiState.copy(topDestinations = destinations) }
+            _uiState.update { uiState ->
+                uiState.copy(
+                    destinations = destinations,
+                    destinationsTitle = if (isNearby) {
+                        SharedRes.strings.destinations_section_nearby_title
+                    } else {
+                        SharedRes.strings.destinations_section_title
+                    },
+                )
+            }
         }
     }
 

@@ -14,13 +14,11 @@ struct GpxFileOptionsMenuView: View {
                     Label(strings.get(id: SharedRes.strings().gpx_collection_action_rename), systemImage: "pencil")
                 }
             }
-            if FeatureFlags.shared.IS_GPX_SHARE_ENABLED {
-                Button(action: onShare) {
-                    Label(
-                        strings.get(id: SharedRes.strings().gpx_collection_action_share),
-                        systemImage: "square.and.arrow.up"
-                    )
-                }
+            Button(action: onShare) {
+                Label(
+                    strings.get(id: SharedRes.strings().gpx_collection_action_share),
+                    systemImage: "square.and.arrow.up"
+                )
             }
             Button(role: .destructive, action: onDelete) {
                 Label(strings.get(id: SharedRes.strings().gpx_collection_action_delete), systemImage: "trash")

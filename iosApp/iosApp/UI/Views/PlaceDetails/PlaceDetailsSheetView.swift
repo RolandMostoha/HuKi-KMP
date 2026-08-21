@@ -44,17 +44,10 @@ struct PlaceDetailsSheetView: View {
             content
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .transition(.opacity)
-            Button(action: onDismissRequest) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .padding(12)
-                    .background(Circle().fill(Color(.systemGray5)))
-            }
-            .buttonStyle(.plain)
-            .contentShape(Circle())
-            .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
-            .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_CLOSE_BUTTON)
+            CloseButton(
+                action: onDismissRequest,
+                accessibilityIdentifier: TestTags.shared.PLACE_DETAILS_CLOSE_BUTTON
+            )
         }
         .padding(.leading, 24)
         .padding(.trailing, 16)

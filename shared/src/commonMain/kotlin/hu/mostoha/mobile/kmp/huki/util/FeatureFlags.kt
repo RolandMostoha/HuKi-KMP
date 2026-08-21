@@ -5,7 +5,6 @@ object FeatureFlags {
      *  Flags for not completed features.
      */
     const val IS_GPX_RENAME_ENABLED = false
-    const val IS_GPX_SHARE_ENABLED = false
 
     /**
      * Debug only flags.

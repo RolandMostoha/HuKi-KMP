@@ -10,7 +10,10 @@ struct MapView: View {
     let onWaypointClicked: (GpxWaypoint) -> Void
     let onDistanceInfoWindowDismissed: () -> Void
     let onMapLongClicked: (Shared.Location) -> Void
+    let onMapCameraChanged: (Shared.CameraPosition) -> Void
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
+    var routePlannerDetent: RoutePlannerDetent = .expanded
+    var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
 
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
@@ -24,6 +27,10 @@ struct MapView: View {
         return !isFacingNorth(cameraBearing)
     }
 
+    private var isRoutePlanVisible: Bool {
+        uiState.mapUiState.routePlan != nil || !uiState.mapUiState.routePlanMarkers.isEmpty
+    }
+
     private func isFacingNorth(_ bearing: Double) -> Bool {
         let tolerance = MapConstants.shared.MAP_FACING_NORTH_TOLERANCE
         let rotation = abs(bearing)
@@ -35,6 +42,9 @@ struct MapView: View {
     @State private var cameraCenter = CLLocationCoordinate2D()
     @State private var isMapLandscape = false
     @State private var isDebugCameraPanelVisible = true
+    @State private var lastRoutePlannerCamera: MapUiEffectsUpdateCamera?
+
+    @State private var routePlannerMapInset = Dimens.routePlannerDetentHeight
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -98,7 +108,8 @@ struct MapView: View {
                                     .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
                             }
 
-                            PointAnnotationGroup(gpxDetails.waypoints, id: \.location.id) { waypoint in
+                            let orderedWaypoints = WaypointMarkerOrder.shared.sort(waypoints: gpxDetails.waypoints)
+                            PointAnnotationGroup(orderedWaypoints, id: \.location.id) { waypoint in
                                 PointAnnotation(coordinate: waypoint.location.coordinate)
                                     .image(waypoint.type.icon.annotationImage)
                                     .iconSize(
@@ -132,6 +143,12 @@ struct MapView: View {
                                 .allowOverlap(true)
                             }
                         }
+                    }
+                    if isRoutePlanVisible {
+                        RoutePlanMapContent(
+                            routePlan: uiState.mapUiState.routePlan,
+                            markers: uiState.mapUiState.routePlanMarkers
+                        )
                     }
                 }
                 .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
@@ -189,7 +206,7 @@ struct MapView: View {
                     }
                 }
                 .task(id: proxy.map != nil) {
-                    guard FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL, let map = proxy.map else { return }
+                    guard let map = proxy.map else { return }
                     cameraZoom = map.cameraState.zoom
                     cameraCenter = map.cameraState.center
                     let cameraChanges = AsyncStream<CameraState> { continuation in
@@ -199,6 +216,8 @@ struct MapView: View {
                         continuation.onTermination = { _ in cancelable.cancel() }
                     }
                     for await state in cameraChanges {
+                        onMapCameraChanged(state.cameraPosition)
+                        guard FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL else { continue }
                         cameraZoom = state.zoom
                         cameraCenter = state.center
                     }
@@ -223,6 +242,12 @@ struct MapView: View {
                 .ignoresSafeArea()
                 .onGeometryChange(for: CGSize.self) { $0.size } action: {
                     isMapLandscape = AdaptiveLayout.isLandscapeViewport(mapSize: $0)
+                }
+                .onChange(of: routePlannerSheetHeight, initial: true) { _, newHeight in
+                    routePlannerMapInset = newHeight
+                }
+                .onChange(of: routePlannerDetent) {
+                    refitRoutePlannerCamera()
                 }
 
                 if isCompassVisible {
@@ -301,9 +326,24 @@ private extension MapView {
     }
 
     func updateCamera(_ effect: MapUiEffectsUpdateCamera) {
-        withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
-            viewport = .target(for: effect, isLandscape: isMapLandscape)
+        if effect.contentPadding == .mapRoutePlanner {
+            lastRoutePlannerCamera = effect
         }
+        withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
+            viewport = .target(
+                for: effect,
+                isLandscape: isMapLandscape,
+                routePlannerSheetHeight: routePlannerMapInset
+            )
+        }
+    }
+
+    func refitRoutePlannerCamera() {
+        guard routePlannerDetent != .fullScreen,
+              uiState.mapUiState.routePlan != nil,
+              let effect = lastRoutePlannerCamera else { return }
+        routePlannerMapInset = routePlannerSheetHeight
+        updateCamera(effect)
     }
 
     func showMyLocation(_ effect: MapUiEffectsShowMyLocation, proxy: MapProxy) {

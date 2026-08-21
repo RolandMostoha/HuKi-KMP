@@ -17,6 +17,17 @@ extension CLLocationCoordinate2D {
     }
 }
 
+extension CameraState {
+    var cameraPosition: Shared.CameraPosition {
+        Shared.CameraPosition(
+            location: center.location,
+            zoom: zoom,
+            bearing: bearing,
+            pitch: pitch
+        )
+    }
+}
+
 extension Shared.Location {
     var id: String {
         String(format: "%.6f,%.6f,%.2f", latitude, longitude, (altitude?.doubleValue ?? 0.0))
@@ -36,7 +47,7 @@ extension Array where Element == Shared.Location {
 }
 
 extension Shared.ContentPadding {
-    func edgeInsets(isLandscape: Bool) -> SwiftUI.EdgeInsets {
+    func edgeInsets(isLandscape: Bool, routePlannerSheetHeight: CGFloat) -> SwiftUI.EdgeInsets {
         switch self {
         case .mapGpx:
             return isLandscape ? Dimens.gpxContentPaddingLandscape : Dimens.gpxContentPaddingPortrait
@@ -44,6 +55,10 @@ extension Shared.ContentPadding {
             return isLandscape
                 ? Dimens.placeDetailsContentPaddingLandscape
                 : Dimens.placeDetailsContentPaddingPortrait
+        case .mapRoutePlanner:
+            return isLandscape
+                ? Dimens.routePlannerContentPaddingLandscape
+                : Dimens.routePlannerContentPaddingPortrait(sheetHeight: routePlannerSheetHeight)
         }
     }
 }

@@ -26,10 +26,12 @@ fun BaseButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    enabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
+        enabled = enabled,
         shape = RoundedCornerShape(percent = 50),
         colors = colors,
         contentPadding = PaddingValues(horizontal = Dimens.ExtraLarge, vertical = Dimens.Medium),

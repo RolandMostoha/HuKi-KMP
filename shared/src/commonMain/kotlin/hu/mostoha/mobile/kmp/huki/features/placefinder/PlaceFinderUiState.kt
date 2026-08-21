@@ -1,5 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.features.placefinder
 
+import dev.icerock.moko.resources.StringResource
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
@@ -12,7 +14,8 @@ data class PlaceFinderUiState(
     val searchRecentPlaces: List<Place> = emptyList(),
     val searchDestinations: List<Destination> = emptyList(),
     val error: InfoViewData? = null,
-    val topDestinations: List<Destination> = emptyList(),
+    val destinations: List<Destination> = emptyList(),
+    val destinationsTitle: StringResource = SharedRes.strings.destinations_section_title,
     val recentPlaces: List<Place> = emptyList(),
     val recentGpxFiles: List<GpxFileItem> = emptyList(),
 ) {

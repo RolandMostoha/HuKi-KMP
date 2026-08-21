@@ -7,6 +7,7 @@ struct GpxDetailsSheetView: View {
     let onStartClick: () -> Void
     let onNavigateToStart: () -> Void
     let onNavigateToEnd: () -> Void
+    let onShareClick: () -> Void
     let onDismissRequest: () -> Void
 
     private var hasEndWaypoint: Bool {
@@ -17,7 +18,7 @@ struct GpxDetailsSheetView: View {
         ScrollView {
             VStack(spacing: 20) {
                 header
-                GpxStatsRowView(strings: strings, gpxDetails: gpxDetails)
+                RouteStatsRowView(strings: strings, routeStats: gpxDetails.toRouteStats())
                 VStack(spacing: 12) {
                     PrimaryButton(
                         icon: .system("location.north.fill"),
@@ -26,6 +27,12 @@ struct GpxDetailsSheetView: View {
                     )
                     .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_START_BUTTON)
                     navigationButtons
+                    SecondaryButton(
+                        icon: .system("square.and.arrow.up"),
+                        title: strings.get(id: SharedRes.strings().gpx_details_share),
+                        action: onShareClick
+                    )
+                    .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_SHARE_BUTTON)
                 }
             }
             .padding(.top, 24)
@@ -55,17 +62,10 @@ struct GpxDetailsSheetView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.trailing, 56)
-            Button(action: onDismissRequest) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .padding(12)
-                    .background(Circle().fill(Color(.systemGray5)))
-            }
-            .buttonStyle(.plain)
-            .contentShape(Circle())
-            .accessibilityLabel(strings.get(id: SharedRes.strings().a11y_close))
-            .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_CLOSE_BUTTON)
+            CloseButton(
+                action: onDismissRequest,
+                accessibilityIdentifier: TestTags.shared.GPX_DETAILS_CLOSE_BUTTON
+            )
         }
     }
 
@@ -116,39 +116,5 @@ private struct NavigationButton: View {
                 .background(SwiftUI.Color(SharedRes.colors().primaryContainer.getUIColor()), in: .capsule)
         }
         .buttonStyle(PressFeedbackButtonStyle())
-    }
-}
-
-private struct GpxStatsRowView: View {
-    let strings: Strings
-    let gpxDetails: GpxDetails
-
-    var body: some View {
-        HStack(spacing: 12) {
-            StatChipView(
-                systemImage: "clock.fill",
-                value: strings.get(desc: TravelTimeFormatter.shared.formatTravelTime(duration: gpxDetails.travelTime)),
-                label: strings.get(id: SharedRes.strings().gpx_details_travel_time),
-                style: .large
-            )
-            StatChipView(
-                systemImage: "location.fill",
-                value: DistanceFormatter.shared.formatDistance(distance: gpxDetails.totalDistance),
-                label: strings.get(id: SharedRes.strings().gpx_details_distance),
-                style: .large
-            )
-            StatChipView(
-                systemImage: "chart.line.uptrend.xyaxis",
-                value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.incline),
-                label: strings.get(id: SharedRes.strings().gpx_details_incline),
-                style: .large
-            )
-            StatChipView(
-                systemImage: "chart.line.downtrend.xyaxis",
-                value: DistanceFormatter.shared.formatMeters(meters: gpxDetails.decline),
-                label: strings.get(id: SharedRes.strings().gpx_details_decline),
-                style: .large
-            )
-        }
     }
 }

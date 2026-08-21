@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.model.mapper
 
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
@@ -126,7 +127,12 @@ internal fun MapViewportState.resetBearing() {
 /**
  * Moves the camera to a single point (flyTo) or fits a bounds/route with padding (overview).
  */
-internal fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.UpdateCamera, isLandscape: Boolean) {
+internal fun MapViewportState.moveCamera(
+    density: Density,
+    effect: MapUiEffects.UpdateCamera,
+    isLandscape: Boolean,
+    routePlannerBottomInset: Dp? = null,
+) {
     when (val target = effect.target) {
         is CameraTarget.Center -> this.flyTo(
             cameraOptions = CameraOptions.Builder()
@@ -151,7 +157,9 @@ internal fun MapViewportState.moveCamera(density: Density, effect: MapUiEffects.
                     .apply {
                         effect.bearing?.let { bearing(it) }
                         effect.pitch?.let { pitch(it) }
-                        effect.contentPadding?.let { padding(it.toEdgeInset(density, isLandscape)) }
+                        effect.contentPadding?.let {
+                            padding(it.toEdgeInset(density, isLandscape, routePlannerBottomInset))
+                        }
                         target.maxZoom?.let { maxZoom(it) }
                     }
                     .build(),

@@ -34,6 +34,7 @@ private object Routes {
     const val TRAIL_SYMBOLS_GUIDE = "trail_symbols_guide"
     const val PLACE_HISTORY = "place_history"
     const val LOCATION_IQ = "location_iq"
+    const val EXTRA_OPEN_ROUTE_PLANNER_KEY = "extra_open_route_planner"
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
     const val EXTRA_PLACE_OSM_TYPE_KEY = "extra_place_osm_type"
     const val EXTRA_PLACE_OSM_ID_KEY = "extra_place_osm_id"
@@ -87,6 +88,9 @@ fun RootNavHost() {
             val openDestinationOsmId by entry.savedStateHandle
                 .getStateFlow<String?>(Routes.EXTRA_DESTINATION_OSM_ID_KEY, null)
                 .collectAsStateWithLifecycle()
+            val openRoutePlanner by entry.savedStateHandle
+                .getStateFlow(Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY, false)
+                .collectAsStateWithLifecycle()
             MainScreen(
                 onMenuClicked = { navController.navigate(Routes.MENU) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
@@ -102,12 +106,18 @@ fun RootNavHost() {
                 },
                 openDestinationOsmId = openDestinationOsmId,
                 onOpenDestinationConsumed = { entry.savedStateHandle[Routes.EXTRA_DESTINATION_OSM_ID_KEY] = null },
+                openRoutePlanner = openRoutePlanner,
+                onOpenRoutePlannerConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = false },
             )
         }
         composable(Routes.MENU) {
             MenuScreen(
                 onBack = { navController.popBackStack() },
                 onSettingsClicked = { navController.navigate(Routes.SETTINGS) },
+                onRoutePlannerClicked = {
+                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = true
+                    navController.popBackStack<Main>(inclusive = false)
+                },
                 onDestinationsClicked = { navController.navigate(Routes.DESTINATIONS) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },

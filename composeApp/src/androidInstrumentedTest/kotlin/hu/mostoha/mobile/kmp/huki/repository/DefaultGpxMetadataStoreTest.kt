@@ -77,13 +77,13 @@ class DefaultGpxMetadataStoreTest {
     }
 
     @Test
-    fun givenMultipleAttributes_whenRemoveByFileName_thenOnlyMatchingRemoved() {
+    fun givenMultipleAttributes_whenRemoveByTrackId_thenOnlyMatchingRemoved() {
         runTest {
             val store = DefaultGpxMetadataStore(FakeCrashlyticsService)
             store.recordOpened(entry("track-1", Instant.fromEpochSeconds(1_700_000_000)))
             store.recordOpened(entry("track-2", Instant.fromEpochSeconds(1_700_000_100)))
 
-            store.remove("track-1.gpx")
+            store.removeByTrackId("track-1")
 
             val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
             metadata.gpxFiles shouldHaveSize 1

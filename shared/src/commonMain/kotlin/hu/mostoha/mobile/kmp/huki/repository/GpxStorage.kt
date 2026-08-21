@@ -1,10 +1,11 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import io.github.vinceglb.filekit.PlatformFile
 
 /**
- * Persists imported GPX files in the app sandbox at `FileKit.filesDir/gpx/` so they can be reused without re-import.
+ * Persists GPX files in the app sandbox at `FileKit.filesDir/gpx/<origin>/` so they can be reused without re-import.
  */
 interface GpxStorage {
 
@@ -18,7 +19,7 @@ interface GpxStorage {
      *
      * @return the sandbox [PlatformFile] to read from.
      */
-    suspend fun saveToSandbox(source: GpxFileSource): PlatformFile
+    suspend fun saveToSandbox(source: GpxFileSource, origin: GpxOrigin): PlatformFile
 
     suspend fun listGpxFiles(): List<PlatformFile>
 
@@ -27,5 +28,15 @@ interface GpxStorage {
      */
     suspend fun resolveGpxFile(fileName: String): PlatformFile?
 
-    suspend fun delete(fileName: String)
+    /**
+     * Resolves the sandbox file [uri] already points at, or `null` when it lives outside the sandbox.
+     * Callers use this to skip re-importing a file that is already committed.
+     */
+    suspend fun resolveSandboxFile(uri: String): PlatformFile?
+
+    /**
+     * Deletes the sandbox file [uri] points at. A file name alone is ambiguous, since the same name can exist
+     * under more than one [GpxOrigin].
+     */
+    suspend fun delete(uri: String)
 }

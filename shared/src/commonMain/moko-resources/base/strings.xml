@@ -64,6 +64,34 @@
     <string name="gpx_details_start">Start Route</string>
     <string name="gpx_details_navigation_to_start">Maps navigation to start</string>
     <string name="gpx_details_navigation_to_end">Maps navigation to end</string>
+    <string name="gpx_details_share">Share GPX file</string>
+
+    <string name="route_planner_title">Route planner</string>
+    <string name="route_planner_profile_on_trails">On Trails</string>
+    <string name="route_planner_profile_shortest_route">Shortest route</string>
+    <string name="route_planner_profile_bike">Bike</string>
+    <string name="route_planner_my_location">My location</string>
+    <string name="route_planner_waypoint_empty">Choose a place</string>
+    <string name="route_planner_add_waypoint">Add stop</string>
+    <string name="route_planner_round_trip">Round trip</string>
+    <string name="route_planner_more_stops">%d more stops</string>
+    <string name="route_planner_max_stops_reached">You’ve reached the maximum number of stops (%d)</string>
+    <string name="route_planner_save">Save Route</string>
+    <string name="route_planner_loading">Planning the route…</string>
+    <string name="route_planner_error_retry">Try again</string>
+    <string name="route_planner_save_error_title">Couldn’t save the route</string>
+    <string name="route_planner_save_error_message">The route plan could not be written to your device. Please try again.</string>
+    <string name="route_planner_daily_limit_error_title">Daily limit reached</string>
+    <string name="route_planner_daily_limit_error_message">We’ve reached the route planner service daily limit. Please try it tomorrow.</string>
+    <string name="route_planner_add_stop_title">Add new stop</string>
+    <string name="route_planner_pick_my_location">My actual location</string>
+    <string name="route_planner_pick_on_map">Select on map with long tap</string>
+    <string name="route_planner_a11y_profiles">Route type</string>
+    <string name="route_planner_a11y_add_stop">Add a new stop</string>
+    <string name="route_planner_a11y_round_trip">Create a round trip</string>
+    <string name="route_planner_a11y_delete_stop">Delete stop</string>
+    <string name="route_planner_a11y_move_up">Move stop up</string>
+    <string name="route_planner_a11y_move_down">Move stop down</string>
 
     <string name="place_details_loading">Looking up this place…</string>
     <string name="place_details_route_plan">Route plan</string>
@@ -97,6 +125,9 @@
     <string name="menu_item_settings">Settings</string>
     <string name="menu_item_settings_description">App preferences</string>
     <string name="menu_a11y_open_settings">Open Settings</string>
+    <string name="menu_item_route_planner">Route planner</string>
+    <string name="menu_item_route_planner_description">Plan on hiking trails or off them</string>
+    <string name="menu_a11y_open_route_planner">Open Route planner</string>
     <string name="menu_item_destinations">Destinations</string>
     <string name="menu_item_destinations_description">Popular hiking spots across Hungary</string>
     <string name="menu_a11y_open_destinations">Open Destinations</string>
@@ -155,6 +186,8 @@
     <string name="gpx_collection_a11y_back">Back</string>
     <string name="gpx_collection_a11y_help">GPX guide</string>
     <string name="gpx_collection_a11y_options">More options</string>
+    <string name="gpx_collection_origin_external">Imported</string>
+    <string name="gpx_collection_origin_route_planner">Route planner</string>
     <string name="gpx_collection_action_rename">Rename</string>
     <string name="gpx_collection_action_share">Share</string>
     <string name="gpx_collection_action_delete">Delete</string>
@@ -269,6 +302,7 @@
     <string name="place_category_farm">Farm</string>
 
     <string name="destinations_section_title">Destinations</string>
+    <string name="destinations_section_nearby_title">Nearby destinations</string>
     <string name="destinations_a11y_info">Show description</string>
     <string name="destinations_title">Destinations</string>
     <string name="destinations_subtitle_pattern">%d destinations</string>

@@ -6,21 +6,29 @@ import androidx.test.filters.MediumTest
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
 import hu.mostoha.mobile.kmp.huki.TestContext.instrumentationContext
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.maplibre.spatialk.units.extensions.kilometers
 import java.io.File
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.hours
 
 /**
  * Real file-system integration test: parses GPXs from instrumentation assets.
@@ -39,6 +47,64 @@ class DefaultGpxRepositoryTest {
         DefaultGpxMetadataStore(FakeCrashlyticsService),
         FakeCrashlyticsService,
     )
+
+    @Test
+    fun givenRoutePlan_whenSaveRoutePlan_thenWrittenToTheRoutePlannerDirAndReopensAsGpx() {
+        runTest {
+            val uri = repository.saveRoutePlan(ROUTE_PLAN, STOP_NAMES, RoutePlannerProfile.ON_TRAILS)
+
+            uri shouldContain "gpx/routeplanner/"
+            File(uri).name shouldContain "Pilisszentkereszt_HuKi_"
+            File(uri).exists() shouldBe true
+            File(uri).readText() shouldContain "HuKi"
+
+            val gpx = repository.readGpxFile(uri)
+
+            gpx.title shouldBe "Dobogókő → Pilisszentkereszt"
+            gpx.locations.size shouldBe ROUTE_PLAN.locations.size
+            gpx.waypoints.count { it.type == WaypointType.START } shouldBe 1
+            gpx.waypoints.count { it.type == WaypointType.END } shouldBe 1
+            gpx.waypoints.count { it.type == WaypointType.INTERMEDIATE } shouldBe 1
+        }
+    }
+
+    @Test
+    fun givenUnresolvedDestination_whenSaveRoutePlan_thenOnlyTheFlagNamesTheFile() {
+        runTest {
+            val stopPlaceNames = listOf("Dobogókő", null)
+
+            val uri = repository.saveRoutePlan(ROUTE_PLAN, stopPlaceNames, RoutePlannerProfile.ON_TRAILS)
+
+            File(uri).name.startsWith("HuKi_") shouldBe true
+            repository.readGpxFile(uri).title shouldBe "Dobogókő"
+        }
+    }
+
+    @Test
+    fun givenSavedRoutePlan_whenReopened_thenItIsNotCopiedIntoTheExternalDir() {
+        runTest {
+            val uri = repository.saveRoutePlan(ROUTE_PLAN, STOP_NAMES, RoutePlannerProfile.ON_TRAILS)
+            val fileName = File(uri).name
+
+            repository.readGpxFile(uri)
+
+            File(appContext.filesDir, "gpx/external/$fileName").exists() shouldBe false
+            repository.getGpxFiles().count { it.fileName == fileName } shouldBe 1
+        }
+    }
+
+    @Test
+    fun givenSavedRoutePlan_whenGetGpxFiles_thenItIsBrowsableAlongsideExternalFiles() {
+        runTest {
+            val planUri = repository.saveRoutePlan(ROUTE_PLAN, STOP_NAMES, RoutePlannerProfile.ON_TRAILS)
+            repository.readGpxFile(saveTestGpx("gpx_test_with_routes.gpx").toString())
+
+            val fileNames = repository.getGpxFiles().map { it.fileName }
+
+            fileNames shouldContain File(planUri).name
+            fileNames shouldContain "gpx_test_with_routes.gpx"
+        }
+    }
 
     @Test
     fun givenGpxWithRoutes_whenReadGpxFile_thenCorrectGpxReturns() {
@@ -147,11 +213,32 @@ class DefaultGpxRepositoryTest {
             val uri = saveTestGpx("gpx_test_with_routes.gpx")
             val gpx = repository.readGpxFile(uri.toString())
 
-            repository.getGpxFiles().map { it.fileName } shouldContain gpx.fileName
+            val item = repository.getGpxFiles().first { it.fileName == gpx.fileName }
 
-            repository.deleteGpxFile(gpx.fileName)
+            repository.deleteGpxFile(item.fileUri, item.trackId)
 
             repository.getGpxFiles().map { it.fileName } shouldNotContain gpx.fileName
+        }
+    }
+
+    @Test
+    fun givenSameNameInBothOrigins_whenDeleteGpxFile_thenOnlyTheTargetedFileIsRemoved() {
+        runTest {
+            val planUri = repository.saveRoutePlan(ROUTE_PLAN, STOP_NAMES, RoutePlannerProfile.ON_TRAILS)
+            val sharedName = File(planUri).name
+            // The same plan re-imported from Downloads lands in the external dir under its original name.
+            val externalUri = saveTestGpx("gpx_test_with_routes.gpx", fileName = sharedName)
+            repository.readGpxFile(externalUri.toString())
+
+            val items = repository.getGpxFiles().filter { it.fileName == sharedName }
+            items shouldHaveSize 2
+
+            val plan = items.first { it.fileUri.contains("routeplanner") }
+            repository.deleteGpxFile(plan.fileUri, plan.trackId)
+
+            File(plan.fileUri).exists() shouldBe false
+            File(appContext.filesDir, "gpx/external/$sharedName").exists() shouldBe true
+            repository.getGpxFiles().count { it.fileName == sharedName } shouldBe 1
         }
     }
 
@@ -161,9 +248,9 @@ class DefaultGpxRepositoryTest {
             val uri = saveTestGpx("gpx_test_with_routes.gpx")
             val gpx = repository.readGpxFile(uri.toString())
 
-            repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldContain gpx.fileName
+            val item = repository.getRecentGpxFiles(limit = 3).first { it.fileName == gpx.fileName }
 
-            repository.deleteGpxFile(gpx.fileName)
+            repository.deleteGpxFile(item.fileUri, item.trackId)
 
             repository.getRecentGpxFiles(limit = 3).map { it.fileName } shouldNotContain gpx.fileName
         }
@@ -209,13 +296,35 @@ class DefaultGpxRepositoryTest {
         }
     }
 
-    private fun saveTestGpx(fileName: String): Uri {
-        val inputStream = instrumentationContext.assets.open(fileName)
+    private fun saveTestGpx(assetName: String, fileName: String = assetName): Uri {
+        val inputStream = instrumentationContext.assets.open(assetName)
         val file = File(appContext.cacheDir.path + "/$fileName").apply {
             outputStream().use { fileOut ->
                 inputStream.copyTo(fileOut)
             }
         }
         return Uri.fromFile(file)
+    }
+
+    companion object {
+        private val STOP_NAMES = listOf<String?>("Dobogókő", "Rám-szakadék", "Pilisszentkereszt")
+        private val ROUTE_PLAN = RoutePlan(
+            waypoints = listOf(
+                Location(47.7193911, 18.8961602),
+                Location(47.7000000, 18.9000000),
+                Location(47.6800000, 18.9200000),
+            ),
+            locations = listOf(
+                Location(47.7193911, 18.8961602, 700.0),
+                Location(47.7000000, 18.9000000, 500.0),
+                Location(47.6800000, 18.9200000, 300.0),
+            ),
+            routeStats = RouteStats(
+                travelTime = 2.hours,
+                distance = 8.5.kilometers,
+                incline = 240,
+                decline = 120,
+            ),
+        )
     }
 }

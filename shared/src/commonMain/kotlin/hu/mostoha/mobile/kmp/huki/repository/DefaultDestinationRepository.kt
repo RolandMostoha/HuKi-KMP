@@ -8,6 +8,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import org.maplibre.spatialk.units.Length
 import org.maplibre.spatialk.units.extensions.inMeters
 import kotlin.math.min
 import kotlin.random.Random
@@ -15,7 +16,6 @@ import kotlin.random.Random
 /**
  * Ranks destinations by a weighted blend of
  * - popularity
- * - distance (when a location is known)
  * - random jitter -> for the surprise effect
  * - type-diversity penalty so categories don't cluster (e.g. avoid 3 PEAKs in a row).
  */
@@ -23,37 +23,26 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
 
     private companion object {
         const val MAX_POPULARITY = 10.0
-        const val DISTANCE_HALF_LIFE_KM = 40.0
 
-        const val WEIGHT_POPULARITY = 0.3
-        const val WEIGHT_DISTANCE = 0.6
-        const val WEIGHT_RANDOM = 0.1
-
-        const val WEIGHT_POPULARITY_NO_LOCATION = 0.65
-        const val WEIGHT_RANDOM_NO_LOCATION = 0.35
+        const val WEIGHT_POPULARITY = 0.65
+        const val WEIGHT_RANDOM = 0.35
 
         const val TYPE_PENALTY = 0.12
         const val MAX_PENALTY_STEPS = 3
     }
 
-    private var rankedDestinations: List<Destination>? = null
-
-    override fun getTopDestinations(location: Location?, limit: Int): List<Destination> {
-        rankedDestinations?.let { return it.take(limit) }
-
-        val ranked = rankDestinations(location)
-        if (location != null) {
-            rankedDestinations = ranked
-        }
-
-        return ranked.take(limit)
-    }
+    override fun getTopDestinations(limit: Int): List<Destination> = rankDestinations().take(limit)
 
     override fun getPopularDestinations(): List<Destination> =
         ALL_DESTINATIONS.sortedWith(compareByDescending<Destination> { it.popularity }.thenBy { it.name })
 
-    override fun getNearbyDestinations(location: Location): List<Destination> =
-        ALL_DESTINATIONS.sortedBy { it.location.distanceBetween(location).inMeters }
+    override fun getNearbyDestinations(location: Location, radius: Length?, limit: Int): List<Destination> =
+        ALL_DESTINATIONS
+            .map { it to it.location.distanceBetween(location).inMeters }
+            .filter { (_, distance) -> radius == null || distance <= radius.inMeters }
+            .sortedBy { (_, distance) -> distance }
+            .take(limit)
+            .map { (destination, _) -> destination }
 
     override fun searchDestinations(query: String, limit: Int): List<Destination> {
         val normalizedQuery = NameNormalizer.normalize(query.trim())
@@ -71,8 +60,8 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
 
     override fun getLandscapes(): List<Landscape> = Landscapes
 
-    private fun rankDestinations(location: Location?): List<Destination> {
-        val baseScores = ALL_DESTINATIONS.associateWith { baseScore(it, location) }
+    private fun rankDestinations(): List<Destination> {
+        val baseScores = ALL_DESTINATIONS.associateWith { baseScore(it) }
 
         val remaining = ALL_DESTINATIONS.toMutableList()
         val typeCounts = mutableMapOf<DestinationType, Int>()
@@ -91,18 +80,6 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
         return ordered
     }
 
-    private fun baseScore(destination: Destination, location: Location?): Double {
-        val popularityScore = destination.popularity / MAX_POPULARITY
-        val randomScore = random.nextDouble()
-
-        return if (location != null) {
-            val km = location.distanceBetween(destination.location).inMeters / 1000.0
-            val distanceScore = 1.0 / (1.0 + km / DISTANCE_HALF_LIFE_KM)
-            WEIGHT_POPULARITY * popularityScore +
-                WEIGHT_DISTANCE * distanceScore +
-                WEIGHT_RANDOM * randomScore
-        } else {
-            WEIGHT_POPULARITY_NO_LOCATION * popularityScore + WEIGHT_RANDOM_NO_LOCATION * randomScore
-        }
-    }
+    private fun baseScore(destination: Destination): Double =
+        WEIGHT_POPULARITY * (destination.popularity / MAX_POPULARITY) + WEIGHT_RANDOM * random.nextDouble()
 }

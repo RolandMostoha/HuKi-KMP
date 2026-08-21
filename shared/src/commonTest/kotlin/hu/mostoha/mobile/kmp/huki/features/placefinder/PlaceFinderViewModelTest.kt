@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -19,12 +20,14 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import io.kotest.matchers.shouldBe
@@ -52,6 +55,7 @@ class PlaceFinderViewModelTest {
     private val locationMonitoringService = noOpLocationMonitoringService()
     private val destinationRepository = mock<DestinationRepository> {
         every { getTopDestinations(any()) } returns emptyList()
+        every { getNearbyDestinations(any(), any(), any()) } returns emptyList()
         every { searchDestinations(any(), any()) } returns emptyList()
     }
     private val gpxRepository = mock<GpxRepository> {
@@ -62,6 +66,16 @@ class PlaceFinderViewModelTest {
         everySuspend { searchPlaces(any(), any()) } returns emptyList()
     }
     private val analyticsService = FakeAnalyticsService()
+    private val mapCameraStore = DefaultMapCameraStore()
+    private val kekesteto = Destination(
+        osmId = "1",
+        name = "Kékestető",
+        town = "Mátraszentimre",
+        type = DestinationType.HIGHEST_PEAK,
+        location = Location(47.8721, 20.0102),
+        description = SharedRes.strings.destinations_type_peak,
+        popularity = 10,
+    )
 
     private lateinit var placeFinderViewModel: PlaceFinderViewModel
 
@@ -69,15 +83,7 @@ class PlaceFinderViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        placeFinderViewModel = PlaceFinderViewModel(
-            geocodingRepository = geocodingRepository,
-            locationMonitoringService = locationMonitoringService,
-            destinationRepository = destinationRepository,
-            gpxRepository = gpxRepository,
-            placeHistoryRepository = placeHistoryRepository,
-            analyticsService = analyticsService,
-            defaultDispatcher = testDispatcher,
-        )
+        placeFinderViewModel = createViewModel()
         testDispatcher.scheduler.runCurrent()
     }
 
@@ -94,33 +100,39 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given top destinations from repository, When view model init, Then uiState exposes them`() {
+    fun `Given camera above the whole country, When view model init, Then uiState exposes top destinations`() {
         runTest {
-            val topDestinations = listOf(
-                Destination(
-                    osmId = "1",
-                    name = "Kékestető",
-                    town = "Mátraszentimre",
-                    type = DestinationType.HIGHEST_PEAK,
-                    location = Location(47.8721, 20.0102),
-                    description = SharedRes.strings.destinations_type_peak,
-                    popularity = 10,
-                ),
-            )
+            val topDestinations = listOf(kekesteto)
             every { destinationRepository.getTopDestinations(any()) } returns topDestinations
+            mapCameraStore.update(MapConstants.HUNGARY_CAMERA_POSITION)
 
-            val viewModel = PlaceFinderViewModel(
-                geocodingRepository = geocodingRepository,
-                locationMonitoringService = locationMonitoringService,
-                destinationRepository = destinationRepository,
-                gpxRepository = gpxRepository,
-                placeHistoryRepository = placeHistoryRepository,
-                analyticsService = analyticsService,
-                defaultDispatcher = testDispatcher,
-            )
+            val viewModel = createViewModel()
             testDispatcher.scheduler.runCurrent()
 
-            viewModel.uiState.value.topDestinations shouldBe topDestinations
+            viewModel.uiState.value.destinations shouldBe topDestinations
+            viewModel.uiState.value.destinationsTitle shouldBe SharedRes.strings.destinations_section_title
+        }
+    }
+
+    @Test
+    fun `Given camera zoomed on a region, When view model init, Then uiState exposes destinations near its center`() {
+        runTest {
+            val cameraCenter = Location(47.8721, 20.0102)
+            val nearbyDestinations = listOf(kekesteto)
+            every { destinationRepository.getNearbyDestinations(cameraCenter, any(), any()) } returns
+                nearbyDestinations
+            mapCameraStore.update(
+                MapConstants.HUNGARY_CAMERA_POSITION.copy(
+                    location = cameraCenter,
+                    zoom = MapConstants.NEARBY_DESTINATIONS_MIN_ZOOM,
+                ),
+            )
+
+            val viewModel = createViewModel()
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.destinations shouldBe nearbyDestinations
+            viewModel.uiState.value.destinationsTitle shouldBe SharedRes.strings.destinations_section_nearby_title
         }
     }
 
@@ -130,15 +142,7 @@ class PlaceFinderViewModelTest {
             val recentGpxFiles = listOf(gpxFileItem("okt15.gpx"), gpxFileItem("pilis.gpx"))
             everySuspend { gpxRepository.getRecentGpxFiles(any()) } returns recentGpxFiles
 
-            val viewModel = PlaceFinderViewModel(
-                geocodingRepository = geocodingRepository,
-                locationMonitoringService = locationMonitoringService,
-                destinationRepository = destinationRepository,
-                gpxRepository = gpxRepository,
-                placeHistoryRepository = placeHistoryRepository,
-                analyticsService = analyticsService,
-                defaultDispatcher = testDispatcher,
-            )
+            val viewModel = createViewModel()
             testDispatcher.scheduler.runCurrent()
 
             viewModel.uiState.value.recentGpxFiles shouldBe recentGpxFiles
@@ -160,15 +164,7 @@ class PlaceFinderViewModelTest {
             )
             everySuspend { placeHistoryRepository.getRecentPlaces(any()) } returns recentPlaces
 
-            val viewModel = PlaceFinderViewModel(
-                geocodingRepository = geocodingRepository,
-                locationMonitoringService = locationMonitoringService,
-                destinationRepository = destinationRepository,
-                gpxRepository = gpxRepository,
-                placeHistoryRepository = placeHistoryRepository,
-                analyticsService = analyticsService,
-                defaultDispatcher = testDispatcher,
-            )
+            val viewModel = createViewModel()
             testDispatcher.scheduler.runCurrent()
 
             viewModel.uiState.value.recentPlaces shouldBe recentPlaces
@@ -200,6 +196,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
@@ -208,6 +205,18 @@ class PlaceFinderViewModelTest {
             viewModel.uiState.value.recentPlaces.single().distance shouldBe expectedDistance
         }
     }
+
+    private fun createViewModel() =
+        PlaceFinderViewModel(
+            geocodingRepository = geocodingRepository,
+            locationMonitoringService = locationMonitoringService,
+            destinationRepository = destinationRepository,
+            gpxRepository = gpxRepository,
+            placeHistoryRepository = placeHistoryRepository,
+            mapCameraStore = mapCameraStore,
+            analyticsService = analyticsService,
+            defaultDispatcher = testDispatcher,
+        )
 
     private fun gpxFileItem(fileName: String): GpxFileItem =
         GpxFileItem(
@@ -221,6 +230,7 @@ class PlaceFinderViewModelTest {
             decline = 100,
             lastModified = Clock.System.now(),
             lastOpened = Clock.System.now(),
+            origin = GpxOrigin.EXTERNAL,
         )
 
     @Test
@@ -287,6 +297,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
@@ -360,6 +371,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
@@ -661,6 +673,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
@@ -739,6 +752,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )
@@ -789,6 +803,7 @@ class PlaceFinderViewModelTest {
                 destinationRepository = destinationRepository,
                 gpxRepository = gpxRepository,
                 placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
                 analyticsService = analyticsService,
                 defaultDispatcher = testDispatcher,
             )

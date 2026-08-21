@@ -15,6 +15,8 @@ object MapConstants {
         pitch = 0.0,
     )
 
+    const val NEARBY_DESTINATIONS_MIN_ZOOM = 6.0
+
     const val PLACE_DEFAULT_CAMERA_ZOOM = 16.0
     const val FOLLOW_LOCATION_ZOOM_LEVEL = 16.0
     const val FOLLOW_LOCATION_LIVE_COMPASS_PITCH = 45.0

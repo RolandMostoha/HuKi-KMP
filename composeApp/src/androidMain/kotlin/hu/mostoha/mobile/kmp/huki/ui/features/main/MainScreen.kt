@@ -44,23 +44,32 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.isModal
 import hu.mostoha.mobile.kmp.huki.model.domain.isStandard
+import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerPick
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
 import hu.mostoha.mobile.kmp.huki.util.rememberScopedViewModelStoreOwner
+import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -80,6 +89,8 @@ fun MainScreen(
     onOpenPlaceConsumed: () -> Unit = {},
     openDestinationOsmId: String? = null,
     onOpenDestinationConsumed: () -> Unit = {},
+    openRoutePlanner: Boolean = false,
+    onOpenRoutePlannerConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,6 +115,13 @@ fun MainScreen(
         openDestinationOsmId?.let { osmId ->
             viewModel.onEvent(MainUiEvents.DestinationSelected(osmId))
             onOpenDestinationConsumed()
+        }
+    }
+
+    LaunchedEffect(openRoutePlanner) {
+        if (openRoutePlanner) {
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            onOpenRoutePlannerConsumed()
         }
     }
 
@@ -133,7 +151,9 @@ private fun MainContent(
     onDestinationsClicked: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val currentSheet by rememberUpdatedState(uiState.sheet)
     val modalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var routePlannerDetent by remember { mutableStateOf(RoutePlannerDetent.EXPANDED) }
     val standardSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false,
@@ -141,7 +161,9 @@ private fun MainContent(
     val standardSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = standardSheetState)
     var showModalBottomSheet by remember { mutableStateOf(false) }
     var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
-    val currentSheet by rememberUpdatedState(uiState.sheet)
+    var routePlannerPeekHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
+    var routePlannerExpandedHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
+    var routePlannerPick by remember { mutableStateOf<RoutePlannerPick?>(null) }
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -155,7 +177,7 @@ private fun MainContent(
             .distinctUntilChanged()
             .collect { value ->
                 val sheet = currentSheet ?: return@collect
-                if (!sheet.isStandard()) return@collect
+                if (!sheet.isStandard() || sheet is Sheet.RoutePlanner) return@collect
                 val dismissed = if (sheet.isPeeking()) {
                     value == SheetValue.Hidden
                 } else {
@@ -169,39 +191,28 @@ private fun MainContent(
 
     LaunchedEffect(uiState.sheet) {
         val sheet = uiState.sheet
-        when {
-            sheet == null -> {
-                modalSheetState.hide()
-                showModalBottomSheet = false
-                standardSheetState.hide()
-            }
-            sheet.isStandard() -> {
-                modalSheetState.hide()
-                showModalBottomSheet = false
-                if (sheet.isPeeking()) {
-                    standardSheetState.partialExpand()
-                } else {
-                    standardSheetState.expand()
-                }
-            }
-            sheet.isModal() -> {
-                standardSheetState.hide()
-                showModalBottomSheet = true
-            }
+        routePlannerDetent = RoutePlannerDetent.EXPANDED
+        if (sheet !is Sheet.RoutePlanner) {
+            routePlannerPick = null
         }
+        showModalBottomSheet = syncSheetStates(
+            sheet = sheet,
+            modalSheetState = modalSheetState,
+            standardSheetState = standardSheetState,
+        )
     }
 
     MainUiEffectHandler(
         mainUiEffects = mainUiEffects,
         onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
+        onRoutePlannerLocationPicked = { location ->
+            routePlannerPick = RoutePlannerPick(id = (routePlannerPick?.id ?: 0L) + 1, location = location)
+        },
     )
 
     BottomSheetScaffold(
         scaffoldState = standardSheetScaffoldState,
-        sheetPeekHeight = when (uiState.sheet) {
-            is Sheet.Gpx -> gpxSheetPeekHeight
-            else -> 0.dp
-        },
+        sheetPeekHeight = sheetPeekHeight(sheet = uiState.sheet, gpxPeekHeight = gpxSheetPeekHeight),
         sheetDragHandle = null,
         sheetSwipeEnabled = true,
         sheetContainerColor = Color.Transparent,
@@ -227,6 +238,12 @@ private fun MainContent(
                 mapUiState = uiState.mapUiState,
                 mapUiEffects = mapUiEffects,
                 onEvent = onEvent,
+                routePlannerBottomInset = routePlannerMapInset(
+                    sheet = uiState.sheet,
+                    detent = routePlannerDetent,
+                    minimizedHeight = routePlannerPeekHeight,
+                    expandedHeight = routePlannerExpandedHeight,
+                ),
             )
             FloatingActionContainer(
                 mainUiState = uiState,
@@ -262,6 +279,20 @@ private fun MainContent(
                 },
                 onMenuClicked = onMenuClicked,
             )
+            (uiState.sheet as? Sheet.RoutePlanner)?.let { sheet ->
+                RoutePlannerSheetOverlay(
+                    place = sheet.place,
+                    pick = routePlannerPick,
+                    detent = routePlannerDetent,
+                    onDetentChange = { routePlannerDetent = it },
+                    minimizedHeight = routePlannerPeekHeight,
+                    expandedHeight = routePlannerExpandedHeight,
+                    onEvent = onEvent,
+                    onLocationIqClicked = onLocationIqClicked,
+                    onMinimizedHeightMeasured = { routePlannerPeekHeight = it },
+                    onExpandedHeightMeasured = { routePlannerExpandedHeight = it },
+                )
+            }
             if (showModalBottomSheet) {
                 MainModalBottomSheet(
                     uiState = uiState,
@@ -307,6 +338,103 @@ private fun MainContent(
 
 private fun Sheet.isPeeking(): Boolean = this is Sheet.Gpx
 
+private fun sheetPeekHeight(sheet: Sheet?, gpxPeekHeight: Dp): Dp =
+    when (sheet) {
+        is Sheet.Gpx -> gpxPeekHeight
+        else -> 0.dp
+    }
+
+@OptIn(ExperimentalMaterial3Api::class)
+private suspend fun syncSheetStates(
+    sheet: Sheet?,
+    modalSheetState: SheetState,
+    standardSheetState: SheetState,
+): Boolean =
+    when {
+        sheet is Sheet.RoutePlanner -> {
+            modalSheetState.hide()
+            standardSheetState.hide()
+            false
+        }
+        sheet != null && sheet.isStandard() -> {
+            modalSheetState.hide()
+            if (sheet.isPeeking()) standardSheetState.partialExpand() else standardSheetState.expand()
+            false
+        }
+        sheet != null && sheet.isModal() -> {
+            standardSheetState.hide()
+            true
+        }
+        else -> {
+            modalSheetState.hide()
+            standardSheetState.hide()
+            false
+        }
+    }
+
+private fun routePlannerMapInset(
+    sheet: Sheet?,
+    detent: RoutePlannerDetent,
+    minimizedHeight: Dp,
+    expandedHeight: Dp,
+): Dp? =
+    when {
+        sheet !is Sheet.RoutePlanner -> null
+        detent == RoutePlannerDetent.FULL_SCREEN -> null
+        detent == RoutePlannerDetent.MINIMIZED -> minimizedHeight
+        else -> expandedHeight
+    }
+
+@Composable
+private fun RoutePlannerSheetOverlay(
+    place: Place?,
+    pick: RoutePlannerPick?,
+    detent: RoutePlannerDetent,
+    onDetentChange: (RoutePlannerDetent) -> Unit,
+    minimizedHeight: Dp,
+    expandedHeight: Dp,
+    onEvent: (MainUiEvents) -> Unit,
+    onLocationIqClicked: () -> Unit,
+    onMinimizedHeightMeasured: (Dp) -> Unit,
+    onExpandedHeightMeasured: (Dp) -> Unit,
+) {
+    CompositionLocalProvider(
+        LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
+    ) {
+        RoutePlannerSheet(
+            detent = detent,
+            onDetentChange = onDetentChange,
+            minimizedHeight = minimizedHeight,
+            expandedHeight = expandedHeight,
+        ) { sheetModifier ->
+            RoutePlannerBottomSheet(
+                place = place,
+                pick = pick,
+                detent = detent,
+                onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
+                onLocationIqClick = onLocationIqClicked,
+                onMinimizedHeightMeasured = onMinimizedHeightMeasured,
+                onExpandedHeightMeasured = onExpandedHeightMeasured,
+                modifier = sheetModifier,
+                onEffect = { effect ->
+                    when (effect) {
+                        is RoutePlannerUiEffects.RoutePlanUpdated -> {
+                            onEvent(MainUiEvents.RoutePlanUpdated(effect.routePlan, effect.markers))
+                        }
+                        is RoutePlannerUiEffects.RoutePlanSaved -> {
+                            onEvent(MainUiEvents.RoutePlanGpxSaved(effect.fileUri))
+                        }
+                        RoutePlannerUiEffects.MinimizeSheet -> onDetentChange(RoutePlannerDetent.MINIMIZED)
+                        RoutePlannerUiEffects.ExpandSheet -> onDetentChange(RoutePlannerDetent.EXPANDED)
+                        RoutePlannerUiEffects.Close -> onEvent(MainUiEvents.SheetDismissed)
+                        RoutePlannerUiEffects.RoutePlanSaveFailed -> Unit
+                    }
+                },
+            )
+        }
+    }
+}
+
 @Composable
 private fun MainStandardBottomSheet(
     uiState: MainUiState,
@@ -331,6 +459,9 @@ private fun MainStandardBottomSheet(
                 },
                 onNavigateToEnd = {
                     onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+                },
+                onShareClick = {
+                    onEvent(MainUiEvents.GpxShareClicked)
                 },
                 onCloseClick = {
                     coroutineScope.launch {
@@ -416,7 +547,11 @@ private fun MainStandardBottomSheet(
 }
 
 @Composable
-private fun MainUiEffectHandler(mainUiEffects: Flow<MainUiEffects>, onShowGpxFilePicker: () -> Unit) {
+private fun MainUiEffectHandler(
+    mainUiEffects: Flow<MainUiEffects>,
+    onShowGpxFilePicker: () -> Unit,
+    onRoutePlannerLocationPicked: (Location) -> Unit,
+) {
     val context = LocalContext.current
     LaunchedEffect(mainUiEffects) {
         mainUiEffects.collect { effect ->
@@ -424,6 +559,8 @@ private fun MainUiEffectHandler(mainUiEffects: Flow<MainUiEffects>, onShowGpxFil
                 MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
                 MainUiEffects.ShowGpxFilePicker -> onShowGpxFilePicker()
                 is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
+                is MainUiEffects.RoutePlannerLocationPicked -> onRoutePlannerLocationPicked(effect.location)
+                is MainUiEffects.ShareGpxFile -> context.shareGpxFile(effect.fileUri, effect.fileName)
             }
         }
     }

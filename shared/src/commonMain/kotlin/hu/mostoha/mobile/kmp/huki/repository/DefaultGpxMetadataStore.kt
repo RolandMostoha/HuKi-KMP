@@ -60,11 +60,11 @@ class DefaultGpxMetadataStore(private val crashlyticsService: CrashlyticsService
         }
     }
 
-    override suspend fun remove(fileName: String) {
+    override suspend fun removeByTrackId(trackId: String) {
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 val model = loadLocked()
-                val gpxFiles = model.gpxFiles.filterNot { it.fileName == fileName }
+                val gpxFiles = model.gpxFiles.filterNot { it.trackId == trackId }
                 if (gpxFiles.size != model.gpxFiles.size) {
                     persistLocked(model.copy(gpxFiles = gpxFiles))
                 }

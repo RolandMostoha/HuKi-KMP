@@ -80,23 +80,21 @@ fun GpxFileOptionsMenu(
                     },
                 )
             }
-            if (FeatureFlags.IS_GPX_SHARE_ENABLED) {
-                DropdownMenuItem(
-                    contentPadding = itemContentPadding,
-                    text = { Text(text = mokoString(SharedRes.strings.gpx_collection_action_share)) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(SharedRes.images.ic_share.drawableResId),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
-                    onClick = {
-                        expanded = false
-                        onShareClick()
-                    },
-                )
-            }
+            DropdownMenuItem(
+                contentPadding = itemContentPadding,
+                text = { Text(text = mokoString(SharedRes.strings.gpx_collection_action_share)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(SharedRes.images.ic_share.drawableResId),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onShareClick()
+                },
+            )
             DropdownMenuItem(
                 modifier = Modifier.testTagAsResourceId(TestTags.GPX_COLLECTION_ITEM_DELETE_BUTTON),
                 contentPadding = itemContentPadding,

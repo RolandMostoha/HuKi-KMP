@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
@@ -194,6 +195,7 @@ private val previewRecentGpxFiles = listOf(
         decline = 1642,
         lastModified = Clock.System.now(),
         lastOpened = Clock.System.now(),
+        origin = GpxOrigin.EXTERNAL,
     ),
     GpxFileItem(
         fileName = "pilis-korte.gpx",
@@ -206,5 +208,6 @@ private val previewRecentGpxFiles = listOf(
         decline = 540,
         lastModified = Clock.System.now(),
         lastOpened = Clock.System.now(),
+        origin = GpxOrigin.EXTERNAL,
     ),
 )

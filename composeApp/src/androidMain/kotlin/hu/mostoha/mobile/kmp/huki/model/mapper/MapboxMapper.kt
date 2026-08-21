@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
@@ -34,7 +35,7 @@ fun List<Location>.toLineString(): LineString = LineString.fromLngLats(this.toPo
 
 fun CameraState.toCameraPosition() =
     CameraPosition(
-        location = Location(center.longitude(), center.latitude()),
+        location = center.toLocation(),
         zoom = zoom,
         bearing = bearing,
         pitch = pitch,
@@ -47,7 +48,11 @@ fun BaseLayer.toMapStyle(): String =
         BaseLayer.SATELLITE -> Style.SATELLITE
     }
 
-fun ContentPadding.toEdgeInset(density: Density, isLandscape: Boolean): EdgeInsets =
+fun ContentPadding.toEdgeInset(
+    density: Density,
+    isLandscape: Boolean,
+    routePlannerBottomInset: Dp? = null,
+): EdgeInsets =
     when (this) {
         ContentPadding.MAP_GPX -> if (isLandscape) {
             Dimens.GpxContentPaddingLandscape
@@ -59,6 +64,23 @@ fun ContentPadding.toEdgeInset(density: Density, isLandscape: Boolean): EdgeInse
         } else {
             Dimens.PlaceDetailsContentPaddingPortrait
         }.toEdgeInset(density)
+        ContentPadding.MAP_ROUTE_PLANNER -> if (isLandscape) {
+            Dimens.RoutePlannerContentPaddingLandscape
+        } else {
+            Dimens.RoutePlannerContentPaddingPortrait.withBottom(routePlannerBottomInset)
+        }.toEdgeInset(density)
+    }
+
+private fun PaddingValues.withBottom(bottom: Dp?): PaddingValues =
+    if (bottom == null) {
+        this
+    } else {
+        PaddingValues(
+            top = calculateTopPadding(),
+            start = calculateLeftPadding(LayoutDirection.Ltr),
+            bottom = bottom + Dimens.RoutePlannerCameraBottomOffset,
+            end = calculateRightPadding(LayoutDirection.Ltr),
+        )
     }
 
 private fun PaddingValues.toEdgeInset(density: Density): EdgeInsets =

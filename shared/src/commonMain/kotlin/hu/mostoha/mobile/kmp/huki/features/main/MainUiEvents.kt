@@ -2,12 +2,14 @@ package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 
 sealed interface MainUiEvents {
@@ -34,12 +36,26 @@ sealed interface MainUiEvents {
     ) : MainUiEvents
 
     /**
+     * Map events
+     */
+    data class MapCameraChanged(val cameraPosition: CameraPosition) : MainUiEvents
+
+    /**
      * Place Details events
      */
     data class MapLongClicked(val location: Location) : MainUiEvents
     data object PlaceDetailsCloseClicked : MainUiEvents
     data object PlaceDetailsRoutePlanClicked : MainUiEvents
     data object PlaceDetailsMapsNavigationClicked : MainUiEvents
+
+    /**
+     * Route Planner events
+     */
+    data object RoutePlannerClicked : MainUiEvents
+    data class RoutePlanUpdated(
+        val routePlan: RoutePlan?,
+        val markers: List<GpxWaypoint>,
+    ) : MainUiEvents
 
     /**
      * My location events
@@ -66,11 +82,13 @@ sealed interface MainUiEvents {
     data object GpxStartNavigationClicked : MainUiEvents
     data class GpxMapsNavigationClicked(val type: GpxMapsNavigationType) : MainUiEvents
     data object GpxCloseClicked : MainUiEvents
+    data object GpxShareClicked : MainUiEvents
     data class GpxFileSelected(
         val uri: String,
         val source: GpxSource = GpxSource.FILES,
     ) : MainUiEvents
     data class GpxFileReopened(val uri: String) : MainUiEvents
+    data class RoutePlanGpxSaved(val uri: String) : MainUiEvents
     data object GpxRouteVisibilityToggled : MainUiEvents
     data object GpxDistancesVisibilityToggled : MainUiEvents
     data object GpxOverviewClicked : MainUiEvents

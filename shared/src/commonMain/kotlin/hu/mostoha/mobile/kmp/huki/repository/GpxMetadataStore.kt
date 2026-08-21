@@ -25,7 +25,8 @@ interface GpxMetadataStore {
     suspend fun remove(trackIds: Set<String>)
 
     /**
-     * Drops the attributes of a single deleted file, matched by its sandbox [fileName].
+     * Drops the attributes of a single deleted file. Keyed on [trackId] because a file name can repeat
+     * across origins.
      */
-    suspend fun remove(fileName: String)
+    suspend fun removeByTrackId(trackId: String)
 }
