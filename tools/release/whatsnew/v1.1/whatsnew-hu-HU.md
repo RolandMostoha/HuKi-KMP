@@ -1,0 +1,4 @@
+- POI részletek
+- Hosszú klikkes POI lerakás
+- Útvonaltervező
+- GPX megosztás

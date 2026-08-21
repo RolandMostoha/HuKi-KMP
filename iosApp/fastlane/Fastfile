@@ -143,7 +143,6 @@ def archive_release
     output_directory: OUTPUT_DIR,
     output_name: "HuKi.ipa",
     xcargs: "#{signing_args} -skipPackagePluginValidation",
-    export_xcargs: signing_args,
     export_options: { signingStyle: "automatic" }
   )
 ensure

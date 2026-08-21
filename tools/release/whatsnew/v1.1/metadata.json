@@ -1,0 +1,13 @@
+{
+  "releaseDate": "2026-08-22",
+  "message": {
+    "title": {
+      "en-US": "BEFORE YOU BEGIN",
+      "hu-HU": "MIELŐTT ÚTNAK INDULSZ"
+    },
+    "body": {
+      "en-US": "Thank you for being among the first to try the iOS version of HuKi. The app is still evolving, so I appreciate any feedback. Enjoy being in the nature!",
+      "hu-HU": "Köszönöm, hogy az elsők között próbálod ki a HuKi iOS verzióját. Az alkalmazás még fejlődik, ezért minden visszajelzésnek örülök. Jó természetjárást kívánok!"
+    }
+  }
+}

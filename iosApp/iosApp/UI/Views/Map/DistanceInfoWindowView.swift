@@ -15,14 +15,14 @@ struct DistanceInfoWindowView: View {
         )
         VStack(spacing: 0) {
             Text(info.distance)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: Dimens.infoWindowDistanceFontSize, weight: .bold))
                 .foregroundStyle(Color(SharedRes.colors().primaryStrong.getUIColor()))
             Text(strings.get(desc: info.travelTime))
-                .font(.system(size: 11))
+                .font(.system(size: Dimens.infoWindowTravelTimeFontSize))
                 .foregroundStyle(Color(.secondaryLabel))
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, Dimens.infoWindowHorizontalPadding)
+        .padding(.vertical, Dimens.infoWindowVerticalPadding)
         .padding(.bottom, Dimens.infoWindowTailHeight)
         .background(shape.fill(Color(.systemBackground)))
         .overlay(

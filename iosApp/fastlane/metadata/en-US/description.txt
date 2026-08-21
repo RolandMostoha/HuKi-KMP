@@ -5,3 +5,4 @@ Features:
 • Search for Places and Destinations
 • GPX import, storage and loading
 • Curated list of destinations across Hungary
+• Route Planner

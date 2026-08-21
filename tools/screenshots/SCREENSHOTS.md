@@ -55,17 +55,18 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 
 ---
 
-## Screenshot #3 — Layers
+## Screenshot #3 — Navigation
 
 - dark mode.
-- Base Map / Layers sheet open
-- Satellite layer selected.
+- Layers -> Satellite is ON.
+- GPX is opened, distances are turned on
+-
 
 |               | Lat/Long/Zoom           |
 |---------------|-------------------------|
-| Camera        | 47.71670,18.89799,15.55 |
-| Camera (iPad) | 47.71608,18.89802,16.00 |
-| Location      | 47.718252,18.898026     |
+| Camera        | 47.71791,18.89788,17.28 |
+| Camera (iPad) | -                       |
+| Location      | 47.71755,18.89761       |
 
 ---
 

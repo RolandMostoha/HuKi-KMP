@@ -1,0 +1,4 @@
+- Place details
+- Long-tap POI details
+- Route planner
+- GPX share

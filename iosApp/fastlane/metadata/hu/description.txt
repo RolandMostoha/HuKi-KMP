@@ -5,3 +5,4 @@ Funkciók:
 • Helység és kirándulóhely kereső
 • GPX importálás, tárolás és betöltés
 • Válogatott kirándulóhelyek szerte Magyarországon
+• Útvonaltervező
