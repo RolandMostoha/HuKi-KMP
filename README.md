@@ -169,12 +169,12 @@ Unquoted values will produce a `Secrets.kt` that fails to compile.
 
 Personal `MapBox` access token is required to test the app's map related features.
 
-The key is stored in an XML under `composeApp/src/androidMain/res/values/mapbox_access_token.xml`.
+The key is stored in an XML under `composeApp/src/main/res/values/mapbox_access_token.xml`.
 
 The XML token is converted to GitHub secret with:
 
 ```shell
-cat composeApp/src/androidMain/res/values/mapbox_access_token.xml | base64
+cat composeApp/src/main/res/values/mapbox_access_token.xml | base64
 ```
 
 ### Location IQ

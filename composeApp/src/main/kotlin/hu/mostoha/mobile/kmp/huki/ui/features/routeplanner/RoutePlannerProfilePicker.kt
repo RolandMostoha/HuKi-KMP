@@ -33,7 +33,7 @@ fun RoutePlannerProfilePicker(
 ) {
     val profiles = RoutePlannerProfile.entries
     val profilesLabel = mokoString(SharedRes.strings.route_planner_a11y_profiles)
-    val colors = ToggleButtonDefaults.toggleButtonColors(
+    val colors = ToggleButtonDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         checkedContainerColor = MaterialTheme.colorScheme.primary,

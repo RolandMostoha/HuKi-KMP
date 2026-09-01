@@ -494,7 +494,7 @@
 			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios.git";
 			requirement = {
 				kind = exactVersion;
-				version = 11.20.1;
+				version = 11.29.1;
 			};
 		};
 		30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
@@ -502,7 +502,7 @@
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
 				kind = exactVersion;
-				version = 0.62.2;
+				version = 0.65.1;
 			};
 		};
 		30D20A4F300E1F5700404D1E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -510,7 +510,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 12.16.0;
+				minimumVersion = 12.18.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

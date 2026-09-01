@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 val versionProps = Properties().apply {
@@ -8,9 +7,7 @@ val versionProps = Properties().apply {
 fun versionProp(key: String): String = versionProps.getProperty(key) ?: error("version.properties: '$key' is missing")
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.googleServices)
@@ -18,47 +15,9 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-            optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
-            optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
-        }
-    }
-
-    sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.mapbox.android)
-            implementation(libs.mapbox.android.compose)
-            implementation(libs.koin.android)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            implementation(libs.androidx.material3)
-            implementation(libs.androidx.navigation.compose)
-            implementation(libs.moko.permissions.compose)
-            implementation(libs.kermit)
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.maplibre.units)
-        }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(projects.shared)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-        androidUnitTest.dependencies {
-            implementation(libs.kotest.core)
-        }
+    compilerOptions {
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+        optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
     }
 }
 
@@ -76,6 +35,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        compose = true
     }
     packaging {
         resources {
@@ -101,13 +61,40 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    implementation(projects.shared)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.lifecycle.viewmodelCompose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.mapbox.android)
+    implementation(libs.mapbox.android.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.moko.permissions.compose)
+    implementation(libs.kermit)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.maplibre.units)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
     lintChecks(libs.compose.lint.checks)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
 
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotest.core)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.kotlin.test.junit)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
     androidTestImplementation(libs.filekit.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
@@ -116,5 +103,4 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.bundles.ktor)
     androidTestImplementation(libs.ktor.client.okhttp)
-    androidTestImplementation(kotlin("test"))
 }

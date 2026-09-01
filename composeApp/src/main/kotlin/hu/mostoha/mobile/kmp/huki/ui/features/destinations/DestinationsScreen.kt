@@ -225,7 +225,7 @@ private fun DestinationsTabBar(
     modifier: Modifier = Modifier,
 ) {
     val tabs = DestinationsTab.entries
-    val colors = ToggleButtonDefaults.toggleButtonColors(
+    val colors = ToggleButtonDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         checkedContainerColor = MaterialTheme.colorScheme.primary,

@@ -183,8 +183,7 @@ class DefaultGpxStorageTest {
         }
     }
 
-    private suspend fun importFile(uri: Uri, origin: GpxOrigin = GpxOrigin.EXTERNAL): PlatformFile =
-        storage.saveToSandbox(storage.readGpx(uri.toString()), origin)
+    private suspend fun importFile(uri: Uri, origin: GpxOrigin = GpxOrigin.EXTERNAL): PlatformFile = storage.saveToSandbox(storage.readGpx(uri.toString()), origin)
 
     private fun writeSourceFile(fileName: String, content: String): Uri {
         val file = File(appContext.cacheDir, fileName).apply { writeText(content) }

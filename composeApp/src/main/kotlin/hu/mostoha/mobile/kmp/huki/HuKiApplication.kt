@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki
 
 import android.app.Application
+import hu.mostoha.mobile.android.huki.BuildConfig
 import hu.mostoha.mobile.kmp.huki.analytics.AndroidAnalyticsService
 import hu.mostoha.mobile.kmp.huki.analytics.AndroidCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.di.androidPlatformModule
@@ -8,12 +9,15 @@ import hu.mostoha.mobile.kmp.huki.di.initKoin
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
+import hu.mostoha.mobile.kmp.huki.util.setDebugBuild
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 class HuKiApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        setDebugBuild(BuildConfig.DEBUG)
 
         initKoin {
             androidContext(this@HuKiApplication)

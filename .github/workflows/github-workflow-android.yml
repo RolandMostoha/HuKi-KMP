@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew lint
 
       - name: Unit tests
-        run: ./gradlew test
+        run: ./gradlew :shared:testAndroidHostTest :composeApp:testDebugUnitTest
 
       - name: Build Android
         run: ./gradlew assembleDebug
