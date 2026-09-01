@@ -22,6 +22,15 @@ struct HukiApp: App {
         if let index = args.firstIndex(of: "skipWhatsNew"), index + 1 < args.count {
             AppLaunchConfig.shared.skipWhatsNew = (args[index + 1] as NSString).boolValue
         }
+        #if DEBUG
+        if let index = args.firstIndex(of: "importGpx"), index + 1 < args.count,
+           (args[index + 1] as NSString).boolValue {
+            AppLaunchConfig.shared.importGpxPath = Bundle.main.path(
+                forResource: "gpx_test_smoke",
+                ofType: "gpx"
+            )
+        }
+        #endif
         doInitKoin(analyticsService: IosAnalyticsService(), crashlyticsService: IosCrashlyticsService())
     }
 

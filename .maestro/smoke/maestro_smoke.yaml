@@ -1,27 +1,334 @@
 appId: ${APP_ID}
 ---
+# One Maestro invocation walks every screen. CI pays the XCUITest driver startup and the first cold
+# launch once, which is what dominates the job time - the steps themselves run in seconds.
+
+# What's New, on a genuinely first launch
 - launchApp:
     clearState: true
-    arguments:
-      skipWhatsNew: true
     permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: WHATS_NEW_SHEET
+    timeout: 30000
+- assertVisible: "New Features"
+- assertVisible: "v\\d+\\.\\d+"
+- assertVisible:
+    id: WHATS_NEW_RELEASE_NOTES
+- assertVisible:
+    id: WHATS_NEW_MESSAGE_CARD
+- tapOn: "Close"
 - extendedWaitUntil:
     visible:
       id: MAP_MAPBOX
     timeout: 30000
 
-# Search bar entry point renders on the map
-- assertVisible: "Search..."
+# Relaunch with a GPX imported from a bundled asset, so the OS file picker stays out of CI.
+# The GPX details sheet wins over What's New when both fire on the same launch, hence two launches.
+- launchApp:
+    clearState: true
+    permissions: { all: allow }
+    arguments:
+      skipWhatsNew: true
+      importGpx: true
+# The first map render is slow and variable on CI's software GPU
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_TITLE
+    timeout: 45000
+- setLocation:
+    latitude: 47.7168079
+    longitude: 18.8950729
+- assertVisible: "gpx_test_smoke.gpx"
+- assertVisible: "7h 10m"
+- assertVisible: "21.8 km"
+- assertVisible: "1023 m"
+- assertVisible: "451 m"
+- assertVisible:
+    id: GPX_DETAILS_START_BUTTON
 
-# Layers sheet opens and closes
+# GPX control FAB. Asserts the FAB labels, never Mapbox-rendered annotations, which are the
+# assertions that fail under the software GPU on CI.
+- tapOn:
+    id: GPX_DETAILS_START_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_FAB_GPX_CONTROL_BUTTON
+    timeout: 15000
+- tapOn:
+    id: MAIN_FAB_GPX_CONTROL_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_OVERVIEW_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_CLEAR_BUTTON
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Show the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Hide the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_CLEAR_BUTTON
+- extendedWaitUntil:
+    notVisible:
+      id: MAIN_FAB_GPX_CONTROL_BUTTON
+    timeout: 15000
+
+# Starting the route put My Location into live compass, which is what hides the search bar. The FAB
+# cycles compass -> following, so no map pan is needed - Mapbox gestures are unreliable on CI's
+# software GPU, where the swipe left the mode unchanged.
+- assertVisible: "My location - Live compass"
+- tapOn:
+    id: MAIN_FAB_MY_LOCATION_BUTTON
+- extendedWaitUntil:
+    visible: "My location - Following"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
+
+# Layers
 - tapOn: "Layers"
 - assertVisible: "Base Map"
+- tapOn: "Satellite"
+- tapOn: "Hiking Trails"
 - tapOn: "Close"
-- assertVisible:
-    id: MAP_MAPBOX
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 15000
 
-# Menu screen opens and navigates back to the map
-- tapOn: "Menu"
+# Search sheet: destinations section, then one query covering both the local dataset (hard) and the
+# LocationIQ section (soft - it renders while loading, on error and with results alike)
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SECTION
+    timeout: 15000
 - assertVisible:
-    id: MENU_SCREEN_ROOT
+    id: DESTINATION_CARD
+- assertVisible:
+    id: DESTINATION_EXPAND_BUTTON
+- inputText: "Dobog"
+- extendedWaitUntil:
+    visible:
+      id: SEARCH_RESULT_ITEM
+    timeout: 15000
+- assertVisible: "Dobogókő"
+- extendedWaitUntil:
+    visible:
+      id: SEARCH_ONLINE_SECTION
+    timeout: 15000
+    optional: true
+
+# Place Details
+- tapOn: "Dobogókő"
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_TITLE
+    timeout: 20000
+- assertVisible:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- assertVisible:
+    id: PLACE_DETAILS_MAPS_NAVIGATION_BUTTON
+
+# Route Planner. A second stop is picked so GraphHopper actually answers - hard-asserting the
+# stats is what proves the routing API and its key still work in CI.
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SHEET
+    timeout: 15000
+- assertVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+- assertVisible:
+    id: ROUTE_PLANNER_SAVE_BUTTON
+- tapOn:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SEARCH_SCREEN
+    timeout: 15000
+- tapOn:
+    id: ROUTE_PLANNER_SEARCH_FIELD
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 25000
+- assertNotVisible:
+    id: ROUTE_PLANNER_LOADING
+- assertNotVisible:
+    id: ROUTE_PLANNER_ERROR
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
+
+# Recent sections, populated by the steps above
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- extendedWaitUntil:
+    visible:
+      id: RECENT_PLACES_SECTION
+    timeout: 15000
+- assertVisible:
+    id: RECENT_PLACES_ITEM
+- assertVisible:
+    id: RECENT_GPX_SECTION
+- assertVisible:
+    id: RECENT_GPX_ITEM
+- tapOn: "Close"
+
+# Menu
+- tapOn: "Menu"
+- extendedWaitUntil:
+    visible:
+      id: MENU_SCREEN_ROOT
+    timeout: 15000
 - assertVisible: "HuKi"
+- assertVisible:
+    id: MENU_VERSION
+
+# Destinations screen
+- tapOn:
+    id: MENU_ROW_DESTINATIONS
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 15000
+- assertVisible:
+    id: DESTINATIONS_TAB_BAR
+- assertVisible:
+    id: DESTINATIONS_ITEM
+- tapOn: "Landscapes"
+- assertVisible:
+    id: DESTINATIONS_ITEM
+- tapOn: "Nearby"
+- assertVisible:
+    id: DESTINATIONS_ITEM
+- tapOn:
+    id: DESTINATIONS_ITEM
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: DESTINATION_PREVIEW
+    timeout: 10000
+- tapOn:
+    id: DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_TITLE
+    timeout: 20000
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+- tapOn: "Menu"
+
+# Place History screen
+- tapOn:
+    id: MENU_ROW_PLACE_HISTORY
+- extendedWaitUntil:
+    visible:
+      id: PLACE_HISTORY_SCREEN_ROOT
+    timeout: 15000
+- assertVisible:
+    id: PLACE_HISTORY_ITEM
+- tapOn:
+    id: PLACE_HISTORY_ITEM
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_SHEET
+    timeout: 15000
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+- tapOn: "Menu"
+
+# GPX Collection screen
+- tapOn:
+    id: MENU_ROW_GPX_COLLECTION
+- extendedWaitUntil:
+    visible:
+      id: GPX_COLLECTION_SCREEN_ROOT
+    timeout: 15000
+- assertVisible:
+    id: GPX_COLLECTION_ITEM_OPTIONS_BUTTON
+- tapOn:
+    id: GPX_COLLECTION_ITEM
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_TITLE
+    timeout: 20000
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+- tapOn: "Menu"
+
+# GPX Guide screen
+- tapOn:
+    id: MENU_ROW_GPX_GUIDE
+- extendedWaitUntil:
+    visible:
+      id: GPX_GUIDE_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: GPX_GUIDE_BACK_BUTTON
+
+# Trail Symbols Guide screen
+- tapOn:
+    id: MENU_ROW_TRAIL_SYMBOLS_GUIDE
+- extendedWaitUntil:
+    visible:
+      id: TRAIL_SYMBOLS_GUIDE_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: TRAIL_SYMBOLS_GUIDE_BACK_BUTTON
+
+# Settings, and the zoom controls it toggles on the map
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- extendedWaitUntil:
+    visible:
+      id: SETTINGS_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: SETTINGS_ZOOM_CONTROLS_TOGGLE
+- tapOn:
+    id: SETTINGS_BACK_BUTTON
+- tapOn:
+    id: MENU_BACK_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_FAB_ZOOM_IN_BUTTON
+    timeout: 15000
+- tapOn:
+    id: MAIN_FAB_ZOOM_IN_BUTTON
+- tapOn:
+    id: MAIN_FAB_ZOOM_OUT_BUTTON
+
+# Route Planner reached from the Menu row rather than from Place Details
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_ROUTE_PLANNER
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SHEET
+    timeout: 15000
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+
+# Long press targets live compass explicitly, so it lands on the same state whatever mode the steps
+# above left behind - unlike a tap, which only cycles
+- longPressOn:
+    id: MAIN_FAB_MY_LOCATION_BUTTON
+- extendedWaitUntil:
+    visible: "My location - Live compass"
+    timeout: 15000

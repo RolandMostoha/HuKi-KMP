@@ -144,10 +144,12 @@ private fun WhatsNewHeader(version: String, releaseDate: LocalDate, onCloseClick
 @Composable
 private fun WhatsNewNotesCard(releaseNotes: StringDesc) {
     Column(
-        modifier = Modifier.padding(
-            vertical = Dimens.Small,
-            horizontal = Dimens.Large,
-        ),
+        modifier = Modifier
+            .padding(
+                vertical = Dimens.Small,
+                horizontal = Dimens.Large,
+            )
+            .testTagAsResourceId(TestTags.WHATS_NEW_RELEASE_NOTES),
         verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
         mokoString(releaseNotes).toReleaseNoteLines().forEach { note ->

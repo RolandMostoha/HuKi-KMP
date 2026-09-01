@@ -55,6 +55,7 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
+import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -115,6 +116,7 @@ class MainViewModel(
         initMyLocation()
         initDistanceMonitoring()
         initWhatsNew()
+        initLaunchArgGpx()
         observeSettings()
         observeSheetViews()
     }
@@ -498,6 +500,11 @@ class MainViewModel(
                 whatsNewRepository.markCurrentWhatsNewSeen()
             }
         }
+    }
+
+    private fun initLaunchArgGpx() {
+        val path = AppLaunchConfig.importGpxPath ?: return
+        importGpx(path, null)
     }
 
     private fun observeSheetViews() {

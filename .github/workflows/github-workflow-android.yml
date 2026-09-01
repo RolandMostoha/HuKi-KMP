@@ -74,7 +74,7 @@ jobs:
         with:
           api-level: 36
           arch: x86_64
-          target: google_apis_playstore
+          target: google_apis
           profile: pixel_7_pro
           disable-spellchecker: true
           disable-animations: true
@@ -104,6 +104,8 @@ jobs:
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Install Maestro
+        env:
+          MAESTRO_VERSION: 2.10.0
         run: |
           curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
@@ -128,7 +130,7 @@ jobs:
         with:
           api-level: 36
           arch: x86_64
-          target: google_apis_playstore
+          target: google_apis
           profile: pixel_7_pro
           disable-spellchecker: true
           disable-animations: true
@@ -138,8 +140,7 @@ jobs:
             until adb shell service check package 2>/dev/null | grep -q found; do sleep 1; done
             adb emu geo fix 18.8950729 47.7168079
             adb install "$PATH_APK"
-            chmod +x tools/scripts/*.sh
-            ./tools/scripts/shared_run_maestro_tests.sh "$APP_ID" "$DEVICE_ID"
+            maestro --no-ansi test .maestro/smoke/maestro_smoke.yaml -e APP_ID="$APP_ID" --device "$DEVICE_ID" --debug-output ./
 
       - name: Upload Maestro Test Reports
         uses: actions/upload-artifact@v4

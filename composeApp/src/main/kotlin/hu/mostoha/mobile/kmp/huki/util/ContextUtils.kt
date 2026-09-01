@@ -80,4 +80,12 @@ fun Context.shareGpxFile(filePath: String, fileName: String) {
     }
 }
 
+fun Context.copyTestGpxToCache(): String {
+    val file = File(cacheDir, TEST_GPX_ASSET)
+    assets.open(TEST_GPX_ASSET).use { input -> file.outputStream().use { input.copyTo(it) } }
+    return file.absolutePath
+}
+
 private const val GPX_MIME_TYPE = "application/gpx+xml"
+
+private const val TEST_GPX_ASSET = "gpx_test_smoke.gpx"

@@ -93,7 +93,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
 
 - Unit tests
 - Instrumentation tests (e.g. Repository tests)
-- UI tests (Maestro E2E) - should work on both platforms
+- UI tests (Maestro E2E) locally, the whole suite run on both platforms (CI only runs smoke suite)
+- Smoke UI tests - are they affected by the change?
 - Lint passes — ktlint, Detekt, SwiftLint
 - Compose Previews
 - Potential re-usable Compose / SwiftUI UI components

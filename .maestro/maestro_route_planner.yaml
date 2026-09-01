@@ -100,6 +100,23 @@ appId: ${APP_ID}
     commands:
       - tapOn:
           id: ROUTE_PLANNER_ADD_STOP_ROW
+      # The sheet animates in, so wait for it before touching anything inside it
+      - extendedWaitUntil:
+          visible:
+            id: ROUTE_PLANNER_SEARCH_SCREEN
+          timeout: 10000
+      # iOS only: the autofocused keyboard covers the actions, and Maestro reads the button as
+      # visible from its hierarchy bounds, so the tap lands on a key. On Android hideKeyboard is a
+      # BACK press, which closes the sheet whenever the keyboard is not up.
+      - runFlow:
+          when:
+            platform: iOS
+          commands:
+            - hideKeyboard
+      - scrollUntilVisible:
+          element:
+            id: ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON
+          direction: DOWN
       - tapOn:
           id: ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON
       - assertVisible:

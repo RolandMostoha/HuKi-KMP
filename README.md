@@ -1,21 +1,27 @@
 # HuKi-KMP - Hungarian Hiking Map #
 
+[![Android CI](https://img.shields.io/github/actions/workflow/status/RolandMostoha/HuKi-KMP/github-workflow-android.yml?branch=main&event=push&label=Android%20CI&logo=android)](https://github.com/RolandMostoha/HuKi-KMP/actions/workflows/github-workflow-android.yml)
+[![iOS CI](https://img.shields.io/github/actions/workflow/status/RolandMostoha/HuKi-KMP/github-workflow-ios.yml?branch=main&event=push&label=iOS%20CI&logo=apple)](https://github.com/RolandMostoha/HuKi-KMP/actions/workflows/github-workflow-ios.yml)
+[![App Store](https://img.shields.io/itunes/v/6794327609?label=App%20Store&logo=appstore)](https://apps.apple.com/app/id6794327609)
+[![Last commit](https://img.shields.io/github/last-commit/RolandMostoha/HuKi-KMP?color=018786)](https://github.com/RolandMostoha/HuKi-KMP/commits/main)
+
 HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
 
 The app helps you plan trips and discover the hiking trails of Hungary.
 
-The purpose of the KMP project is to implement HuKi on iOS platform as well, so KMP was my choice to transform the app
-to support both platforms.
-
 **HuKi-iOS** is released and available in App Store: https://apps.apple.com/app/id6794327609
 
-**HuKi-Android v2.0 (KMP-based)** is not a live Android app, it will only replace "legacy" HuKi if the feature set comes
+<a href="https://apps.apple.com/app/id6794327609"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="56"></a>
+
+**HuKi-Android v2.0 (KMP-based)** is not live yet, it will only replace "legacy" HuKi if the feature set comes
 close to the legacy app.
 
-**HuKi-Android v1.x (legacy)** is a live Android app:
+**HuKi-Android v1.x (legacy - will be replaced)** is a live Android app:
 
 - Implemented under: https://github.com/RolandMostoha/HuKi-Android
 - Published on Google Play: https://play.google.com/store/apps/details?id=hu.mostoha.mobile.android.huki
+
+<a href="https://play.google.com/store/apps/details?id=hu.mostoha.mobile.android.huki"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="75"></a>
 
 ## Screenshots
 

@@ -37,23 +37,22 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### General / tech tasks
 
-| Status | Feature                                                                                                                                                  |
-|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                                   |
-| `[ ]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches       |
-| `[x]`  | Update Kotlin + Gradle 9 + dependencies.                                                                                                                 |
-| `[ ]`  | Android 17 / targetSdk 37 behaviour changes — bumped targetSdk with the Gradle 9 upgrade without adapting to them                                        |
-| `[R]`  | Flaky E2E tests in Android + iOS. After some time GitHub machines seem unreliable. Do only smoke tests on pipeline and force full-test coverage locally? |
-| `[R]`  | GitHub smart labels, E.g.: https://github.com/balazsgerlei/ScreenLit/blob/main/README.md?plain=1                                                         |
-| `[ ]`  | App store preview video (optional)                                                                                                                       |
-| `[ ]`  | App store header picture/video (optional)                                                                                                                |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                           |
-| `[?]`  | Sonar? free for open source projects                                                                                                                     |
+| Status | Feature                                                                                                                                            |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                             |
+| `[ ]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
+| `[ ]`  | Android 17 / targetSdk 37 behaviour changes — bumped targetSdk with the Gradle 9 upgrade without adapting to them                                  |
+| `[ ]`  | App store preview video (optional)                                                                                                                 |
+| `[ ]`  | App store header picture/video (optional)                                                                                                          |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
+| `[?]`  | Sonar? free for open source projects. In agentic ERA i don't see too much value, it just slows down the process.                                   |
 
 ### Bugs
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Search     | Bug: iOS. Search fails a lot. search_failed: 133 events, 41 users. Rate limit? Check Non-fatal crashlytics errors.                                                                                                                                                                                              |
+| `[R]`  | Search     | Bug: iOS. location_iq screen_view is over-firing. VM / analytics bug, not real user error.                                                                                                                                                                                                                      |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[ ]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
@@ -89,10 +88,10 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: My Location
 
-| Status | Scope      | Task                                                                                                                                                  |
-|--------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | MyLocation | Show altitude somewhere                                                                                                                               |
-| `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). |
+| Status | Scope      | Task                                                                                                                                                                                                                                                                  |
+|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
+| `[R]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Layers
 
@@ -102,11 +101,11 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Search
 
-| Status | Scope  | Task                                                                                   |
-|--------|--------|----------------------------------------------------------------------------------------|
-| `[ ]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország)                           |
-| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
-| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                   |
+| Status | Scope  | Task                                                                                                  |
+|--------|--------|-------------------------------------------------------------------------------------------------------|
+| `[R]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország). !!!GPX import is barely used on iOS.!!! |
+| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                |
+| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                                  |
 
 ### FEATURE: Destinations
 
@@ -163,7 +162,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[ ]`  | PlaceHistory | Add the PlaceSource indicator (long-tap, destinations etc.) to place history screen |
 
 ### FEATURE: Route Planner
-
 
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -321,7 +319,7 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 Goal: Create a search engine for hiking routes which have downloadable GPX files.
 The crawler parses the most important HU hiking sites:
 
-- aktivmagyarorszag
+- aktivkalandor
 - kirandulastippek
 - mozgasvilag
 - termeszetjaro
