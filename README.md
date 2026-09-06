@@ -7,16 +7,24 @@
 
 HuKi-KMP is a Kotlin Multiplatform project targeting Android and iOS.
 
-The app helps you plan trips and discover the hiking trails of Hungary.
+HuKi is a hiking app that helps you plan trips and discover the hiking trails of Hungary.
+
+HuKi is my pet project, I develop it in my free time. The app is free, ad-free and open source.
+
+## Releases
+
+### iOS
 
 **HuKi-iOS** is released and available in App Store: https://apps.apple.com/app/id6794327609
 
-<a href="https://apps.apple.com/app/id6794327609"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" height="56"></a>
+<a href="https://apps.apple.com/app/id6794327609"><img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store" width="175"></a>
+
+### Android
 
 **HuKi-Android v2.0 (KMP-based)** is not live yet, it will only replace "legacy" HuKi if the feature set comes
 close to the legacy app.
 
-**HuKi-Android v1.x (legacy - will be replaced)** is a live Android app:
+**HuKi-Android v1.x (legacy → will be replaced)** is a live native Android app:
 
 - Implemented under: https://github.com/RolandMostoha/HuKi-Android
 - Published on Google Play: https://play.google.com/store/apps/details?id=hu.mostoha.mobile.android.huki
@@ -28,14 +36,6 @@ close to the legacy app.
 |                                   iOS                                   |                                   Android                                   |
 |:-----------------------------------------------------------------------:|:---------------------------------------------------------------------------:|
 | <img src="tools/assets/huki_readme_ios.webp" width="367" height="750"/> | <img src="tools/assets/huki_readme_android.webp" width="357" height="750"/> |
-
-## Goals
-
-The project was born for the following reasons:
-
-1. My personal entertainment - it's my beloved pet project in which I can try out tech outside of my job.
-2. It comes in handy for hikers to have trips in Hungary. No need to download tiles or setup layers manually.
-3. Learn and improve
 
 ## Project Overview
 
