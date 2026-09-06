@@ -14,7 +14,7 @@ import kotlin.test.Test
 class DestinationMapperTest {
 
     @Test
-    fun `Given destination, When toPlace, Then osmType is NODE and address is town`() {
+    fun `Given destination - When toPlace - Then osmType is NODE and address is town`() {
         val destination = Destination(
             osmId = "456",
             name = "Kékestető",

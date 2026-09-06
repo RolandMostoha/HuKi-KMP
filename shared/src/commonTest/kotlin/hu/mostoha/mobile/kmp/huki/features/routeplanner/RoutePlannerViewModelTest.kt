@@ -156,7 +156,7 @@ class RoutePlannerViewModelTest {
         )
 
     @Test
-    fun `Given default state, When view model init, Then my location and an empty stop are shown`() {
+    fun `Given default state - When view model init - Then my location and an empty stop are shown`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -174,7 +174,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no known location, When view model init, Then the my location stop stays empty`() {
+    fun `Given no known location - When view model init - Then the my location stop stays empty`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
 
@@ -187,7 +187,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the planner is opened with a place, When place added, Then it follows my location`() {
+    fun `Given the planner is opened with a place - When place added - Then it follows my location`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -198,7 +198,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given my location is far away, When the planner is opened with a place, Then the start stop is emptied`() {
+    fun `Given my location is far away - When the planner is opened with a place - Then the start stop is emptied`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -211,7 +211,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a far place added before the fix, When the first fix arrives, Then the start stop stays empty`() {
+    fun `Given a far place added before the fix - When the first fix arrives - Then the start stop stays empty`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
             val viewModel = createViewModel()
@@ -227,7 +227,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given my location is far away, When my location is added explicitly, Then it is kept`() {
+    fun `Given my location is far away - When my location is added explicitly - Then it is kept`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő", FAR_PLACE_LOCATION)))
@@ -240,7 +240,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given shortest route profile selected, When event received, Then profile is updated`() {
+    fun `Given shortest route profile selected - When event received - Then profile is updated`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -251,7 +251,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given empty stops, When place added twice, Then my location is kept and stops are appended`() {
+    fun `Given empty stops - When place added twice - Then my location is kept and stops are appended`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -266,7 +266,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given an empty stop, When location added, Then it is filled with the formatted coordinates`() {
+    fun `Given an empty stop - When location added - Then it is filled with the formatted coordinates`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -280,7 +280,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a geocoded location, When location added, Then the coordinates are replaced by the place name`() {
+    fun `Given a geocoded location - When location added - Then the coordinates are replaced by the place name`() {
         runTest {
             val location = Location(47.12345, 18.98765)
             everySuspend { geocodingRepository.reverseGeocode(location) } returns
@@ -295,7 +295,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a failing geocode, When location added, Then the coordinates are kept`() {
+    fun `Given a failing geocode - When location added - Then the coordinates are kept`() {
         runTest {
             everySuspend { geocodingRepository.reverseGeocode(any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
@@ -309,7 +309,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a pending geocode, When the waypoint is removed, Then the resolved name is dropped`() {
+    fun `Given a pending geocode - When the waypoint is removed - Then the resolved name is dropped`() {
         runTest {
             val location = Location(47.12345, 18.98765)
             everySuspend { geocodingRepository.reverseGeocode(location) } returns
@@ -326,7 +326,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given all stops filled, When location added, Then it is appended as a new stop`() {
+    fun `Given all stops filled - When location added - Then it is appended as a new stop`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -340,7 +340,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given all stops filled, When place added, Then it is appended as a new stop`() {
+    fun `Given all stops filled - When place added - Then it is appended as a new stop`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -356,7 +356,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the maximum stops, When a place is added, Then it is not appended`() {
+    fun `Given the maximum stops - When a place is added - Then it is not appended`() {
         runTest {
             val viewModel = createViewModelWithMaxStops()
 
@@ -369,7 +369,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the maximum stops, When a location is long tapped, Then it is not appended`() {
+    fun `Given the maximum stops - When a location is long tapped - Then it is not appended`() {
         runTest {
             val viewModel = createViewModelWithMaxStops()
 
@@ -381,7 +381,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the maximum stops, When the state is read, Then the round trip is disabled`() {
+    fun `Given the maximum stops - When the state is read - Then the round trip is disabled`() {
         runTest {
             val viewModel = createViewModelWithMaxStops()
 
@@ -393,7 +393,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given three waypoints, When last one moved to front, Then order is updated`() {
+    fun `Given three waypoints - When last one moved to front - Then order is updated`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("A")))
@@ -407,7 +407,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given invalid indexes, When waypoint moved, Then order is unchanged`() {
+    fun `Given invalid indexes - When waypoint moved - Then order is unchanged`() {
         runTest {
             val viewModel = createViewModel()
             val originalWaypoints = viewModel.uiState.value.waypoints
@@ -419,7 +419,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a third stop, When it is removed, Then the minimum stops remain`() {
+    fun `Given a third stop - When it is removed - Then the minimum stops remain`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -435,7 +435,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given minimum stops, When my location is removed, Then the row is kept but emptied`() {
+    fun `Given minimum stops - When my location is removed - Then the row is kept but emptied`() {
         runTest {
             val viewModel = createViewModel()
             val firstStop = viewModel.uiState.value.stops.first()
@@ -451,7 +451,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given an emptied start stop, When a place is added, Then it fills the start stop`() {
+    fun `Given an emptied start stop - When a place is added - Then it fills the start stop`() {
         runTest {
             val viewModel = createViewModel()
             val firstStop = viewModel.uiState.value.stops.first()
@@ -464,7 +464,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given default state, When add stop from search clicked, Then the waypoint search is shown`() {
+    fun `Given default state - When add stop from search clicked - Then the waypoint search is shown`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -476,7 +476,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search is shown, When it is dismissed, Then it is hidden`() {
+    fun `Given the waypoint search is shown - When it is dismissed - Then it is hidden`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -488,7 +488,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search is shown, When a place is added, Then the search is hidden`() {
+    fun `Given the waypoint search is shown - When a place is added - Then the search is hidden`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -501,7 +501,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search is shown, When a location is long tapped, Then the search is hidden`() {
+    fun `Given the waypoint search is shown - When a location is long tapped - Then the search is hidden`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -514,7 +514,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search, When a search place is added, Then it is a stop and a recorded visit`() {
+    fun `Given the waypoint search - When a search place is added - Then it is a stop and a recorded visit`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -531,7 +531,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search, When a destination is added, Then its location becomes a stop`() {
+    fun `Given the waypoint search - When a destination is added - Then its location becomes a stop`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -545,7 +545,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a known location, When my location is added, Then it becomes a stop`() {
+    fun `Given a known location - When my location is added - Then it becomes a stop`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -561,7 +561,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no known location, When my location is added, Then nothing changes`() {
+    fun `Given no known location - When my location is added - Then nothing changes`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
             val viewModel = createViewModel()
@@ -578,7 +578,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the waypoint search, When pick on map is clicked, Then the sheet is minimized`() {
+    fun `Given the waypoint search - When pick on map is clicked - Then the sheet is minimized`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -595,7 +595,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given two empty stops, When the second one is targeted, Then the search fills that stop`() {
+    fun `Given two empty stops - When the second one is targeted - Then the search fills that stop`() {
         runTest {
             val viewModel = createViewModel()
             // Below the minimum a removal empties the row instead of dropping it, so both stops end up empty.
@@ -613,7 +613,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given an empty stop, When no waypoint is targeted, Then the search fills the first empty stop`() {
+    fun `Given an empty stop - When no waypoint is targeted - Then the search fills the first empty stop`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -625,7 +625,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a moved user, When my location is added, Then the current fix is used`() {
+    fun `Given a moved user - When my location is added - Then the current fix is used`() {
         runTest {
             val viewModel = createViewModel()
             val movedLocation = Location(47.9, 19.4)
@@ -639,7 +639,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a targeted stop, When pick on map is clicked, Then the target survives the dismissal`() {
+    fun `Given a targeted stop - When pick on map is clicked - Then the target survives the dismissal`() {
         runTest {
             val viewModel = createViewModel()
             val targetStop = viewModel.uiState.value.stops.last()
@@ -655,7 +655,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a pick is pending, When a location is long tapped, Then the sheet is expanded again`() {
+    fun `Given a pick is pending - When a location is long tapped - Then the sheet is expanded again`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
@@ -673,7 +673,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no pick is pending, When a location is long tapped, Then the sheet is left alone`() {
+    fun `Given no pick is pending - When a location is long tapped - Then the sheet is left alone`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -687,7 +687,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given an empty stop, When it is removed, Then nothing changes`() {
+    fun `Given an empty stop - When it is removed - Then nothing changes`() {
         runTest {
             val viewModel = createViewModel()
             val emptyStop = viewModel.uiState.value.stops.last()
@@ -700,7 +700,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a planned route, When a stop is emptied, Then the route plan is cleared`() {
+    fun `Given a planned route - When a stop is emptied - Then the route plan is cleared`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -716,7 +716,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a round trip, When markers are built, Then the repeated stop is not marked twice`() {
+    fun `Given a round trip - When markers are built - Then the repeated stop is not marked twice`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -733,7 +733,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a route, When round trip clicked, Then the first stop is repeated at the end`() {
+    fun `Given a route - When round trip clicked - Then the first stop is repeated at the end`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -750,7 +750,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a route, When stop types are read, Then the first stop is a start`() {
+    fun `Given a route - When stop types are read - Then the first stop is a start`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -763,7 +763,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a round trip, When stop types are read, Then the first stop is a start`() {
+    fun `Given a round trip - When stop types are read - Then the first stop is a start`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -779,7 +779,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a round trip, When round trip clicked again, Then the route is unchanged`() {
+    fun `Given a round trip - When round trip clicked again - Then the route is unchanged`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -793,7 +793,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no known location, When round trip clicked, Then no stop is repeated`() {
+    fun `Given no known location - When round trip clicked - Then no stop is repeated`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
             val viewModel = createViewModel()
@@ -808,7 +808,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no known location, When the first fix arrives, Then the stop fills and the route is planned`() {
+    fun `Given no known location - When the first fix arrives - Then the stop fills and the route is planned`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
             val viewModel = createViewModel()
@@ -826,7 +826,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a single waypoint, When view model init, Then no route is planned`() {
+    fun `Given a single waypoint - When view model init - Then no route is planned`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -840,7 +840,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given two waypoints, When place added, Then the route plan and its stats are shown`() {
+    fun `Given two waypoints - When place added - Then the route plan and its stats are shown`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -859,7 +859,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a planned route, When save clicked, Then the plan is saved and opened as a GPX`() {
+    fun `Given a planned route - When save clicked - Then the plan is saved and opened as a GPX`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -880,7 +880,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a geocoded my location, When save clicked, Then its place name is used for the GPX naming`() {
+    fun `Given a geocoded my location - When save clicked - Then its place name is used for the GPX naming`() {
         runTest {
             everySuspend { geocodingRepository.reverseGeocode(any()) } returns
                 NetworkResult.Success(locationIqPlace("Téry Ödön út"))
@@ -903,7 +903,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a geocoded my location, When resolved, Then the row label stays the my location placeholder`() {
+    fun `Given a geocoded my location - When resolved - Then the row label stays the my location placeholder`() {
         runTest {
             everySuspend { geocodingRepository.reverseGeocode(any()) } returns
                 NetworkResult.Success(locationIqPlace("Téry Ödön út"))
@@ -916,7 +916,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a re-plan in flight, When save clicked, Then the stale plan is not saved`() {
+    fun `Given a re-plan in flight - When save clicked - Then the stale plan is not saved`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -938,7 +938,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no planned route, When save clicked, Then nothing is saved`() {
+    fun `Given no planned route - When save clicked - Then nothing is saved`() {
         runTest {
             val viewModel = createViewModel()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -951,7 +951,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a failing storage, When save clicked, Then the save error is shown and the plan is kept`() {
+    fun `Given a failing storage - When save clicked - Then the save error is shown and the plan is kept`() {
         runTest {
             everySuspend { gpxRepository.saveRoutePlan(any(), any(), any()) } throws IllegalStateException("disk full")
             val viewModel = createViewModel()
@@ -970,7 +970,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a planned route, When profile selected, Then the route is planned with the new profile`() {
+    fun `Given a planned route - When profile selected - Then the route is planned with the new profile`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -984,7 +984,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a planned route, When profile switched rapidly, Then only the last profile is requested`() {
+    fun `Given a planned route - When profile switched rapidly - Then only the last profile is requested`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -1004,7 +1004,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given no internet, When route is planned, Then the error is shown`() {
+    fun `Given no internet - When route is planned - Then the error is shown`() {
         runTest {
             everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
@@ -1023,7 +1023,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given rate limited response, When route is planned, Then the daily limit error is shown`() {
+    fun `Given rate limited response - When route is planned - Then the daily limit error is shown`() {
         runTest {
             everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
                 NetworkResult.Error(NetworkError.RATE_LIMITED)
@@ -1045,7 +1045,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given an empty route response, When route is planned, Then the not found error is shown`() {
+    fun `Given an empty route response - When route is planned - Then the not found error is shown`() {
         runTest {
             everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
                 NetworkResult.Success(GraphhopperRouteResponse())
@@ -1059,7 +1059,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a failed route plan, When retry clicked, Then the route is planned again`() {
+    fun `Given a failed route plan - When retry clicked - Then the route is planned again`() {
         runTest {
             everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
@@ -1079,7 +1079,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given two waypoints, When the route is planned, Then it is emitted for the map`() {
+    fun `Given two waypoints - When the route is planned - Then it is emitted for the map`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -1095,7 +1095,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a single waypoint, When it is added, Then it is emitted for the map without a plan`() {
+    fun `Given a single waypoint - When it is added - Then it is emitted for the map without a plan`() {
         runTest {
             everySuspend { locationMonitoringService.lastKnownLocation() } returns null
             val viewModel = createViewModel()
@@ -1112,7 +1112,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given my location is far away, When the planner is opened with a place, Then the end marker is emitted`() {
+    fun `Given my location is far away - When the planner is opened with a place - Then the end marker is emitted`() {
         runTest {
             val viewModel = createViewModel()
 
@@ -1128,7 +1128,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given the planner is open, When close clicked, Then Close effect is emitted`() {
+    fun `Given the planner is open - When close clicked - Then Close effect is emitted`() {
         runTest {
             val viewModel = createViewModel()
 

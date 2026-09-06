@@ -48,10 +48,10 @@ jobs:
           fi
           echo "Releasing $GITHUB_REF_NAME (appVersion=$APP_VERSION, iosBuildNumber=$APP_BUILD)"
 
-      - name: Select latest Xcode
+      - name: Select Xcode 26.5
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "latest"
+          xcode-version: "26.5"
 
       - name: Setup Java
         uses: actions/setup-java@v4

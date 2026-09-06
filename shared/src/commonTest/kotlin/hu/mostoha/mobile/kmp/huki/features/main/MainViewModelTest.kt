@@ -207,7 +207,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted location permission, When allow, Then uiState has Granted Following`() {
+    fun `Given not granted location permission - When allow - Then uiState has Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
             advanceUntilIdle()
@@ -229,7 +229,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted location permission, When disallow, Then uiState has Denied`() {
+    fun `Given not granted location permission - When disallow - Then uiState has Denied`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
             advanceUntilIdle()
@@ -255,7 +255,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted location permission, When init, Then uiState has Granted Following`() {
+    fun `Given granted location permission - When init - Then uiState has Granted Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -270,7 +270,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following my location, When MyLocationClicked, Then uiState has FollowingLiveCompass`() {
+    fun `Given Following my location - When MyLocationClicked - Then uiState has FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -286,7 +286,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass my location, When MyLocationClicked, Then uiState has Following`() {
+    fun `Given FollowingLiveCompass my location - When MyLocationClicked - Then uiState has Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -304,7 +304,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass my location, When MyLocationLongClicked, Then it stays FollowingLiveCompass`() {
+    fun `Given FollowingLiveCompass my location - When MyLocationLongClicked - Then it stays FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -322,7 +322,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Default my location, When MyLocationLongClicked, Then uiState has FollowingLiveCompass`() {
+    fun `Given Default my location - When MyLocationLongClicked - Then uiState has FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -340,7 +340,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass, When CompassClicked, Then uiState has Following`() {
+    fun `Given FollowingLiveCompass - When CompassClicked - Then uiState has Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -364,7 +364,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass, When CompassClicked, Then uiEffect is animated ShowMyLocation Following`() {
+    fun `Given FollowingLiveCompass - When CompassClicked - Then uiEffect is animated ShowMyLocation Following`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -383,7 +383,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Default, When CompassClicked, Then uiState still has Default`() {
+    fun `Given Default - When CompassClicked - Then uiState still has Default`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -402,7 +402,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Default, When CompassClicked, Then uiEffect is ResetBearing`() {
+    fun `Given Default - When CompassClicked - Then uiEffect is ResetBearing`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -420,7 +420,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+    fun `Given Following - When ZoomInClicked - Then uiEffect is Zoom zoomIn`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -437,7 +437,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given FollowingLiveCompass, When ZoomOutClicked, Then uiEffect is Zoom zoomOut`() {
+    fun `Given FollowingLiveCompass - When ZoomOutClicked - Then uiEffect is Zoom zoomOut`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -456,7 +456,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Default my location, When ZoomInClicked, Then uiEffect is Zoom zoomIn`() {
+    fun `Given Default my location - When ZoomInClicked - Then uiEffect is Zoom zoomIn`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -474,7 +474,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following my location, When MyLocationUpdated, Then uiState has Default MyLocationStatus`() {
+    fun `Given Following my location - When MyLocationUpdated - Then uiState has Default MyLocationStatus`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -490,7 +490,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted location permission, When init, Then uiEffect is ShowMyLocation`() {
+    fun `Given granted location permission - When init - Then uiEffect is ShowMyLocation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -503,7 +503,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted location permission, When MyLocationClicked, Then uiEffect is animated ShowMyLocation`() {
+    fun `Given granted location permission - When MyLocationClicked - Then uiEffect is animated ShowMyLocation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -526,7 +526,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted permission and no fix, When init, Then isMyLocationLoading is true`() {
+    fun `Given granted permission and no fix - When init - Then isMyLocationLoading is true`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -538,7 +538,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given searching my location, When MyLocationReceived, Then isMyLocationLoading is false`() {
+    fun `Given searching my location - When MyLocationReceived - Then isMyLocationLoading is false`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -554,7 +554,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given location fix received, When MyLocationClicked, Then isMyLocationLoading stays false`() {
+    fun `Given location fix received - When MyLocationClicked - Then isMyLocationLoading stays false`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -576,7 +576,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted permission, When GpxStartNavigationClicked, Then uiState has FollowingLiveCompass`() {
+    fun `Given granted permission - When GpxStartNavigationClicked - Then uiState has FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -592,7 +592,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted permission, When GpxStartNavigationClicked and allow, Then FollowingLiveCompass`() {
+    fun `Given not granted permission - When GpxStartNavigationClicked and allow - Then FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = true)
             advanceUntilIdle()
@@ -614,7 +614,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given not granted permission, When GpxStartNavigationClicked and disallow, Then stays NotAvailable Denied`() {
+    fun `Given not granted permission - When GpxStartNavigationClicked and disallow - Then stays NotAvailable Denied`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = false, allowPermission = false)
             advanceUntilIdle()
@@ -636,7 +636,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When LayersClicked, Then uiState sheet is Layers`() {
+    fun `When LayersClicked - Then uiState sheet is Layers`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -652,7 +652,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Layers sheet, When ModalSheetDismissed, Then uiState sheet is SearchBar`() {
+    fun `Given Layers sheet - When ModalSheetDismissed - Then uiState sheet is SearchBar`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -670,7 +670,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given OUTDOORS, When BaseLayerSelected, Then uiState has SATELLITE`() {
+    fun `Given OUTDOORS - When BaseLayerSelected - Then uiState has SATELLITE`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -686,7 +686,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When HikingLayerSelected, Then uiState has switched hiking layer visibility`() {
+    fun `When HikingLayerSelected - Then uiState has switched hiking layer visibility`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -706,7 +706,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxLayerSelected and no GPX imported, Then sheet is hidden and mainUiEffect is ShowGpxFilePicker`() {
+    fun `When GpxLayerSelected and no GPX imported - Then sheet is hidden and mainUiEffect is ShowGpxFilePicker`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -727,7 +727,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then uiState has updated loading state and GPX details`() {
+    fun `When GpxFileSelected - Then uiState has updated loading state and GPX details`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -756,7 +756,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given imported GPX and known location, When GpxWaypointClicked, Then distanceInfoWindow is set`() {
+    fun `Given imported GPX and known location - When GpxWaypointClicked - Then distanceInfoWindow is set`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
@@ -781,7 +781,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given round trip GPX and intermediate waypoint behind current location, When GpxWaypointClicked, Then distance wraps forward`() {
+    fun `Given round trip GPX and intermediate waypoint behind current location - When GpxWaypointClicked - Then distance wraps forward`() {
         runTest {
             val waypoint = GpxWaypoint(TEST_GPX_WAY_CLOSED[1], WaypointType.INTERMEDIATE)
             val gpxDetails = TEST_GPX_DETAILS.copy(
@@ -815,7 +815,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given imported GPX, When GpxDistancesVisibilityToggled, Then all waypoints get distance windows`() {
+    fun `Given imported GPX - When GpxDistancesVisibilityToggled - Then all waypoints get distance windows`() {
         runTest {
             val waypoints = listOf(
                 GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
@@ -852,7 +852,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given selected waypoint, When GpxDistancesVisibilityToggled on and off, Then windows are fully cleared`() {
+    fun `Given selected waypoint - When GpxDistancesVisibilityToggled on and off - Then windows are fully cleared`() {
         runTest {
             val waypoints = listOf(
                 GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
@@ -891,7 +891,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given all distances visible, When DistanceInfoWindowDismissed, Then windows cleared and toggle off`() {
+    fun `Given all distances visible - When DistanceInfoWindowDismissed - Then windows cleared and toggle off`() {
         runTest {
             val waypoints = listOf(
                 GpxWaypoint(TEST_GPX_WAY_CLOSED.first(), WaypointType.START),
@@ -919,7 +919,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxLayerSelected and GPX already imported, Then uiState toggles GPX layer visibility`() {
+    fun `When GpxLayerSelected and GPX already imported - Then uiState toggles GPX layer visibility`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -945,7 +945,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then mapUiEffect is UpdateCamera`() {
+    fun `When GpxFileSelected - Then mapUiEffect is UpdateCamera`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -968,7 +968,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When RoutePlanUpdated, Then the route is drawn and the camera frames it`() {
+    fun `When RoutePlanUpdated - Then the route is drawn and the camera frames it`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -988,7 +988,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a drawn route, When the sheet is dismissed, Then the route is removed from the map`() {
+    fun `Given a drawn route - When the sheet is dismissed - Then the route is removed from the map`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1003,7 +1003,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a drawn route, When a saved plan is reopened as GPX, Then the route overlay is removed`() {
+    fun `Given a drawn route - When a saved plan is reopened as GPX - Then the route overlay is removed`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1021,7 +1021,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a saved plan is reopened, When onEvent, Then no gpx import analytics event is logged`() {
+    fun `Given a saved plan is reopened - When onEvent - Then no gpx import analytics event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1035,7 +1035,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a drawn route, When only its waypoints change, Then the camera is not reframed`() {
+    fun `Given a drawn route - When only its waypoints change - Then the camera is not reframed`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1060,7 +1060,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a single waypoint, When RoutePlanUpdated, Then only its marker is drawn`() {
+    fun `Given a single waypoint - When RoutePlanUpdated - Then only its marker is drawn`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1075,7 +1075,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given no route can be planned, When a single waypoint is drawn, Then the camera frames it`() {
+    fun `Given no route can be planned - When a single waypoint is drawn - Then the camera frames it`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1094,7 +1094,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxFileSelected, Then uiState sheet is Gpx`() {
+    fun `When GpxFileSelected - Then uiState sheet is Gpx`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1112,7 +1112,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxCloseClicked, Then gpx details is null and sheet is SearchBar`() {
+    fun `When GpxCloseClicked - Then gpx details is null and sheet is SearchBar`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1138,7 +1138,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given loaded GPX, When GpxMapsNavigationClicked START, Then effect is OpenMapsNavigation to start`() {
+    fun `Given loaded GPX - When GpxMapsNavigationClicked START - Then effect is OpenMapsNavigation to start`() {
         runTest {
             val startLocation = Location(47.0, 19.0, 300.0)
             val endLocation = Location(48.0, 20.0, 500.0)
@@ -1164,7 +1164,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given loaded GPX, When GpxMapsNavigationClicked END, Then effect is OpenMapsNavigation to end`() {
+    fun `Given loaded GPX - When GpxMapsNavigationClicked END - Then effect is OpenMapsNavigation to end`() {
         runTest {
             val startLocation = Location(47.0, 19.0, 300.0)
             val endLocation = Location(48.0, 20.0, 500.0)
@@ -1190,7 +1190,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given round trip GPX, When GpxMapsNavigationClicked START, Then effect is OpenMapsNavigation to round trip`() {
+    fun `Given round trip GPX - When GpxMapsNavigationClicked START - Then effect is OpenMapsNavigation to round trip`() {
         runTest {
             val roundTripLocation = Location(47.0, 19.0, 300.0)
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
@@ -1214,7 +1214,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given no loaded GPX, When GpxMapsNavigationClicked, Then no effect is emitted`() {
+    fun `Given no loaded GPX - When GpxMapsNavigationClicked - Then no effect is emitted`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1229,7 +1229,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given loaded GPX, When GpxShareClicked, Then effect is ShareGpxFile with the sandbox file`() {
+    fun `Given loaded GPX - When GpxShareClicked - Then effect is ShareGpxFile with the sandbox file`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1251,7 +1251,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given no loaded GPX, When GpxShareClicked, Then no effect is emitted`() {
+    fun `Given no loaded GPX - When GpxShareClicked - Then no effect is emitted`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1266,7 +1266,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX import error, When GpxImportErrorDismissed, Then import error is cleared`() {
+    fun `Given GPX import error - When GpxImportErrorDismissed - Then import error is cleared`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } throws NonGpxFileException()
             val viewModel = createViewModel(grantedPermission = true)
@@ -1293,7 +1293,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted permission, When init, Then isSearchBarVisible is true`() {
+    fun `Given granted permission - When init - Then isSearchBarVisible is true`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1305,7 +1305,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Following, When my location becomes FollowingLiveCompass and back, Then SearchBar toggles`() {
+    fun `Given Following - When my location becomes FollowingLiveCompass and back - Then SearchBar toggles`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1331,7 +1331,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GpxStartNavigationClicked, Then isSearchBarVisible is false`() {
+    fun `When GpxStartNavigationClicked - Then isSearchBarVisible is false`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1347,7 +1347,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When SearchDestinationSelected, Then PlaceDetails sheet is shown with the destination place`() {
+    fun `When SearchDestinationSelected - Then PlaceDetails sheet is shown with the destination place`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1368,7 +1368,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When SearchDestinationSelected, Then mapUiEffect is UpdateCamera to destination location`() {
+    fun `When SearchDestinationSelected - Then mapUiEffect is UpdateCamera to destination location`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1387,7 +1387,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given known osmId, When DestinationSelected, Then UpdateCamera to destination location and visit recorded`() {
+    fun `Given known osmId - When DestinationSelected - Then UpdateCamera to destination location and visit recorded`() {
         runTest {
             every { destinationRepository.requireDestination(TEST_DESTINATION.osmId) } returns TEST_DESTINATION
             val viewModel = createViewModel(grantedPermission = true)
@@ -1409,7 +1409,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place without bounding box, When SearchPlaceSelected, Then UpdateCamera centers on location`() {
+    fun `Given place without bounding box - When SearchPlaceSelected - Then UpdateCamera centers on location`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1428,7 +1428,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place with bounding box, When SearchPlaceSelected, Then UpdateCamera fits the bounding box`() {
+    fun `Given place with bounding box - When SearchPlaceSelected - Then UpdateCamera fits the bounding box`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1451,7 +1451,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place from search, When SearchPlaceSelected, Then visit is recorded`() {
+    fun `Given place from search - When SearchPlaceSelected - Then visit is recorded`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1464,7 +1464,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place without distance, When SearchRecentPlaceSelected, Then PlaceDetails shows distance from last location`() {
+    fun `Given place without distance - When SearchRecentPlaceSelected - Then PlaceDetails shows distance from last location`() {
         runTest {
             val userLocation = Location(47.7181, 18.8948)
             val viewModel = createViewModel(
@@ -1488,7 +1488,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given swiped sheet is still the current one, When SheetSwipeDismissed, Then the sheet is hidden`() {
+    fun `Given swiped sheet is still the current one - When SheetSwipeDismissed - Then the sheet is hidden`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1508,7 +1508,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given sheet already replaced, When SheetSwipeDismissed of the previous sheet, Then it is ignored`() {
+    fun `Given sheet already replaced - When SheetSwipeDismissed of the previous sheet - Then it is ignored`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1535,7 +1535,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place from search, When SearchPlaceSelected, Then Place Details sheet shows the loaded place`() {
+    fun `Given place from search - When SearchPlaceSelected - Then Place Details sheet shows the loaded place`() {
         runTest {
             val place = TEST_PLACE.copy(placeCategory = PlaceCategory.PEAK, osmType = OsmType.NODE)
             val viewModel = createViewModel(grantedPermission = true)
@@ -1555,7 +1555,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given recent place from search, When SearchRecentPlaceSelected, Then Place Details sheet is shown`() {
+    fun `Given recent place from search - When SearchRecentPlaceSelected - Then Place Details sheet is shown`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1574,7 +1574,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given history place, When HistoryPlaceSelected, Then Place Details sheet is shown`() {
+    fun `Given history place - When HistoryPlaceSelected - Then Place Details sheet is shown`() {
         runTest {
             val historyPlace = TEST_PLACE.copy(placeSource = PlaceSource.DESTINATIONS)
             everySuspend { placeHistoryRepository.getPlace(any(), any()) } returns historyPlace
@@ -1595,7 +1595,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given history place, When HistoryPlaceSelected, Then visit is re-recorded keeping its original source`() {
+    fun `Given history place - When HistoryPlaceSelected - Then visit is re-recorded keeping its original source`() {
         runTest {
             val historyPlace = TEST_PLACE.copy(placeSource = PlaceSource.DESTINATIONS)
             everySuspend { placeHistoryRepository.getPlace(any(), any()) } returns historyPlace
@@ -1610,7 +1610,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When GPX becomes visible, Then isSearchBarVisible is false, and true again when closed`() {
+    fun `When GPX becomes visible - Then isSearchBarVisible is false - and true again when closed`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1638,7 +1638,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given following state, When my location clicked, Then live compass analytics event is logged`() {
+    fun `Given following state - When my location clicked - Then live compass analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1653,7 +1653,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given live compass state, When my location clicked, Then following analytics event is logged`() {
+    fun `Given live compass state - When my location clicked - Then following analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1671,7 +1671,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given base layer selection, When onEvent, Then layer analytics event is logged`() {
+    fun `Given base layer selection - When onEvent - Then layer analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1683,7 +1683,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place selection from search, When onEvent, Then place analytics event is logged`() {
+    fun `Given place selection from search - When onEvent - Then place analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1698,7 +1698,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given recent place selection from search, When onEvent, Then history place analytics event is logged`() {
+    fun `Given recent place selection from search - When onEvent - Then history place analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1713,7 +1713,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given destination selection from search, When onEvent, Then destination analytics event is logged`() {
+    fun `Given destination selection from search - When onEvent - Then destination analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1728,7 +1728,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given place history match from search results, When onEvent, Then search place history event is logged`() {
+    fun `Given place history match from search results - When onEvent - Then search place history event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1743,7 +1743,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given destination match from search results, When onEvent, Then search destination event is logged`() {
+    fun `Given destination match from search results - When onEvent - Then search destination event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1758,7 +1758,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given successful GPX import, When onEvent, Then gpx imported analytics event is logged`() {
+    fun `Given successful GPX import - When onEvent - Then gpx imported analytics event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1773,7 +1773,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX imported from the Layers sheet, When onEvent, Then gpx imported layers event is logged`() {
+    fun `Given GPX imported from the Layers sheet - When onEvent - Then gpx imported layers event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1787,7 +1787,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given loaded GPX, When GpxShareClicked, Then gpx shared details analytics event is logged`() {
+    fun `Given loaded GPX - When GpxShareClicked - Then gpx shared details analytics event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1807,7 +1807,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given saved GPX reopened, When onEvent, Then history gpx selected analytics event is logged`() {
+    fun `Given saved GPX reopened - When onEvent - Then history gpx selected analytics event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
@@ -1821,7 +1821,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxStartNavigationClicked, Then gpx navigation started event is logged`() {
+    fun `Given GPX details - When GpxStartNavigationClicked - Then gpx navigation started event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1834,7 +1834,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxMapsNavigationClicked, Then gpx maps navigation opened event is logged`() {
+    fun `Given GPX details - When GpxMapsNavigationClicked - Then gpx maps navigation opened event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1847,7 +1847,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given failing GPX import, When onEvent, Then gpx import failed event is logged`() {
+    fun `Given failing GPX import - When onEvent - Then gpx import failed event is logged`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } throws NonGpxFileException()
             val viewModel = createViewModel(grantedPermission = true)
@@ -1861,7 +1861,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxCloseClicked, Then gpx closed event is logged`() {
+    fun `Given GPX details - When GpxCloseClicked - Then gpx closed event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1874,7 +1874,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxRouteVisibilityToggled, Then gpx route visibility toggled event is logged`() {
+    fun `Given GPX details - When GpxRouteVisibilityToggled - Then gpx route visibility toggled event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1887,7 +1887,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxDistancesVisibilityToggled, Then gpx distances toggled event is logged`() {
+    fun `Given GPX details - When GpxDistancesVisibilityToggled - Then gpx distances toggled event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1900,7 +1900,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given GPX details, When GpxOverviewClicked, Then gpx overview clicked event is logged`() {
+    fun `Given GPX details - When GpxOverviewClicked - Then gpx overview clicked event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1913,7 +1913,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given whats new to show, When init, Then whats new screen view is logged`() {
+    fun `Given whats new to show - When init - Then whats new screen view is logged`() {
         runTest {
             everySuspend { whatsNewRepository.shouldShowWhatsNew() } returns true
             every { whatsNewRepository.currentWhatsNew } returns WhatsNewContent.toCurrentWhatsNew()
@@ -1926,7 +1926,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given search sheet opened, When onEvent, Then search screen view is logged`() {
+    fun `Given search sheet opened - When onEvent - Then search screen view is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1939,7 +1939,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given layers sheet opened, When onEvent, Then layers screen view is logged`() {
+    fun `Given layers sheet opened - When onEvent - Then layers screen view is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1952,7 +1952,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given search sheet dismissed and reopened, When onEvent, Then two search screen views are logged`() {
+    fun `Given search sheet dismissed and reopened - When onEvent - Then two search screen views are logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1972,7 +1972,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When MapCameraChanged, Then the camera is kept in the map camera store`() {
+    fun `When MapCameraChanged - Then the camera is kept in the map camera store`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -1988,7 +1988,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When MapLongClicked, Then uiState has loading PlaceDetails, then the reverse geocoded place`() {
+    fun `When MapLongClicked - Then uiState has loading PlaceDetails - then the reverse geocoded place`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2021,7 +2021,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given last known location, When MapLongClicked, Then PlaceDetails has the straight line distance`() {
+    fun `Given last known location - When MapLongClicked - Then PlaceDetails has the straight line distance`() {
         runTest {
             val userLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
             val viewModel = createViewModel(
@@ -2042,7 +2042,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given successful reverse geocode, When MapLongClicked, Then the long tapped place visit is recorded`() {
+    fun `Given successful reverse geocode - When MapLongClicked - Then the long tapped place visit is recorded`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2067,7 +2067,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given failing reverse geocode, When MapLongClicked, Then no place visit is recorded`() {
+    fun `Given failing reverse geocode - When MapLongClicked - Then no place visit is recorded`() {
         runTest {
             reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel(grantedPermission = true)
@@ -2081,7 +2081,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given failing reverse geocode, When MapLongClicked, Then PlaceDetails is Unresolved with the location`() {
+    fun `Given failing reverse geocode - When MapLongClicked - Then PlaceDetails is Unresolved with the location`() {
         runTest {
             reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel(grantedPermission = true)
@@ -2100,7 +2100,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given failing reverse geocode and last known location, When MapLongClicked, Then distance is shown`() {
+    fun `Given failing reverse geocode and last known location - When MapLongClicked - Then distance is shown`() {
         runTest {
             reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
             val userLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
@@ -2122,7 +2122,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given Unresolved PlaceDetails, When PlaceDetailsMapsNavigationClicked, Then the tapped location opens`() {
+    fun `Given Unresolved PlaceDetails - When PlaceDetailsMapsNavigationClicked - Then the tapped location opens`() {
         runTest {
             reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel(grantedPermission = true)
@@ -2140,7 +2140,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given shown PlaceDetails, When PlaceDetailsCloseClicked, Then sheet and marker are cleared`() {
+    fun `Given shown PlaceDetails - When PlaceDetailsCloseClicked - Then sheet and marker are cleared`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2160,7 +2160,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given shown PlaceDetails, When SearchClicked, Then the place marker is cleared`() {
+    fun `Given shown PlaceDetails - When SearchClicked - Then the place marker is cleared`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2180,7 +2180,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given shown PlaceDetails, When PlaceDetailsRoutePlanClicked, Then the place marker is removed`() {
+    fun `Given shown PlaceDetails - When PlaceDetailsRoutePlanClicked - Then the place marker is removed`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2197,7 +2197,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given open Route Planner, When MapLongClicked, Then the location is emitted instead of PlaceDetails`() {
+    fun `Given open Route Planner - When MapLongClicked - Then the location is emitted instead of PlaceDetails`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2220,7 +2220,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given shown PlaceDetails, When PlaceDetailsMapsNavigationClicked, Then effect is OpenMapsNavigation`() {
+    fun `Given shown PlaceDetails - When PlaceDetailsMapsNavigationClicked - Then effect is OpenMapsNavigation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -2237,7 +2237,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `When MapLongClicked, Then place details analytics events are logged`() {
+    fun `When MapLongClicked - Then place details analytics events are logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()

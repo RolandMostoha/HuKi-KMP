@@ -6,7 +6,7 @@ import kotlin.test.Test
 class NameNormalizerTest {
 
     @Test
-    fun `Given value, When normalize, Then it is lowercased and Hungarian diacritics are folded`() {
+    fun `Given value - When normalize - Then it is lowercased and Hungarian diacritics are folded`() {
         testCases().forEach { testCase ->
             val actual = NameNormalizer.normalize(testCase.input)
 

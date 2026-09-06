@@ -39,14 +39,14 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When observed, Then uiState is default`() {
+    fun `Given view model init - When observed - Then uiState is default`() {
         runTest {
             menuViewModel.uiState.value shouldBe MenuUiState.Default
         }
     }
 
     @Test
-    fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
+    fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.BackClicked)
@@ -59,7 +59,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When PlaceHistoryClicked event, Then NavigateToPlaceHistory effect is emitted`() {
+    fun `Given default state - When PlaceHistoryClicked event - Then NavigateToPlaceHistory effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.PlaceHistoryClicked)
@@ -72,7 +72,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When GpxCollectionClicked event, Then NavigateToGpxCollection effect is emitted`() {
+    fun `Given default state - When GpxCollectionClicked event - Then NavigateToGpxCollection effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.GpxCollectionClicked)
@@ -85,7 +85,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When GpxGuideClicked event, Then NavigateToGpxGuide effect is emitted`() {
+    fun `Given default state - When GpxGuideClicked event - Then NavigateToGpxGuide effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.GpxGuideClicked)
@@ -98,7 +98,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When TrailSymbolsGuideClicked event, Then NavigateToTrailSymbolsGuide effect is emitted`() {
+    fun `Given default state - When TrailSymbolsGuideClicked event - Then NavigateToTrailSymbolsGuide effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.TrailSymbolsGuideClicked)
@@ -111,7 +111,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When EmailClicked event, Then SendEmail effect with email and subject is emitted`() {
+    fun `Given default state - When EmailClicked event - Then SendEmail effect with email and subject is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.EmailClicked)
@@ -128,7 +128,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When FacebookClicked event, Then OpenUrl effect with Facebook url is emitted`() {
+    fun `Given default state - When FacebookClicked event - Then OpenUrl effect with Facebook url is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.FacebookClicked)
@@ -142,7 +142,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When GithubClicked event, Then OpenUrl effect with GitHub url is emitted`() {
+    fun `Given default state - When GithubClicked event - Then OpenUrl effect with GitHub url is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.GithubClicked)
@@ -156,7 +156,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When PrivacyPolicyClicked event, Then OpenUrl effect with privacy policy url is emitted`() {
+    fun `Given default state - When PrivacyPolicyClicked event - Then OpenUrl effect with privacy policy url is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.PrivacyPolicyClicked)
@@ -170,7 +170,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state, When LocationIqClicked event, Then NavigateToLocationIq effect is emitted`() {
+    fun `Given default state - When LocationIqClicked event - Then NavigateToLocationIq effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.LocationIqClicked)
@@ -184,7 +184,7 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When created, Then menu screen view is logged`() {
+    fun `Given view model init - When created - Then menu screen view is logged`() {
         runTest {
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.MENU))
         }

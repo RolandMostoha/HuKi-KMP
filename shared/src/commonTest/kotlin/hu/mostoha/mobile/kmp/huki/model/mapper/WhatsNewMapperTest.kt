@@ -13,7 +13,7 @@ import kotlin.test.Test
 class WhatsNewMapperTest {
 
     @Test
-    fun `Given entry without message, When toWhatsNew, Then it maps fields and message is null`() {
+    fun `Given entry without message - When toWhatsNew - Then it maps fields and message is null`() {
         val entry = WhatsNewContent.Entry(
             version = "1.0",
             releaseDate = "2026-08-01",
@@ -32,7 +32,7 @@ class WhatsNewMapperTest {
     }
 
     @Test
-    fun `Given entry with message, When toWhatsNew, Then the message is wrapped as StringDesc`() {
+    fun `Given entry with message - When toWhatsNew - Then the message is wrapped as StringDesc`() {
         val entry = WhatsNewContent.Entry(
             version = "1.0",
             releaseDate = "2026-08-01",
@@ -52,7 +52,7 @@ class WhatsNewMapperTest {
     }
 
     @Test
-    fun `Given markdown notes, When toReleaseNoteLines, Then bullet markers and blank lines are stripped`() {
+    fun `Given markdown notes - When toReleaseNoteLines - Then bullet markers and blank lines are stripped`() {
         val notes = "- Map, GPS navigation\n\n* Hungarian trails\n  - GPX import\n"
 
         val actual = notes.toReleaseNoteLines()
@@ -61,14 +61,14 @@ class WhatsNewMapperTest {
     }
 
     @Test
-    fun `Given generated content, When toCurrentWhatsNew, Then the current version entry is returned`() {
+    fun `Given generated content - When toCurrentWhatsNew - Then the current version entry is returned`() {
         val actual = WhatsNewContent.toCurrentWhatsNew()
 
         actual.version shouldBe WhatsNewContent.currentVersion
     }
 
     @Test
-    fun `Given generated content, When toWhatsNewHistory, Then every release is mapped`() {
+    fun `Given generated content - When toWhatsNewHistory - Then every release is mapped`() {
         val actual = WhatsNewContent.toWhatsNewHistory()
 
         actual.map { it.version } shouldBe WhatsNewContent.releases.map { it.version }

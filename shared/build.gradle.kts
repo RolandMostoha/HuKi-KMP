@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.mokoResources)
     alias(libs.plugins.skie)
     alias(libs.plugins.mokkery)
@@ -42,9 +42,18 @@ tasks.register<GenerateStoreReleaseNotesTask>("generateStoreReleaseNotes") {
 }
 
 kotlin {
-    androidTarget {
+    androidLibrary {
+        namespace = "hu.mostoha.mobile.huki.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTestBuilder { }.configure {
+            isIncludeAndroidResources = true
         }
     }
 
@@ -116,21 +125,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "hu.mostoha.mobile.huki.shared"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-    buildFeatures {
-        buildConfig = true
-    }
-}
-
 multiplatformResources {
     resourcesPackage.set("hu.mostoha.mobile.huki.shared")
     resourcesClassName.set("SharedRes")
@@ -165,3 +159,8 @@ tasks.matching { it.name.startsWith("generateMR") }.configureEach {
 tasks.matching { it.name == "embedAndSignAppleFrameworkForXcode" }.configureEach {
     dependsOn(generateVersionXcconfig)
 }
+
+tasks.matching { it.name == "generateAndroidHostTestLintModel" || it.name == "lintAnalyzeAndroidHostTest" }
+    .configureEach {
+        dependsOn("kspAndroidHostTest")
+    }

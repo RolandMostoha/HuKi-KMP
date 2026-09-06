@@ -5,7 +5,8 @@
 ### Android
 ```bash
 ./gradlew :composeApp:assembleDebug           # Build debug APK
-./gradlew :shared:testDebugUnitTest           # Run unit tests
+./gradlew :shared:testAndroidHostTest         # Run shared unit tests
+./gradlew :composeApp:testDebugUnitTest       # Run app unit tests
 ./gradlew :composeApp:ktlintCheck             # Run KtLint
 ./gradlew :composeApp:detekt                  # Run Detekt
 ./gradlew :composeApp:lint                    # Run Android Lint
@@ -29,7 +30,9 @@ Lint:
 
 ### Shared
 - Build: `./gradlew :shared:compileKotlinIosArm64`
-- Tests: `./gradlew :shared:testDebugUnitTest`
+- Tests (JVM / Android actuals): `./gradlew :shared:testAndroidHostTest`
+- Tests (Kotlin/Native / iOS actuals): `./gradlew :shared:iosSimulatorArm64Test`
+- Both at once (macOS only): `./gradlew :shared:allTests`
 
 ## Utility Scripts
 
@@ -66,17 +69,20 @@ Lint:
 - **KMP approach**: "Do not share UI", so iOS UI is written in SwiftUI.
 - **UI Frameworks**: Jetpack Compose for Android, SwiftUI for iOS.
 - **Target Platform APIs**:
-  - Android: minSdk=26, targetSdk=36
+  - Android: minSdk=26, targetSdk=37, compileSdk=37
   - iOS: Xcode=26.1.1+, Deployment Target=18.2
 - **Package IDs**:
   - Android: `hu.mostoha.mobile.android.huki` — debug builds append ".debug"`
   - iOS: `hu.mostoha.mobile.ios.huki`
 - **Project Structure**:
-  - `:composeApp`: Android native code.
+  - `:composeApp`: Android native code. A plain `com.android.application` module on AGP 9 built-in
+    Kotlin (`src/main`, `src/test`, `src/androidTest`) — not a KMP module.
   - `:iosApp`: iOS native code.
   - `:shared`: Shared kotlin code.
     - `:shared:commonMain`: Common code.
-    - `:shared:androidMain`: Android specific shared code.
+    - `:shared:androidMain`: Android specific shared code. Built by the
+      `com.android.kotlin.multiplatform.library` plugin, which is variant-agnostic: no build types,
+      and no generated `BuildConfig` (see `BuildFlags.android.kt`).
     - `:shared:iosMain`: iOS specific shared code.
 - **Supported app languages**: English, Hungarian.
 - **Supported device orientations**: Portrait and Landscape.
@@ -87,7 +93,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
 
 - Unit tests
 - Instrumentation tests (e.g. Repository tests)
-- UI tests (Maestro E2E) - should work on both platforms
+- UI tests (Maestro E2E) locally, the whole suite run on both platforms (CI only runs smoke suite)
+- Smoke UI tests - are they affected by the change?
 - Lint passes — ktlint, Detekt, SwiftLint
 - Compose Previews
 - Potential re-usable Compose / SwiftUI UI components
@@ -107,7 +114,7 @@ Chores is a checklist which should be checked for every "feature complete" code 
 
 ## Technology Stack
 - **MapBox**: Used for the map engine.
-  - Mapbox version for Android and iOS: `11.20.1`
+  - Mapbox version for Android and iOS: `11.29.1`
   - Always make sure the Mapbox API / SDK functions exist and available
   - Android: MapBox is used with Jetpack Compose
   - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
@@ -271,7 +278,7 @@ Before writing a comment, **both** must hold. If either fails, delete it.
 - Use an injectable Mapper **class** (Koin) only when the mapping needs a dependency (formatter, locale, clock, resource provider).
 
 ### Unit tests
-- Use `Given X, When Y, Then Z`
+- Use `Given X - When Y - Then Z`
 - Use test functions like:
 ```
 val [input] = X

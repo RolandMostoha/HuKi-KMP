@@ -33,7 +33,7 @@ class DefaultPlaceHistoryRepositoryTest {
     private val repository = DefaultPlaceHistoryRepository(dao, fixedClock)
 
     @Test
-    fun `Given place, When recordVisit, Then dao upsert is called with the mapped entity`() {
+    fun `Given place - When recordVisit - Then dao upsert is called with the mapped entity`() {
         runTest {
             val place = Place(
                 osmId = "123",
@@ -66,7 +66,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given destination place, When recordVisit, Then dao upsert is called with the mapped entity`() {
+    fun `Given destination place - When recordVisit - Then dao upsert is called with the mapped entity`() {
         runTest {
             val destination = Destination(
                 osmId = "456",
@@ -101,7 +101,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given stored entities, When getRecentPlaces, Then dao recent entities are mapped to places`() {
+    fun `Given stored entities - When getRecentPlaces - Then dao recent entities are mapped to places`() {
         runTest {
             val entity = PlaceHistoryEntity(
                 osmType = OsmType.WAY,
@@ -136,7 +136,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given stored entities, When getPlaceHistory, Then dao entities are mapped to history items`() {
+    fun `Given stored entities - When getPlaceHistory - Then dao entities are mapped to history items`() {
         runTest {
             val entity = PlaceHistoryEntity(
                 osmType = OsmType.WAY,
@@ -174,7 +174,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given a stored entity, When getPlace by key, Then the mapped place is returned`() {
+    fun `Given a stored entity - When getPlace by key - Then the mapped place is returned`() {
         runTest {
             val entity = PlaceHistoryEntity(
                 osmType = OsmType.NODE,
@@ -207,7 +207,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given a query, When searchPlaces, Then dao is queried with the normalized query and entities are mapped`() {
+    fun `Given a query - When searchPlaces - Then dao is queried with the normalized query and entities are mapped`() {
         runTest {
             val entity = PlaceHistoryEntity(
                 osmType = OsmType.NODE,
@@ -242,7 +242,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given a blank query, When searchPlaces, Then an empty list is returned`() {
+    fun `Given a blank query - When searchPlaces - Then an empty list is returned`() {
         runTest {
             val actual = repository.searchPlaces("   ", 5)
 
@@ -251,7 +251,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given a query with LIKE wildcards, When searchPlaces, Then the wildcards are escaped`() {
+    fun `Given a query with LIKE wildcards - When searchPlaces - Then the wildcards are escaped`() {
         runTest {
             everySuspend { dao.searchByName(any(), any()) } returns emptyList()
 
@@ -262,7 +262,7 @@ class DefaultPlaceHistoryRepositoryTest {
     }
 
     @Test
-    fun `Given no stored entity, When getPlace by key, Then null is returned`() {
+    fun `Given no stored entity - When getPlace by key - Then null is returned`() {
         runTest {
             everySuspend { dao.getByKey(OsmType.NODE, "missing") } returns null
 

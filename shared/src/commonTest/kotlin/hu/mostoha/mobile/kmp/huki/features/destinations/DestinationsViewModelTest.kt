@@ -75,7 +75,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When created, Then destinations screen view is logged`() {
+    fun `Given view model init - When created - Then destinations screen view is logged`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -86,7 +86,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given popular destinations, When view model init, Then popular items and count are set`() {
+    fun `Given popular destinations - When view model init - Then popular items and count are set`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -102,7 +102,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given landscapes, When view model init, Then landscapes is populated`() {
+    fun `Given landscapes - When view model init - Then landscapes is populated`() {
         stubPermissionState(PermissionState.NotDetermined)
         val landscape = landscape("bukk", POPULAR)
         every { destinationRepository.getLandscapes() } returns listOf(landscape)
@@ -115,7 +115,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given location permission not granted, When view model init, Then nearby state requires permission`() {
+    fun `Given location permission not granted - When view model init - Then nearby state requires permission`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -126,7 +126,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given permission granted and a location, When view model init, Then nearby items are loaded with distances`() {
+    fun `Given permission granted and a location - When view model init - Then nearby items are loaded with distances`() {
         val location = Location(47.0, 19.0)
         stubPermissionState(PermissionState.Granted)
         everySuspend { locationMonitoringService.lastKnownLocation() } returns location
@@ -143,7 +143,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given user location available, When distanceText for a destination at that location, Then zero distance`() {
+    fun `Given user location available - When distanceText for a destination at that location - Then zero distance`() {
         val location = Location(47.0, 19.0)
         val destination = destination("1", "Kékestető", popularity = 10).copy(location = location)
         stubPermissionState(PermissionState.Granted)
@@ -158,7 +158,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given no user location, When distanceText, Then null is returned`() {
+    fun `Given no user location - When distanceText - Then null is returned`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -169,7 +169,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given granted but no location fix, When init, Then nearby state is location unavailable`() {
+    fun `Given granted but no location fix - When init - Then nearby state is location unavailable`() {
         stubPermissionState(PermissionState.Granted)
         everySuspend { locationMonitoringService.lastKnownLocation() } returns null
         every { locationMonitoringService.locationUpdates } returns MutableSharedFlow()
@@ -183,7 +183,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given a tab, When TabSelected event, Then selected tab is updated`() {
+    fun `Given a tab - When TabSelected event - Then selected tab is updated`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -196,7 +196,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given default state, When BackClicked event, Then NavigateBack effect is emitted`() {
+    fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
@@ -211,7 +211,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given permission required, When permission is granted, Then nearby items are loaded`() {
+    fun `Given permission required - When permission is granted - Then nearby items are loaded`() {
         val location = Location(47.0, 19.0)
         stubPermissionState(PermissionState.NotDetermined)
         everySuspend { permissionsController.providePermission(Permission.LOCATION) } returns Unit
@@ -230,7 +230,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given permission denied always, When permission requested, Then NavigateToAppSettings effect is emitted`() {
+    fun `Given permission denied always - When permission requested - Then NavigateToAppSettings effect is emitted`() {
         stubPermissionState(PermissionState.NotDetermined)
         val deniedAlways = DeniedAlwaysException(Permission.LOCATION)
         everySuspend { permissionsController.providePermission(Permission.LOCATION) } throws deniedAlways
@@ -251,7 +251,7 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given permission denied, When permission requested, Then denied analytics event is logged`() {
+    fun `Given permission denied - When permission requested - Then denied analytics event is logged`() {
         stubPermissionState(PermissionState.NotDetermined)
         everySuspend {
             permissionsController.providePermission(Permission.LOCATION)

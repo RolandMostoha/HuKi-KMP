@@ -10,7 +10,7 @@ import kotlin.test.Test
 class SettingsMapperTest {
 
     @Test
-    fun `Given empty preferences, When toUserPreferences, Then default preferences are returned`() {
+    fun `Given empty preferences - When toUserPreferences - Then default preferences are returned`() {
         val preferences = emptyPreferences()
 
         val actual = preferences.toUserPreferences()
@@ -19,7 +19,7 @@ class SettingsMapperTest {
     }
 
     @Test
-    fun `Given stored map zoom controls flag, When toUserPreferences, Then the flag is returned`() {
+    fun `Given stored map zoom controls flag - When toUserPreferences - Then the flag is returned`() {
         val preferences = preferencesOf(SettingsPreferenceKeys.MAP_ZOOM_CONTROLS_VISIBLE to true)
 
         val actual = preferences.toUserPreferences()

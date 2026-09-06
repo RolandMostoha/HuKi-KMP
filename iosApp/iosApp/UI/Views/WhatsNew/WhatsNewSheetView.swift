@@ -30,6 +30,7 @@ struct WhatsNewSheetView: View {
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 16)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.WHATS_NEW_SHEET)
     }
 
@@ -101,6 +102,8 @@ struct WhatsNewSheetView: View {
         .padding(.horizontal, 20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(TestTags.shared.WHATS_NEW_RELEASE_NOTES)
     }
 
     private func messageCard(_ message: WhatsNewMessage) -> some View {

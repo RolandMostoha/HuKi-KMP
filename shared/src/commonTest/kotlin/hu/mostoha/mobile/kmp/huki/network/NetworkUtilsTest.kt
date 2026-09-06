@@ -22,7 +22,7 @@ class NetworkUtilsTest {
     private val crashlyticsService = FakeCrashlyticsService()
 
     @Test
-    fun `Given successful response, When handleNetworkCall invoked, Then success result has decoded body`() {
+    fun `Given successful response - When handleNetworkCall invoked - Then success result has decoded body`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {
@@ -43,7 +43,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given bad request response, When handleNetworkCall invoked, Then error result is BAD_REQUEST`() {
+    fun `Given bad request response - When handleNetworkCall invoked - Then error result is BAD_REQUEST`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.BadRequest) })
@@ -55,7 +55,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given not found response, When handleNetworkCall invoked, Then error result is NOT_FOUND`() {
+    fun `Given not found response - When handleNetworkCall invoked - Then error result is NOT_FOUND`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.NotFound) })
@@ -67,7 +67,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given request timeout response, When handleNetworkCall invoked, Then error result is REQUEST_TIMEOUT`() {
+    fun `Given request timeout response - When handleNetworkCall invoked - Then error result is REQUEST_TIMEOUT`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.RequestTimeout) })
@@ -79,7 +79,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given rate limited response, When handleNetworkCall invoked, Then error result is RATE_LIMITED`() {
+    fun `Given rate limited response - When handleNetworkCall invoked - Then error result is RATE_LIMITED`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.TooManyRequests) })
@@ -91,7 +91,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given server error response, When handleNetworkCall invoked, Then error result is INTERNAL_SERVER_ERROR`() {
+    fun `Given server error response - When handleNetworkCall invoked - Then error result is INTERNAL_SERVER_ERROR`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.InternalServerError) })
@@ -103,7 +103,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unexpected response, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
+    fun `Given unexpected response - When handleNetworkCall invoked - Then error is UNKNOWN and exception recorded`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.Found) })
@@ -116,7 +116,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unauthorized response, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
+    fun `Given unauthorized response - When handleNetworkCall invoked - Then error is UNKNOWN and exception recorded`() {
         runTest {
             val actual = handleNetworkCall<TestDto>(crashlyticsService) {
                 createHttpClient(MockEngine { respond("", HttpStatusCode.Unauthorized) })
@@ -129,7 +129,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unresolved address exception, When handleNetworkCall invoked, Then error result is NO_INTERNET`() {
+    fun `Given unresolved address exception - When handleNetworkCall invoked - Then error result is NO_INTERNET`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {
@@ -147,7 +147,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unknown host exception, When handleNetworkCall invoked, Then error result is NO_INTERNET`() {
+    fun `Given unknown host exception - When handleNetworkCall invoked - Then error result is NO_INTERNET`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {
@@ -165,7 +165,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given malformed json response, When handleNetworkCall invoked, Then error result is SERIALIZATION`() {
+    fun `Given malformed json response - When handleNetworkCall invoked - Then error result is SERIALIZATION`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {
@@ -187,7 +187,7 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unexpected exception, When handleNetworkCall invoked, Then error is UNKNOWN and exception recorded`() {
+    fun `Given unexpected exception - When handleNetworkCall invoked - Then error is UNKNOWN and exception recorded`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {

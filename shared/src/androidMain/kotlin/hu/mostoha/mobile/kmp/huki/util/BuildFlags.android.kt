@@ -1,5 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.util
 
-import hu.mostoha.mobile.huki.shared.BuildConfig
+private var debugBuild = false
 
-actual val isDebugBuild: Boolean = BuildConfig.DEBUG
+fun setDebugBuild(isDebug: Boolean) {
+    debugBuild = isDebug
+}
+
+actual val isDebugBuild: Boolean
+    get() = debugBuild

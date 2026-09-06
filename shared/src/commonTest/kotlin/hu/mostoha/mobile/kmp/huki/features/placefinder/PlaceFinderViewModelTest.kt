@@ -93,14 +93,14 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given view model init, When observed, Then uiState is default`() {
+    fun `Given view model init - When observed - Then uiState is default`() {
         runTest {
             placeFinderViewModel.uiState.value shouldBe PlaceFinderUiState.Default
         }
     }
 
     @Test
-    fun `Given camera above the whole country, When view model init, Then uiState exposes top destinations`() {
+    fun `Given camera above the whole country - When view model init - Then uiState exposes top destinations`() {
         runTest {
             val topDestinations = listOf(kekesteto)
             every { destinationRepository.getTopDestinations(any()) } returns topDestinations
@@ -115,7 +115,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given camera zoomed on a region, When view model init, Then uiState exposes destinations near its center`() {
+    fun `Given camera zoomed on a region - When view model init - Then uiState exposes destinations near its center`() {
         runTest {
             val cameraCenter = Location(47.8721, 20.0102)
             val nearbyDestinations = listOf(kekesteto)
@@ -137,7 +137,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given recent gpx files from repository, When view model init, Then uiState exposes them`() {
+    fun `Given recent gpx files from repository - When view model init - Then uiState exposes them`() {
         runTest {
             val recentGpxFiles = listOf(gpxFileItem("okt15.gpx"), gpxFileItem("pilis.gpx"))
             everySuspend { gpxRepository.getRecentGpxFiles(any()) } returns recentGpxFiles
@@ -150,7 +150,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given recent places from repository, When view model init, Then uiState exposes them`() {
+    fun `Given recent places from repository - When view model init - Then uiState exposes them`() {
         runTest {
             val recentPlaces = listOf(
                 Place(
@@ -172,7 +172,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given known last location, When recent places are loaded, Then they show distance from that location`() {
+    fun `Given known last location - When recent places are loaded - Then they show distance from that location`() {
         runTest {
             val userLocation = Location(47.4979, 19.0402)
             val placeLocation = Location(46.2530, 20.1414)
@@ -234,7 +234,7 @@ class PlaceFinderViewModelTest {
         )
 
     @Test
-    fun `Given valid search text, When autocomplete succeeds, Then uiState shows loading then mapped places`() {
+    fun `Given valid search text - When autocomplete succeeds - Then uiState shows loading then mapped places`() {
         runTest {
             val networkPlace = locationIqPlace(
                 placeId = "budapest-id",
@@ -283,7 +283,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given known last location, When autocomplete succeeds, Then places show distance from that location`() {
+    fun `Given known last location - When autocomplete succeeds - Then places show distance from that location`() {
         runTest {
             val userLocation = Location(47.4979, 19.0402)
             val placeLocation = Location(46.2530, 20.1414)
@@ -332,7 +332,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given no last location, When autocomplete succeeds, Then places have no distance`() {
+    fun `Given no last location - When autocomplete succeeds - Then places have no distance`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Szeged")
@@ -363,7 +363,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given last location never returns, When timeout elapses, Then search still completes without distance`() {
+    fun `Given last location never returns - When timeout elapses - Then search still completes without distance`() {
         runTest {
             val viewModel = PlaceFinderViewModel(
                 geocodingRepository = geocodingRepository,
@@ -408,7 +408,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given valid search text, When autocomplete fails, Then uiState has error and empty places`() {
+    fun `Given valid search text - When autocomplete fails - Then uiState has error and empty places`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Balaton")
@@ -439,7 +439,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given valid search text, When autocomplete has no internet, Then search no internet event is logged`() {
+    fun `Given valid search text - When autocomplete has no internet - Then search no internet event is logged`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Balaton")
@@ -470,7 +470,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given valid search text, When autocomplete is rate limited, Then search rate limited event is logged`() {
+    fun `Given valid search text - When autocomplete is rate limited - Then search rate limited event is logged`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Balaton")
@@ -501,7 +501,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given valid search text, When autocomplete returns empty, Then search empty event is logged`() {
+    fun `Given valid search text - When autocomplete returns empty - Then search empty event is logged`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Nowhere")
@@ -532,7 +532,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given successful results, When search text becomes shorter than minimum, Then uiState clears the state`() {
+    fun `Given successful results - When search text becomes shorter than minimum - Then uiState clears the state`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Matra")
@@ -585,7 +585,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given quick consecutive searches, When debounce expires once, Then only the latest query is sent`() {
+    fun `Given quick consecutive searches - When debounce expires once - Then only the latest query is sent`() {
         runTest {
             everySuspend {
                 geocodingRepository.autocomplete("Budapest")
@@ -642,7 +642,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given failed search, When retry, Then autocomplete runs again after debounce and clears the error`() {
+    fun `Given failed search - When retry - Then autocomplete runs again after debounce and clears the error`() {
         runTest {
             var autocompleteCallCount = 0
             placeFinderViewModel = PlaceFinderViewModel(
@@ -734,7 +734,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given retry tapped repeatedly within debounce, When debounce expires, Then autocomplete runs only once`() {
+    fun `Given retry tapped repeatedly within debounce - When debounce expires - Then autocomplete runs only once`() {
         runTest {
             var autocompleteCallCount = 0
             placeFinderViewModel = PlaceFinderViewModel(
@@ -783,7 +783,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given completed search, When same search text re-emitted, Then autocomplete does not run again`() {
+    fun `Given completed search - When same search text re-emitted - Then autocomplete does not run again`() {
         runTest {
             var autocompleteCallCount = 0
             placeFinderViewModel = PlaceFinderViewModel(
@@ -832,7 +832,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given local matches, When two characters typed, Then local groups populate instantly and online stays empty`() {
+    fun `Given local matches - When two characters typed - Then local groups populate instantly and online stays empty`() {
         runTest {
             val recentPlace = Place(
                 osmId = "r1",
@@ -864,7 +864,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given three character query, When debounce elapses, Then online results merge with local groups`() {
+    fun `Given three character query - When debounce elapses - Then online results merge with local groups`() {
         runTest {
             val recentPlace = Place(
                 osmId = "r1",
@@ -895,7 +895,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given local matches, When online fails, Then local groups remain and error is set`() {
+    fun `Given local matches - When online fails - Then local groups remain and error is set`() {
         runTest {
             val recentPlace = Place(
                 osmId = "r1",
@@ -920,7 +920,7 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given local matches, When query cleared, Then local groups are cleared`() {
+    fun `Given local matches - When query cleared - Then local groups are cleared`() {
         runTest {
             val recentPlace = Place(
                 osmId = "r1",

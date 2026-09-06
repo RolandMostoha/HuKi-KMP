@@ -15,7 +15,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given LocationIqPlace with known type and osmType, when toPlaceSearchResult, then both resolved`() {
+    fun `Given LocationIqPlace with known type and osmType - when toPlaceSearchResult - then both resolved`() {
         val networkPlace = locationIqPlace(type = "peak", osmType = "N")
 
         val place = networkPlace.toPlaceSearchResult()
@@ -25,7 +25,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given LocationIqPlace with unknown type, when toPlaceSearchResult, then placeCategory is null`() {
+    fun `Given LocationIqPlace with unknown type - when toPlaceSearchResult - then placeCategory is null`() {
         val networkPlace = locationIqPlace(type = "unmapped_tag", osmType = "way")
 
         val place = networkPlace.toPlaceSearchResult()
@@ -35,7 +35,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given LocationIqPlace with null type and unrecognized osmType, when toPlaceSearchResult, then both null`() {
+    fun `Given LocationIqPlace with null type and unrecognized osmType - when toPlaceSearchResult - then both null`() {
         val networkPlace = locationIqPlace(type = null, osmType = "garbage")
 
         val place = networkPlace.toPlaceSearchResult()
@@ -45,7 +45,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given reverse geocoded place with address details, when toReverseGeocodedPlace, then name and address built`() {
+    fun `Given reverse geocoded place with address details - when toReverseGeocodedPlace - then name and address built`() {
         val networkPlace = locationIqPlace(type = "residential", osmType = "way").copy(
             lat = 47.9,
             lon = 18.5,
@@ -66,7 +66,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given reverse geocoded place without address details, when toReverseGeocodedPlace, then displayName used`() {
+    fun `Given reverse geocoded place without address details - when toReverseGeocodedPlace - then displayName used`() {
         val networkPlace = locationIqPlace(type = null, osmType = "node")
 
         val place = networkPlace.toReverseGeocodedPlace(TAPPED_LOCATION)
@@ -76,7 +76,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given reverse geocoded place, when toReverseGeocodedPlace, then location is the tapped one`() {
+    fun `Given reverse geocoded place - when toReverseGeocodedPlace - then location is the tapped one`() {
         val networkPlace = locationIqPlace(type = "peak", osmType = "N").copy(lat = 47.9, lon = 18.5)
 
         val place = networkPlace.toReverseGeocodedPlace(TAPPED_LOCATION)
@@ -85,7 +85,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given user location, when toReverseGeocodedPlace, then distance is formatted`() {
+    fun `Given user location - when toReverseGeocodedPlace - then distance is formatted`() {
         val networkPlace = locationIqPlace(type = "peak", osmType = "N")
         val userLocation = Location(TAPPED_LOCATION.latitude - 0.1, TAPPED_LOCATION.longitude)
 
@@ -95,7 +95,7 @@ class PlaceMapperTest {
     }
 
     @Test
-    fun `Given no user location, when toReverseGeocodedPlace, then distance is null`() {
+    fun `Given no user location - when toReverseGeocodedPlace - then distance is null`() {
         val networkPlace = locationIqPlace(type = "peak", osmType = "N")
 
         val place = networkPlace.toReverseGeocodedPlace(TAPPED_LOCATION, userLocation = null)

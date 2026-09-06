@@ -15,7 +15,7 @@ import kotlin.test.Test
 class DefaultWhatsNewRepositoryTest {
 
     @Test
-    fun `Given no last seen version, When shouldShowWhatsNew, Then it returns true`() {
+    fun `Given no last seen version - When shouldShowWhatsNew - Then it returns true`() {
         runTest {
             val repository = DefaultWhatsNewRepository(FakeDataStore())
 
@@ -26,7 +26,7 @@ class DefaultWhatsNewRepositoryTest {
     }
 
     @Test
-    fun `Given last seen version equals current, When shouldShowWhatsNew, Then it returns false`() {
+    fun `Given last seen version equals current - When shouldShowWhatsNew - Then it returns false`() {
         runTest {
             val dataStore = FakeDataStore(
                 preferencesOf(SettingsPreferenceKeys.WHATS_NEW_LAST_SEEN_VERSION to WhatsNewContent.currentVersion),
@@ -40,7 +40,7 @@ class DefaultWhatsNewRepositoryTest {
     }
 
     @Test
-    fun `Given unseen version, When markCurrentWhatsNewSeen, Then shouldShowWhatsNew becomes false`() {
+    fun `Given unseen version - When markCurrentWhatsNewSeen - Then shouldShowWhatsNew becomes false`() {
         runTest {
             val repository = DefaultWhatsNewRepository(FakeDataStore())
 

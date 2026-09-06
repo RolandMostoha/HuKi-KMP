@@ -7,7 +7,7 @@ import kotlin.test.Test
 class GpxUtilsTest {
 
     @Test
-    fun `Given identical content with different names, When toGpxTrackId, Then ids are equal`() {
+    fun `Given identical content with different names - When toGpxTrackId - Then ids are equal`() {
         val content = "<gpx>track</gpx>".encodeToByteArray()
         val sameContent = "<gpx>track</gpx>".encodeToByteArray()
 
@@ -15,7 +15,7 @@ class GpxUtilsTest {
     }
 
     @Test
-    fun `Given different content, When toGpxTrackId, Then ids differ`() {
+    fun `Given different content - When toGpxTrackId - Then ids differ`() {
         val first = "<gpx>track-a</gpx>".encodeToByteArray()
         val second = "<gpx>track-b</gpx>".encodeToByteArray()
 
@@ -23,7 +23,7 @@ class GpxUtilsTest {
     }
 
     @Test
-    fun `Given content, When toGpxTrackId, Then id is a 16-char hex string`() {
+    fun `Given content - When toGpxTrackId - Then id is a 16-char hex string`() {
         val id = "content".encodeToByteArray().toGpxTrackId()
 
         id.length shouldBe 16

@@ -8,14 +8,14 @@ import kotlin.time.Duration.Companion.seconds
 
 class TravelTimeUtilsTest {
     @Test
-    fun `Given 5 km distance without incline, when naismith, then 1 hour travel time returns`() {
+    fun `Given 5 km distance without incline - when naismith - then 1 hour travel time returns`() {
         val travelTime = naismith(5.0, 0.0)
 
         travelTime shouldBe 1.25
     }
 
     @Test
-    fun `Given list of locations, when calculateTravelTime, then estimated travel time returns`() {
+    fun `Given list of locations - when calculateTravelTime - then estimated travel time returns`() {
         val locations = listOf(
             Location(47.123, 19.234, 90.0),
             Location(47.123, 19.235, 100.0),

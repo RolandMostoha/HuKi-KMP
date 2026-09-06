@@ -6,7 +6,7 @@ import kotlin.test.Test
 class OsmTypeTest {
 
     @Test
-    fun `Given raw OSM type string, When fromString, Then expected OsmType returns`() {
+    fun `Given raw OSM type string - When fromString - Then expected OsmType returns`() {
         testCases().forEach { testCase ->
             val actual = OsmType.fromString(testCase.input)
 

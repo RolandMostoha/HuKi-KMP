@@ -7,7 +7,7 @@ import kotlin.time.Instant
 class DateTimeUtilsTest {
 
     @Test
-    fun `Given instant, When format then parse with iso offset, Then same instant returns`() {
+    fun `Given instant - When format then parse with iso offset - Then same instant returns`() {
         val instant = Instant.fromEpochSeconds(1_700_000_000)
 
         val roundTripped = instant.toIsoOffsetString().toInstantFromIsoOffset()
@@ -16,7 +16,7 @@ class DateTimeUtilsTest {
     }
 
     @Test
-    fun `Given malformed string, When toInstantFromIsoOffset, Then null returns`() {
+    fun `Given malformed string - When toInstantFromIsoOffset - Then null returns`() {
         "not-a-date".toInstantFromIsoOffset() shouldBe null
     }
 }

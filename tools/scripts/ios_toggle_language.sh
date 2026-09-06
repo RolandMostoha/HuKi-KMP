@@ -28,8 +28,12 @@ fi
 xcrun simctl spawn "$DEV" defaults write -g AppleLanguages -array $languages
 xcrun simctl spawn "$DEV" defaults write -g AppleLocale -string "$locale"
 
-# Relaunch the app so it picks up the new global language at process start.
-xcrun simctl terminate "$DEV" "$bundle" 2>/dev/null
+# SpringBoard and the system daemons only read the language at process start, so a reboot is the
+# only way to get the whole simulator (not just the app) into the new language.
+xcrun simctl shutdown "$DEV"
+xcrun simctl boot "$DEV"
+xcrun simctl bootstatus "$DEV" >/dev/null 2>&1
+
 xcrun simctl launch "$DEV" "$bundle" >/dev/null 2>&1
 
 echo "Language set to $label"
