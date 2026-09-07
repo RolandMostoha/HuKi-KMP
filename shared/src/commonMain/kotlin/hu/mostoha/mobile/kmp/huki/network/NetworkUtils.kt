@@ -7,7 +7,6 @@ import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.JsonConvertException
-import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
@@ -38,9 +37,6 @@ suspend inline fun <reified T> handleNetworkCall(
         }
     } catch (exception: CancellationException) {
         throw exception
-    } catch (exception: UnresolvedAddressException) {
-        Logger.e(exception) { "Network: No internet." }
-        NetworkResult.Error(NetworkError.NO_INTERNET)
     } catch (exception: SerializationException) {
         Logger.e(exception) { "Network: Failed serialization." }
         crashlyticsService.recordException(exception)
@@ -50,33 +46,29 @@ suspend inline fun <reified T> handleNetworkCall(
         crashlyticsService.recordException(exception)
         NetworkResult.Error(NetworkError.SERIALIZATION)
     } catch (exception: Exception) {
-        if (exception.isNoInternetException()) {
-            Logger.e(exception) { "Network: No internet. ${exception.toDeepLog()}" }
-            NetworkResult.Error(NetworkError.NO_INTERNET)
-        } else {
-            Logger.e(exception) { "Network: Uncaught exception. ${exception.toDeepLog()}" }
-            crashlyticsService.recordException(exception)
-            NetworkResult.Error(NetworkError.UNKNOWN)
+        when {
+            exception.isNoInternetException() -> {
+                Logger.e(exception) { "Network: No internet. ${exception.toDeepLog()}" }
+                NetworkResult.Error(NetworkError.NO_INTERNET)
+            }
+            exception.isTimeoutException() -> {
+                Logger.e(exception) { "Network: Request timed out. ${exception.toDeepLog()}" }
+                NetworkResult.Error(NetworkError.REQUEST_TIMEOUT)
+            }
+            else -> {
+                Logger.e(exception) { "Network: Uncaught exception. ${exception.toDeepLog()}" }
+                crashlyticsService.recordException(exception)
+                NetworkResult.Error(NetworkError.UNKNOWN)
+            }
         }
     }
-
-/**
- * Network failures are sometimes wrapped by Ktor or platform exceptions, so we
- * inspect the full cause chain instead of only the top-level exception.
- */
-@PublishedApi
-internal fun Throwable.isNoInternetException(): Boolean =
-    generateSequence(this) { throwable -> throwable.cause }
-        .any { throwable ->
-            throwable is UnresolvedAddressException || throwable::class.simpleName == "UnknownHostException"
-        }
 
 /**
  * Builds a compact throwable summary for logs because some KMP/platform exceptions
  * do not expose a useful message or stack trace in Logcat by default.
  */
 fun Throwable.toDeepLog(maxDepth: Int = 5): String =
-    generateSequence(this) { throwable -> throwable.cause }
+    causeChain()
         .take(maxDepth)
         .joinToString(separator = " -> ") { throwable ->
             buildString {

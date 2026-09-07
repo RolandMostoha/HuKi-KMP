@@ -211,9 +211,14 @@ class PlaceFinderViewModel(
             }
             is NetworkResult.Error -> {
                 val event = when (result.error) {
+                    NetworkError.NOT_FOUND -> AnalyticsEvent.SearchEmpty
                     NetworkError.RATE_LIMITED -> AnalyticsEvent.SearchRateLimited
                     NetworkError.NO_INTERNET -> AnalyticsEvent.SearchNoInternet
-                    else -> AnalyticsEvent.SearchFailed
+                    NetworkError.REQUEST_TIMEOUT -> AnalyticsEvent.SearchTimeout
+                    NetworkError.BAD_REQUEST -> AnalyticsEvent.SearchBadRequest
+                    NetworkError.INTERNAL_SERVER_ERROR -> AnalyticsEvent.SearchServerError
+                    NetworkError.SERIALIZATION -> AnalyticsEvent.SearchSerializationError
+                    NetworkError.UNKNOWN -> AnalyticsEvent.SearchFailed
                 }
                 analyticsService.logEvent(event)
                 _uiState.update { uiState ->
