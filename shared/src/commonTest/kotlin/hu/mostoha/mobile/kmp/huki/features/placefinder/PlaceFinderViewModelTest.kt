@@ -206,7 +206,7 @@ class PlaceFinderViewModelTest {
         }
     }
 
-    private fun createViewModel() =
+    private fun createViewModel(analyticsService: FakeAnalyticsService = this.analyticsService) =
         PlaceFinderViewModel(
             geocodingRepository = geocodingRepository,
             locationMonitoringService = locationMonitoringService,
@@ -408,94 +408,39 @@ class PlaceFinderViewModelTest {
     }
 
     @Test
-    fun `Given valid search text - When autocomplete fails - Then uiState has error and empty places`() {
+    fun `Given valid search text - When autocomplete fails - Then uiState has error and the matching event is logged`() {
         runTest {
-            everySuspend {
-                geocodingRepository.autocomplete("Balaton")
-            } returns NetworkResult.Error(NetworkError.UNKNOWN)
+            searchErrorTestCases().forEach { testCase ->
+                everySuspend {
+                    geocodingRepository.autocomplete("Balaton")
+                } returns NetworkResult.Error(testCase.error)
+                val analyticsService = FakeAnalyticsService()
+                val viewModel = createViewModel(analyticsService = analyticsService)
+                testDispatcher.scheduler.runCurrent()
 
-            placeFinderViewModel.uiState.test {
-                awaitItem() shouldBe PlaceFinderUiState.Default
+                viewModel.uiState.test {
+                    awaitItem() shouldBe PlaceFinderUiState.Default
 
-                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
+                    viewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
 
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = true,
-                )
+                    awaitItem() shouldBe PlaceFinderUiState(
+                        searchText = "Balaton",
+                        isLoading = true,
+                    )
 
-                testDispatcher.scheduler.advanceTimeBy(800)
-                testDispatcher.scheduler.advanceUntilIdle()
+                    testDispatcher.scheduler.advanceTimeBy(2000)
+                    testDispatcher.scheduler.runCurrent()
 
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = false,
-                    places = emptyList(),
-                    error = NetworkError.UNKNOWN.toInfoViewData(),
-                )
-                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchFailed)
-            }
-        }
-    }
+                    awaitItem() shouldBe PlaceFinderUiState(
+                        searchText = "Balaton",
+                        isLoading = false,
+                        places = emptyList(),
+                        error = testCase.error.toInfoViewData(),
+                    )
+                    analyticsService.loggedEvents shouldBe listOf(testCase.event)
+                }
 
-    @Test
-    fun `Given valid search text - When autocomplete has no internet - Then search no internet event is logged`() {
-        runTest {
-            everySuspend {
-                geocodingRepository.autocomplete("Balaton")
-            } returns NetworkResult.Error(NetworkError.NO_INTERNET)
-
-            placeFinderViewModel.uiState.test {
-                awaitItem() shouldBe PlaceFinderUiState.Default
-
-                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
-
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = true,
-                )
-
-                testDispatcher.scheduler.advanceTimeBy(800)
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = false,
-                    places = emptyList(),
-                    error = NetworkError.NO_INTERNET.toInfoViewData(),
-                )
-                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchNoInternet)
-            }
-        }
-    }
-
-    @Test
-    fun `Given valid search text - When autocomplete is rate limited - Then search rate limited event is logged`() {
-        runTest {
-            everySuspend {
-                geocodingRepository.autocomplete("Balaton")
-            } returns NetworkResult.Error(NetworkError.RATE_LIMITED)
-
-            placeFinderViewModel.uiState.test {
-                awaitItem() shouldBe PlaceFinderUiState.Default
-
-                placeFinderViewModel.onEvent(PlaceFinderUiEvents.SearchTextChanged("Balaton"))
-
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = true,
-                )
-
-                testDispatcher.scheduler.advanceTimeBy(800)
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                awaitItem() shouldBe PlaceFinderUiState(
-                    searchText = "Balaton",
-                    isLoading = false,
-                    places = emptyList(),
-                    error = NetworkError.RATE_LIMITED.toInfoViewData(),
-                )
-                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SearchRateLimited)
+                viewModel.clear()
             }
         }
     }
@@ -974,4 +919,23 @@ class PlaceFinderViewModelTest {
         displayPlace = displayPlace,
         displayAddress = displayAddress,
     )
+
+    private data class SearchErrorTestCase(
+        val error: NetworkError,
+        val event: AnalyticsEvent,
+    )
+
+    private companion object {
+        fun searchErrorTestCases() =
+            listOf(
+                SearchErrorTestCase(NetworkError.NOT_FOUND, AnalyticsEvent.SearchEmpty),
+                SearchErrorTestCase(NetworkError.RATE_LIMITED, AnalyticsEvent.SearchRateLimited),
+                SearchErrorTestCase(NetworkError.NO_INTERNET, AnalyticsEvent.SearchNoInternet),
+                SearchErrorTestCase(NetworkError.REQUEST_TIMEOUT, AnalyticsEvent.SearchTimeout),
+                SearchErrorTestCase(NetworkError.BAD_REQUEST, AnalyticsEvent.SearchBadRequest),
+                SearchErrorTestCase(NetworkError.INTERNAL_SERVER_ERROR, AnalyticsEvent.SearchServerError),
+                SearchErrorTestCase(NetworkError.SERIALIZATION, AnalyticsEvent.SearchSerializationError),
+                SearchErrorTestCase(NetworkError.UNKNOWN, AnalyticsEvent.SearchFailed),
+            )
+    }
 }

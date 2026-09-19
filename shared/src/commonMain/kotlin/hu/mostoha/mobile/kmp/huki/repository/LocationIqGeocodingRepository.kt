@@ -7,8 +7,10 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.network.handleNetworkCall
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import kotlin.time.Duration.Companion.seconds
 
 class LocationIqGeocodingRepository(
     private val httpClient: HttpClient,
@@ -19,11 +21,15 @@ class LocationIqGeocodingRepository(
         private const val URL_AUTOCOMPLETE = BASE_URL + "autocomplete"
         private const val URL_REVERSE_GEOCODE = BASE_URL + "reverse"
         private const val AUTOCOMPLETE_ITEM_LIMIT = 20
+
+        // Shorter than the client-wide timeout so a stalled search doesn't leave the user on a spinner.
+        private val AUTOCOMPLETE_TIMEOUT = 12.seconds
     }
 
     override suspend fun autocomplete(searchText: String): NetworkResult<List<LocationIqPlace>> =
         handleNetworkCall(crashlyticsService) {
             httpClient.get(urlString = URL_AUTOCOMPLETE) {
+                timeout { requestTimeoutMillis = AUTOCOMPLETE_TIMEOUT.inWholeMilliseconds }
                 parameter("q", searchText)
                 parameter("countrycodes", "hu")
                 parameter("accept-language", "hu")

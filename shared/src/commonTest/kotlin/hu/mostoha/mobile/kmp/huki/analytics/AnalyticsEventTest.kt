@@ -40,6 +40,16 @@ class AnalyticsEventTest {
                 TestCase(AnalyticsEvent.SearchOpened, "search_opened", emptyMap()),
                 TestCase(AnalyticsEvent.SearchFailed, "search_failed", emptyMap()),
                 TestCase(AnalyticsEvent.SearchEmpty, "search_empty", emptyMap()),
+                TestCase(AnalyticsEvent.SearchRateLimited, "search_rate_limited", emptyMap()),
+                TestCase(AnalyticsEvent.SearchNoInternet, "search_no_internet", emptyMap()),
+                TestCase(AnalyticsEvent.SearchTimeout, "search_timeout", emptyMap()),
+                TestCase(AnalyticsEvent.SearchBadRequest, "search_bad_request", emptyMap()),
+                TestCase(AnalyticsEvent.SearchServerError, "search_server_error", emptyMap()),
+                TestCase(
+                    AnalyticsEvent.SearchSerializationError,
+                    "search_serialization_error",
+                    emptyMap(),
+                ),
                 TestCase(AnalyticsEvent.SearchPlaceSelected, "search_place_selected", emptyMap()),
                 TestCase(
                     AnalyticsEvent.SearchPlaceHistorySelected,

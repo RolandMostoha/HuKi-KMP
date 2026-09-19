@@ -27,6 +27,22 @@ sealed interface AnalyticsEvent {
         override val name = "search_no_internet"
     }
 
+    data object SearchTimeout : AnalyticsEvent {
+        override val name = "search_timeout"
+    }
+
+    data object SearchBadRequest : AnalyticsEvent {
+        override val name = "search_bad_request"
+    }
+
+    data object SearchServerError : AnalyticsEvent {
+        override val name = "search_server_error"
+    }
+
+    data object SearchSerializationError : AnalyticsEvent {
+        override val name = "search_serialization_error"
+    }
+
     data object SearchEmpty : AnalyticsEvent {
         override val name = "search_empty"
     }

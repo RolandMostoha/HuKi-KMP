@@ -8,6 +8,9 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -147,11 +150,11 @@ class NetworkUtilsTest {
     }
 
     @Test
-    fun `Given unknown host exception - When handleNetworkCall invoked - Then error result is NO_INTERNET`() {
+    fun `Given wrapped unresolved address exception - When handleNetworkCall invoked - Then error result is NO_INTERNET`() {
         runTest {
             val client = createHttpClient(
                 engine = MockEngine {
-                    throw UnknownHostException(message = "Unable to resolve host")
+                    throw IllegalStateException("Wrapped", UnresolvedAddressException())
                 },
             )
 
@@ -161,6 +164,27 @@ class NetworkUtilsTest {
 
             actual shouldBe NetworkResult.Error(NetworkError.NO_INTERNET)
             crashlyticsService.recordedExceptions.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given timeout exception - When handleNetworkCall invoked - Then error result is REQUEST_TIMEOUT`() {
+        timeoutExceptions().forEach { timeoutException ->
+            runTest {
+                val crashlyticsService = FakeCrashlyticsService()
+                val client = createHttpClient(
+                    engine = MockEngine {
+                        throw timeoutException
+                    },
+                )
+
+                val actual = handleNetworkCall<TestDto>(crashlyticsService) {
+                    client.get("https://example.com")
+                }
+
+                actual shouldBe NetworkResult.Error(NetworkError.REQUEST_TIMEOUT)
+                crashlyticsService.recordedExceptions.shouldBeEmpty()
+            }
         }
     }
 
@@ -210,9 +234,14 @@ class NetworkUtilsTest {
         val count: Int,
     )
 
-    private class UnknownHostException(message: String) : Exception(message)
-
     private companion object {
         val jsonHeaders = headersOf(HttpHeaders.ContentType, "application/json")
+
+        fun timeoutExceptions() =
+            listOf(
+                SocketTimeoutException("Socket timeout"),
+                ConnectTimeoutException("Connect timeout"),
+                HttpRequestTimeoutException(url = "https://example.com", timeoutMillis = 1000L),
+            )
     }
 }
