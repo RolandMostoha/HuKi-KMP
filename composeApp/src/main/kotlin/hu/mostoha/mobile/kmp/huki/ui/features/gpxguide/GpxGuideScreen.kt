@@ -42,11 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideUiEvents
 import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -55,7 +57,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun GpxGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    koinViewModel<GpxGuideViewModel>()
+    val viewModel = koinViewModel<GpxGuideViewModel>()
+    ScreenViewEffect { viewModel.onEvent(GpxGuideUiEvents.ScreenViewed) }
     GpxGuideContent(
         onBack = onBack,
         modifier = modifier,

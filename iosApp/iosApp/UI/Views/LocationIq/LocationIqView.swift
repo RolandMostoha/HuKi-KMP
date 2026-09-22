@@ -42,6 +42,9 @@ struct LocationIqView: View {
             .readableWidth()
         }
         .background(backgroundColor.ignoresSafeArea())
+        .task {
+            viewModel.onEvent(event: LocationIqUiEventsScreenViewed.shared)
+        }
         .accessibilityIdentifier(TestTags.shared.LOCATION_IQ_SCREEN_ROOT)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)

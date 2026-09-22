@@ -62,6 +62,9 @@ struct MenuView: View {
                 }
             }
             .task {
+                viewModel.onEvent(event: MenuUiEventsScreenViewed.shared)
+            }
+            .task {
                 for await effect in viewModel.menuUiEffects {
                     handleEffect(effect)
                 }

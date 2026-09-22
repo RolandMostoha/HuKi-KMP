@@ -36,6 +36,9 @@ struct PlaceHistoryView: View {
                 ToolbarItem(placement: .topBarLeading) { backButton }
             }
             .task {
+                viewModel.onEvent(event: PlaceHistoryUiEventsScreenViewed.shared)
+            }
+            .task {
                 for await effect in viewModel.uiEffects {
                     handleEffect(effect)
                 }

@@ -40,6 +40,9 @@ struct GpxCollectionView: View {
                 ToolbarItem(placement: .topBarTrailing) { helpButton }
             }
             .task {
+                viewModel.onEvent(event: GpxCollectionUiEventsScreenViewed.shared)
+            }
+            .task {
                 for await effect in viewModel.uiEffects {
                     handleEffect(effect)
                 }

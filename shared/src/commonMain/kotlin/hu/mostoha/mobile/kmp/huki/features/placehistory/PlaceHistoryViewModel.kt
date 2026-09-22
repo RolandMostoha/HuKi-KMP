@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
-import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryHeader
@@ -12,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistoryItem
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceHistorySection
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ import kotlin.time.Clock
 class PlaceHistoryViewModel(
     private val placeHistoryRepository: PlaceHistoryRepository,
     private val clock: Clock,
-    analyticsService: AnalyticsService,
+    private val analyticsService: AnalyticsService,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlaceHistoryUiState.Default)
@@ -42,7 +42,6 @@ class PlaceHistoryViewModel(
     val uiEffects: Flow<PlaceHistoryUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.PLACE_HISTORY))
         initLogging()
         loadPlaceHistory()
     }
@@ -50,6 +49,7 @@ class PlaceHistoryViewModel(
     fun onEvent(event: PlaceHistoryUiEvents) {
         Logger.d { "PlaceHistoryEvent: $event" }
         when (event) {
+            PlaceHistoryUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.PLACE_HISTORY)
             PlaceHistoryUiEvents.BackClicked -> sendEffect(PlaceHistoryUiEffects.NavigateBack)
             is PlaceHistoryUiEvents.PlaceClicked -> sendEffect(
                 PlaceHistoryUiEffects.OpenPlace(

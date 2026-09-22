@@ -256,11 +256,13 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
-    fun `Given view model init - When created - Then gpx history screen view is logged`() {
+    fun `Given view model - When screen viewed - Then gpx history screen view is logged`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 
         runTest {
-            createViewModel()
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(GpxCollectionUiEvents.ScreenViewed)
 
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.GPX_HISTORY))
         }

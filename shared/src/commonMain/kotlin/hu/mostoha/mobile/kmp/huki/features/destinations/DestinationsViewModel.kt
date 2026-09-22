@@ -19,6 +19,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toDestinationListItem
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import kotlinx.coroutines.CoroutineDispatcher
@@ -53,7 +54,6 @@ class DestinationsViewModel(
     val uiEffects: Flow<DestinationsUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.DESTINATIONS))
         initLogging()
         loadDestinations()
     }
@@ -61,6 +61,7 @@ class DestinationsViewModel(
     fun onEvent(event: DestinationsUiEvents) {
         Logger.d { "DestinationsEvent: $event" }
         when (event) {
+            DestinationsUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.DESTINATIONS)
             DestinationsUiEvents.BackClicked -> sendEffect(DestinationsUiEffects.NavigateBack)
             is DestinationsUiEvents.TabSelected -> _uiState.update { it.copy(selectedTab = event.tab) }
             DestinationsUiEvents.GrantLocationClicked -> requestLocationPermission()

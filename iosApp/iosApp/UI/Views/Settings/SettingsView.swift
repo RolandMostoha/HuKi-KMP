@@ -60,6 +60,9 @@ struct SettingsView: View {
                 }
             }
             .task {
+                viewModel.onEvent(event: SettingsUiEventsScreenViewed.shared)
+            }
+            .task {
                 for await effect in viewModel.uiEffects {
                     handleEffect(effect)
                 }

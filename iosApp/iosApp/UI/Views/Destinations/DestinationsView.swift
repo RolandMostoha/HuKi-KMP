@@ -54,6 +54,9 @@ struct DestinationsView: View {
             ToolbarItem(placement: .topBarLeading) { backButton }
         }
         .task {
+            viewModel.onEvent(event: DestinationsUiEventsScreenViewed.shared)
+        }
+        .task {
             for await effect in viewModel.uiEffects {
                 handleEffect(effect)
             }

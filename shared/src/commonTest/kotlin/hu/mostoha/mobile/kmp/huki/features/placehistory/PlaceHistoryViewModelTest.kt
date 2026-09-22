@@ -173,11 +173,13 @@ class PlaceHistoryViewModelTest {
     }
 
     @Test
-    fun `Given view model init - When created - Then place history screen view is logged`() {
+    fun `Given view model - When screen viewed - Then place history screen view is logged`() {
         everySuspend { placeHistoryRepository.getPlaceHistory() } returns emptyList()
 
         runTest {
-            createViewModel()
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(PlaceHistoryUiEvents.ScreenViewed)
 
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.PLACE_HISTORY))
         }

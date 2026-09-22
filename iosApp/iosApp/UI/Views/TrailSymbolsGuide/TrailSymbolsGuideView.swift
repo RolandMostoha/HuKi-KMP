@@ -28,6 +28,9 @@ struct TrailSymbolsGuideView: View {
             .readableWidth()
         }
         .background(Color(.systemGroupedBackground))
+        .task {
+            viewModel.onEvent(event: TrailSymbolsGuideUiEventsScreenViewed.shared)
+        }
         .accessibilityIdentifier(TestTags.shared.TRAIL_SYMBOLS_GUIDE_SCREEN_ROOT)
         .navigationTitle(strings.get(id: SharedRes.strings().trail_symbols_guide_title))
         .navigationBarTitleDisplayMode(.large)

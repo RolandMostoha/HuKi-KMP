@@ -1,12 +1,16 @@
 package hu.mostoha.mobile.kmp.huki.features.gpxguide
 
 import androidx.lifecycle.ViewModel
-import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 
-class GpxGuideViewModel(analyticsService: AnalyticsService) : ViewModel() {
-    init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.GPX_GUIDE))
+class GpxGuideViewModel(private val analyticsService: AnalyticsService) : ViewModel() {
+    fun onEvent(event: GpxGuideUiEvents) {
+        Logger.d { "GpxGuideEvent: $event" }
+        when (event) {
+            GpxGuideUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.GPX_GUIDE)
+        }
     }
 }

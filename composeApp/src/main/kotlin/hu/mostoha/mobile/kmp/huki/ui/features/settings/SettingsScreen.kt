@@ -39,6 +39,7 @@ import hu.mostoha.mobile.kmp.huki.features.settings.SettingsUiState
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScreenViewEffect { viewModel.onEvent(SettingsUiEvents.ScreenViewed) }
     SettingsContent(
         uiState = uiState,
         uiEffects = viewModel.uiEffects,

@@ -12,6 +12,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,6 @@ class GpxCollectionViewModel(
     val uiEffects: Flow<GpxCollectionUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.GPX_HISTORY))
         initLogging()
         loadGpxFiles()
     }
@@ -49,6 +49,7 @@ class GpxCollectionViewModel(
     fun onEvent(event: GpxCollectionUiEvents) {
         Logger.d { "GpxCollectionEvent: $event" }
         when (event) {
+            GpxCollectionUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.GPX_HISTORY)
             GpxCollectionUiEvents.BackClicked -> sendEffect(GpxCollectionUiEffects.NavigateBack)
             GpxCollectionUiEvents.HelpClicked -> openTutorial()
             is GpxCollectionUiEvents.FileClicked -> sendEffect(GpxCollectionUiEffects.OpenGpx(event.file.fileUri))
