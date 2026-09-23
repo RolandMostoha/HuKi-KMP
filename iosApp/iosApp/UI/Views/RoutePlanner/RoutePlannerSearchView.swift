@@ -6,7 +6,8 @@ struct RoutePlannerSearchView: View {
     let uiState: RoutePlannerUiState
     let onEvent: (RoutePlannerUiEvents) -> Void
 
-    @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getPlaceFinderViewModel)
+    private var viewModel: PlaceFinderViewModel { holder.viewModel }
     @State private var showLocationIq = false
     @FocusState private var isSearchFieldFocused: Bool
 
@@ -24,8 +25,6 @@ struct RoutePlannerSearchView: View {
                 LocationIqView()
             }
             .onAppear { isSearchFieldFocused = true }
-            // Pushing LocationIq also fires onDisappear, and clear() cancels the scope irreversibly.
-            .onDisappear { if !showLocationIq { viewModel.clear() } }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SEARCH_SCREEN)
         }

@@ -2,6 +2,11 @@ package hu.mostoha.mobile.kmp.huki.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import dev.icerock.moko.permissions.ios.PermissionsController
@@ -67,14 +72,17 @@ fun initKoin(analyticsService: AnalyticsService, crashlyticsService: Crashlytics
 
 object KoinViewModelProvider : KoinComponent {
     fun getMainViewModel(): MainViewModel = get()
-    fun getPlaceFinderViewModel(): PlaceFinderViewModel = get()
-    fun getMenuViewModel(): MenuViewModel = get()
-    fun getGpxCollectionViewModel(): GpxCollectionViewModel = get()
-    fun getGpxGuideViewModel(): GpxGuideViewModel = get()
-    fun getTrailSymbolsGuideViewModel(): TrailSymbolsGuideViewModel = get()
-    fun getLocationIqViewModel(): LocationIqViewModel = get()
-    fun getPlaceHistoryViewModel(): PlaceHistoryViewModel = get()
+    fun getPlaceFinderViewModel(owner: IosViewModelStoreOwner): PlaceFinderViewModel = owner.resolve()
+    fun getMenuViewModel(owner: IosViewModelStoreOwner): MenuViewModel = owner.resolve()
+    fun getGpxCollectionViewModel(owner: IosViewModelStoreOwner): GpxCollectionViewModel = owner.resolve()
+    fun getGpxGuideViewModel(owner: IosViewModelStoreOwner): GpxGuideViewModel = owner.resolve()
+    fun getTrailSymbolsGuideViewModel(owner: IosViewModelStoreOwner): TrailSymbolsGuideViewModel = owner.resolve()
+    fun getLocationIqViewModel(owner: IosViewModelStoreOwner): LocationIqViewModel = owner.resolve()
+    fun getPlaceHistoryViewModel(owner: IosViewModelStoreOwner): PlaceHistoryViewModel = owner.resolve()
     fun getRoutePlannerViewModel(): RoutePlannerViewModel = get()
-    fun getSettingsViewModel(): SettingsViewModel = get()
-    fun getDestinationsViewModel(): DestinationsViewModel = get()
+    fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
+    fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
+
+    private inline fun <reified T : ViewModel> ViewModelStoreOwner.resolve(): T =
+        ViewModelProvider.create(this, viewModelFactory { initializer { get<T>() } })[T::class]
 }

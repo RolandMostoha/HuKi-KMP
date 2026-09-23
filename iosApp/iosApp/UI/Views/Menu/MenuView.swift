@@ -15,7 +15,8 @@ struct MenuView: View {
     let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
-    @State var viewModel = KoinViewModelProvider.shared.getMenuViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getMenuViewModel)
+    var viewModel: MenuViewModel { holder.viewModel }
     @Environment(\.dismiss) private var dismiss
 
     let strings = Strings()

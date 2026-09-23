@@ -5,7 +5,8 @@ struct GpxCollectionView: View {
     let onOpenTutorial: () -> Void
     let onOpenGpx: (String) -> Void
 
-    @State private var viewModel = KoinViewModelProvider.shared.getGpxCollectionViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getGpxCollectionViewModel)
+    private var viewModel: GpxCollectionViewModel { holder.viewModel }
     @State private var showDeleteConfirm = false
     @State private var shareItem: ShareItem?
     @Environment(\.dismiss) private var dismiss

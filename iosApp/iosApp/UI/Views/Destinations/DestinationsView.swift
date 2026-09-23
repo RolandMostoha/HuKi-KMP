@@ -4,7 +4,8 @@ import SwiftUI
 struct DestinationsView: View {
     let onShowOnMap: (Destination) -> Void
 
-    @State private var viewModel = KoinViewModelProvider.shared.getDestinationsViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getDestinationsViewModel)
+    private var viewModel: DestinationsViewModel { holder.viewModel }
     @State private var selectedTab: DestinationsTab = .popular
     @State private var destinationCount: Int32 = 0
     @State private var sortedLandscapes: [Landscape] = []

@@ -15,7 +15,8 @@ struct SearchSheetView: View {
     let onSeeAllDestinationsClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
-    @State private var viewModel = KoinViewModelProvider.shared.getPlaceFinderViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getPlaceFinderViewModel)
+    private var viewModel: PlaceFinderViewModel { holder.viewModel }
     @State private var headerHeight: CGFloat = 80
     @FocusState private var isSearchFieldFocused: Bool
 
@@ -30,9 +31,6 @@ struct SearchSheetView: View {
             .background(Color(.systemGray6))
             .onAppear {
                 isSearchFieldFocused = true
-            }
-            .onDisappear {
-                viewModel.clear()
             }
         }
     }

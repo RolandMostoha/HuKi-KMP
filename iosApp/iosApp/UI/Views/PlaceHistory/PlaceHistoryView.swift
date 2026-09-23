@@ -4,7 +4,8 @@ import SwiftUI
 struct PlaceHistoryView: View {
     let onOpenPlace: (OsmType, String) -> Void
 
-    @State private var viewModel = KoinViewModelProvider.shared.getPlaceHistoryViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getPlaceHistoryViewModel)
+    private var viewModel: PlaceHistoryViewModel { holder.viewModel }
     @Environment(\.dismiss) private var dismiss
 
     private let strings = Strings()

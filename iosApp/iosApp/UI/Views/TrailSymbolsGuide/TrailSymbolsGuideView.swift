@@ -7,7 +7,8 @@ enum TrailSymbolsGuideRoute: Hashable {
 
 struct TrailSymbolsGuideView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = KoinViewModelProvider.shared.getTrailSymbolsGuideViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getTrailSymbolsGuideViewModel)
+    private var viewModel: TrailSymbolsGuideViewModel { holder.viewModel }
 
     private let strings = Strings()
 
