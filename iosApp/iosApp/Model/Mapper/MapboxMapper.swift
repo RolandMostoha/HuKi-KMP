@@ -64,14 +64,17 @@ extension Shared.ContentPadding {
 }
 
 extension Shared.BaseLayer {
-    var mapStyle: MapStyle {
+
+    func mapStyle(isDarkMode: Bool) -> MapStyle {
+        let lightPreset: StandardLightPreset = isDarkMode ? .night : .day
+
         switch self {
         case .outdoors:
             return .outdoors
-        case .street:
-            return .streets
+        case .city:
+            return .standard(lightPreset: lightPreset)
         case .satellite:
-            return .satellite
+            return .standardSatellite(lightPreset: lightPreset)
         }
     }
 }

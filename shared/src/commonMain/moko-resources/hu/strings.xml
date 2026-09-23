@@ -50,7 +50,7 @@
 
     <string name="layers_base_layers_title">Alap térkép</string>
     <string name="layers_base_outdoors_title">Természet</string>
-    <string name="layers_base_streets_title">Városi</string>
+    <string name="layers_base_city_title">Városi</string>
     <string name="layers_base_satellite_title">Műhold</string>
     <string name="layers_overlay_layers_title">Rétegek</string>
     <string name="layers_overlay_hiking_title">Túraútvonalak</string>

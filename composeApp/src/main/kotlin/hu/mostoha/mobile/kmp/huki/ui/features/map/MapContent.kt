@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.ui.features.map
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -49,8 +50,8 @@ import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
+import com.mapbox.maps.extension.compose.style.DoubleValue
 import com.mapbox.maps.extension.compose.style.LongValue
-import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.extension.compose.style.StringListValue
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
@@ -83,10 +84,10 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
-import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
@@ -118,6 +119,7 @@ fun MapContent(
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
     )
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
+    val isDarkMode = isSystemInDarkTheme()
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
@@ -164,7 +166,7 @@ fun MapContent(
             modifier = Modifier
                 .testTag(TestTags.MAP_MAPBOX)
                 .fillMaxSize(),
-            style = { MapStyle(mapUiState.baseLayer.toMapStyle()) },
+            style = { MapBaseStyle(baseLayer = mapUiState.baseLayer, isDarkMode = isDarkMode) },
             mapViewportState = mapViewportState,
             mapState = mapState,
             onMapClickListener = OnMapClickListener {
@@ -273,7 +275,9 @@ fun MapContent(
                         minZoom = LongValue(OverlayLayer.TURISTAUTAK.minZoom)
                         maxZoom = LongValue(OverlayLayer.TURISTAUTAK.maxZoom)
                     },
-                )
+                ) {
+                    rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
+                }
             }
             if (mapUiState.gpxLayerVisible) {
                 GpxLayer(
@@ -329,6 +333,7 @@ private fun PlaceMarker(location: Location) {
         iconImage = markerImage
         iconAnchor = IconAnchor.BOTTOM
         iconSize = SharedDimens.PLACE_MARKER_SCALE
+        iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
     }
 }
 
@@ -365,6 +370,7 @@ private fun GpxLayer(
             }
             iconImage = rememberIconImage
             iconSize = waypoint.type.markerScale
+            iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
         }
     }
     mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->

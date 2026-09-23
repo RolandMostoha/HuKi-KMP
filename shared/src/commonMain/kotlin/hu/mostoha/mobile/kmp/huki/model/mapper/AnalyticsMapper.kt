@@ -12,7 +12,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 fun BaseLayer.toLayer(): Layer =
     when (this) {
         BaseLayer.OUTDOORS -> Layer.OUTDOORS
-        BaseLayer.STREET -> Layer.STREET
+        BaseLayer.CITY -> Layer.CITY
         BaseLayer.SATELLITE -> Layer.SATELLITE
     }
 

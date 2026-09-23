@@ -1,4 +1,4 @@
-@preconcurrency import MapboxMaps
+@preconcurrency @_spi(Experimental) import MapboxMaps
 import Shared
 import SwiftUI
 
@@ -20,6 +20,9 @@ struct RoutePlanMapContent: MapContent {
                 .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
                 .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
                 .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
+                .lineColorUseTheme(.none)
+                .lineBorderColorUseTheme(.none)
+                .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
         }
         // In Route Plans, waypoints should sit on top of my location, to always see the plan.
         // ViewAnnotations are real views above every style layer.

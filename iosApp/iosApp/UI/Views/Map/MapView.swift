@@ -1,4 +1,4 @@
-@preconcurrency import MapboxMaps
+@preconcurrency @_spi(Experimental) import MapboxMaps
 import Shared
 import SwiftUI
 
@@ -14,6 +14,10 @@ struct MapView: View {
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isDarkMode: Bool { colorScheme == .dark }
 
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
@@ -57,6 +61,7 @@ struct MapView: View {
         MapReader { proxy in
             ZStack(alignment: .topTrailing) {
                 Map(viewport: $viewport) {
+                    OutdoorsColorThemeContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode)
                     TapInteraction { _ in
                         if !uiState.mapUiState.distanceInfoWindows.isEmpty {
                             onDistanceInfoWindowDismissed()
@@ -71,18 +76,14 @@ struct MapView: View {
                         return true
                     }
                     if uiState.mapUiState.hikingLayerVisible {
-                        RasterSource(id: OverlayLayer.turistautak.layerId)
-                            .tiles(OverlayLayer.turistautak.tiles)
-                            .tileSize(Double(OverlayLayer.turistautak.tileSize))
-                            .minzoom(Double(OverlayLayer.turistautak.minZoom))
-                            .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
-                        RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
+                        HikingTrailsMapContent()
                     }
                     if let placeDetails = uiState.mapUiState.placeDetails {
                         PointAnnotation(coordinate: placeDetails.location.coordinate)
                             .image(SharedRes.images().ic_marker_picker.annotationImage)
                             .iconAnchor(.bottom)
                             .iconSize(SharedDimens.shared.PLACE_MARKER_SCALE)
+                            .iconEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
                     }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: PuckBearingSource.puck)
@@ -106,6 +107,9 @@ struct MapView: View {
                                     .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
                                     .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
                                     .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
+                                    .lineColorUseTheme(.none)
+                                    .lineBorderColorUseTheme(.none)
+                                    .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
                             }
 
                             let orderedWaypoints = WaypointMarkerOrder.shared.sort(waypoints: gpxDetails.waypoints)
@@ -117,6 +121,7 @@ struct MapView: View {
                                             ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
                                             : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                                     )
+                                    .iconEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
                                     .onTapGesture {
                                         onWaypointClicked(waypoint)
                                     }
@@ -151,7 +156,7 @@ struct MapView: View {
                         )
                     }
                 }
-                .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
+                .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
                 .gestureOptions(GestureOptions(
                     rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
                 ))

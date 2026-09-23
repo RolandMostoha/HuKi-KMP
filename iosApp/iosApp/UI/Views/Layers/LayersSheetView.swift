@@ -29,7 +29,7 @@ struct LayersSheetView: View {
                 .padding(.top, 26)
                 .padding(.horizontal, 16)
 
-                HStack(spacing: 36) {
+                HStack(spacing: 0) {
                     ForEach(BaseLayer.allCases, id: \.self) { baseLayer in
                         LayersItemView(
                             title: strings.get(id: baseLayer.title),
@@ -37,29 +37,32 @@ struct LayersSheetView: View {
                             selected: selectedBaseLayer == baseLayer,
                             onClick: { onBaseLayerSelected(baseLayer) }
                         )
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 4)
+                .padding(.top, 8)
 
                 Text(strings.get(id: SharedRes.strings().layers_overlay_layers_title))
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.top, 12)
 
-                HStack(spacing: 56) {
+                HStack(spacing: 0) {
                     LayersItemView(
                         title: strings.get(id: SharedRes.strings().layers_overlay_hiking_title),
                         image: SharedRes.images().ic_layers_hiking.toUIImage()!,
                         selected: isHikingLayerSelected,
                         onClick: { onHikingLayerSelected() }
                     )
+                    .frame(maxWidth: .infinity)
                     LayersItemView(
                         title: strings.get(id: SharedRes.strings().layers_overlay_gpx_title),
                         image: SharedRes.images().ic_layers_gpx.toUIImage()!,
                         selected: isGpxLayerSelected,
                         onClick: { onGpxLayerSelected() }
                     )
+                    .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 8)
