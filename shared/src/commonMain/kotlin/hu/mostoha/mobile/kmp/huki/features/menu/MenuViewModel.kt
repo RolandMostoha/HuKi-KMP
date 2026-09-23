@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +28,13 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
     val menuUiEffects: Flow<MenuUiEffects> = _menuUiEffects.receiveAsFlow()
 
     init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.MENU))
         initLogging()
     }
 
     fun onEvent(event: MenuUiEvents) {
         Logger.d { "MenuEvent: $event" }
         when (event) {
+            MenuUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.MENU)
             MenuUiEvents.BackClicked -> sendEffect(MenuUiEffects.NavigateBack)
             MenuUiEvents.SettingsClicked -> sendEffect(MenuUiEffects.NavigateToSettings)
             MenuUiEvents.RoutePlannerClicked -> openRoutePlanner()

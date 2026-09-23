@@ -7,7 +7,8 @@ enum GpxGuideRoute: Hashable {
 
 struct GpxGuideView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = KoinViewModelProvider.shared.getGpxGuideViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getGpxGuideViewModel)
+    private var viewModel: GpxGuideViewModel { holder.viewModel }
 
     private let strings = Strings()
     private let primary = Color(SharedRes.colors().primary.getUIColor())
@@ -24,6 +25,9 @@ struct GpxGuideView: View {
             .readableWidth()
         }
         .background(Color(.systemGroupedBackground))
+        .task {
+            viewModel.onEvent(event: GpxGuideUiEventsScreenViewed.shared)
+        }
         .accessibilityIdentifier(TestTags.shared.GPX_GUIDE_SCREEN_ROOT)
         .navigationTitle(strings.get(id: SharedRes.strings().gpx_guide_title))
         .navigationBarTitleDisplayMode(.large)

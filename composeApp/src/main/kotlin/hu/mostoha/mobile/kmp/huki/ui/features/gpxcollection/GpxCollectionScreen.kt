@@ -51,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.ui.components.GpxFileCard
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
@@ -70,6 +71,7 @@ fun GpxCollectionScreen(
     viewModel: GpxCollectionViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScreenViewEffect { viewModel.onEvent(GpxCollectionUiEvents.ScreenViewed) }
     GpxCollectionContent(
         uiState = uiState,
         uiEffects = viewModel.uiEffects,

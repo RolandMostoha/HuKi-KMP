@@ -6,7 +6,8 @@ enum SettingsRoute: Hashable {
 }
 
 struct SettingsView: View {
-    @State private var viewModel = KoinViewModelProvider.shared.getSettingsViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getSettingsViewModel)
+    private var viewModel: SettingsViewModel { holder.viewModel }
     @Environment(\.dismiss) private var dismiss
 
     private let strings = Strings()
@@ -58,6 +59,9 @@ struct SettingsView: View {
                     .labelStyle(.iconOnly)
                     .accessibilityIdentifier(TestTags.shared.SETTINGS_BACK_BUTTON)
                 }
+            }
+            .task {
+                viewModel.onEvent(event: SettingsUiEventsScreenViewed.shared)
             }
             .task {
                 for await effect in viewModel.uiEffects {

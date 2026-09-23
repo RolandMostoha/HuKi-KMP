@@ -184,9 +184,18 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given view model init - When created - Then menu screen view is logged`() {
+    fun `Given view model - When screen viewed - Then menu screen view is logged`() {
         runTest {
+            menuViewModel.onEvent(MenuUiEvents.ScreenViewed)
+
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.MENU))
+        }
+    }
+
+    @Test
+    fun `Given view model - When created - Then no screen view is logged`() {
+        runTest {
+            analyticsService.screenViews shouldBe emptyList()
         }
     }
 }

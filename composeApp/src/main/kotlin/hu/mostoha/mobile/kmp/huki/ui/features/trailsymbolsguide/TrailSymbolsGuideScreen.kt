@@ -39,19 +39,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideUiEvents
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.TrailSymbol
 import hu.mostoha.mobile.kmp.huki.model.domain.TrailSymbolSection
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TrailSymbolsGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    koinViewModel<TrailSymbolsGuideViewModel>()
+    val viewModel = koinViewModel<TrailSymbolsGuideViewModel>()
+    ScreenViewEffect { viewModel.onEvent(TrailSymbolsGuideUiEvents.ScreenViewed) }
     TrailSymbolsGuideContent(
         onBack = onBack,
         modifier = modifier,

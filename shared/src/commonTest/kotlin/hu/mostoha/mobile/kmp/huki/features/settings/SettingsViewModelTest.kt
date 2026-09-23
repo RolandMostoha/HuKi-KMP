@@ -99,10 +99,12 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Given view model init - When created - Then settings screen view is logged`() {
+    fun `Given view model - When screen viewed - Then settings screen view is logged`() {
         runTest {
-            createViewModel()
+            val viewModel = createViewModel()
             advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.ScreenViewed)
 
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.SETTINGS))
         }

@@ -55,6 +55,7 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.ui.components.PlaceRow
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.flow.Flow
@@ -70,6 +71,7 @@ fun PlaceHistoryScreen(
     viewModel: PlaceHistoryViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScreenViewEffect { viewModel.onEvent(PlaceHistoryUiEvents.ScreenViewed) }
     PlaceHistoryContent(
         uiState = uiState,
         uiEffects = viewModel.uiEffects,

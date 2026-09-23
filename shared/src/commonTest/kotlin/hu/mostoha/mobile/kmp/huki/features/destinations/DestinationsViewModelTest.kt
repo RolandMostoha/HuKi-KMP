@@ -75,11 +75,13 @@ class DestinationsViewModelTest {
     }
 
     @Test
-    fun `Given view model init - When created - Then destinations screen view is logged`() {
+    fun `Given view model - When screen viewed - Then destinations screen view is logged`() {
         stubPermissionState(PermissionState.NotDetermined)
 
         runTest {
-            createViewModel()
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(DestinationsUiEvents.ScreenViewed)
 
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.DESTINATIONS))
         }

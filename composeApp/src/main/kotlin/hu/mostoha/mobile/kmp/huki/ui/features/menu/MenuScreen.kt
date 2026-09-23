@@ -51,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.ui.components.VersionPill
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
@@ -76,6 +77,7 @@ fun MenuScreen(
     viewModel: MenuViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScreenViewEffect { viewModel.onEvent(MenuUiEvents.ScreenViewed) }
     MenuContent(
         uiState = uiState,
         menuUiEffects = viewModel.menuUiEffects,

@@ -7,7 +7,8 @@ enum LocationIqRoute: Hashable {
 
 struct LocationIqView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = KoinViewModelProvider.shared.getLocationIqViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getLocationIqViewModel)
+    private var viewModel: LocationIqViewModel { holder.viewModel }
 
     private let strings = Strings()
 
@@ -42,6 +43,9 @@ struct LocationIqView: View {
             .readableWidth()
         }
         .background(backgroundColor.ignoresSafeArea())
+        .task {
+            viewModel.onEvent(event: LocationIqUiEventsScreenViewed.shared)
+        }
         .accessibilityIdentifier(TestTags.shared.LOCATION_IQ_SCREEN_ROOT)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)

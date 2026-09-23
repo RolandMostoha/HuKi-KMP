@@ -8,6 +8,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,6 @@ class SettingsViewModel(
     val uiEffects: Flow<SettingsUiEffects> = _uiEffects.receiveAsFlow()
 
     init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.SETTINGS))
         initLogging()
         observeSettings()
     }
@@ -39,6 +39,7 @@ class SettingsViewModel(
     fun onEvent(event: SettingsUiEvents) {
         Logger.d { "SettingsEvent: $event" }
         when (event) {
+            SettingsUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.SETTINGS)
             SettingsUiEvents.BackClicked -> sendEffect(SettingsUiEffects.NavigateBack)
             is SettingsUiEvents.MapZoomControlsToggled -> toggleMapZoomControls(event.visible)
         }

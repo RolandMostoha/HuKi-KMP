@@ -11,9 +11,18 @@ class GpxGuideViewModelTest {
     private val analyticsService = FakeAnalyticsService()
 
     @Test
-    fun `Given view model init - When created - Then gpx tutorial screen view is logged`() {
-        GpxGuideViewModel(analyticsService)
+    fun `Given view model - When screen viewed - Then gpx guide screen view is logged`() {
+        val viewModel = GpxGuideViewModel(analyticsService)
+
+        viewModel.onEvent(GpxGuideUiEvents.ScreenViewed)
 
         analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.GPX_GUIDE))
+    }
+
+    @Test
+    fun `Given view model - When created - Then no screen view is logged`() {
+        GpxGuideViewModel(analyticsService)
+
+        analyticsService.screenViews shouldBe emptyList()
     }
 }

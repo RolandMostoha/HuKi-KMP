@@ -1,12 +1,16 @@
 package hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide
 
 import androidx.lifecycle.ViewModel
-import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.logScreenView
 
-class TrailSymbolsGuideViewModel(analyticsService: AnalyticsService) : ViewModel() {
-    init {
-        analyticsService.logEvent(AnalyticsEvent.ScreenView(Screen.TRAIL_SYMBOLS_GUIDE))
+class TrailSymbolsGuideViewModel(private val analyticsService: AnalyticsService) : ViewModel() {
+    fun onEvent(event: TrailSymbolsGuideUiEvents) {
+        Logger.d { "TrailSymbolsGuideEvent: $event" }
+        when (event) {
+            TrailSymbolsGuideUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.TRAIL_SYMBOLS_GUIDE)
+        }
     }
 }

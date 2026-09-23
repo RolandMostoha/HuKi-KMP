@@ -7,7 +7,8 @@ enum TrailSymbolsGuideRoute: Hashable {
 
 struct TrailSymbolsGuideView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = KoinViewModelProvider.shared.getTrailSymbolsGuideViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getTrailSymbolsGuideViewModel)
+    private var viewModel: TrailSymbolsGuideViewModel { holder.viewModel }
 
     private let strings = Strings()
 
@@ -28,6 +29,9 @@ struct TrailSymbolsGuideView: View {
             .readableWidth()
         }
         .background(Color(.systemGroupedBackground))
+        .task {
+            viewModel.onEvent(event: TrailSymbolsGuideUiEventsScreenViewed.shared)
+        }
         .accessibilityIdentifier(TestTags.shared.TRAIL_SYMBOLS_GUIDE_SCREEN_ROOT)
         .navigationTitle(strings.get(id: SharedRes.strings().trail_symbols_guide_title))
         .navigationBarTitleDisplayMode(.large)

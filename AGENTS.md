@@ -247,6 +247,9 @@ Before writing a comment, **both** must hold. If either fails, delete it.
 - **Naming usage sites.** `... shown in GPX Details and Route Planner` becomes a lie, and a
   maintenance chore, the day a third screen uses it.
 - **Cross-platform referrals.** "We did this on Android, that on iOS".
+- **Comparing to alternatives.** `(@State re-creates it on every view init)` describes another
+  approach, not this code. Say what this code does; the list of alternatives never ends, and the
+  previous version lives in git.
 - **Doc comments on Composables / SwiftUI views.** Go straight from `import` to
   `struct X: View` / `@Composable fun X()`. Add a `@Preview` / `#Preview` instead.
 

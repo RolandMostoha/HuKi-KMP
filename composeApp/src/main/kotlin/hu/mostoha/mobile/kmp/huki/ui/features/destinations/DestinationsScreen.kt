@@ -72,6 +72,7 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
+import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
@@ -86,6 +87,7 @@ fun DestinationsScreen(
     viewModel: DestinationsViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScreenViewEffect { viewModel.onEvent(DestinationsUiEvents.ScreenViewed) }
     BindEffect(viewModel.permissionsController)
     DestinationsContent(
         uiState = uiState,

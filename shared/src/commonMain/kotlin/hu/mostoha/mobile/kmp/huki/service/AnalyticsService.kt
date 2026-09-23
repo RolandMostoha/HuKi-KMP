@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.service
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
+import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.analytics.UserProperty
 
 /**
@@ -12,4 +13,8 @@ interface AnalyticsService {
     fun setUserProperty(property: UserProperty)
 
     fun setUserId(userId: String?)
+}
+
+fun AnalyticsService.logScreenView(screen: Screen) {
+    logEvent(AnalyticsEvent.ScreenView(screen))
 }

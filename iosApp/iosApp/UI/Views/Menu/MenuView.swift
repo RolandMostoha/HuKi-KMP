@@ -15,7 +15,8 @@ struct MenuView: View {
     let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
-    @State var viewModel = KoinViewModelProvider.shared.getMenuViewModel()
+    @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getMenuViewModel)
+    var viewModel: MenuViewModel { holder.viewModel }
     @Environment(\.dismiss) private var dismiss
 
     let strings = Strings()
@@ -60,6 +61,9 @@ struct MenuView: View {
                     .labelStyle(.iconOnly)
                     .accessibilityIdentifier(TestTags.shared.MENU_BACK_BUTTON)
                 }
+            }
+            .task {
+                viewModel.onEvent(event: MenuUiEventsScreenViewed.shared)
             }
             .task {
                 for await effect in viewModel.menuUiEffects {
