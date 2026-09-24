@@ -70,9 +70,11 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
+import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
 import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
@@ -232,25 +234,18 @@ fun MapContent(
                 )
             },
         ) {
-            val primaryOnMapColor = SharedRes.colors.primaryOnMap.toComposeColor(context)
-            val primaryLightOnMapColor = SharedRes.colors.primaryLightOnMap.toComposeColor(context)
-            val mapStrokeColor = SharedRes.colors.mapStrokeOnMap.toComposeColor(context)
+            val primaryColor = SharedRes.colors.primary.toComposeColor(context)
+            val primaryLightColor = SharedRes.colors.primaryLight.toComposeColor(context)
+            val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
 
             MapEffect(Unit) { mapView ->
                 mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
                 mapView.location.updateSettings {
                     enabled = true
-                    locationPuck = LocationPuck2D(
-                        topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
-                        bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
-                        shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
-                    )
                     puckBearingEnabled = true
                     puckBearing = PuckBearing.HEADING
                     showAccuracyRing = true
-                    accuracyRingColor = SharedRes.colors.accuracyRingOnMap.getColor(context)
                     pulsingEnabled = true
-                    pulsingColor = primaryLightOnMapColor.toArgb()
                 }
                 val positionListener = object : OnIndicatorPositionChangedListener {
                     override fun onIndicatorPositionChanged(point: Point) {
@@ -264,6 +259,17 @@ fun MapContent(
                     if (from.isFollow() && (to.isIdle() || to.isOverview())) {
                         onEvent(MainUiEvents.FollowingDisabled)
                     }
+                }
+            }
+            MapEffect(isDarkMode) { mapView ->
+                mapView.location.updateSettings {
+                    locationPuck = LocationPuck2D(
+                        topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
+                        bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
+                        shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
+                    )
+                    accuracyRingColor = SharedRes.colors.accuracyRing.getColor(context)
+                    pulsingColor = primaryLightColor.toArgb()
                 }
             }
             if (mapUiState.hikingLayerVisible) {
@@ -283,20 +289,25 @@ fun MapContent(
                 GpxLayer(
                     mapUiState = mapUiState,
                     onEvent = onEvent,
-                    routeColor = primaryOnMapColor,
+                    routeColor = primaryColor,
                     routeStrokeColor = mapStrokeColor,
+                    isDarkMode = isDarkMode,
                 )
             }
             if (mapUiState.routePlan != null || mapUiState.routePlanMarkers.isNotEmpty()) {
                 RoutePlanLayer(
                     routePlan = mapUiState.routePlan,
                     markers = mapUiState.routePlanMarkers,
-                    routeColor = primaryOnMapColor,
+                    routeColor = primaryColor,
                     routeStrokeColor = mapStrokeColor,
                 )
             }
             mapUiState.placeDetails?.let { placeDetails ->
-                PlaceMarker(location = placeDetails.location)
+                PlaceMarker(
+                    location = placeDetails.location,
+                    isDarkMode = isDarkMode,
+                    baseLayer = mapUiState.baseLayer,
+                )
             }
         }
         MapCameraDebugPanel(
@@ -327,8 +338,9 @@ private fun MapViewportState.handleMapEffect(
 @OptIn(MapboxDelicateApi::class)
 @Composable
 @MapboxMapComposable
-private fun PlaceMarker(location: Location) {
-    val markerImage = rememberIconImage(SharedRes.images.ic_marker_picker.drawableResId)
+private fun PlaceMarker(location: Location, isDarkMode: Boolean, baseLayer: BaseLayer) {
+    val markerIcon = MarkerIcons.placeSymbol(isDarkMode, baseLayer)
+    val markerImage = rememberIconImage(markerIcon.drawableResId)
     PointAnnotation(location.toPoint()) {
         iconImage = markerImage
         iconAnchor = IconAnchor.BOTTOM
@@ -345,6 +357,7 @@ private fun GpxLayer(
     onEvent: (MainUiEvents) -> Unit,
     routeColor: Color,
     routeStrokeColor: Color,
+    isDarkMode: Boolean,
 ) {
     val gpxDetails = mapUiState.gpxDetails ?: return
     if (mapUiState.gpxRouteVisible) {
@@ -362,7 +375,8 @@ private fun GpxLayer(
         )
     }
     WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->
-        val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
+        val waypointIcon = MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer)
+        val rememberIconImage = rememberIconImage(waypointIcon.drawableResId)
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {
                 onEvent(MainUiEvents.GpxWaypointClicked(waypoint))

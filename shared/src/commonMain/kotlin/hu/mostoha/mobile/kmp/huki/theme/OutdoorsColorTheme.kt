@@ -1,33 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.theme
 
 object OutdoorsColorTheme {
-    /**
-     * Value for Mapbox's `*-color-use-theme` properties that holds a layer out of the colour theme.
-     *
-     * The LUT grades every colour the Outdoors basemap draws, including HuKi's own overlays, so
-     * layers whose colour carries meaning — the GPX route, the route plan — opt out with this.
-     *
-     * Known SDK limitation: `*-use-theme` only takes effect after a zoom level change.
-     */
+    // The LUT grades every colour the style draws, HuKi's overlays included, so layers whose colour
+    // carries meaning opt out with this. It only takes effect after a zoom level change.
     const val COLOR_USE_THEME_NONE = "none"
 
     /**
-     * Colour-grading LUT that turns the light Outdoors basemap into a dark one.
-     *
-     * Mapbox only ships designed dark cartography for the Standard style family. Outdoors is a
-     * classic style with no `lightPreset`, so the only way to darken it is a colour theme: a lookup
-     * table that remaps every colour the style draws, terrain and contours included.
-     *
-     * The transform inverts lightness through a gamma curve so that paper-white fills drop into the
-     * shadows while near-black labels stay bright, scales saturation by `0.35`, then blends 22%
-     * towards a cool navy. A plain linear inversion leaves large area fills (forest, terrain)
-     * sitting at a washed-out mid tone.
-     *
-     * The value is a base64-encoded 32x32x32 LUT laid out as a 1024x32 PNG. Regenerate it with
-     * `python3 tools/python/generate_dark_map_lut.py`, which is also where the tuning constants live.
-     *
-     * Applied on iOS via `ColorTheme(base64:)` and on Android via `rememberColorTheme(base64 = ...)`.
-     * Both are experimental Mapbox APIs — re-verify on every SDK bump.
+     * Outdoors is a classic style with no `lightPreset`, so the only way to darken it is a colour
+     * theme: a base64 32x32x32 LUT remapping every colour the style draws. Regenerate it with
+     * `tools/python/generate_dark_map_lut.py`, which holds the transform and its tuning constants.
      */
     val DARK_MAP_LUT_BASE64: String = """
         iVBORw0KGgoAAAANSUhEUgAABAAAAAAgCAIAAAADnJ3xAAAzeklEQVR42rWdvcs0z5rXp7uf8zt79pxVZANBE8VAETSQTdRkTRaD

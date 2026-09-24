@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.layers
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -83,13 +85,13 @@ fun LayersBottomSheet(
             Row(
                 modifier = Modifier
                     .padding(horizontal = Dimens.ExtraLarge),
+                horizontalArrangement = Arrangement.spacedBy(36.dp),
             ) {
                 BaseLayer.entries.forEach { baseLayer ->
                     LayersItem(
                         title = mokoString(baseLayer.title),
                         imageRes = baseLayer.image.drawableResId,
                         selected = baseLayer == selectedBaseLayer,
-                        modifier = Modifier.weight(1f),
                         onClick = {
                             onBaseLayerSelected(baseLayer)
                         },
@@ -108,12 +110,12 @@ fun LayersBottomSheet(
             Row(
                 modifier = Modifier
                     .padding(horizontal = Dimens.ExtraLarge),
+                horizontalArrangement = Arrangement.spacedBy(56.dp),
             ) {
                 LayersItem(
                     title = mokoString(SharedRes.strings.layers_overlay_hiking_title),
                     imageRes = SharedRes.images.ic_layers_hiking.drawableResId,
                     selected = isHikingLayerSelected,
-                    modifier = Modifier.weight(1f),
                     onClick = {
                         onHikingLayerSelected()
                     },
@@ -122,7 +124,6 @@ fun LayersBottomSheet(
                     title = mokoString(SharedRes.strings.layers_overlay_gpx_title),
                     imageRes = SharedRes.images.ic_layers_gpx.drawableResId,
                     selected = isGpxLayerSelected,
-                    modifier = Modifier.weight(1f),
                     onClick = {
                         onGpxLayerSelected()
                     },

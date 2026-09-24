@@ -75,8 +75,8 @@ they can record their exact location / zoom level with a CROSS marker.
 | Status | Scope    | Bug                                                                                                                                   |
 |--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | DarkMode | Use proper dark mode for mapbox OUTDOORS + STANDARD + STANDARD_SATELLITE                                                              |
-| `[L]`  | DarkMode | Use dark mode colors in Map content, markers, annotations, lines etc.                                                                 |
-| `[L]`  | DarkMode | Make THEME switchable from Settings, Light-Dark-System                                                                                |
+| `[x]`  | DarkMode | Use dark mode colors in Map content, markers, annotations, lines etc.                                                                 |
+| `[R]`  | DarkMode | Make THEME switchable from Settings, Light-Dark-System. Save it to user preference.                                                   |
 | `[x]`  | DarkMode | Bug, iOS 27, found in beta. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png) |
 
 ### FEATURE: Landscape

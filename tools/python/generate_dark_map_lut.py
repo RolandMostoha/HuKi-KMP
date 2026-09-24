@@ -15,10 +15,21 @@ Run it to regenerate the constant in
 
 It prints the base64 PNG to stdout. The LUT is a 32x32x32 cube laid out as a 1024x32 image:
 x = blue * 32 + red, y = green.
+
+The LUT grades *every* layer the style draws, raster icon images included, and Mapbox has no
+`icon-image-use-theme` to hold an image out of it. Overlay artwork that has to land on a specific
+on-screen colour therefore ships a `-dark` variant painted in the colour that *grades into* the one
+we want. Solve for it with:
+
+    python3 tools/python/generate_dark_map_lut.py --solve '#6BBA6F'
+
+Note the LUT cuts saturation to `SATURATION_SCALE`, so vivid targets are outside its output gamut
+and the solver returns the closest reachable colour, printing both so the gap is visible.
 """
 
 import base64
 import struct
+import sys
 import zlib
 
 SIZE = 32
@@ -189,5 +200,49 @@ def encode_png(width, height, rows):
     )
 
 
+def parse_hex(value):
+    value = value.lstrip("#")
+    return tuple(int(value[i : i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def format_hex(colour):
+    return "#%02x%02x%02x" % tuple(min(255, max(0, round(c * 255))) for c in colour)
+
+
+def solve(target):
+    """Find the source colour that `darken` grades closest to `target`.
+
+    A coarse sweep of the cube followed by a local refinement; the transform is smooth enough that
+    the coarse winner is always in the right basin.
+    """
+    best = None
+
+    def consider(r, g, b):
+        nonlocal best
+        graded = darken(r / 255, g / 255, b / 255)
+        distance = sum((graded[i] - target[i]) ** 2 for i in range(3))
+        if best is None or distance < best[0]:
+            best = (distance, (r, g, b), graded)
+
+    for r in range(0, 256, 4):
+        for g in range(0, 256, 4):
+            for b in range(0, 256, 4):
+                consider(r, g, b)
+
+    coarse = best[1]
+    for r in range(max(0, coarse[0] - 5), min(256, coarse[0] + 6)):
+        for g in range(max(0, coarse[1] - 5), min(256, coarse[1] + 6)):
+            for b in range(max(0, coarse[2] - 5), min(256, coarse[2] + 6)):
+                consider(r, g, b)
+
+    return best[1], best[2]
+
+
 if __name__ == "__main__":
-    print(base64.b64encode(encode_png(*build_lut())).decode("ascii"))
+    if len(sys.argv) == 3 and sys.argv[1] == "--solve":
+        wanted = parse_hex(sys.argv[2])
+        source, graded = solve(wanted)
+        source = tuple(channel / 255 for channel in source)
+        print(f"paint {format_hex(source)} to render {format_hex(graded)} (asked for {format_hex(wanted)})")
+    else:
+        print(base64.b64encode(encode_png(*build_lut())).decode("ascii"))
