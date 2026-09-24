@@ -6,6 +6,8 @@ import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
+import hu.mostoha.mobile.kmp.huki.model.mapper.toTheme
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.logScreenView
@@ -42,6 +44,7 @@ class SettingsViewModel(
             SettingsUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.SETTINGS)
             SettingsUiEvents.BackClicked -> sendEffect(SettingsUiEffects.NavigateBack)
             is SettingsUiEvents.MapZoomControlsToggled -> toggleMapZoomControls(event.visible)
+            is SettingsUiEvents.ThemeModeSelected -> selectThemeMode(event.themeMode)
         }
     }
 
@@ -52,10 +55,22 @@ class SettingsViewModel(
         }
     }
 
+    private fun selectThemeMode(themeMode: ThemeMode) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsThemeSelected(themeMode.toTheme()))
+        viewModelScope.launch {
+            settingsRepository.setThemeMode(themeMode)
+        }
+    }
+
     private fun observeSettings() {
         settingsRepository.settings
             .onEach { settings ->
-                _uiState.update { it.copy(mapZoomControlsVisible = settings.mapZoomControlsVisible) }
+                _uiState.update {
+                    it.copy(
+                        mapZoomControlsVisible = settings.mapZoomControlsVisible,
+                        themeMode = settings.themeMode,
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }

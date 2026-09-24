@@ -26,6 +26,7 @@
 9. Destinations - Locally stored POIs (Peaks, Waterfalls, Valleys etc.)
 10. OKT/AKT/RPDDK routes
 11. Landscapes
+12. Place Category search (peaks, rivers, caves etc.)
 
 ## Release plan
 
@@ -72,12 +73,9 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Dark Mode
 
-| Status | Scope    | Bug                                                                                                                                   |
-|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | DarkMode | Use proper dark mode for mapbox OUTDOORS + STANDARD + STANDARD_SATELLITE                                                              |
-| `[x]`  | DarkMode | Use dark mode colors in Map content, markers, annotations, lines etc.                                                                 |
-| `[R]`  | DarkMode | Make THEME switchable from Settings, Light-Dark-System. Save it to user preference.                                                   |
-| `[x]`  | DarkMode | Bug, iOS 27, found in beta. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png) |
+| Status | Scope | Bug |
+|--------|-------|-----|
+| `[]`   |       |     |
 
 ### FEATURE: Landscape
 
@@ -117,6 +115,24 @@ they can record their exact location / zoom level with a CROSS marker.
 |--------|--------------|--------------------------------------------|
 | `[ ]`  | Destinations | Add Map based destinations with Landscapes |
 | `[ ]`  | Destinations | Improve destinations descriptions          |
+
+### FEATURE: Discovery
+
+Goal: have a feature for the users to discover new places, trails, landscapes, etc.
+Appearance: a bottom sheet, title "Discovery", left icon: backpack, close with X button.
+Features (sections inside bottom sheet):
+
+- Landscapes - a button to show landscapes
+- Hike recommendations - AKTIVKALANDOR, KIRANDULASTIPPEK, TERMESZETJARO
+- Destination categories (horizontally scrollable) - e.g. highest peaks, edu trails, rivers, caves etc.
+- OKT routes (OKT, RPDDK, AKT)
+  Observed: !!!GPX import is barely used on iOS.!!! - we need a place where we show Hike Collections.
+
+| Status | Scope     | Task                                                                                                        |
+|--------|-----------|-------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Discovery | Add a new sheet for Discovery. a bottom sheet, title "Discovery", left icon: backpack, close with X button. |
+| `[ ]`  | Discovery | Add HikeRecommendations, use same design as in GpxCollection (horizontal list)                              |
+| `[ ]`  | Discovery | Add Destinations button which navigates to DestinationsScreen                                               |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -186,7 +202,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | Status | Scope    | Task                                                                    |
 |--------|----------|-------------------------------------------------------------------------|
 | `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
-| `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                               |
 | `[ ]`  | Settings | Add Enable/Disable two finger rotation                                  |
 
 ### FEATURE: Analytics

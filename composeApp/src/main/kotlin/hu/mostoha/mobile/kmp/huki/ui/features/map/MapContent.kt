@@ -3,7 +3,6 @@ package hu.mostoha.mobile.kmp.huki.ui.features.map
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -89,6 +88,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
@@ -121,7 +121,7 @@ fun MapContent(
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
     )
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
-    val isDarkMode = isSystemInDarkTheme()
+    val isDarkMode = LocalIsDarkTheme.current
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }

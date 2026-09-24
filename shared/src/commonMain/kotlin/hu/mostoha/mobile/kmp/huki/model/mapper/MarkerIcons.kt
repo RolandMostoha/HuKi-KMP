@@ -11,17 +11,15 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
  */
 object MarkerIcons {
 
-    fun waypointSymbol(type: WaypointType, isDarkMode: Boolean, baseLayer: BaseLayer): ImageResource {
-        return if (isColorGraded(isDarkMode, baseLayer)) type.outdoorsDarkIcon else type.icon
-    }
+    fun waypointSymbol(type: WaypointType, isDarkMode: Boolean, baseLayer: BaseLayer): ImageResource =
+        if (isColorGraded(isDarkMode, baseLayer)) type.outdoorsDarkIcon else type.icon
 
-    fun placeSymbol(isDarkMode: Boolean, baseLayer: BaseLayer): ImageResource {
-        return if (isColorGraded(isDarkMode, baseLayer)) {
+    fun placeSymbol(isDarkMode: Boolean, baseLayer: BaseLayer): ImageResource =
+        if (isColorGraded(isDarkMode, baseLayer)) {
             SharedRes.images.ic_marker_picker_outdoors_dark
         } else {
             SharedRes.images.ic_marker_picker
         }
-    }
 
     private fun isColorGraded(isDarkMode: Boolean, baseLayer: BaseLayer) = isDarkMode && baseLayer == BaseLayer.OUTDOORS
 }

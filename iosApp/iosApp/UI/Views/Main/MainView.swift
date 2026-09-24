@@ -20,6 +20,7 @@ struct MainView: View {
     @State private var isRoutePlannerPresented = false
     @State private var showFileImporter = false
     @State private var showAlert = false
+    @State private var themeMode: ThemeMode = .system
 
     let strings = Strings()
     private let filePickerTypes = [UTType(filenameExtension: "gpx")!]
@@ -40,6 +41,12 @@ struct MainView: View {
         NavigationStack(path: $navigationPath) {
             navigationDestinations {
                 mainContent
+            }
+        }
+        .preferredColorScheme(themeMode.colorScheme)
+        .task {
+            for await uiState in viewModel.uiState where uiState.themeMode != themeMode {
+                themeMode = uiState.themeMode
             }
         }
         .onOpenURL { url in

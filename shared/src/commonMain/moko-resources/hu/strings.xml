@@ -170,6 +170,12 @@
 
     <string name="settings_title">Beállítások</string>
     <string name="settings_a11y_back">Vissza</string>
+    <string name="settings_section_appearance">Megjelenés</string>
+    <string name="settings_theme_title">Téma</string>
+    <string name="settings_theme_system">Rendszer</string>
+    <string name="settings_theme_light">Világos</string>
+    <string name="settings_theme_dark">Sötét</string>
+    <string name="settings_a11y_theme_picker">Téma kiválasztása</string>
     <string name="settings_section_map">Térkép</string>
     <string name="settings_zoom_controls_title">Zoom gombok</string>
     <string name="settings_zoom_controls_description">Mindig mutasd a + / − gombokat térképen</string>

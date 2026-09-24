@@ -10,7 +10,7 @@ import kotlin.test.Test
 class MarkerIconsTest {
 
     @Test
-    fun `Given appearance and base layer, when waypointSymbol, then pre-graded icon is only used on dark Outdoors`() {
+    fun `Given appearance and base layer - When waypointSymbol - Then pre-graded icon is only used on dark Outdoors`() {
         waypointTestCases().forEach { testCase ->
             val actual = MarkerIcons.waypointSymbol(testCase.type, testCase.isDarkMode, testCase.baseLayer)
 
@@ -19,7 +19,7 @@ class MarkerIconsTest {
     }
 
     @Test
-    fun `Given appearance and base layer, when placeSymbol, then pre-graded icon is only used on dark Outdoors`() {
+    fun `Given appearance and base layer - When placeSymbol - Then pre-graded icon is only used on dark Outdoors`() {
         placeTestCases().forEach { testCase ->
             val actual = MarkerIcons.placeSymbol(testCase.isDarkMode, testCase.baseLayer)
 
@@ -42,24 +42,26 @@ class MarkerIconsTest {
             val result: ImageResource,
         )
 
-        private fun waypointTestCases() = WaypointType.entries.flatMap { type ->
-            listOf(
-                WaypointTestCase(type, isDarkMode = true, BaseLayer.OUTDOORS, type.outdoorsDarkIcon),
-                WaypointTestCase(type, isDarkMode = true, BaseLayer.CITY, type.icon),
-                WaypointTestCase(type, isDarkMode = true, BaseLayer.SATELLITE, type.icon),
-                WaypointTestCase(type, isDarkMode = false, BaseLayer.OUTDOORS, type.icon),
-                WaypointTestCase(type, isDarkMode = false, BaseLayer.CITY, type.icon),
-                WaypointTestCase(type, isDarkMode = false, BaseLayer.SATELLITE, type.icon),
-            )
-        }
+        private fun waypointTestCases() =
+            WaypointType.entries.flatMap { type ->
+                listOf(
+                    WaypointTestCase(type, isDarkMode = true, BaseLayer.OUTDOORS, type.outdoorsDarkIcon),
+                    WaypointTestCase(type, isDarkMode = true, BaseLayer.CITY, type.icon),
+                    WaypointTestCase(type, isDarkMode = true, BaseLayer.SATELLITE, type.icon),
+                    WaypointTestCase(type, isDarkMode = false, BaseLayer.OUTDOORS, type.icon),
+                    WaypointTestCase(type, isDarkMode = false, BaseLayer.CITY, type.icon),
+                    WaypointTestCase(type, isDarkMode = false, BaseLayer.SATELLITE, type.icon),
+                )
+            }
 
-        private fun placeTestCases() = listOf(
-            PlaceTestCase(true, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker_outdoors_dark),
-            PlaceTestCase(true, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
-            PlaceTestCase(true, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
-            PlaceTestCase(false, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker),
-            PlaceTestCase(false, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
-            PlaceTestCase(false, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
-        )
+        private fun placeTestCases() =
+            listOf(
+                PlaceTestCase(true, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker_outdoors_dark),
+                PlaceTestCase(true, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
+                PlaceTestCase(true, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
+                PlaceTestCase(false, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker),
+                PlaceTestCase(false, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
+                PlaceTestCase(false, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
+            )
     }
 }

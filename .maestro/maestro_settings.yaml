@@ -29,8 +29,14 @@ appId: ${APP_ID}
     id: MENU_ROW_SETTINGS
 - assertVisible:
     id: SETTINGS_SCREEN_ROOT
+- assertVisible: "Appearance"
+- assertVisible:
+    id: SETTINGS_THEME_PICKER
 - assertVisible: "Map"
 - assertVisible: "Zoom controls"
+
+# Switch the app to the Dark theme
+- tapOn: "Dark"
 
 # Enable "always show zoom controls"
 - tapOn:
@@ -51,3 +57,20 @@ appId: ${APP_ID}
     id: MAIN_FAB_ZOOM_IN_BUTTON
 - assertVisible:
     id: MAIN_FAB_ZOOM_OUT_BUTTON
+
+# Both preferences survive a relaunch
+- launchApp:
+    arguments:
+      skipWhatsNew: true
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- assertVisible:
+    id: MAIN_FAB_ZOOM_IN_BUTTON
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- assertVisible:
+    id: SETTINGS_THEME_PICKER
+- assertVisible: "Dark"
