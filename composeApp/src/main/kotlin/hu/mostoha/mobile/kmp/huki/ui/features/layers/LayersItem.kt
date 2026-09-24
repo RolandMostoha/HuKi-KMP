@@ -91,7 +91,7 @@ private fun LayersItemPreview() {
     HuKiTheme {
         LayersItem(
             title = "Satellite",
-            imageRes = SharedRes.images.ic_layers_outdoors.drawableResId,
+            imageRes = SharedRes.images.ic_layers_satellite.drawableResId,
             selected = true,
             onClick = {},
         )

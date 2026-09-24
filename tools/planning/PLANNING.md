@@ -26,6 +26,7 @@
 9. Destinations - Locally stored POIs (Peaks, Waterfalls, Valleys etc.)
 10. OKT/AKT/RPDDK routes
 11. Landscapes
+12. Place Category search (peaks, rivers, caves etc.)
 
 ## Release plan
 
@@ -45,6 +46,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | `[ ]`  | App store preview video (optional)                                                                                                                 |
 | `[ ]`  | App store header picture/video (optional)                                                                                                          |
 | `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
+| `[R]`  | Use [HuKi-iOS] in the email subject in Menu - Contact                                                                                              |
 | `[?]`  | Sonar? free for open source projects. In agentic ERA i don't see too much value, it just slows down the process.                                   |
 
 ### Bugs
@@ -62,6 +64,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 |--------|-------|-----------------------------------------------------------------------------------|
 | `[ ]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 | `[ ]`  | Map   | Bug: GPX Menu -> Overview -> applies a big bottom padding, not necessary          |
+| `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking trails          |
 
 ### FEATURE: Camera panel
 
@@ -70,9 +73,9 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Dark Mode
 
-| Status | Scope    | Bug                                                                                                                                   |
-|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | DarkMode | Bug, iOS 27, found in beta. In dark mode GPX color is too bright, barely readable ![bug_ios27_dark_mode.png](bug_ios27_dark_mode.png) |
+| Status | Scope | Bug |
+|--------|-------|-----|
+| `[]`   |       |     |
 
 ### FEATURE: Landscape
 
@@ -112,6 +115,24 @@ they can record their exact location / zoom level with a CROSS marker.
 |--------|--------------|--------------------------------------------|
 | `[ ]`  | Destinations | Add Map based destinations with Landscapes |
 | `[ ]`  | Destinations | Improve destinations descriptions          |
+
+### FEATURE: Discovery
+
+Goal: have a feature for the users to discover new places, trails, landscapes, etc.
+Appearance: a bottom sheet, title "Discovery", left icon: backpack, close with X button.
+Features (sections inside bottom sheet):
+
+- Landscapes - a button to show landscapes
+- Hike recommendations - AKTIVKALANDOR, KIRANDULASTIPPEK, TERMESZETJARO
+- Destination categories (horizontally scrollable) - e.g. highest peaks, edu trails, rivers, caves etc.
+- OKT routes (OKT, RPDDK, AKT)
+  Observed: !!!GPX import is barely used on iOS.!!! - we need a place where we show Hike Collections.
+
+| Status | Scope     | Task                                                                                                        |
+|--------|-----------|-------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Discovery | Add a new sheet for Discovery. a bottom sheet, title "Discovery", left icon: backpack, close with X button. |
+| `[ ]`  | Discovery | Add HikeRecommendations, use same design as in GpxCollection (horizontal list)                              |
+| `[ ]`  | Discovery | Add Destinations button which navigates to DestinationsScreen                                               |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -181,7 +202,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | Status | Scope    | Task                                                                    |
 |--------|----------|-------------------------------------------------------------------------|
 | `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
-| `[ ]`  | Settings | Add Theme (light/dark/system) in Settings                               |
 | `[ ]`  | Settings | Add Enable/Disable two finger rotation                                  |
 
 ### FEATURE: Analytics

@@ -56,8 +56,14 @@ if [ -z "$DEVICE_LINE" ]; then
     xcrun devicectl list devices 2>/dev/null || true
     exit 1
 fi
+# Simulators report a UUID, physical devices an ECID pair such as 00008120-000E08482104201E.
 DEVICE_ID="$(echo "$DEVICE_LINE" \
-    | grep -oE '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}' | head -1)"
+    | grep -oE '[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}|[0-9A-Fa-f]{16})' \
+    | head -1)"
+if [ -z "$DEVICE_ID" ]; then
+    echo "Error: could not read a device identifier from: $DEVICE_LINE"
+    exit 1
+fi
 DEVICE_NAME="$(echo "$DEVICE_LINE" | sed -E 's/[[:space:]]{2,}.*//')"
 
 echo "Device:   $DEVICE_NAME ($DEVICE_ID)"

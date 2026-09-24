@@ -529,10 +529,14 @@ class MainViewModel(
 
     private fun observeSettings() {
         settingsRepository.settings
-            .map { it.mapZoomControlsVisible }
             .distinctUntilChanged()
-            .onEach { alwaysVisible ->
-                _uiState.update { it.copy(mapZoomControlsAlwaysVisible = alwaysVisible) }
+            .onEach { settings ->
+                _uiState.update {
+                    it.copy(
+                        mapZoomControlsAlwaysVisible = settings.mapZoomControlsVisible,
+                        themeMode = settings.themeMode,
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }

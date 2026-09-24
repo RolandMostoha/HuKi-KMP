@@ -50,7 +50,7 @@
 
     <string name="layers_base_layers_title">Base Map</string>
     <string name="layers_base_outdoors_title">Outdoors</string>
-    <string name="layers_base_streets_title">Streets</string>
+    <string name="layers_base_city_title">City</string>
     <string name="layers_base_satellite_title">Satellite</string>
     <string name="layers_overlay_layers_title">Overlays</string>
     <string name="layers_overlay_hiking_title">Hiking Trails</string>
@@ -171,6 +171,12 @@
 
     <string name="settings_title">Settings</string>
     <string name="settings_a11y_back">Back</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_a11y_theme_picker">Theme selection</string>
     <string name="settings_section_map">Map</string>
     <string name="settings_zoom_controls_title">Zoom controls</string>
     <string name="settings_zoom_controls_description">Always Show + / − buttons on the map</string>

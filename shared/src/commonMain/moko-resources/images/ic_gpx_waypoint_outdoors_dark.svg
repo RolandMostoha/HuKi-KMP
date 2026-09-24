@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 512 512">
+
+    <circle
+        cx="256"
+        cy="256"
+        r="240"
+        fill="#00bb00"
+        stroke="#fffdfd"
+        stroke-width="40" />
+
+    <circle
+        cx="256"
+        cy="256"
+        r="60"
+        fill="#d0c4a6" />
+
+</svg>

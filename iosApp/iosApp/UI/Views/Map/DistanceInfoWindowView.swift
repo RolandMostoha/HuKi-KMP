@@ -27,15 +27,13 @@ struct DistanceInfoWindowView: View {
         .background(shape.fill(Color(.systemBackground)))
         .overlay(
             shape.stroke(
-                Color(SharedRes.colors().mapStroke.getUIColor()),
+                Color(SharedRes.colors().mapSurfaceStroke.getUIColor()),
                 style: StrokeStyle(lineWidth: Dimens.infoWindowBorder, lineCap: .round, lineJoin: .round)
             )
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel(strings.get(id: SharedRes.strings().gpx_distance_info_window_a11y))
         .accessibilityIdentifier(TestTags.shared.MAP_DISTANCE_INFO_WINDOW)
-        // Mapbox is light-only, so keep the window in its light appearance regardless of app theme
-        .environment(\.colorScheme, .light)
     }
 }
 

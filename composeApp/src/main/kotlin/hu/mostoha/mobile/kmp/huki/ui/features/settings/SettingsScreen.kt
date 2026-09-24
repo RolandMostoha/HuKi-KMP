@@ -110,6 +110,15 @@ private fun SettingsContent(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = Dimens.ExtraLarge),
         ) {
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_appearance))
+            SettingsCard {
+                SettingsPickerItem(title = mokoString(SharedRes.strings.settings_theme_title)) {
+                    SettingsThemePicker(
+                        selectedThemeMode = uiState.themeMode,
+                        onThemeModeSelected = { onEvent(SettingsUiEvents.ThemeModeSelected(it)) },
+                    )
+                }
+            }
             SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_map))
             SettingsCard {
                 SettingsSwitchItem(
@@ -153,6 +162,23 @@ private fun SettingsCard(content: @Composable () -> Unit) {
         shadowElevation = 0.5.dp,
     ) {
         Column { content() }
+    }
+}
+
+@Composable
+private fun SettingsPickerItem(title: String, content: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Dimens.Large, vertical = Dimens.MediumLarge),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = Dimens.Medium),
+        )
+        content()
     }
 }
 

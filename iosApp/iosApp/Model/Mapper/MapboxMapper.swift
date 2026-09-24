@@ -64,20 +64,34 @@ extension Shared.ContentPadding {
 }
 
 extension Shared.BaseLayer {
-    var mapStyle: MapStyle {
+
+    func mapStyle(isDarkMode: Bool) -> MapStyle {
+        let lightPreset: StandardLightPreset = isDarkMode ? .night : .day
+
         switch self {
         case .outdoors:
             return .outdoors
-        case .street:
-            return .streets
+        case .city:
+            return .standard(lightPreset: lightPreset)
         case .satellite:
-            return .satellite
+            return .standardSatellite(lightPreset: lightPreset)
         }
     }
 }
 
 extension Shared.ImageResource {
-    var annotationImage: PointAnnotation.Image {
-        PointAnnotation.Image(image: self.toUIImage()!, name: self.assetImageName)
+
+    func appearanceImage(for colorScheme: ColorScheme) -> UIImage {
+        let traits = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
+        let image = self.toUIImage()!
+        return image.imageAsset?.image(with: traits) ?? image
+    }
+
+    func annotationImage(for colorScheme: ColorScheme) -> PointAnnotation.Image {
+        let isDark = colorScheme == .dark
+        return PointAnnotation.Image(
+            image: self.appearanceImage(for: colorScheme),
+            name: "\(self.assetImageName)-\(isDark ? "dark" : "light")"
+        )
     }
 }

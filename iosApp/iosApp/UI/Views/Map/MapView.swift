@@ -1,4 +1,4 @@
-@preconcurrency import MapboxMaps
+@preconcurrency @_spi(Experimental) import MapboxMaps
 import Shared
 import SwiftUI
 
@@ -14,6 +14,10 @@ struct MapView: View {
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isDarkMode: Bool { colorScheme == .dark }
 
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
@@ -57,6 +61,7 @@ struct MapView: View {
         MapReader { proxy in
             ZStack(alignment: .topTrailing) {
                 Map(viewport: $viewport) {
+                    OutdoorsColorThemeContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode)
                     TapInteraction { _ in
                         if !uiState.mapUiState.distanceInfoWindows.isEmpty {
                             onDistanceInfoWindowDismissed()
@@ -71,26 +76,23 @@ struct MapView: View {
                         return true
                     }
                     if uiState.mapUiState.hikingLayerVisible {
-                        RasterSource(id: OverlayLayer.turistautak.layerId)
-                            .tiles(OverlayLayer.turistautak.tiles)
-                            .tileSize(Double(OverlayLayer.turistautak.tileSize))
-                            .minzoom(Double(OverlayLayer.turistautak.minZoom))
-                            .maxzoom(Double(OverlayLayer.turistautak.maxZoom))
-                        RasterLayer(id: OverlayLayer.turistautak.layerId, source: OverlayLayer.turistautak.layerId)
+                        HikingTrailsMapContent()
                     }
                     if let placeDetails = uiState.mapUiState.placeDetails {
-                        PointAnnotation(coordinate: placeDetails.location.coordinate)
-                            .image(SharedRes.images().ic_marker_picker.annotationImage)
-                            .iconAnchor(.bottom)
-                            .iconSize(SharedDimens.shared.PLACE_MARKER_SCALE)
+                        PlaceMarkerMapContent(
+                            location: placeDetails.location,
+                            baseLayer: uiState.mapUiState.baseLayer,
+                            colorScheme: colorScheme
+                        )
                     }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: PuckBearingSource.puck)
                             .showsAccuracyRing(true)
-                            .accuracyRingColor(SharedRes.colors().accuracyRingOnMap.getUIColor())
-                            .pulsing(.init(color: SharedRes.colors().primaryLightOnMap.getUIColor()))
-                            .topImage(SharedRes.images().ic_my_location_top_image.toUIImage())
-                            .bearingImage(SharedRes.images().ic_my_location_bearing.toUIImage())
+                            .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
+                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
+                            .topImage(SharedRes.images().ic_my_location_top_image.appearanceImage(for: colorScheme))
+                            .bearingImage(SharedRes.images().ic_my_location_bearing.appearanceImage(for: colorScheme))
+                            .shadowImage(SharedRes.images().ic_my_location_shadow.appearanceImage(for: colorScheme))
                             .scale(1.2)
                     }
                     if uiState.mapUiState.gpxLayerVisible {
@@ -103,24 +105,20 @@ struct MapView: View {
 
                                 LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
                                     .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                                    .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
+                                    .lineColor(SharedRes.colors().primary.getUIColor())
                                     .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                                    .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
+                                    .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                                    .lineColorUseTheme(.none)
+                                    .lineBorderColorUseTheme(.none)
+                                    .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
                             }
 
-                            let orderedWaypoints = WaypointMarkerOrder.shared.sort(waypoints: gpxDetails.waypoints)
-                            PointAnnotationGroup(orderedWaypoints, id: \.location.id) { waypoint in
-                                PointAnnotation(coordinate: waypoint.location.coordinate)
-                                    .image(waypoint.type.icon.annotationImage)
-                                    .iconSize(
-                                        waypoint.type == .intermediate
-                                            ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
-                                            : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
-                                    )
-                                    .onTapGesture {
-                                        onWaypointClicked(waypoint)
-                                    }
-                            }
+                            GpxWaypointsMapContent(
+                                waypoints: gpxDetails.waypoints,
+                                baseLayer: uiState.mapUiState.baseLayer,
+                                colorScheme: colorScheme,
+                                onWaypointClicked: onWaypointClicked
+                            )
                             ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.location.id) { info in
                                 let waypointType = gpxDetails.waypoints
                                     .first { $0.location.id == info.location.id }?.type
@@ -151,7 +149,7 @@ struct MapView: View {
                         )
                     }
                 }
-                .mapStyle(uiState.mapUiState.baseLayer.mapStyle)
+                .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
                 .gestureOptions(GestureOptions(
                     rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
                 ))

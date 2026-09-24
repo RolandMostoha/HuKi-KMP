@@ -4,15 +4,17 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.RouteProfile
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 
 fun BaseLayer.toLayer(): Layer =
     when (this) {
         BaseLayer.OUTDOORS -> Layer.OUTDOORS
-        BaseLayer.STREET -> Layer.STREET
+        BaseLayer.CITY -> Layer.CITY
         BaseLayer.SATELLITE -> Layer.SATELLITE
     }
 
@@ -28,6 +30,13 @@ fun RoutePlannerProfile.toRouteProfile(): RouteProfile =
         RoutePlannerProfile.ON_TRAILS -> RouteProfile.ON_TRAILS
         RoutePlannerProfile.SHORTEST_ROUTE -> RouteProfile.SHORTEST_ROUTE
         RoutePlannerProfile.BIKE -> RouteProfile.BIKE
+    }
+
+fun ThemeMode.toTheme(): Theme =
+    when (this) {
+        ThemeMode.SYSTEM -> Theme.SYSTEM
+        ThemeMode.LIGHT -> Theme.LIGHT
+        ThemeMode.DARK -> Theme.DARK
     }
 
 fun Sheet?.toScreen(): Screen =

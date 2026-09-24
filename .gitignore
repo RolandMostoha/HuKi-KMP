@@ -66,3 +66,7 @@ iosApp/fastlane/metadata/review_information/demo_password.txt
 *.ipa
 *.dSYM.zip
 *.xcarchive
+
+# Python
+__pycache__/
+*.pyc

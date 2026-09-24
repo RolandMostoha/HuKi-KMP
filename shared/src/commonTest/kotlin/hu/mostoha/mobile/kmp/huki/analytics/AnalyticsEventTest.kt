@@ -129,7 +129,7 @@ class AnalyticsEventTest {
                     mapOf("screen_name" to "location_iq"),
                 ),
                 TestCase(AnalyticsEvent.LayerSelected(Layer.OUTDOORS), "layer_selected_outdoors", emptyMap()),
-                TestCase(AnalyticsEvent.LayerSelected(Layer.STREET), "layer_selected_street", emptyMap()),
+                TestCase(AnalyticsEvent.LayerSelected(Layer.CITY), "layer_selected_city", emptyMap()),
                 TestCase(AnalyticsEvent.LayerSelected(Layer.SATELLITE), "layer_selected_satellite", emptyMap()),
                 TestCase(AnalyticsEvent.LayerSelected(Layer.HIKING), "layer_selected_hiking", emptyMap()),
                 TestCase(AnalyticsEvent.MyLocationFollowed(MyLocationMode.FOLLOWING), "my_location_following", emptyMap()),

@@ -12,8 +12,8 @@ enum class BaseLayer(
         title = SharedRes.strings.layers_base_outdoors_title,
         image = SharedRes.images.ic_layers_outdoors,
     ),
-    STREET(
-        title = SharedRes.strings.layers_base_streets_title,
+    CITY(
+        title = SharedRes.strings.layers_base_city_title,
         image = SharedRes.images.ic_layers_streets,
     ),
     SATELLITE(

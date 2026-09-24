@@ -1,4 +1,4 @@
-@preconcurrency import MapboxMaps
+@preconcurrency @_spi(Experimental) import MapboxMaps
 import Shared
 import SwiftUI
 
@@ -17,9 +17,12 @@ struct RoutePlanMapContent: MapContent {
 
             LineLayer(id: Self.layerId, source: Self.layerId)
                 .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                .lineColor(SharedRes.colors().primaryOnMap.getUIColor())
+                .lineColor(SharedRes.colors().primary.getUIColor())
                 .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                .lineBorderColor(SharedRes.colors().mapStrokeOnMap.getUIColor())
+                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                .lineColorUseTheme(.none)
+                .lineBorderColorUseTheme(.none)
+                .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
         }
         // In Route Plans, waypoints should sit on top of my location, to always see the plan.
         // ViewAnnotations are real views above every style layer.
@@ -36,6 +39,8 @@ struct RoutePlanMapContent: MapContent {
 private struct RoutePlanMarkerView: View {
     let waypoint: GpxWaypoint
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private var scale: CGFloat {
         CGFloat(
             waypoint.type == .intermediate
@@ -45,10 +50,9 @@ private struct RoutePlanMarkerView: View {
     }
 
     var body: some View {
-        if let image = waypoint.type.icon.toUIImage() {
-            Image(uiImage: image)
-                .resizable()
-                .frame(width: image.size.width * scale, height: image.size.height * scale)
-        }
+        let image = waypoint.type.icon.appearanceImage(for: colorScheme)
+        Image(uiImage: image)
+            .resizable()
+            .frame(width: image.size.width * scale, height: image.size.height * scale)
     }
 }

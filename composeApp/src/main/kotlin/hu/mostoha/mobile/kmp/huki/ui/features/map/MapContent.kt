@@ -49,8 +49,8 @@ import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
+import com.mapbox.maps.extension.compose.style.DoubleValue
 import com.mapbox.maps.extension.compose.style.LongValue
-import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.extension.compose.style.StringListValue
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
@@ -69,9 +69,11 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
+import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
 import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
@@ -83,10 +85,11 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
-import hu.mostoha.mobile.kmp.huki.model.mapper.toMapStyle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
+import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
@@ -118,6 +121,7 @@ fun MapContent(
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
     )
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
+    val isDarkMode = LocalIsDarkTheme.current
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
@@ -164,7 +168,7 @@ fun MapContent(
             modifier = Modifier
                 .testTag(TestTags.MAP_MAPBOX)
                 .fillMaxSize(),
-            style = { MapStyle(mapUiState.baseLayer.toMapStyle()) },
+            style = { MapBaseStyle(baseLayer = mapUiState.baseLayer, isDarkMode = isDarkMode) },
             mapViewportState = mapViewportState,
             mapState = mapState,
             onMapClickListener = OnMapClickListener {
@@ -230,25 +234,18 @@ fun MapContent(
                 )
             },
         ) {
-            val primaryOnMapColor = SharedRes.colors.primaryOnMap.toComposeColor(context)
-            val primaryLightOnMapColor = SharedRes.colors.primaryLightOnMap.toComposeColor(context)
-            val mapStrokeColor = SharedRes.colors.mapStrokeOnMap.toComposeColor(context)
+            val primaryColor = SharedRes.colors.primary.toComposeColor(context)
+            val primaryLightColor = SharedRes.colors.primaryLight.toComposeColor(context)
+            val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
 
             MapEffect(Unit) { mapView ->
                 mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
                 mapView.location.updateSettings {
                     enabled = true
-                    locationPuck = LocationPuck2D(
-                        topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
-                        bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
-                        shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
-                    )
                     puckBearingEnabled = true
                     puckBearing = PuckBearing.HEADING
                     showAccuracyRing = true
-                    accuracyRingColor = SharedRes.colors.accuracyRingOnMap.getColor(context)
                     pulsingEnabled = true
-                    pulsingColor = primaryLightOnMapColor.toArgb()
                 }
                 val positionListener = object : OnIndicatorPositionChangedListener {
                     override fun onIndicatorPositionChanged(point: Point) {
@@ -264,6 +261,17 @@ fun MapContent(
                     }
                 }
             }
+            MapEffect(isDarkMode) { mapView ->
+                mapView.location.updateSettings {
+                    locationPuck = LocationPuck2D(
+                        topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
+                        bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
+                        shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
+                    )
+                    accuracyRingColor = SharedRes.colors.accuracyRing.getColor(context)
+                    pulsingColor = primaryLightColor.toArgb()
+                }
+            }
             if (mapUiState.hikingLayerVisible) {
                 RasterLayer(
                     layerId = OverlayLayer.TURISTAUTAK.layerId,
@@ -273,26 +281,33 @@ fun MapContent(
                         minZoom = LongValue(OverlayLayer.TURISTAUTAK.minZoom)
                         maxZoom = LongValue(OverlayLayer.TURISTAUTAK.maxZoom)
                     },
-                )
+                ) {
+                    rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
+                }
             }
             if (mapUiState.gpxLayerVisible) {
                 GpxLayer(
                     mapUiState = mapUiState,
                     onEvent = onEvent,
-                    routeColor = primaryOnMapColor,
+                    routeColor = primaryColor,
                     routeStrokeColor = mapStrokeColor,
+                    isDarkMode = isDarkMode,
                 )
             }
             if (mapUiState.routePlan != null || mapUiState.routePlanMarkers.isNotEmpty()) {
                 RoutePlanLayer(
                     routePlan = mapUiState.routePlan,
                     markers = mapUiState.routePlanMarkers,
-                    routeColor = primaryOnMapColor,
+                    routeColor = primaryColor,
                     routeStrokeColor = mapStrokeColor,
                 )
             }
             mapUiState.placeDetails?.let { placeDetails ->
-                PlaceMarker(location = placeDetails.location)
+                PlaceMarker(
+                    location = placeDetails.location,
+                    isDarkMode = isDarkMode,
+                    baseLayer = mapUiState.baseLayer,
+                )
             }
         }
         MapCameraDebugPanel(
@@ -323,12 +338,14 @@ private fun MapViewportState.handleMapEffect(
 @OptIn(MapboxDelicateApi::class)
 @Composable
 @MapboxMapComposable
-private fun PlaceMarker(location: Location) {
-    val markerImage = rememberIconImage(SharedRes.images.ic_marker_picker.drawableResId)
+private fun PlaceMarker(location: Location, isDarkMode: Boolean, baseLayer: BaseLayer) {
+    val markerIcon = MarkerIcons.placeSymbol(isDarkMode, baseLayer)
+    val markerImage = rememberIconImage(markerIcon.drawableResId)
     PointAnnotation(location.toPoint()) {
         iconImage = markerImage
         iconAnchor = IconAnchor.BOTTOM
         iconSize = SharedDimens.PLACE_MARKER_SCALE
+        iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
     }
 }
 
@@ -340,6 +357,7 @@ private fun GpxLayer(
     onEvent: (MainUiEvents) -> Unit,
     routeColor: Color,
     routeStrokeColor: Color,
+    isDarkMode: Boolean,
 ) {
     val gpxDetails = mapUiState.gpxDetails ?: return
     if (mapUiState.gpxRouteVisible) {
@@ -357,7 +375,8 @@ private fun GpxLayer(
         )
     }
     WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->
-        val rememberIconImage = rememberIconImage(waypoint.type.icon.drawableResId)
+        val waypointIcon = MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer)
+        val rememberIconImage = rememberIconImage(waypointIcon.drawableResId)
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {
                 onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
@@ -365,6 +384,7 @@ private fun GpxLayer(
             }
             iconImage = rememberIconImage
             iconSize = waypoint.type.markerScale
+            iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
         }
     }
     mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->

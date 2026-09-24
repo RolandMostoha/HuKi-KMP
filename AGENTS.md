@@ -120,6 +120,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
   - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
   - iOS: MapBox is used with SwiftUI
   - iOS API reference: https://docs.mapbox.com/ios/maps/api/latest/documentation/mapboxmaps/
+  - **Base layers**: `OUTDOORS` (classic style), `STANDARD` and `SATELLITE` (Standard Satellite).
+  - **Dark mode** Outdoors → custom, graded with a LUT (tools/python/generate_dark_map_lut.py). Standard and Standard-Satellite have official dark variants.
 - **Location**: `LocationMonitoringService` (commonMain) is the shared location source — a `locationUpdates` stream plus a one-shot `lastKnownLocation()`.
   - Android: backed by Mapbox's `LocationService`. It uses Google's Fused Location Provider automatically when `play-services-location` is on the classpath.
   - iOS: backed by CoreLocation (`CLLocationManager`).

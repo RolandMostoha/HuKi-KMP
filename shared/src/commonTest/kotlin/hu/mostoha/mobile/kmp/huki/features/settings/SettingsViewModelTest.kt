@@ -8,6 +8,8 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
+import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
@@ -79,6 +81,32 @@ class SettingsViewModelTest {
 
             verifySuspend { settingsRepository.setMapZoomControlsVisible(true) }
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsZoomControlsToggled)
+        }
+    }
+
+    @Test
+    fun `Given stored theme mode - When observed - Then uiState reflects the theme mode`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(themeMode = ThemeMode.DARK))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.themeMode shouldBe ThemeMode.DARK
+        }
+    }
+
+    @Test
+    fun `Given default state - When ThemeModeSelected event - Then repository stores the theme mode`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.ThemeModeSelected(ThemeMode.LIGHT))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setThemeMode(ThemeMode.LIGHT) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsThemeSelected(Theme.LIGHT))
         }
     }
 

@@ -15,6 +15,19 @@ struct SettingsView: View {
     var body: some View {
         Observing(viewModel.uiState) { uiState in
             Form {
+                Section(strings.get(id: SharedRes.strings().settings_section_appearance)) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(strings.get(id: SharedRes.strings().settings_theme_title))
+                        SettingsThemePickerView(
+                            strings: strings,
+                            selectedThemeMode: uiState.themeMode,
+                            onThemeModeSelected: { themeMode in
+                                let event = SettingsUiEventsThemeModeSelected(themeMode: themeMode)
+                                viewModel.onEvent(event: event)
+                            }
+                        )
+                    }
+                }
                 Section(strings.get(id: SharedRes.strings().settings_section_map)) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
