@@ -124,7 +124,7 @@ private fun MenuContent(
                 is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
                 is MenuUiEffects.SendEmail -> context.sendEmail(
                     email = context.resolveMoko(effect.emailRes),
-                    subject = context.resolveMoko(effect.subjectRes),
+                    subject = context.resolveMoko(SharedRes.strings.menu_email_subject_android),
                 )
                 MenuUiEffects.NavigateToDestinations -> onDestinationsClicked()
             }

@@ -162,7 +162,8 @@
     <string name="menu_a11y_open_github">GitHub repository megnyitása</string>
     <string name="menu_a11y_open_location_iq">Location IQ weboldal megnyitása</string>
     <string name="menu_contact_email">huki.app@gmail.com</string>
-    <string name="menu_email_subject">[HuKi]</string>
+    <string name="menu_email_subject_android">[HuKi-Android]</string>
+    <string name="menu_email_subject_ios">[HuKi-iOS]</string>
     <string name="menu_privacy_policy_url">https://huki.hu/privacy-policy/</string>
     <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
     <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>

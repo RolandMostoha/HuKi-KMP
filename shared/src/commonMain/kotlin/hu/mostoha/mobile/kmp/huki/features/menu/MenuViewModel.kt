@@ -58,12 +58,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
 
     private fun openEmail() {
         analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL))
-        sendEffect(
-            MenuUiEffects.SendEmail(
-                emailRes = SharedRes.strings.menu_contact_email,
-                subjectRes = SharedRes.strings.menu_email_subject,
-            ),
-        )
+        sendEffect(MenuUiEffects.SendEmail(SharedRes.strings.menu_contact_email))
     }
 
     private fun openFacebook() {

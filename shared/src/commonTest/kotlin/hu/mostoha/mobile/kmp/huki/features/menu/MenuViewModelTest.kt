@@ -111,17 +111,14 @@ class MenuViewModelTest {
     }
 
     @Test
-    fun `Given default state - When EmailClicked event - Then SendEmail effect with email and subject is emitted`() {
+    fun `Given default state - When EmailClicked event - Then SendEmail effect with email is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {
                 menuViewModel.onEvent(MenuUiEvents.EmailClicked)
 
                 val actual = awaitItem()
 
-                actual shouldBe MenuUiEffects.SendEmail(
-                    emailRes = SharedRes.strings.menu_contact_email,
-                    subjectRes = SharedRes.strings.menu_email_subject,
-                )
+                actual shouldBe MenuUiEffects.SendEmail(SharedRes.strings.menu_contact_email)
                 analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL))
             }
         }

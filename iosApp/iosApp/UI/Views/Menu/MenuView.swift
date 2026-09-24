@@ -119,7 +119,10 @@ private extension MenuView {
         case .openUrl(let openUrl):
             openExternalUrl(strings.get(id: openUrl.urlRes))
         case .sendEmail(let sendEmail):
-            composeEmail(email: strings.get(id: sendEmail.emailRes), subject: strings.get(id: sendEmail.subjectRes))
+            composeEmail(
+                email: strings.get(id: sendEmail.emailRes),
+                subject: strings.get(id: SharedRes.strings().menu_email_subject_ios)
+            )
         default:
             navigationAction(for: effect)?()
         }
