@@ -1,11 +1,13 @@
 package hu.mostoha.mobile.kmp.huki.model.mapper
 
+import hu.mostoha.mobile.kmp.huki.model.analytics.HikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.RouteProfile
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -48,4 +50,12 @@ fun Sheet?.toScreen(): Screen =
         Sheet.PlaceDetails -> Screen.PLACE_DETAILS
         is Sheet.RoutePlanner -> Screen.ROUTE_PLANNER
         is Sheet.WhatsNew -> Screen.WHATS_NEW
+        Sheet.Discover -> Screen.DISCOVER
+    }
+
+fun HikeRecommendation.toHikeRecommender(): HikeRecommender =
+    when (this) {
+        HikeRecommendation.AKTIVKALANDOR -> HikeRecommender.AKTIVKALANDOR
+        HikeRecommendation.KIRANDULASTIPPEK -> HikeRecommender.KIRANDULASTIPPEK
+        HikeRecommendation.TERMESZETJARO -> HikeRecommender.TERMESZETJARO
     }

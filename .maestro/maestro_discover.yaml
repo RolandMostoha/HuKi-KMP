@@ -1,0 +1,65 @@
+appId: ${APP_ID}
+---
+# Discover: open the sheet from the map FAB, check the Hike recommendations and
+# Destinations sections, browse to the Destinations screen, then reopen the sheet
+# from the Menu and close it.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Discover from the map FAB.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- assertVisible:
+    id: DISCOVER_HIKE_RECOMMENDATIONS_SECTION
+- assertVisible:
+    id: HIKE_RECOMMENDATION_CARD
+    index: 0
+- assertVisible:
+    id: HIKE_RECOMMENDATION_CARD
+    index: 2
+- assertVisible:
+    id: DISCOVER_BROWSE_DESTINATIONS_BUTTON
+
+# Browse destinations closes the sheet and opens the Destinations screen.
+- tapOn:
+    id: DISCOVER_BROWSE_DESTINATIONS_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+- tapOn:
+    id: DESTINATIONS_BACK_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- assertNotVisible:
+    id: DISCOVER_SHEET
+
+# Open Discover from the Menu, then close it.
+- tapOn: "Menu"
+- assertVisible:
+    id: MENU_ROW_DISCOVER
+- tapOn:
+    id: MENU_ROW_DISCOVER
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_FAB_DISCOVER_BUTTON
+    timeout: 5000

@@ -32,9 +32,14 @@ sealed class Sheet {
      * WhatsNew Modal Sheet is shown after the app is updated.
      */
     data class WhatsNew(val whatsNew: WhatsNewModel) : Sheet()
+
+    /**
+     * Discover Modal Sheet is shown.
+     */
+    data object Discover : Sheet()
 }
 
 fun Sheet.isStandard(): Boolean =
     this is Sheet.Gpx || this is Sheet.Search || this is Sheet.PlaceDetails || this is Sheet.RoutePlanner
 
-fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew
+fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew || this is Sheet.Discover

@@ -22,6 +22,7 @@ fun SectionHeader(
     actionModifier: Modifier = Modifier,
     actionText: String? = null,
     onActionClick: (() -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -47,6 +48,7 @@ fun SectionHeader(
                 )
             }
         }
+        trailingContent?.invoke()
     }
 }
 

@@ -27,6 +27,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
@@ -37,11 +38,13 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
+import hu.mostoha.mobile.kmp.huki.model.mapper.toUrl
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -138,6 +141,11 @@ class MainViewModel(
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
+            // Discover events
+            MainUiEvents.DiscoverClicked -> showSheet(Sheet.Discover)
+            is MainUiEvents.HikeRecommendationClicked -> openHikeRecommendation(event.recommendation)
+            MainUiEvents.DiscoverBrowseDestinationsClicked -> browseDestinations()
+            MainUiEvents.HikeRecommendationsInfoClicked -> logHikeRecommendationsInfoOpened()
             // Map events
             is MainUiEvents.MapCameraChanged -> mapCameraStore.update(event.cameraPosition)
             // Place Details events
@@ -180,6 +188,25 @@ class MainViewModel(
     private fun showSearch() {
         analyticsService.logEvent(AnalyticsEvent.SearchOpened)
         showSheet(Sheet.Search)
+    }
+
+    private fun openHikeRecommendation(recommendation: HikeRecommendation) {
+        analyticsService.logEvent(AnalyticsEvent.HikeRecommendationSelected(recommendation.toHikeRecommender()))
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenUrl(recommendation.toUrl(mapCameraStore.cameraPosition.location)))
+        }
+    }
+
+    private fun logHikeRecommendationsInfoOpened() {
+        analyticsService.logEvent(AnalyticsEvent.HikeRecommendationsInfoOpened)
+    }
+
+    private fun browseDestinations() {
+        analyticsService.logEvent(AnalyticsEvent.DiscoverBrowseDestinationsClicked)
+        hideSheet()
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.NavigateToDestinations)
+        }
     }
 
     private fun showSheet(sheet: Sheet) {

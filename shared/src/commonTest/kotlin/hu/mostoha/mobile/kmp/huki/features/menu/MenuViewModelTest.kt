@@ -59,6 +59,19 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state - When DiscoverClicked event - Then NavigateToDiscover effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.DiscoverClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToDiscover
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When PlaceHistoryClicked event - Then NavigateToPlaceHistory effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

@@ -263,6 +263,7 @@ Before writing a comment, **both** must hold. If either fails, delete it.
 **Style:**
 - Kotlin: use a plain `//` for one-line comments on members inside a class, interface or object —
   never KDoc `/** */`. Reserve KDoc for the top-level declaration, or complex public functions.
+- Kotlin KDoc: always use the extended multi-line format, even for a one-liner — `/**`, ` * text`, ` */` on separate lines; never `/** text */`.
 - Swift: follow the comment-marks rule in **SwiftUI - iOS**.
 
 ### KMP
@@ -318,7 +319,8 @@ val [actual] = operation(X)
 - Don't use unnecessary blank lines between UI components.
 - Always use animations for UI transitions, avoid flashing transitions.
 - Always respect edge-to-edge `windowInsets` for screens.
-- Prefer icons from the official Google Font icon set: https://fonts.google.com/icons.
+- Use icons from the official Google Font icon set: https://fonts.google.com/icons. 
+  - Download the Android vector drawable directly, never hand-write path data: `https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/<icon_name>/default/24px.xml` → `res/drawable/ic_<icon_name>.xml`.
 - Prefer official Material3 components instead of custom views
 - Whenever makes sense, extract UI components to separate classes -> `@Composable` functions.
 

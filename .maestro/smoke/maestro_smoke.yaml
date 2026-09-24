@@ -190,6 +190,22 @@ appId: ${APP_ID}
     id: RECENT_GPX_ITEM
 - tapOn: "Close"
 
+# Discover sheet
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 15000
+- assertVisible:
+    id: HIKE_RECOMMENDATION_CARD
+- tapOn:
+    id: DISCOVER_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
+
 # Menu
 - tapOn: "Menu"
 - extendedWaitUntil:
