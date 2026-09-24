@@ -43,6 +43,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
+import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
@@ -145,7 +146,7 @@ class MainViewModel(
             MainUiEvents.PlaceDetailsRoutePlanClicked -> planRoute()
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // Route Planner events
-            MainUiEvents.RoutePlannerClicked -> showSheet(Sheet.RoutePlanner(place = null))
+            MainUiEvents.RoutePlannerClicked -> showRoutePlanner(place = null)
             is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers)
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
@@ -371,12 +372,22 @@ class MainViewModel(
     private fun planRoute() {
         val placeDetails = _uiState.value.mapUiState.placeDetails ?: return
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsRoutePlanClicked)
-        val place = (placeDetails as? PlaceDetails.PlaceLoaded)?.place
+        showRoutePlanner((placeDetails as? PlaceDetails.PlaceLoaded)?.place)
+    }
+
+    private fun showRoutePlanner(place: Place?) {
+        selectedWaypoint.value = null
         cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = Sheet.RoutePlanner(place),
-                mapUiState = uiState.mapUiState.copy(placeDetails = null),
+                mapUiState = uiState.mapUiState
+                    .withoutGpx()
+                    .copy(
+                        placeDetails = null,
+                        routePlan = null,
+                        routePlanWaypoints = emptyList(),
+                    ),
             )
         }
     }
@@ -677,14 +688,9 @@ class MainViewModel(
         viewModelScope.launch {
             _uiState.update { uiState ->
                 uiState.copy(
-                    mapUiState = uiState.mapUiState.copy(
-                        gpxDetails = null,
-                        placeDetails = null,
-                        gpxLayerVisible = false,
-                        gpxRouteVisible = true,
-                        allDistancesVisible = false,
-                        distanceInfoWindows = emptyList(),
-                    ),
+                    mapUiState = uiState.mapUiState
+                        .withoutGpx()
+                        .copy(placeDetails = null),
                     sheet = null,
                 )
             }

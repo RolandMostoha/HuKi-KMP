@@ -2197,6 +2197,47 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given loaded GPX - When RoutePlannerClicked - Then GPX is closed and Route Planner is shown`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            with(viewModel.uiState.value) {
+                sheet shouldBe Sheet.RoutePlanner(place = null)
+                mapUiState.gpxDetails shouldBe null
+                mapUiState.gpxLayerVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
+    fun `Given loaded GPX and shown PlaceDetails - When PlaceDetailsRoutePlanClicked - Then GPX is closed`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                mapUiState.gpxDetails shouldBe null
+                mapUiState.gpxLayerVisible shouldBe false
+                mapUiState.placeDetails shouldBe null
+            }
+        }
+    }
+
+    @Test
     fun `Given open Route Planner - When MapLongClicked - Then the location is emitted instead of PlaceDetails`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
