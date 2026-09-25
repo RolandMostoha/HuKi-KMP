@@ -535,6 +535,7 @@ class MainViewModel(
                     it.copy(
                         mapZoomControlsAlwaysVisible = settings.mapZoomControlsVisible,
                         themeMode = settings.themeMode,
+                        mapUiState = it.mapUiState.copy(baseLayer = settings.baseLayer),
                     )
                 }
             }
@@ -618,6 +619,9 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.LayerSelected(baseLayer.toLayer()))
         _uiState.updateMapUiState {
             it.copy(baseLayer = baseLayer)
+        }
+        viewModelScope.launch {
+            settingsRepository.setBaseLayer(baseLayer)
         }
     }
 

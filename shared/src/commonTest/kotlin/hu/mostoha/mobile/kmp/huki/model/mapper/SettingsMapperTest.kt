@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
 import hu.mostoha.mobile.kmp.huki.datastore.SettingsPreferenceKeys
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import io.kotest.matchers.shouldBe
@@ -43,7 +44,33 @@ class SettingsMapperTest {
         }
     }
 
+    @Test
+    fun `Given stored base layer - When toUserPreferences - Then the base layer is returned`() {
+        baseLayerTestCases().forEach { testCase ->
+            val preferences = if (testCase.input != null) {
+                preferencesOf(SettingsPreferenceKeys.BASE_LAYER to testCase.input)
+            } else {
+                emptyPreferences()
+            }
+
+            val actual = preferences.toUserPreferences()
+
+            actual.baseLayer shouldBe testCase.expected
+        }
+    }
+
     companion object {
+        fun baseLayerTestCases() =
+            listOf(
+                BaseLayerTestCase(input = "OUTDOORS", expected = BaseLayer.OUTDOORS),
+                BaseLayerTestCase(input = "CITY", expected = BaseLayer.CITY),
+                BaseLayerTestCase(input = "SATELLITE", expected = BaseLayer.SATELLITE),
+                BaseLayerTestCase(input = "satellite", expected = BaseLayer.OUTDOORS),
+                BaseLayerTestCase(input = "REMOVED_LAYER", expected = BaseLayer.OUTDOORS),
+                BaseLayerTestCase(input = "", expected = BaseLayer.OUTDOORS),
+                BaseLayerTestCase(input = null, expected = BaseLayer.OUTDOORS),
+            )
+
         fun testCases() =
             listOf(
                 TestCase(input = "SYSTEM", expected = ThemeMode.SYSTEM),
@@ -59,5 +86,10 @@ class SettingsMapperTest {
     data class TestCase(
         val input: String?,
         val expected: ThemeMode,
+    )
+
+    data class BaseLayerTestCase(
+        val input: String?,
+        val expected: BaseLayer,
     )
 }

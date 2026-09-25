@@ -6,10 +6,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxWaypoints
 
 data class MapUiState(
-    val baseLayer: BaseLayer = BaseLayer.OUTDOORS,
+    val baseLayer: BaseLayer = UserPreferences.DEFAULTS.baseLayer,
     val hikingLayerVisible: Boolean = true,
     val gpxLayerVisible: Boolean = false,
     val gpxRouteVisible: Boolean = true,

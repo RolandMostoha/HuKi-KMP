@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import hu.mostoha.mobile.kmp.huki.datastore.SettingsPreferenceKeys
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.mapper.toUserPreferences
@@ -33,6 +34,12 @@ class DefaultSettingsRepository(private val dataStore: DataStore<Preferences>) :
     override suspend fun setThemeMode(themeMode: ThemeMode) {
         dataStore.edit { preferences ->
             preferences[SettingsPreferenceKeys.THEME_MODE] = themeMode.name
+        }
+    }
+
+    override suspend fun setBaseLayer(baseLayer: BaseLayer) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.BASE_LAYER] = baseLayer.name
         }
     }
 }

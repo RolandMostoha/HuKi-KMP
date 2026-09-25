@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import kotlinx.coroutines.flow.Flow
@@ -10,4 +11,6 @@ interface SettingsRepository {
     suspend fun setMapZoomControlsVisible(visible: Boolean)
 
     suspend fun setThemeMode(themeMode: ThemeMode)
+
+    suspend fun setBaseLayer(baseLayer: BaseLayer)
 }

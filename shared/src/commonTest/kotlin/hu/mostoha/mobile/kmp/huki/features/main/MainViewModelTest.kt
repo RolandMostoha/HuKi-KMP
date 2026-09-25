@@ -706,6 +706,31 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given stored base layer - When view model created - Then uiState has the stored base layer`() {
+        runTest {
+            every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(baseLayer = BaseLayer.SATELLITE))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.baseLayer shouldBe BaseLayer.SATELLITE
+        }
+    }
+
+    @Test
+    fun `When BaseLayerSelected - Then base layer is saved`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.SATELLITE))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setBaseLayer(BaseLayer.SATELLITE) }
+        }
+    }
+
+    @Test
     fun `When GpxLayerSelected and no GPX imported - Then sheet is hidden and mainUiEffect is ShowGpxFilePicker`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
