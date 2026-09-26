@@ -327,6 +327,7 @@ appId: ${APP_ID}
     element:
       id: MENU_ROW_SETTINGS
     direction: UP
+    centerElement: true
 - tapOn:
     id: MENU_ROW_SETTINGS
 - extendedWaitUntil:
