@@ -49,12 +49,16 @@ appId: ${APP_ID}
 
 # GPX control FAB. Asserts the FAB labels, never Mapbox-rendered annotations, which are the
 # assertions that fail under the software GPU on CI.
-- tapOn:
-    id: GPX_DETAILS_START_BUTTON
-- extendedWaitUntil:
-    visible:
-      id: MAIN_FAB_GPX_CONTROL_BUTTON
-    timeout: 15000
+# The sheet can swallow the first tap while it is still settling on CI's slow simulator
+- retry:
+    maxRetries: 2
+    commands:
+      - tapOn:
+          id: GPX_DETAILS_START_BUTTON
+      - extendedWaitUntil:
+          visible:
+            id: MAIN_FAB_GPX_CONTROL_BUTTON
+          timeout: 15000
 - tapOn:
     id: MAIN_FAB_GPX_CONTROL_BUTTON
 - assertVisible:
@@ -289,6 +293,11 @@ appId: ${APP_ID}
 - tapOn: "Menu"
 
 # GPX Guide screen
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_GPX_GUIDE
+    direction: DOWN
+    centerElement: true
 - tapOn:
     id: MENU_ROW_GPX_GUIDE
 - extendedWaitUntil:
@@ -299,6 +308,11 @@ appId: ${APP_ID}
     id: GPX_GUIDE_BACK_BUTTON
 
 # Trail Symbols Guide screen
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_TRAIL_SYMBOLS_GUIDE
+    direction: DOWN
+    centerElement: true
 - tapOn:
     id: MENU_ROW_TRAIL_SYMBOLS_GUIDE
 - extendedWaitUntil:
@@ -309,6 +323,10 @@ appId: ${APP_ID}
     id: TRAIL_SYMBOLS_GUIDE_BACK_BUTTON
 
 # Settings, and the zoom controls it toggles on the map
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_SETTINGS
+    direction: UP
 - tapOn:
     id: MENU_ROW_SETTINGS
 - extendedWaitUntil:
