@@ -8,6 +8,7 @@ struct FloatingActionContainer: View {
     let mainActionGlassID: String
     let mainActionGlassNamespace: Namespace.ID
     let onLayersClicked: () -> Void
+    let onDiscoverClicked: () -> Void
     let onMyLocationClicked: () -> Void
     let onMyLocationLongClicked: () -> Void
     let onZoomInClicked: () -> Void
@@ -34,13 +35,18 @@ struct FloatingActionContainer: View {
         Group {
             if isWideLayout {
                 HStack(alignment: .bottom, spacing: 16) {
-                    searchBar
+                    VStack(alignment: .leading, spacing: 20) {
+                        discoverFab
+                        searchBar
+                    }
                     Spacer(minLength: 0)
                     fabControls
                 }
             } else {
-                VStack(spacing: 16) {
-                    HStack {
+                VStack(spacing: 20) {
+                    HStack(alignment: .bottom) {
+                        discoverFab
+                            .padding(.leading, 11)
                         Spacer()
                         fabControls
                     }
@@ -68,6 +74,29 @@ struct FloatingActionContainer: View {
                 fabColumn
             }
             .transition(.move(edge: .trailing).combined(with: .opacity))
+        }
+    }
+
+    private var isDiscoverFabVisible: Bool {
+        uiState.sheet == nil && uiState.isSearchBarVisible
+    }
+
+    @ViewBuilder
+    private var discoverFab: some View {
+        if isDiscoverFabVisible {
+            VStack {
+                Button(action: onDiscoverClicked) {
+                    Image(systemName: "backpack.fill")
+                        .fontWeight(.bold)
+                        .frame(width: Dimens.discoverFabSize, height: Dimens.discoverFabSize)
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .glassBackground(.regular, in: Circle(), interactive: true)
+                .accessibilityIdentifier(TestTags.shared.MAIN_FAB_DISCOVER_BUTTON)
+                .accessibilityLabel(strings.get(id: SharedRes.strings().discover_a11y_fab))
+            }
+            .transition(.move(edge: .leading).combined(with: .opacity))
         }
     }
 

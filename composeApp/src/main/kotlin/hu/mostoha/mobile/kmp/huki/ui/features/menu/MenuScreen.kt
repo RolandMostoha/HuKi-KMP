@@ -68,6 +68,7 @@ fun MenuScreen(
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
+    onDiscoverClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -85,6 +86,7 @@ fun MenuScreen(
         onBack = onBack,
         onSettingsClicked = onSettingsClicked,
         onRoutePlannerClicked = onRoutePlannerClicked,
+        onDiscoverClicked = onDiscoverClicked,
         onDestinationsClicked = onDestinationsClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onGpxGuideClicked = onGpxGuideClicked,
@@ -102,6 +104,7 @@ private fun MenuContent(
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
+    onDiscoverClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -116,6 +119,7 @@ private fun MenuContent(
                 MenuUiEffects.NavigateBack -> onBack()
                 MenuUiEffects.NavigateToSettings -> onSettingsClicked()
                 MenuUiEffects.NavigateToRoutePlanner -> onRoutePlannerClicked()
+                MenuUiEffects.NavigateToDiscover -> onDiscoverClicked()
                 MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
                 MenuUiEffects.NavigateToGpxGuide -> onGpxGuideClicked()
@@ -191,16 +195,31 @@ private fun MenuContent(
                 }
                 MenuRowDivider()
                 MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_discover),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_discover),
+                    testTag = TestTags.MENU_ROW_DISCOVER,
+                    onClick = { onEvent(MenuUiEvents.DiscoverClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_discover_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_backpack,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_destinations),
                     valueText = null,
                     contentDescription = mokoString(SharedRes.strings.menu_a11y_open_destinations),
                     testTag = TestTags.MENU_ROW_DESTINATIONS,
                     onClick = { onEvent(MenuUiEvents.DestinationsClicked) },
-                    description = mokoString(SharedRes.strings.menu_item_destinations_description),
+                    description = mokoString(SharedRes.strings.destinations_description),
                     iconBackgroundColor = mokoColor(SharedRes.colors.primary),
                 ) {
                     TintedRowIcon(
-                        drawableResId = R.drawable.ic_backpack,
+                        drawableResId = R.drawable.ic_place_circle,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -215,7 +234,7 @@ private fun MenuContent(
                     iconBackgroundColor = mokoColor(SharedRes.colors.primary),
                 ) {
                     TintedRowIcon(
-                        drawableResId = R.drawable.ic_place_circle,
+                        drawableResId = R.drawable.ic_history,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -511,6 +530,7 @@ private fun MenuContentPreview() {
             onBack = {},
             onSettingsClicked = {},
             onRoutePlannerClicked = {},
+            onDiscoverClicked = {},
             onDestinationsClicked = {},
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},

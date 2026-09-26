@@ -1,9 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.gpxguide
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,10 +31,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +44,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.HikeRecommendationCard
 import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
@@ -242,45 +239,12 @@ private fun RecommendationsRow(onOpenUrl: (String) -> Unit, modifier: Modifier =
         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
     ) {
         HikeRecommendation.entries.forEach { recommendation ->
-            RecommendationCard(
+            HikeRecommendationCard(
                 recommendation = recommendation,
-                onOpenUrl = onOpenUrl,
+                onClick = { onOpenUrl(recommendation.baseUrl) },
                 modifier = Modifier.weight(1f),
             )
         }
-    }
-}
-
-@Composable
-private fun RecommendationCard(
-    recommendation: HikeRecommendation,
-    onOpenUrl: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable { onOpenUrl(recommendation.baseUrl) }
-            .padding(vertical = Dimens.MediumLarge, horizontal = Dimens.ExtraSmall),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
-    ) {
-        Image(
-            painter = painterResource(recommendation.iconRes.drawableResId),
-            contentDescription = null,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape),
-        )
-        Text(
-            text = mokoString(recommendation.title),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 
