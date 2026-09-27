@@ -338,6 +338,10 @@ appId: ${APP_ID}
     id: SETTINGS_ZOOM_CONTROLS_TOGGLE
 - tapOn:
     id: SETTINGS_BACK_BUTTON
+- scrollUntilVisible:
+    element:
+      id: MENU_BACK_BUTTON
+    direction: UP
 - tapOn:
     id: MENU_BACK_BUTTON
 - extendedWaitUntil:
