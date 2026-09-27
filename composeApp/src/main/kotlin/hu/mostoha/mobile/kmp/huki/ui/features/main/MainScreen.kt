@@ -55,6 +55,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.isModal
 import hu.mostoha.mobile.kmp.huki.model.domain.isStandard
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.features.discover.DiscoverBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
@@ -68,6 +69,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
+import hu.mostoha.mobile.kmp.huki.util.openUrl
 import hu.mostoha.mobile.kmp.huki.util.rememberScopedViewModelStoreOwner
 import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
 import kotlinx.coroutines.flow.Flow
@@ -91,6 +93,8 @@ fun MainScreen(
     onOpenDestinationConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
+    openDiscover: Boolean = false,
+    onOpenDiscoverConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -122,6 +126,13 @@ fun MainScreen(
         if (openRoutePlanner) {
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             onOpenRoutePlannerConsumed()
+        }
+    }
+
+    LaunchedEffect(openDiscover) {
+        if (openDiscover) {
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            onOpenDiscoverConsumed()
         }
     }
 
@@ -205,6 +216,7 @@ private fun MainContent(
     MainUiEffectHandler(
         mainUiEffects = mainUiEffects,
         onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
+        onNavigateToDestinations = onDestinationsClicked,
         onRoutePlannerLocationPicked = { location ->
             routePlannerPick = RoutePlannerPick(id = (routePlannerPick?.id ?: 0L) + 1, location = location)
         },
@@ -252,6 +264,9 @@ private fun MainContent(
                 },
                 onLayersClicked = {
                     onEvent(MainUiEvents.LayersClicked)
+                },
+                onDiscoverClicked = {
+                    onEvent(MainUiEvents.DiscoverClicked)
                 },
                 onMyLocationClicked = {
                     onEvent(MainUiEvents.MyLocationClicked)
@@ -550,6 +565,7 @@ private fun MainStandardBottomSheet(
 private fun MainUiEffectHandler(
     mainUiEffects: Flow<MainUiEffects>,
     onShowGpxFilePicker: () -> Unit,
+    onNavigateToDestinations: () -> Unit,
     onRoutePlannerLocationPicked: (Location) -> Unit,
 ) {
     val context = LocalContext.current
@@ -561,6 +577,8 @@ private fun MainUiEffectHandler(
                 is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
                 is MainUiEffects.RoutePlannerLocationPicked -> onRoutePlannerLocationPicked(effect.location)
                 is MainUiEffects.ShareGpxFile -> context.shareGpxFile(effect.fileUri, effect.fileName)
+                is MainUiEffects.OpenUrl -> context.openUrl(effect.url)
+                MainUiEffects.NavigateToDestinations -> onNavigateToDestinations()
             }
         }
     }
@@ -586,6 +604,15 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
             WhatsNewBottomSheet(
                 whatsNew = sheet.whatsNew,
                 sheetState = sheetState,
+                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+            )
+        }
+        Sheet.Discover -> {
+            DiscoverBottomSheet(
+                sheetState = sheetState,
+                onHikeRecommendationClicked = { onEvent(MainUiEvents.HikeRecommendationClicked(it)) },
+                onBrowseDestinationsClicked = { onEvent(MainUiEvents.DiscoverBrowseDestinationsClicked) },
+                onInfoClicked = { onEvent(MainUiEvents.HikeRecommendationsInfoClicked) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
             )
         }

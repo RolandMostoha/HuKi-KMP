@@ -7,6 +7,7 @@ sealed interface MenuUiEffects : UiEffect {
     data object NavigateBack : MenuUiEffects
     data object NavigateToSettings : MenuUiEffects
     data object NavigateToRoutePlanner : MenuUiEffects
+    data object NavigateToDiscover : MenuUiEffects
     data object NavigateToDestinations : MenuUiEffects
     data object NavigateToPlaceHistory : MenuUiEffects
     data object NavigateToGpxCollection : MenuUiEffects

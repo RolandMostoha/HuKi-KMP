@@ -29,8 +29,18 @@ extension MenuView {
             divider
             MenuItemView(
                 icon: tintedSymbol("backpack.fill", color: onPrimary),
+                title: strings.get(id: SharedRes.strings().menu_item_discover),
+                description: strings.get(id: SharedRes.strings().menu_item_discover_description),
+                iconBackgroundColor: primary,
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_discover),
+                testTag: TestTags.shared.MENU_ROW_DISCOVER,
+                action: { viewModel.onEvent(event: MenuUiEventsDiscoverClicked.shared) }
+            )
+            divider
+            MenuItemView(
+                icon: tintedSymbol("mappin.and.ellipse", color: onPrimary),
                 title: strings.get(id: SharedRes.strings().menu_item_destinations),
-                description: strings.get(id: SharedRes.strings().menu_item_destinations_description),
+                description: strings.get(id: SharedRes.strings().destinations_description),
                 iconBackgroundColor: primary,
                 accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_destinations),
                 testTag: TestTags.shared.MENU_ROW_DESTINATIONS,
@@ -38,7 +48,7 @@ extension MenuView {
             )
             divider
             MenuItemView(
-                icon: tintedSymbol("mappin.and.ellipse", color: onPrimary),
+                icon: tintedSymbol("clock.arrow.circlepath", color: onPrimary),
                 title: strings.get(id: SharedRes.strings().menu_item_place_history),
                 description: strings.get(id: SharedRes.strings().menu_item_place_history_description),
                 iconBackgroundColor: primary,

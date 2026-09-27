@@ -6,6 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
@@ -34,6 +35,14 @@ sealed interface MainUiEvents {
         val osmType: OsmType,
         val osmId: String,
     ) : MainUiEvents
+
+    /**
+     * Discover events
+     */
+    data object DiscoverClicked : MainUiEvents
+    data class HikeRecommendationClicked(val recommendation: HikeRecommendation) : MainUiEvents
+    data object DiscoverBrowseDestinationsClicked : MainUiEvents
+    data object HikeRecommendationsInfoClicked : MainUiEvents
 
     /**
      * Map events

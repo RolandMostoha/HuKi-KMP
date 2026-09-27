@@ -14,18 +14,18 @@ enum class HikeRecommendation(
         title = SharedRes.strings.hike_recommender_aktivkalandor,
         iconRes = SharedRes.images.ic_aktivkalandor,
         baseUrl = "https://aktivkalandor.hu/turak-a-terkepen/",
-        areaUrl = "https://aktivkalandor.hu/tajegysegek/%s",
+        areaUrl = "https://aktivkalandor.hu/tajegysegek/{areaId}",
     ),
     KIRANDULASTIPPEK(
         title = SharedRes.strings.hike_recommender_kirandulastippek,
         iconRes = SharedRes.images.ic_kirandulastippek,
         baseUrl = "https://kirandulastippek.hu",
-        areaUrl = "https://kirandulastippek.hu/%s?tag=gyalogtura",
+        areaUrl = "https://kirandulastippek.hu/{areaId}?tag=gyalogtura",
     ),
     TERMESZETJARO(
         title = SharedRes.strings.hike_recommender_termeszetjaro,
         iconRes = SharedRes.images.ic_termeszetjaro,
-        baseUrl = "https://www.termeszetjaro.hu",
-        areaUrl = "https://www.termeszetjaro.hu/hu/tours/?cat=22729870#area=%s&wt=%s",
+        baseUrl = "https://www.termeszetjaro.hu/hu/tours/?cat=22729870",
+        areaUrl = "https://www.termeszetjaro.hu/hu/tours/?cat=22729870#area={areaId}&wt={areaName}",
     ),
 }

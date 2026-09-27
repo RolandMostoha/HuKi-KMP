@@ -14,8 +14,11 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -51,6 +54,7 @@ fun FloatingActionContainer(
     mainUiState: MainUiState,
     onSearchClicked: () -> Unit,
     onLayersClicked: () -> Unit,
+    onDiscoverClicked: () -> Unit,
     onMyLocationClicked: () -> Unit,
     onMyLocationLongClicked: () -> Unit,
     onZoomInClicked: () -> Unit,
@@ -63,6 +67,7 @@ fun FloatingActionContainer(
     modifier: Modifier = Modifier,
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isSearchBarVisible = mainUiState.isSearchBarVisible && mainUiState.sheet == null
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -88,18 +93,26 @@ fun FloatingActionContainer(
         }
         if (isLandscape) {
             // Landscape: search bar bottom-start with a fixed width, FABs dropped to bottom-end.
-            SearchBarAction(
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(
                         horizontal = Dimens.Medium,
                         vertical = Dimens.Small,
                     ),
-                visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
-                searchBarModifier = Modifier.width(Dimens.SearchBarLandscapeWidth),
-                onSearchClicked = onSearchClicked,
-                onMenuClicked = onMenuClicked,
-            )
+            ) {
+                DiscoverFabAction(
+                    modifier = Modifier.padding(bottom = Dimens.Large),
+                    visible = isSearchBarVisible,
+                    onDiscoverClicked = onDiscoverClicked,
+                )
+                SearchBarAction(
+                    visible = isSearchBarVisible,
+                    searchBarModifier = Modifier.width(Dimens.SearchBarLandscapeWidth),
+                    onSearchClicked = onSearchClicked,
+                    onMenuClicked = onMenuClicked,
+                )
+            }
             FabColumnAction(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -125,17 +138,29 @@ fun FloatingActionContainer(
                     ),
                 horizontalAlignment = Alignment.End,
             ) {
-                FabColumnAction(
-                    modifier = Modifier.padding(bottom = Dimens.Large),
-                    mainUiState = mainUiState,
-                    onLayersClicked = onLayersClicked,
-                    onMyLocationClicked = onMyLocationClicked,
-                    onMyLocationLongClicked = onMyLocationLongClicked,
-                    onZoomInClicked = onZoomInClicked,
-                    onZoomOutClicked = onZoomOutClicked,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Dimens.Large),
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    DiscoverFabAction(
+                        modifier = Modifier.padding(start = Dimens.Medium),
+                        visible = isSearchBarVisible,
+                        onDiscoverClicked = onDiscoverClicked,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    FabColumnAction(
+                        mainUiState = mainUiState,
+                        onLayersClicked = onLayersClicked,
+                        onMyLocationClicked = onMyLocationClicked,
+                        onMyLocationLongClicked = onMyLocationLongClicked,
+                        onZoomInClicked = onZoomInClicked,
+                        onZoomOutClicked = onZoomOutClicked,
+                    )
+                }
                 SearchBarAction(
-                    visible = mainUiState.isSearchBarVisible && mainUiState.sheet == null,
+                    visible = isSearchBarVisible,
                     searchBarModifier = Modifier.padding(horizontal = Dimens.Medium),
                     onSearchClicked = onSearchClicked,
                     onMenuClicked = onMenuClicked,
@@ -251,6 +276,31 @@ private fun FabColumnAction(
 }
 
 @Composable
+private fun DiscoverFabAction(visible: Boolean, onDiscoverClicked: () -> Unit, modifier: Modifier = Modifier) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+        exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
+    ) {
+        FloatingActionButton(
+            modifier = Modifier.testTag(TestTags.MAIN_FAB_DISCOVER_BUTTON),
+            containerColor = MaterialTheme.colorScheme.surface,
+            elevation = FloatingActionButtonDefaults.elevation(
+                defaultElevation = Dimens.FloatingActionElevation,
+            ),
+            shape = CircleShape,
+            onClick = onDiscoverClicked,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_backpack),
+                contentDescription = mokoString(SharedRes.strings.discover_a11y_fab),
+            )
+        }
+    }
+}
+
+@Composable
 private fun SearchBarAction(
     visible: Boolean,
     onSearchClicked: () -> Unit,
@@ -280,6 +330,7 @@ private fun MainContentPreview() {
             mainUiState = MainUiState(),
             onSearchClicked = {},
             onLayersClicked = {},
+            onDiscoverClicked = {},
             onMyLocationClicked = {},
             onMyLocationLongClicked = {},
             onZoomInClicked = {},

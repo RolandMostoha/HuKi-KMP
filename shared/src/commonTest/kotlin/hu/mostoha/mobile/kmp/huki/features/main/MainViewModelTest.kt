@@ -22,18 +22,21 @@ import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.HikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
@@ -648,6 +651,84 @@ class MainViewModelTest {
 
                 awaitItem().sheet shouldBe Sheet.Layers
             }
+        }
+    }
+
+    @Test
+    fun `When DiscoverClicked - Then uiState sheet is Discover`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().sheet shouldBe null
+
+                viewModel.onEvent(MainUiEvents.DiscoverClicked)
+
+                awaitItem().sheet shouldBe Sheet.Discover
+            }
+        }
+    }
+
+    @Test
+    fun `Given Discover sheet over Bukk - When HikeRecommendationClicked - Then Bukk url is opened and event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(
+                MainUiEvents.MapCameraChanged(
+                    CameraPosition(location = Location(48.05, 20.5), zoom = 10.0, bearing = 0.0, pitch = 0.0),
+                ),
+            )
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.HikeRecommendationClicked(HikeRecommendation.AKTIVKALANDOR))
+
+                awaitItem() shouldBe MainUiEffects.OpenUrl("https://aktivkalandor.hu/tajegysegek/bukk")
+                ensureAllEventsConsumed()
+            }
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.HikeRecommendationSelected(HikeRecommender.AKTIVKALANDOR),
+            )
+            viewModel.uiState.value.sheet shouldBe Sheet.Discover
+        }
+    }
+
+    @Test
+    fun `Given Discover sheet - When HikeRecommendationsInfoClicked - Then info opened event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            viewModel.onEvent(MainUiEvents.HikeRecommendationsInfoClicked)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HikeRecommendationsInfoOpened)
+            viewModel.uiState.value.sheet shouldBe Sheet.Discover
+        }
+    }
+
+    @Test
+    fun `Given Discover sheet - When DiscoverBrowseDestinationsClicked - Then sheet is hidden and NavigateToDestinations is emitted`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.DiscoverBrowseDestinationsClicked)
+
+                awaitItem() shouldBe MainUiEffects.NavigateToDestinations
+                ensureAllEventsConsumed()
+            }
+            viewModel.uiState.value.sheet shouldBe null
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.DiscoverBrowseDestinationsClicked)
         }
     }
 
@@ -1960,6 +2041,19 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.SEARCH))
+        }
+    }
+
+    @Test
+    fun `Given discover sheet opened - When onEvent - Then discover screen view is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            advanceUntilIdle()
+
+            analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.DISCOVER))
         }
     }
 

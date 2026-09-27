@@ -53,6 +53,7 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                                                     |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Analytics  | Bug: iOS. No screen VM is ever cleared: `@State var viewModel = KoinViewModelProvider...` re-runs on every view init (throwaway VMs run `init` work) and `viewModelScope` is never cancelled (e.g. Settings' DataStore collector leaks). Fix: `ViewModelHolder` (`@StateObject`, `deinit { clear() }`), migrate manual `clear()` calls. |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug).                         |
 | `[ ]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                                                   |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                              |
@@ -116,23 +117,25 @@ they can record their exact location / zoom level with a CROSS marker.
 | `[ ]`  | Destinations | Add Map based destinations with Landscapes |
 | `[ ]`  | Destinations | Improve destinations descriptions          |
 
-### FEATURE: Discovery
+### FEATURE: Discover
 
 Goal: have a feature for the users to discover new places, trails, landscapes, etc.
-Appearance: a bottom sheet, title "Discovery", left icon: backpack, close with X button.
+Appearance: a bottom sheet, title "Discover", close with X button.
 Features (sections inside bottom sheet):
 
-- Landscapes - a button to show landscapes
 - Hike recommendations - AKTIVKALANDOR, KIRANDULASTIPPEK, TERMESZETJARO
 - Destination categories (horizontally scrollable) - e.g. highest peaks, edu trails, rivers, caves etc.
 - OKT routes (OKT, RPDDK, AKT)
-  Observed: !!!GPX import is barely used on iOS.!!! - we need a place where we show Hike Collections.
+- Landscapes - a button to show landscapes
 
-| Status | Scope     | Task                                                                                                        |
-|--------|-----------|-------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Discovery | Add a new sheet for Discovery. a bottom sheet, title "Discovery", left icon: backpack, close with X button. |
-| `[ ]`  | Discovery | Add HikeRecommendations, use same design as in GpxCollection (horizontal list)                              |
-| `[ ]`  | Discovery | Add Destinations button which navigates to DestinationsScreen                                               |
+| Status | Scope    | Task                                                                                                                                                                                                                                                              |
+|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Discover | Add a new circular FAB to bottom left, above the search field. It navigates to DiscoverSheet. It similarily shows/hides like the my location / layers FABs.                                                                                                       |
+| `[R]`  | Discover | Add a new sheet for Discover. A bottom sheet, title "Discovery", left icon: backpack, close with X button. Apply the same sheet style as we did for other sheets.                                                                                                 |
+| `[R]`  | Discover | Icon changes: Discover -> becomes the backpack (previously used in menu-destinations). Destinations -> becomes the PIN icon (previously used in menu-place history). Place History -> becomes "History" icon material: "History", SFsymb: clock.arrow.circlepath" |
+| `[R]`  | Discover | Add HikeRecommendations, section title: Hike Recommendations, sections styles are the same as in SearchSheet. For HikeRecommendations use same design as in GpxCollection (horizontal list).                                                                      |
+| `[R]`  | Discover | Add Destinations section and Browse destinations button which navigates to DestinationsScreen. Subtitle is the same as in Settings.                                                                                                                               |
+| `[R]`  | Discover | Add "Discover" item to Menu.                                                                                                                                                                                                                                      |
 
 ### FEATURE: Versioning + WhatsNew
 

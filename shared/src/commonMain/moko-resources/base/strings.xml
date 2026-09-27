@@ -128,8 +128,11 @@
     <string name="menu_item_route_planner">Route planner</string>
     <string name="menu_item_route_planner_description">Plan on hiking trails or off them</string>
     <string name="menu_a11y_open_route_planner">Open Route planner</string>
+    <string name="menu_item_discover">Discover</string>
+    <string name="menu_item_discover_description">Hike ideas and destinations</string>
     <string name="menu_item_destinations">Destinations</string>
-    <string name="menu_item_destinations_description">Popular hiking spots across Hungary</string>
+    <string name="destinations_description">Nearly 400 hand-picked places</string>
+    <string name="menu_a11y_open_discover">Open Discover</string>
     <string name="menu_a11y_open_destinations">Open Destinations</string>
     <string name="menu_item_place_history">Place History</string>
     <string name="menu_item_place_history_description">Places you have recently opened</string>
@@ -225,12 +228,6 @@
     <string name="gpx_guide_step_3_message">Save it from the website — it lands in Files or Downloads.</string>
     <string name="gpx_guide_step_4_title">Open the file with HuKi</string>
     <string name="gpx_guide_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.</string>
-    <string name="gpx_guide_recommended_aktivkalandor">Aktív Kalandor</string>
-    <string name="gpx_guide_recommended_termeszetjaro">Természetjáró</string>
-    <string name="gpx_guide_recommended_kirandulastippek">Kirándulástippek</string>
-    <string name="gpx_guide_recommended_aktivkalandor_url">https://aktivkalandor.hu/turak-a-terkepen/</string>
-    <string name="gpx_guide_recommended_termeszetjaro_url">https://www.termeszetjaro.hu</string>
-    <string name="gpx_guide_recommended_kirandulastippek_url">https://kirandulastippek.hu</string>
     <string name="gpx_guide_a11y_open_collection">Open %s</string>
 
     <string name="trail_symbols_guide_title">Trail Symbols Guide</string>
@@ -343,6 +340,13 @@
     <string name="hike_recommender_termeszetjaro">Természetjáró</string>
     <string name="hike_recommender_kirandulastippek">Kirándulástippek</string>
     <string name="hike_recommender_aktivkalandor">Aktív Kalandor</string>
+
+    <string name="discover_title">Discover</string>
+    <string name="discover_a11y_fab">Discover</string>
+    <string name="discover_hike_recommendations_title">Hike recommendations</string>
+    <string name="discover_hike_recommendations_a11y_info">About hike recommendations</string>
+    <string name="discover_hike_recommendations_info">The hike collections below are my personal favourites, and GPX routes downloaded from them can be opened in the app.\n\nHuKi does not use the content of these websites, it only provides a navigation link that opens in an external browser.\n\nThe terms of each website apply to the use of its content.</string>
+    <string name="discover_browse_destinations">Browse destinations</string>
 
     <string name="location_iq_a11y_back">Back</string>
     <string name="location_iq_a11y_logo">LocationIQ logo</string>

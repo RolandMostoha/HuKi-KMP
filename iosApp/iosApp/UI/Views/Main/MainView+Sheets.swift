@@ -17,7 +17,32 @@ extension MainView {
             routePlannerSheet(place: sheet.place)
         case .whatsNew(let sheet):
             whatsNewSheet(whatsNew: sheet.whatsNew)
+        case .discover:
+            discoverSheet()
         }
+    }
+
+    func discoverSheet() -> some View {
+        DiscoverSheetView(
+            strings: strings,
+            onHikeRecommendationClicked: { recommendation in
+                viewModel.onEvent(event: MainUiEventsHikeRecommendationClicked(recommendation: recommendation))
+            },
+            onBrowseDestinationsClicked: {
+                viewModel.onEvent(event: MainUiEventsDiscoverBrowseDestinationsClicked.shared)
+            },
+            onInfoClicked: {
+                viewModel.onEvent(event: MainUiEventsHikeRecommendationsInfoClicked.shared)
+            },
+            onDismissRequest: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            },
+            onHeightChange: { height in
+                discoverHeight = height
+            }
+        )
+        .presentationDetents([isLandscape ? .large : .height(discoverHeight)])
+        .presentationDragIndicator(.hidden)
     }
 
     func whatsNewSheet(whatsNew: WhatsNew) -> some View {

@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.analytics
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.HikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
@@ -152,6 +153,31 @@ class AnalyticsEventTest {
                 TestCase(AnalyticsEvent.GpxOverviewClicked, "gpx_overview_clicked", emptyMap()),
                 TestCase(AnalyticsEvent.GpxClosed, "gpx_closed", emptyMap()),
                 TestCase(AnalyticsEvent.GpxDeleted, "gpx_deleted", emptyMap()),
+                TestCase(
+                    AnalyticsEvent.HikeRecommendationSelected(HikeRecommender.AKTIVKALANDOR),
+                    "hike_recommendation_aktivkalandor",
+                    emptyMap(),
+                ),
+                TestCase(
+                    AnalyticsEvent.HikeRecommendationSelected(HikeRecommender.KIRANDULASTIPPEK),
+                    "hike_recommendation_kirandulastippek",
+                    emptyMap(),
+                ),
+                TestCase(
+                    AnalyticsEvent.HikeRecommendationSelected(HikeRecommender.TERMESZETJARO),
+                    "hike_recommendation_termeszetjaro",
+                    emptyMap(),
+                ),
+                TestCase(
+                    AnalyticsEvent.HikeRecommendationsInfoOpened,
+                    "hike_recommendations_info_opened",
+                    emptyMap(),
+                ),
+                TestCase(
+                    AnalyticsEvent.DiscoverBrowseDestinationsClicked,
+                    "discover_browse_destinations_clicked",
+                    emptyMap(),
+                ),
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL), "menu_link_email", emptyMap()),
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.FACEBOOK), "menu_link_facebook", emptyMap()),
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB), "menu_link_github", emptyMap()),

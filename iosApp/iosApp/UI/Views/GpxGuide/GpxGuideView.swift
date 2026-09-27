@@ -142,21 +142,13 @@ struct GpxGuideView: View {
 
     private var recommendationsRow: some View {
         HStack(spacing: 6) {
-            recommendationCard(
-                name: strings.get(id: SharedRes.strings().gpx_guide_recommended_aktivkalandor),
-                image: SharedRes.images().ic_aktivkalandor.toUIImage()!,
-                urlString: strings.get(id: SharedRes.strings().gpx_guide_recommended_aktivkalandor_url)
-            )
-            recommendationCard(
-                name: strings.get(id: SharedRes.strings().gpx_guide_recommended_kirandulastippek),
-                image: SharedRes.images().ic_kirandulastippek.toUIImage()!,
-                urlString: strings.get(id: SharedRes.strings().gpx_guide_recommended_kirandulastippek_url)
-            )
-            recommendationCard(
-                name: strings.get(id: SharedRes.strings().gpx_guide_recommended_termeszetjaro),
-                image: SharedRes.images().ic_termeszetjaro.toUIImage()!,
-                urlString: strings.get(id: SharedRes.strings().gpx_guide_recommended_termeszetjaro_url)
-            )
+            ForEach(HikeRecommendation.allCases, id: \.self) { recommendation in
+                HikeRecommendationCardView(
+                    strings: strings,
+                    recommendation: recommendation,
+                    onClick: { open(recommendation.baseUrl) }
+                )
+            }
         }
     }
 
@@ -185,32 +177,6 @@ struct GpxGuideView: View {
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.white)
         }
-    }
-
-    private func recommendationCard(name: String, image: UIImage, urlString: String) -> some View {
-        Button(
-            action: { open(urlString) },
-            label: {
-                VStack(spacing: 8) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
-                    Text(name)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 2)
-                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            }
-        )
-        .buttonStyle(.plain)
-        .accessibilityLabel(strings.get(id: SharedRes.strings().gpx_guide_a11y_open_collection, args: [name]))
     }
 
     private func sectionHeader(_ text: String) -> some View {

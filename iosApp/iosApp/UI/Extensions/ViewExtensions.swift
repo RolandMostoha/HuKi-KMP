@@ -63,9 +63,9 @@ extension View {
     }
 
     @ViewBuilder
-    func glassBackground(_ style: GlassStyle = .clear, in shape: some Shape) -> some View {
+    func glassBackground(_ style: GlassStyle = .clear, in shape: some Shape, interactive: Bool = false) -> some View {
         if #available(iOS 26.0, *) {
-            glassEffect(style.glass, in: shape)
+            glassEffect(style.glass.interactive(interactive), in: shape)
         } else {
             background(style.fallbackMaterial, in: shape)
         }

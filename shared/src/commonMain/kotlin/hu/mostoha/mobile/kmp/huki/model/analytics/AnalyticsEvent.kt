@@ -206,6 +206,18 @@ sealed interface AnalyticsEvent {
         override val name = "route_plan_waypoint_removed"
     }
 
+    data class HikeRecommendationSelected(val recommender: HikeRecommender) : AnalyticsEvent {
+        override val name = "hike_recommendation_${recommender.value}"
+    }
+
+    data object HikeRecommendationsInfoOpened : AnalyticsEvent {
+        override val name = "hike_recommendations_info_opened"
+    }
+
+    data object DiscoverBrowseDestinationsClicked : AnalyticsEvent {
+        override val name = "discover_browse_destinations_clicked"
+    }
+
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {
         override val name = "menu_link_${link.value}"
     }

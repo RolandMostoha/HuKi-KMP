@@ -4,6 +4,8 @@ import SwiftUI
 enum Dimens {
     static let sectionSpacing: CGFloat = 18
 
+    static let discoverFabSize: CGFloat = 52
+
     static let infoWindowBorder: CGFloat = 1.5
     static let infoWindowCornerRadius: CGFloat = 16
     static let infoWindowTailWidth: CGFloat = 16
@@ -71,6 +73,8 @@ enum Dimens {
     }
 
     static let placeDetailsDetentHeight: CGFloat = 215
+
+    static let discoverDetentHeight: CGFloat = 400
 
     static let routePlannerDetentHeight: CGFloat = 520
     static let routePlannerMinimizedDetentHeight: CGFloat = 190

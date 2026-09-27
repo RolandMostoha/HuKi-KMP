@@ -8,6 +8,7 @@ struct MainView: View {
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
+    @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
     @State var routePlannerHeights = RoutePlannerSheetHeights(
         expanded: Dimens.routePlannerDetentHeight,
         minimized: Dimens.routePlannerMinimizedDetentHeight
@@ -93,6 +94,9 @@ struct MainView: View {
                         mainActionGlassNamespace: mainActionGlassNamespace,
                         onLayersClicked: {
                             viewModel.onEvent(event: MainUiEventsLayersClicked.shared)
+                        },
+                        onDiscoverClicked: {
+                            viewModel.onEvent(event: MainUiEventsDiscoverClicked.shared)
                         },
                         onMyLocationClicked: {
                             viewModel.onEvent(event: MainUiEventsMyLocationClicked.shared)
@@ -225,6 +229,10 @@ private extension MainView {
                 viewModel.onEvent(event: MainUiEventsRoutePlannerClicked.shared)
                 navigationPath = NavigationPath()
             },
+            onDiscoverClicked: {
+                viewModel.onEvent(event: MainUiEventsDiscoverClicked.shared)
+                navigationPath = NavigationPath()
+            },
             onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
             onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
             onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) },
@@ -273,6 +281,12 @@ private extension MainView {
             routePlannerPick = RoutePlannerPick(location: effect.location)
         case .shareGpxFile(let effect):
             gpxShareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
+        case .openUrl(let effect):
+            if let url = URL(string: effect.url) {
+                UIApplication.shared.open(url)
+            }
+        case .navigateToDestinations:
+            navigationPath.append(DestinationsRoute.destinations)
         }
     }
 

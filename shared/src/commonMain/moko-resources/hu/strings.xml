@@ -128,8 +128,11 @@
     <string name="menu_item_route_planner">Útvonaltervező</string>
     <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
     <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
+    <string name="menu_item_discover">Felfedezés</string>
+    <string name="menu_item_discover_description">Túraötletek és kirándulóhelyek</string>
     <string name="menu_item_destinations">Kirándulóhelyek</string>
-    <string name="menu_item_destinations_description">Népszerű kirándulóhelyek országszerte</string>
+    <string name="destinations_description">Közel 400 kézzel válogatott hely</string>
+    <string name="menu_a11y_open_discover">Felfedezés megnyitása</string>
     <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
     <string name="menu_item_place_history">Helyelőzmények</string>
     <string name="menu_item_place_history_description">A nemrég megnyitott helyeid</string>
@@ -225,12 +228,6 @@
     <string name="gpx_guide_step_3_message">Mentsd el a weboldalról — a Fájlok vagy a Letöltések közé kerül.</string>
     <string name="gpx_guide_step_4_title">Nyisd meg a fájlt a HuKi-val</string>
     <string name="gpx_guide_step_4_message">Koppints a GPX fájlra, válaszd a Megosztást, majd a HuKi-t. Az útvonal ezután megjelenik a GPX gyűjteményedben.</string>
-    <string name="gpx_guide_recommended_aktivkalandor">Aktív Kalandor</string>
-    <string name="gpx_guide_recommended_termeszetjaro">Természetjáró</string>
-    <string name="gpx_guide_recommended_kirandulastippek">Kirándulástippek</string>
-    <string name="gpx_guide_recommended_aktivkalandor_url">https://aktivkalandor.hu/turak-a-terkepen/</string>
-    <string name="gpx_guide_recommended_termeszetjaro_url">https://www.termeszetjaro.hu</string>
-    <string name="gpx_guide_recommended_kirandulastippek_url">https://kirandulastippek.hu</string>
     <string name="gpx_guide_a11y_open_collection">%s megnyitása</string>
 
     <string name="trail_symbols_guide_title">Turistajelzések útmutató</string>
@@ -343,6 +340,13 @@
     <string name="hike_recommender_termeszetjaro">Természetjáró</string>
     <string name="hike_recommender_kirandulastippek">Kirándulástippek</string>
     <string name="hike_recommender_aktivkalandor">Aktív Kalandor</string>
+
+    <string name="discover_title">Felfedezés</string>
+    <string name="discover_a11y_fab">Felfedezés</string>
+    <string name="discover_hike_recommendations_title">Túragyűjtemények</string>
+    <string name="discover_hike_recommendations_a11y_info">A túraajánlókról</string>
+    <string name="discover_hike_recommendations_info">Az alábbi túragyűjtemények a személyes kedvenceim, amelyekből letöltött GPX útvonalak megnyithatóak az alkalmazással.\n\nA HuKi a weboldalak tartalmát nem használja fel, csak egy navigációs linket nyújt, ami külső böngészőben nyílik meg.\n\nA weboldalakon elérhető tartalom felhasználásához az adott oldal feltételei érvényesek.</string>
+    <string name="discover_browse_destinations">Kirándulóhelyek megnyitása</string>
 
     <string name="location_iq_a11y_back">Vissza</string>
     <string name="location_iq_a11y_logo">LocationIQ logó</string>
