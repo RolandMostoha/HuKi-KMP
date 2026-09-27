@@ -1,0 +1,4 @@
+- Felfedező funkció
+- Már a térkép is támogatja a sötét módot
+- A sötét téma a beállításokban is állítható
+- A kiválasztott térképréteg mentése

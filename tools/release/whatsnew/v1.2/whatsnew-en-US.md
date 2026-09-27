@@ -1,0 +1,4 @@
+- Discover feature
+- The map now supports dark mode
+- Dark mode can be switched in Settings
+- The selected map layer is saved
