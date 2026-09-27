@@ -31,7 +31,7 @@ platform :ios do
     archive_release
     upload_to_testflight(
       api_key: api_key,
-      skip_waiting_for_build_processing: true,
+      groups: ["Friends and Family"],
       distribute_external: false
     )
     upload_crashlytics_symbols
@@ -51,7 +51,7 @@ platform :ios do
       force: true,
       # Staged, not submitted: App Review is started by a human in App Store Connect.
       submit_for_review: false,
-      automatic_release: false,
+      automatic_release: true,
       precheck_include_in_app_purchases: false,
       submission_information: { add_id_info_uses_idfa: false }
     )
