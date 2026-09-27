@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		308875FD30011C9700924526 /* HukiAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 308875FC30011C9700924526 /* HukiAppIcon.icon */; };
+		300988F33069547300316D3B /* huki_icon_composer.icon in Resources */ = {isa = PBXBuildFile; fileRef = 300988F23069547300316D3B /* huki_icon_composer.icon */; };
 		30BD1E832EFAE3AD00CD3768 /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 30BD1E822EFAE3AD00CD3768 /* MapboxMaps */; };
 		30D20A51300E1F5700404D1E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30D20A50300E1F5700404D1E /* FirebaseAnalytics */; };
 		30D20A53300E1F5700404D1E /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30D20A52300E1F5700404D1E /* FirebaseCrashlytics */; };
@@ -15,7 +15,7 @@
 
 /* Begin PBXFileReference section */
 		1A9A712AB036D9037ECB1140 /* HuKi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HuKi.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		308875FC30011C9700924526 /* HukiAppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = HukiAppIcon.icon; sourceTree = "<group>"; };
+		300988F23069547300316D3B /* huki_icon_composer.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = huki_icon_composer.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -83,8 +83,8 @@
 				A8795A49EAC062F4C5704EFF /* Configuration */,
 				30FA57E12F4A100000A60BF0 /* fastlane */,
 				4E05C4AB383E64F4131B52E6 /* iosApp */,
+				300988F23069547300316D3B /* huki_icon_composer.icon */,
 				2F0795DE8B4FD8C854FA6817 /* Products */,
-				308875FC30011C9700924526 /* HukiAppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -167,7 +167,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				308875FD30011C9700924526 /* HukiAppIcon.icon in Resources */,
+				300988F33069547300316D3B /* huki_icon_composer.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,7 +346,7 @@
 		57B889860B731141085E6EF7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = HukiAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = huki_icon_composer;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -376,7 +376,7 @@
 		B09B3B75F962F1C15607488B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = HukiAppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = huki_icon_composer;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";

@@ -1,0 +1,73 @@
+{
+  "fill" : {
+    "solid" : "display-p3:0.15979,0.28247,0.18945,1.00000"
+  },
+  "groups" : [
+    {
+      "blur-material" : null,
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "display-p3:0.80000,0.90196,0.65490,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.88489,1.00000,0.72633,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "huki_app_icon_v3_hill.svg",
+          "name" : "huki_app_icon_v3_hill",
+          "position" : {
+            "scale" : 0.84,
+            "translation-in-points" : [
+              2.441905491761645,
+              16
+            ]
+          }
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.96700,0.96700,0.96700,1.00000"
+              }
+            }
+          ],
+          "glass" : true,
+          "image-name" : "huki_app_icon_v3_tree.svg",
+          "name" : "huki_app_icon_v3_tree",
+          "position" : {
+            "scale" : 0.87,
+            "translation-in-points" : [
+              2.3502307158196345e-06,
+              4
+            ]
+          }
+        }
+      ],
+      "lighting" : "individual",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.8
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

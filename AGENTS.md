@@ -34,34 +34,6 @@ Lint:
 - Tests (Kotlin/Native / iOS actuals): `./gradlew :shared:iosSimulatorArm64Test`
 - Both at once (macOS only): `./gradlew :shared:allTests`
 
-## Utility Scripts
-
-### iOS
-- `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
-- `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
-- `ios_fix_location.sh [lat,lon]` — fix a wedged location (defaults to Dobogókő). Use when the simulator loses GPS signal.
-- `ios_simulate_gpx_walk.sh <path.gpx> [speed-mps] [step]` — simulate "walking" along a GPX track by feeding its `<trkpt>` points to `simctl location start`, which interpolates between them and emits updates carrying **course + speed**, so the bearing puck and live compass work. Use `step` to thin dense tracks. Runs in the background; stop with `xcrun simctl location booted clear`. Use for: "simulate walking a route", "move location along GPX".
-- `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
-- `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
-- `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
-- `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
-- `ios_toggle_demo_mode.sh` — toggle a clean "demo" status bar (9:41, full Wi-Fi/cellular, 100% battery) on the booted simulator via `simctl status_bar`. Use for: "demo mode (iOS)", clean status bar for App Store screenshots.
-- `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
-
-### Android
-- `android_setup_emulator.sh [device-serial] [--no-reboot]` — apply the standard emulator setup: disable stylus handwriting, add Hungarian as secondary system language, switch to 3-button navigation, add the Dark theme Quick Settings tile, enable Developer options. Reboots at the end (the language list only applies after a restart). Use for: "set up emulator", "configure a fresh emulator".
-- `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
-- `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
-- `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
-- `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
-- `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
-- `android_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the connected emulator's location (`adb emu geo fix`) through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Requires an emulator (not a physical device). Use for: "simulate walking a route", "move location along GPX".
-
-### Cross-platform
-- `android_run_all_maestro_tests.sh [device-serial]` — run all `.maestro/maestro_*.yaml` tests against the Android app. Defaults to the first connected adb device. Use for: "run maestro tests (Android)", "run E2E tests (Android)".
-- `ios_run_all_maestro_tests.sh [simulator-udid]` — run all `.maestro/maestro_*.yaml` tests against the iOS app. Defaults to the currently booted simulator. Use for: "run maestro tests (iOS)", "run E2E tests (iOS)".
-- `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — engine that runs all `.maestro/maestro_*.yaml` tests against the given app and device, auto-uploading GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Prefer the platform wrappers above, which fill in the APP_ID and booted device for you.
-
 ## Project Overview
 - **Domain**: Hiking application for Hungarian landscapes, trails, destinations.
 - **Type**: Kotlin Multiplatform (KMP).
@@ -373,12 +345,6 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - Ad-hoc internal TestFlight builds: `bundle exec fastlane beta` locally (never reviewed).
 - **Tagging convention**: `ios/v<appVersion>`
 
-## App Icon
-
-- **Source of truth**: `tools/assets/huki_app_icon_v3.svg` — a flat SVG on a 1255 canvas with three named paths (`background` / `hill` / `tree`).
-- **Android** — adaptive icon only
-- **iOS** — `iosApp/HukiAppIcon.icon` - made by Apple Icon Composer
-
 ## Code Quality & Linting
 ### Android
 - **Formatting:** Use **ktlint**. Refer to `.editorconfig` in the root for specific formatting rules.
@@ -398,3 +364,31 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - Both builds **hard-fail** without them: Gradle reports *"File google-services.json is missing"*, Xcode reports a missing build input file.
 - CI injects them from the `GOOGLE_SERVICES_JSON_BASE64` / `GOOGLE_SERVICE_INFO_PLIST_BASE64` repo secrets via the `checkout-with-secrets` composite actions, so every job that builds gets them automatically.
 - Regenerate a secret value with `base64 -i <file> | pbcopy`.
+
+## Utility Scripts
+
+### iOS
+- `ios_get_booted_device_id.sh` — print the UUID of the currently booted iOS simulator.
+- `ios_reset_simulator.sh` — factory-reset the booted simulator (shutdown + erase + reboot). Use for: "reset simulator", "wipe simulator", "clean simulator state".
+- `ios_fix_location.sh [lat,lon]` — fix a wedged location (defaults to Dobogókő). Use when the simulator loses GPS signal.
+- `ios_simulate_gpx_walk.sh <path.gpx> [speed-mps] [step]` — simulate "walking" along a GPX track by feeding its `<trkpt>` points to `simctl location start`, which interpolates between them and emits updates carrying **course + speed**, so the bearing puck and live compass work. Use `step` to thin dense tracks. Runs in the background; stop with `xcrun simctl location booted clear`. Use for: "simulate walking a route", "move location along GPX".
+- `ios_remove_app.sh` — uninstall `hu.mostoha.mobile.ios.huki` from the booted simulator. Use for: "remove app", "uninstall app on iOS".
+- `ios_upload_test_gpx_files.sh` — copy every `tools/gpx/*.gpx` into the iOS app's Documents container on the booted simulator. Needed for Maestro tests on iOS where GPX import is necessary.
+- `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
+- `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
+- `ios_toggle_demo_mode.sh` — toggle a clean "demo" status bar (9:41, full Wi-Fi/cellular, 100% battery) on the booted simulator via `simctl status_bar`. Use for: "demo mode (iOS)", clean status bar for App Store screenshots.
+- `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
+
+### Android
+- `android_setup_emulator.sh [device-serial] [--no-reboot]` — apply the standard emulator setup: disable stylus handwriting, add Hungarian as secondary system language, switch to 3-button navigation, add the Dark theme Quick Settings tile, enable Developer options. Reboots at the end (the language list only applies after a restart). Use for: "set up emulator", "configure a fresh emulator".
+- `android_toggle_dark_mode.sh` — toggle the connected device/emulator's night mode. Use for: "toggle dark mode (Android)".
+- `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
+- `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
+- `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
+- `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
+- `android_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the connected emulator's location (`adb emu geo fix`) through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Requires an emulator (not a physical device). Use for: "simulate walking a route", "move location along GPX".
+
+### Cross-platform
+- `android_run_all_maestro_tests.sh [device-serial]` — run all `.maestro/maestro_*.yaml` tests against the Android app. Defaults to the first connected adb device. Use for: "run maestro tests (Android)", "run E2E tests (Android)".
+- `ios_run_all_maestro_tests.sh [simulator-udid]` — run all `.maestro/maestro_*.yaml` tests against the iOS app. Defaults to the currently booted simulator. Use for: "run maestro tests (iOS)", "run E2E tests (iOS)".
+- `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — engine that runs all `.maestro/maestro_*.yaml` tests against the given app and device, auto-uploading GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Prefer the platform wrappers above, which fill in the APP_ID and booted device for you.
