@@ -128,14 +128,12 @@ Features (sections inside bottom sheet):
 - OKT routes (OKT, RPDDK, AKT)
 - Landscapes - a button to show landscapes
 
-| Status | Scope    | Task                                                                                                                                                                                                                                                              |
-|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Discover | Add a new circular FAB to bottom left, above the search field. It navigates to DiscoverSheet. It similarily shows/hides like the my location / layers FABs.                                                                                                       |
-| `[R]`  | Discover | Add a new sheet for Discover. A bottom sheet, title "Discovery", left icon: backpack, close with X button. Apply the same sheet style as we did for other sheets.                                                                                                 |
-| `[R]`  | Discover | Icon changes: Discover -> becomes the backpack (previously used in menu-destinations). Destinations -> becomes the PIN icon (previously used in menu-place history). Place History -> becomes "History" icon material: "History", SFsymb: clock.arrow.circlepath" |
-| `[R]`  | Discover | Add HikeRecommendations, section title: Hike Recommendations, sections styles are the same as in SearchSheet. For HikeRecommendations use same design as in GpxCollection (horizontal list).                                                                      |
-| `[R]`  | Discover | Add Destinations section and Browse destinations button which navigates to DestinationsScreen. Subtitle is the same as in Settings.                                                                                                                               |
-| `[R]`  | Discover | Add "Discover" item to Menu.                                                                                                                                                                                                                                      |
+| Status | Scope    | Task                                                                                                 |
+|--------|----------|------------------------------------------------------------------------------------------------------|
+| `[R]`  | Discover | Add OKT section to discover feature. Use legacy app's (HuKi-Android) assets. ![img_2.png](img_2.png) |
+| `[R]`  | OKT      | Add OKT sheet which lists the sections. Use platform design patterns. Follow legacy app              |
+
+### FEATURE: OKT
 
 ### FEATURE: Versioning + WhatsNew
 

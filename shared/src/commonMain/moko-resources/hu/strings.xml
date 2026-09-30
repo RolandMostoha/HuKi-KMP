@@ -128,11 +128,11 @@
     <string name="menu_item_route_planner">Útvonaltervező</string>
     <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
     <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
-    <string name="menu_item_discover">Felfedezés</string>
+    <string name="menu_item_discover">Felfedező</string>
     <string name="menu_item_discover_description">Túraötletek és kirándulóhelyek</string>
     <string name="menu_item_destinations">Kirándulóhelyek</string>
     <string name="destinations_description">Közel 400 kézzel válogatott hely</string>
-    <string name="menu_a11y_open_discover">Felfedezés megnyitása</string>
+    <string name="menu_a11y_open_discover">Felfedező megnyitása</string>
     <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
     <string name="menu_item_place_history">Helyelőzmények</string>
     <string name="menu_item_place_history_description">A nemrég megnyitott helyeid</string>
@@ -341,8 +341,8 @@
     <string name="hike_recommender_kirandulastippek">Kirándulástippek</string>
     <string name="hike_recommender_aktivkalandor">Aktív Kalandor</string>
 
-    <string name="discover_title">Felfedezés</string>
-    <string name="discover_a11y_fab">Felfedezés</string>
+    <string name="discover_title">Felfedező</string>
+    <string name="discover_a11y_fab">Felfedező</string>
     <string name="discover_hike_recommendations_title">Túragyűjtemények</string>
     <string name="discover_hike_recommendations_a11y_info">A túraajánlókról</string>
     <string name="discover_hike_recommendations_info">Az alábbi túragyűjtemények a személyes kedvenceim, amelyekből letöltött GPX útvonalak megnyithatóak az alkalmazással.\n\nA HuKi a weboldalak tartalmát nem használja fel, csak egy navigációs linket nyújt, ami külső böngészőben nyílik meg.\n\nA weboldalakon elérhető tartalom felhasználásához az adott oldal feltételei érvényesek.</string>
