@@ -4,8 +4,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import org.maplibre.spatialk.geojson.Point
 import org.maplibre.spatialk.turf.measurement.distance
 import org.maplibre.spatialk.units.Length
+import org.maplibre.spatialk.units.extensions.inMeters
 import org.maplibre.spatialk.units.extensions.meters
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.min
 
 fun Location.distanceBetween(other: Location): Length = distance(toPoint(), other.toPoint())
@@ -25,6 +28,47 @@ fun List<Location>.calculateCenter(): Location =
         latitude = this.sumOf { it.latitude } / this.size,
         longitude = this.sumOf { it.longitude } / this.size,
     )
+
+/**
+ * Index of the closest location, compared on an equirectangular projection which is precise enough at hiking
+ * scale and avoids a haversine per point on long tracks.
+ */
+fun List<Location>.nearestIndexTo(target: Location): Int {
+    require(isNotEmpty()) { "Cannot find the nearest location of an empty list." }
+
+    val longitudeScale = cos(target.latitude * PI / 180)
+    var nearestIndex = 0
+    var nearestDistance = Double.MAX_VALUE
+    forEachIndexed { index, location ->
+        val dx = (location.longitude - target.longitude) * longitudeScale
+        val dy = location.latitude - target.latitude
+        val distance = dx * dx + dy * dy
+        if (distance < nearestDistance) {
+            nearestDistance = distance
+            nearestIndex = index
+        }
+    }
+    return nearestIndex
+}
+
+/**
+ * Along-track distance between the consecutive [points] snapped onto this track, the first one measured from the
+ * track start. A point snapped behind its predecessor yields zero.
+ */
+fun List<Location>.legDistancesTo(points: List<Location>): List<Length> {
+    if (isEmpty()) return points.map { 0.meters }
+
+    val trackDistances = DoubleArray(size)
+    for (index in 1 until size) {
+        trackDistances[index] = trackDistances[index - 1] + this[index - 1].distanceBetween(this[index]).inMeters
+    }
+    val pointTrackDistances = points.map { trackDistances[nearestIndexTo(it)] }
+
+    return pointTrackDistances.mapIndexed { index, distance ->
+        val previousDistance = pointTrackDistances.getOrElse(index - 1) { 0.0 }
+        (distance - previousDistance).coerceAtLeast(0.0).meters
+    }
+}
 
 fun Location.isCloseWithThreshold(other: Location, threshold: Length = 20.meters): Boolean =
     this.distanceBetween(other) <= threshold

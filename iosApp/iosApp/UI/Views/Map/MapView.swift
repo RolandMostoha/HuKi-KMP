@@ -11,9 +11,14 @@ struct MapView: View {
     let onDistanceInfoWindowDismissed: () -> Void
     let onMapLongClicked: (Shared.Location) -> Void
     let onMapCameraChanged: (Shared.CameraPosition) -> Void
+    var onOktLineClicked: (Shared.Location) -> Void = { _ in }
+    var onOktMarkerClicked: (OktMarker) -> Void = { _ in }
+    var onOktInfoWindowPlaceDetailsClicked: () -> Void = {}
+    var onOktInfoWindowDismissed: () -> Void = {}
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
+    var oktSheetHeight: CGFloat = Dimens.oktDetentMinHeight
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -49,6 +54,10 @@ struct MapView: View {
     @State private var lastRoutePlannerCamera: MapUiEffectsUpdateCamera?
 
     @State private var routePlannerMapInset = Dimens.routePlannerDetentHeight
+    @State private var oktMapInset = Dimens.oktDetentMinHeight
+
+    // Panning turns the viewport idle and drops its padding while the camera keeps it, so it is tracked here
+    @State private var appliedCameraPadding = SwiftUI.EdgeInsets()
 
     @State private var viewport = Viewport.camera(
         center: MapConstants.shared.HUNGARY_CAMERA_POSITION.location.coordinate,
@@ -66,6 +75,9 @@ struct MapView: View {
                         if !uiState.mapUiState.distanceInfoWindows.isEmpty {
                             onDistanceInfoWindowDismissed()
                         }
+                        if uiState.mapUiState.okt?.infoWindow != nil {
+                            onOktInfoWindowDismissed()
+                        }
                         return false
                     }
                     LongPressInteraction { context in
@@ -77,6 +89,15 @@ struct MapView: View {
                     }
                     if uiState.mapUiState.hikingLayerVisible {
                         HikingTrailsMapContent()
+                    }
+                    if let okt = uiState.mapUiState.okt {
+                        OktMapContent(
+                            strings: strings,
+                            okt: okt,
+                            onLineClicked: onOktLineClicked,
+                            onMarkerClicked: onOktMarkerClicked,
+                            onInfoWindowPlaceDetailsClicked: onOktInfoWindowPlaceDetailsClicked
+                        )
                     }
                     if let placeDetails = uiState.mapUiState.placeDetails {
                         PlaceMarkerMapContent(
@@ -98,19 +119,7 @@ struct MapView: View {
                     if uiState.mapUiState.gpxLayerVisible {
                         if let gpxDetails = uiState.mapUiState.gpxDetails {
                             if uiState.mapUiState.gpxRouteVisible {
-                                let feature = Feature(geometry: .lineString(gpxDetails.locations.lineString))
-
-                                GeoJSONSource(id: gpxDetails.layerId)
-                                    .data(.feature(feature))
-
-                                LineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
-                                    .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                                    .lineColor(SharedRes.colors().primary.getUIColor())
-                                    .lineBorderWidth(SharedDimens.shared.GPX_STROKE_WIDTH)
-                                    .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
-                                    .lineColorUseTheme(.none)
-                                    .lineBorderColorUseTheme(.none)
-                                    .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
+                                GpxRouteMapContent(gpxDetails: gpxDetails)
                             }
 
                             GpxWaypointsMapContent(
@@ -244,6 +253,7 @@ struct MapView: View {
                 .onChange(of: routePlannerSheetHeight, initial: true) { _, newHeight in
                     routePlannerMapInset = newHeight
                 }
+                .onChange(of: oktSheetHeight, initial: true) { oktMapInset = $1 }
                 .onChange(of: routePlannerDetent) {
                     refitRoutePlannerCamera()
                 }
@@ -319,7 +329,7 @@ private extension MapView {
     func resetBearing(proxy: MapProxy) {
         guard let map = proxy.map else { return }
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
-            viewport = .resetBearingTarget(cameraState: map.cameraState)
+            viewport = .resetBearingTarget(cameraState: map.cameraState).padding(appliedCameraPadding)
         }
     }
 
@@ -327,13 +337,27 @@ private extension MapView {
         if effect.contentPadding == .mapRoutePlanner {
             lastRoutePlannerCamera = effect
         }
-        withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)) {
+        let targetPadding = cameraPadding(for: effect)
+        let animation: ViewportAnimation = targetPadding == appliedCameraPadding
+            ? .default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
+            : .easeInOut(duration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
+        appliedCameraPadding = targetPadding
+        withViewportAnimation(animation) {
             viewport = .target(
                 for: effect,
                 isLandscape: isMapLandscape,
-                routePlannerSheetHeight: routePlannerMapInset
+                routePlannerSheetHeight: routePlannerMapInset,
+                oktSheetHeight: oktMapInset
             )
         }
+    }
+
+    private func cameraPadding(for effect: MapUiEffectsUpdateCamera) -> SwiftUI.EdgeInsets {
+        effect.contentPadding?.edgeInsets(
+            isLandscape: isMapLandscape,
+            routePlannerSheetHeight: routePlannerMapInset,
+            oktSheetHeight: oktMapInset
+        ) ?? SwiftUI.EdgeInsets()
     }
 
     func refitRoutePlannerCamera() {
@@ -350,6 +374,7 @@ private extension MapView {
             cameraZoom: proxy.map?.cameraState.zoom
         ) else { return }
         let duration = effect.animated ? AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
+        appliedCameraPadding = SwiftUI.EdgeInsets()
         withViewportAnimation(.default(maxDuration: duration)) {
             viewport = target
         }
@@ -357,7 +382,7 @@ private extension MapView {
 
     func zoom(_ effect: MapUiEffectsZoom, proxy: MapProxy) {
         guard let map = proxy.map else { return }
-        let target = viewport.zoomTarget(effect, cameraState: map.cameraState)
+        let target = viewport.zoomTarget(effect, cameraState: map.cameraState).padding(appliedCameraPadding)
         withViewportAnimation(.default(maxDuration: AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S)) {
             viewport = target
         }

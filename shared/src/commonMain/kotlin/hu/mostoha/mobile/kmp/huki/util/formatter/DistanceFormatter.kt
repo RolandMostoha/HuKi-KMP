@@ -9,6 +9,7 @@ object DistanceFormatter {
 
     private const val METERS_IN_KILOMETER = 1000.0
     private const val WHOLE_KILOMETERS_THRESHOLD = 100.0
+    private const val ELEVATION_KILOMETERS_THRESHOLD = 10_000
 
     /**
      * 1. Distance below a kilometer in meters,
@@ -26,7 +27,22 @@ object DistanceFormatter {
         }
     }
 
+    /**
+     * Distance added to a previous point, e.g. `+850 m`, `+12.4 km`.
+     */
+    fun formatRelative(distance: Length): String = "+${formatDistance(distance)}"
+
     fun formatMeters(meters: Int): String = "$meters m"
+
+    /**
+     * Elevation in meters, switching to kilometers only for multi-day trails, e.g. `1290 m`, `31.5 km`.
+     */
+    fun formatElevation(meters: Int): String =
+        if (meters < ELEVATION_KILOMETERS_THRESHOLD) {
+            formatMeters(meters)
+        } else {
+            "${formatKilometers(meters / METERS_IN_KILOMETER)} km"
+        }
 
     private fun formatKilometers(kilometers: Double): String {
         if (kilometers >= WHOLE_KILOMETERS_THRESHOLD) {

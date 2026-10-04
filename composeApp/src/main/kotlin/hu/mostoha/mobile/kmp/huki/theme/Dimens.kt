@@ -17,10 +17,10 @@ object Dimens {
     val IconExtraSmall = 16.dp
     val IconSmall = 22.dp
     val IconMedium = 24.dp
+    val IconLarge = 28.dp
     val IconContainer = 40.dp
     val IconHero = 96.dp
 
-    val InfoWindowBorder = 1.6.dp
     val InfoWindowTailWidth = 16.dp
     val InfoWindowTailHeight = 8.dp
     val InfoWindowMarkerPadding = 1.dp
@@ -41,11 +41,24 @@ object Dimens {
     val RoutePlannerListMaxHeight = 400.dp
     val RoutePlannerWaypointIconColumnWidth = 20.dp
     val RoutePlannerConnectorWidth = 2.dp
-    val RoutePlannerCameraBottomOffset = 20.dp
+    val SheetCameraBottomOffset = 20.dp
+    val OktSheetCameraBottomOffset = 44.dp
 
     val PlaceDetailsTitleMinFontSize = 13.sp
 
     val SearchBarLandscapeWidth = 350.dp
+
+    val OktSheetMinHeight = 300.dp
+    val OktBadgeSize = 48.dp
+    val OktStampCardWidth = 148.dp
+    val OktStampCardHeight = 112.dp
+    val OktStampIconSize = 30.dp
+    val OktMarkerSize = 30.dp
+    val OktSelectedMarkerSize = 40.dp
+    val OktEdgeMarkerSize = 36.dp
+    val OktTypeIconHeight = 44.dp
+    val OktInfoWindowWidth = 290.dp
+    val OktResumeFabSize = 56.dp
 
     val GpxContentPaddingPortrait = PaddingValues(
         top = 150.dp,
@@ -82,5 +95,23 @@ object Dimens {
         start = 60.dp,
         bottom = 60.dp,
         end = 60.dp,
+    )
+    val OktContentPaddingPortrait = PaddingValues(
+        top = 120.dp,
+        start = 40.dp,
+        bottom = 0.dp,
+        end = 40.dp,
+    )
+    val OktStartedContentPaddingPortrait = PaddingValues(
+        top = 120.dp,
+        start = 40.dp,
+        bottom = 140.dp,
+        end = 40.dp,
+    )
+    val OktContentPaddingLandscape = PaddingValues(
+        top = 40.dp,
+        start = 40.dp,
+        bottom = 40.dp,
+        end = 40.dp,
     )
 }

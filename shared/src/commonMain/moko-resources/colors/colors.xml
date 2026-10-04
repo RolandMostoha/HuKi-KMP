@@ -44,11 +44,6 @@
         <light>#1a1a1a</light>
         <dark>#0E0A0F</dark>
     </color>
-    <!-- Outlines HuKi's own surfaces over the map, which need to separate from the basemap, not sink into it -->
-    <color name="mapSurfaceStroke">
-        <light>#1a1a1a</light>
-        <dark>#919191</dark>
-    </color>
     <color name="accuracyRing">
         <light>#1363138A</light>
         <dark>#6BBA6F8A</dark>
@@ -245,6 +240,14 @@
     <color name="oktBlue">
         <light>#015398</light>
         <dark>#64b5f6</dark>
+    </color>
+    <color name="onOktBlue">
+        <light>#ffffff</light>
+        <dark>#232323</dark>
+    </color>
+    <color name="oktMapStroke">
+        <light>#ffffff</light>
+        <dark>#0E0A0F</dark>
     </color>
 
     <!-- Hungarian Trail Symbols -->

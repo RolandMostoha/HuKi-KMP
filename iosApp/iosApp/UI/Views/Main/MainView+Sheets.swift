@@ -19,6 +19,48 @@ extension MainView {
             whatsNewSheet(whatsNew: sheet.whatsNew)
         case .discover:
             discoverSheet()
+        case .okt:
+            oktSheet(uiState: uiState)
+        }
+    }
+
+    @ViewBuilder
+    func oktSheet(uiState: MainUiState) -> some View {
+        if let okt = uiState.mapUiState.okt {
+            OktSheetView(
+                strings: strings,
+                okt: okt,
+                onSectionClicked: { sectionId in
+                    viewModel.onEvent(event: OktUiEventsOktSectionClicked(sectionId: sectionId))
+                },
+                onSectionStartClicked: { sectionId in
+                    viewModel.onEvent(event: OktUiEventsOktSectionStartClicked(sectionId: sectionId))
+                },
+                onSectionWebsiteClicked: { sectionId in
+                    viewModel.onEvent(event: OktUiEventsOktSectionWebsiteClicked(sectionId: sectionId))
+                },
+                onSectionReverseClicked: { sectionId in
+                    viewModel.onEvent(event: OktUiEventsOktSectionReverseClicked(sectionId: sectionId))
+                },
+                onStampClicked: { marker in
+                    viewModel.onEvent(event: OktUiEventsOktMarkerClicked(marker: marker))
+                },
+                onDismissRequest: {
+                    viewModel.onEvent(event: OktUiEventsOktCloseClicked.shared)
+                }
+            )
+            .presentationDetents(
+                isLandscape ? [.large] : [.height(oktDetentHeight), .large],
+                selection: $oktDetent
+            )
+            .presentationDragIndicator(.visible)
+            .presentationBackgroundInteraction(.enabled(upThrough: .height(oktDetentHeight)))
+            .presentationContentInteraction(.scrolls)
+            .onAppear {
+                oktDetent = isLandscape ? .large : .height(oktDetentHeight)
+            }
+        } else {
+            EmptyView()
         }
     }
 
@@ -33,6 +75,12 @@ extension MainView {
             },
             onInfoClicked: {
                 viewModel.onEvent(event: MainUiEventsHikeRecommendationsInfoClicked.shared)
+            },
+            onOktTypeClicked: { type in
+                viewModel.onEvent(event: OktUiEventsOktTypeClicked(type: type))
+            },
+            onOktInfoClicked: {
+                viewModel.onEvent(event: OktUiEventsOktInfoClicked.shared)
             },
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())

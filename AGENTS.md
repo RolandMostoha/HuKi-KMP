@@ -233,8 +233,8 @@ Before writing a comment, **both** must hold. If either fails, delete it.
   needed. If it isn't worth justifying there, don't write it.
 
 **Style:**
-- Kotlin: use a plain `//` for one-line comments on members inside a class, interface or object —
-  never KDoc `/** */`. Reserve KDoc for the top-level declaration, or complex public functions.
+- Kotlin: use KDoc `/** */` for comments on declarations, including members inside a class, interface or
+  object; plain `//` only for notes inside function bodies.
 - Kotlin KDoc: always use the extended multi-line format, even for a one-liner — `/**`, ` * text`, ` */` on separate lines; never `/** text */`.
 - Swift: follow the comment-marks rule in **SwiftUI - iOS**.
 
@@ -315,6 +315,7 @@ val [actual] = operation(X)
 
 ### Good to know
 - `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
+- OKT / RPDDK / AKT (Blue Trails): full-trail GPX files are bundled in `shared/src/commonMain/moko-resources/files/`, read via `BundledFileReader`. Sections are static data in `shared/**/data/OktSections.kt` (ported from the legacy app). To update a trail, swap the GPX file and its `OktType.gpxFile` reference.
 - `tools/planning/PLANNING.md` is the live plan board — roadmap, backlog, bugs, and per-feature task lists (with status legend). Read it before starting feature or bugfix work to "see ahead".
 
 ## Release / Versioning / WhatsNew

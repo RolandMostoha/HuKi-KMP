@@ -6,7 +6,6 @@ enum Dimens {
 
     static let discoverFabSize: CGFloat = 52
 
-    static let infoWindowBorder: CGFloat = 1.5
     static let infoWindowCornerRadius: CGFloat = 16
     static let infoWindowTailWidth: CGFloat = 16
     static let infoWindowTailHeight: CGFloat = 8
@@ -58,6 +57,44 @@ enum Dimens {
         bottom: 60,
         trailing: 60
     )
+
+    static func oktContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
+        EdgeInsets(
+            top: 90,
+            leading: 40,
+            bottom: sheetHeight + 44,
+            trailing: 40
+        )
+    }
+    static let oktStartedContentPaddingPortrait = EdgeInsets(
+        top: 120,
+        leading: 40,
+        bottom: 140,
+        trailing: 40
+    )
+    static let oktContentPaddingLandscape = EdgeInsets(
+        top: 40,
+        leading: 40,
+        bottom: 40,
+        trailing: 40
+    )
+
+    static let oktDetentMinHeight: CGFloat = 300
+    private static let oktDetentScreenFraction: CGFloat = 0.45
+
+    /// Share of the screen, so the map keeps room for the trail on small iPhones.
+    static func oktDetentHeight(screenHeight: CGFloat) -> CGFloat {
+        max(screenHeight * oktDetentScreenFraction, oktDetentMinHeight)
+    }
+    static let oktBadgeSize: CGFloat = 48
+    static let oktStampCardWidth: CGFloat = 148
+    static let oktStampCardHeight: CGFloat = 112
+    static let oktStampIconSize: CGFloat = 30
+    static let oktMarkerSize: CGFloat = 30
+    static let oktSelectedMarkerSize: CGFloat = 40
+    static let oktEdgeMarkerSize: CGFloat = 36
+    static let oktInfoWindowWidth: CGFloat = 290
+    static let oktStopFabSize: CGFloat = 56
 
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
     static let gpxDetailsExpandedDetentHeight: CGFloat = 382

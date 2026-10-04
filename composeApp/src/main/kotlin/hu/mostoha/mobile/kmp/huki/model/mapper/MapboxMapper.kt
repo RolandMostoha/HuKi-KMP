@@ -43,12 +43,23 @@ fun ContentPadding.toEdgeInset(
     density: Density,
     isLandscape: Boolean,
     routePlannerBottomInset: Dp? = null,
+    oktSheetHeight: Dp? = null,
 ): EdgeInsets =
     when (this) {
         ContentPadding.MAP_GPX -> if (isLandscape) {
             Dimens.GpxContentPaddingLandscape
         } else {
             Dimens.GpxContentPaddingPortrait
+        }.toEdgeInset(density)
+        ContentPadding.MAP_OKT -> if (isLandscape) {
+            Dimens.OktContentPaddingLandscape
+        } else {
+            Dimens.OktContentPaddingPortrait
+        }.withBottom(oktSheetHeight, Dimens.OktSheetCameraBottomOffset).toEdgeInset(density)
+        ContentPadding.MAP_OKT_STARTED -> if (isLandscape) {
+            Dimens.OktContentPaddingLandscape
+        } else {
+            Dimens.OktStartedContentPaddingPortrait
         }.toEdgeInset(density)
         ContentPadding.MAP_PLACE_DETAILS -> if (isLandscape) {
             Dimens.PlaceDetailsContentPaddingLandscape
@@ -62,14 +73,14 @@ fun ContentPadding.toEdgeInset(
         }.toEdgeInset(density)
     }
 
-private fun PaddingValues.withBottom(bottom: Dp?): PaddingValues =
+private fun PaddingValues.withBottom(bottom: Dp?, offset: Dp = Dimens.SheetCameraBottomOffset): PaddingValues =
     if (bottom == null) {
         this
     } else {
         PaddingValues(
             top = calculateTopPadding(),
             start = calculateLeftPadding(LayoutDirection.Ltr),
-            bottom = bottom + Dimens.RoutePlannerCameraBottomOffset,
+            bottom = bottom + offset,
             end = calculateRightPadding(LayoutDirection.Ltr),
         )
     }

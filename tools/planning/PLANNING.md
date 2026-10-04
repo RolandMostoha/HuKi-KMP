@@ -40,13 +40,13 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 | Status | Feature                                                                                                                                            |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                    |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                             |
 | `[ ]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
 | `[ ]`  | Android 17 / targetSdk 37 behaviour changes — bumped targetSdk with the Gradle 9 upgrade without adapting to them                                  |
 | `[ ]`  | App store preview video (optional)                                                                                                                 |
 | `[ ]`  | App store header picture/video (optional)                                                                                                          |
 | `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
-| `[R]`  | Use [HuKi-iOS] in the email subject in Menu - Contact                                                                                              |
 | `[?]`  | Sonar? free for open source projects. In agentic ERA i don't see too much value, it just slows down the process.                                   |
 
 ### Bugs
@@ -76,18 +76,18 @@ they can record their exact location / zoom level with a CROSS marker.
 
 | Status | Scope | Bug |
 |--------|-------|-----|
-| `[]`   |       |     |
+| `[ ]`  |       |     |
 
 ### FEATURE: Landscape
 
-| Status | Feature                                                                                                     |
-|--------|-------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                            |
-| `[ ]`  | iOS: In Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)  |
-| `[ ]`  | In Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                         |
-| `[?]`  | In Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side |
-| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                  |
-| `[ ]`  | iPad: Use overlay panels instead of Sheets -> they show up in the center of the screen                      |
+| Status | Feature                                                                                                                       |
+|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                              |
+| `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                        |
+| `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                          |
+| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                  |
+| `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space |
+| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                    |
 
 ### FEATURE: My Location
 
@@ -98,17 +98,16 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Layers
 
-| Status | Scope  | Task                                                                                                                                         |
-|--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Layers | Save picked layer state permanently for users (UserPreferencesRepository). E.g. picked layer -> Satellite, it saves for the next app launch. |
+| Status | Scope  | Task |
+|--------|--------|------|
+| `[ ]`  | Layers |      |
 
 ### FEATURE: Search
 
-| Status | Scope  | Task                                                                                                  |
-|--------|--------|-------------------------------------------------------------------------------------------------------|
-| `[R]`  | Search | Show GPX Trail collection (Természetjáró, AktívMagyarország). !!!GPX import is barely used on iOS.!!! |
-| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                |
-| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                                  |
+| Status | Scope  | Task                                                                                   |
+|--------|--------|----------------------------------------------------------------------------------------|
+| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
+| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                   |
 
 ### FEATURE: Destinations
 
@@ -128,12 +127,15 @@ Features (sections inside bottom sheet):
 - OKT routes (OKT, RPDDK, AKT)
 - Landscapes - a button to show landscapes
 
-| Status | Scope    | Task                                                                                                 |
-|--------|----------|------------------------------------------------------------------------------------------------------|
-| `[R]`  | Discover | Add OKT section to discover feature. Use legacy app's (HuKi-Android) assets. ![img_2.png](img_2.png) |
-| `[R]`  | OKT      | Add OKT sheet which lists the sections. Use platform design patterns. Follow legacy app              |
+| Status | Scope    | Task                                                           |
+|--------|----------|----------------------------------------------------------------|
+| `[R]`  | Discover | Add GPX Guide navigation link to Discover->HikeRecomm->Tooltip |
 
 ### FEATURE: OKT
+
+| Status | Scope | Task |
+|--------|-------|------|
+| `[ ]`  | OKT   |      |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -154,6 +156,7 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
+| `[R]`  | GPX   | Use white stroked route line similarly to OKT ![img_10.png](img_10.png)           |
 | `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
 | `[ ]`  | GPX   | Colored GPX                                                                       |
 | `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |

@@ -32,6 +32,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,6 +50,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktResumeFab
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
@@ -63,6 +68,7 @@ fun FloatingActionContainer(
     onGpxToggleDistancesClicked: () -> Unit,
     onGpxOverviewClicked: () -> Unit,
     onGpxClearClicked: () -> Unit,
+    onOktResumeClicked: () -> Unit,
     onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -90,6 +96,23 @@ fun FloatingActionContainer(
                 onOverviewClicked = onGpxOverviewClicked,
                 onClearClicked = onGpxClearClicked,
             )
+        }
+        val okt = mainUiState.mapUiState.okt
+        // Keeps the last section so the FAB can still slide out after OKT is cleared
+        var resumeSection by remember { mutableStateOf(okt?.selectedSection) }
+        okt?.selectedSection?.let { resumeSection = it }
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = Dimens.Medium + Dimens.Medium,
+                    bottom = if (isLandscape) Dimens.Small else Dimens.Small + Dimens.Large,
+                ),
+            visible = mainUiState.sheet == null && okt != null,
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
+        ) {
+            resumeSection?.let { OktResumeFab(section = it, onClick = onOktResumeClicked) }
         }
         if (isLandscape) {
             // Landscape: search bar bottom-start with a fixed width, FABs dropped to bottom-end.
@@ -214,12 +237,12 @@ private fun FabColumnAction(
                 ),
                 shape = CircleShape,
                 onClick = {
-                    if (!mainUiState.isGpxLoading) {
+                    if (!mainUiState.isGpxLoading && !mainUiState.isOktLoading) {
                         onLayersClicked()
                     }
                 },
             ) {
-                if (mainUiState.isGpxLoading) {
+                if (mainUiState.isGpxLoading || mainUiState.isOktLoading) {
                     LoadingIndicator(
                         modifier = Modifier.size(24.dp),
                     )
@@ -295,6 +318,7 @@ private fun DiscoverFabAction(visible: Boolean, onDiscoverClicked: () -> Unit, m
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_backpack),
                 contentDescription = mokoString(SharedRes.strings.discover_a11y_fab),
+                modifier = Modifier.size(Dimens.IconLarge),
             )
         }
     }
@@ -339,6 +363,7 @@ private fun MainContentPreview() {
             onGpxToggleDistancesClicked = {},
             onGpxOverviewClicked = {},
             onGpxClearClicked = {},
+            onOktResumeClicked = {},
             onMenuClicked = {},
         )
     }

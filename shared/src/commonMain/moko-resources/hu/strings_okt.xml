@@ -1,0 +1,29 @@
+<resources>
+    <string name="okt_header_title">Országos Kéktúra</string>
+    <string name="okt_a11y_info">Az Országos Kéktúráról</string>
+    <string name="okt_official_info">A Kéktúra útvonalai, bélyegzőhelyei és szakaszai a Kéktúra hivatalos weboldalán alapulnak. Túra előtt ott ellenőrizd a legfrissebb információkat.</string>
+    <string name="okt_official_website">kektura.hu megnyitása</string>
+    <string name="okt_okt_title">OKT</string>
+    <string name="okt_okt_subtitle">Országos Kéktúra</string>
+    <string name="okt_rpddk_title">RPDDK</string>
+    <string name="okt_rpddk_subtitle">Dél-dunántúli</string>
+    <string name="okt_rpddk_subtitle_long">Rockenbauer Pál Dél-dunántúli Kéktúra</string>
+    <string name="okt_akt_title">AKT</string>
+    <string name="okt_akt_subtitle">Alföldi Kéktúra</string>
+    <string name="okt_loading_error">Az útvonalat nem sikerült betölteni.</string>
+    <string name="okt_menu_details">Hivatalos weboldal</string>
+    <string name="okt_menu_details_subtitle">Hasznos infók és GPX</string>
+    <string name="okt_menu_start">Szakasz kezdése</string>
+    <string name="okt_menu_start_subtitle">%s kezdése</string>
+    <string name="okt_menu_reverse">Irány megfordítása</string>
+    <string name="okt_menu_reverse_subtitle">Pecsételőhelyek fordított sorrendben</string>
+    <string name="okt_stamp_info_window_title">%s bélyegzőhely</string>
+    <string name="okt_start_info_window_title">%s (kezdőpont)</string>
+    <string name="okt_end_info_window_title">%s (végpont)</string>
+    <string name="okt_info_window_navigate">Hely részletei</string>
+    <string name="okt_a11y_start">Szakasz kezdése</string>
+    <string name="okt_a11y_resume">%s megjelenítése</string>
+    <string name="okt_a11y_section_menu">%s műveletek</string>
+    <string name="okt_a11y_reversed_state">Fordított irány</string>
+    <string name="okt_a11y_stamp_distance">%s az előző bélyegzőhelytől</string>
+</resources>

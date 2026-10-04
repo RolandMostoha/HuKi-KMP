@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,6 +21,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -30,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
@@ -39,17 +42,21 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.HikeRecommendationCard
 import hu.mostoha.mobile.kmp.huki.ui.components.NavigationRowCard
 import hu.mostoha.mobile.kmp.huki.ui.components.SectionHeader
+import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktTypeCard
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.openUrl
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 import kotlinx.coroutines.launch
 
@@ -62,6 +69,8 @@ fun DiscoverBottomSheet(
     onHikeRecommendationClicked: (HikeRecommendation) -> Unit,
     onBrowseDestinationsClicked: () -> Unit,
     onInfoClicked: () -> Unit,
+    onOktTypeClicked: (OktType) -> Unit,
+    onOktInfoClicked: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -74,6 +83,8 @@ fun DiscoverBottomSheet(
             onHikeRecommendationClicked = onHikeRecommendationClicked,
             onBrowseDestinationsClicked = onBrowseDestinationsClicked,
             onInfoClicked = onInfoClicked,
+            onOktTypeClicked = onOktTypeClicked,
+            onOktInfoClicked = onOktInfoClicked,
             onCloseClicked = onDismissRequest,
         )
     }
@@ -84,6 +95,8 @@ fun DiscoverContent(
     onHikeRecommendationClicked: (HikeRecommendation) -> Unit,
     onBrowseDestinationsClicked: () -> Unit,
     onInfoClicked: () -> Unit,
+    onOktTypeClicked: (OktType) -> Unit,
+    onOktInfoClicked: () -> Unit,
     onCloseClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -122,6 +135,32 @@ fun DiscoverContent(
                                 .testTag(TestTags.HIKE_RECOMMENDATION_CARD),
                         )
                     }
+                }
+            }
+        }
+        Column(
+            modifier = Modifier
+                .padding(top = Dimens.SectionSpacing)
+                .testTag(TestTags.DISCOVER_OKT_SECTION),
+            verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
+        ) {
+            SectionHeader(
+                title = mokoString(SharedRes.strings.okt_header_title),
+                trailingContent = { OktInfoButton(onClick = onOktInfoClicked) },
+            )
+            Row(
+                modifier = Modifier.padding(horizontal = Dimens.Large),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+            ) {
+                OktType.entries.forEach { type ->
+                    OktTypeCard(
+                        type = type,
+                        onClick = { onOktTypeClicked(type) },
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag(TestTags.DISCOVER_OKT_CARD),
+                    )
                 }
             }
         }
@@ -166,6 +205,10 @@ private fun HikeRecommendationsInfoButton(onClick: () -> Unit) {
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             RichTooltip(
+                shape = RoundedCornerShape(Dimens.Large),
+                colors = TooltipDefaults.richTooltipColors(containerColor = MaterialTheme.colorScheme.surface),
+                tonalElevation = 0.dp,
+                shadowElevation = Dimens.ExtraSmall,
                 modifier = Modifier.testTag(TestTags.DISCOVER_HIKE_RECOMMENDATIONS_INFO_TOOLTIP),
                 title = { Text(mokoString(SharedRes.strings.discover_hike_recommendations_title)) },
             ) {
@@ -184,6 +227,48 @@ private fun HikeRecommendationsInfoButton(onClick: () -> Unit) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_help),
                 contentDescription = mokoString(SharedRes.strings.discover_hike_recommendations_a11y_info),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun OktInfoButton(onClick: () -> Unit) {
+    val context = LocalContext.current
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val coroutineScope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            RichTooltip(
+                shape = RoundedCornerShape(Dimens.Large),
+                colors = TooltipDefaults.richTooltipColors(containerColor = MaterialTheme.colorScheme.surface),
+                tonalElevation = 0.dp,
+                shadowElevation = Dimens.ExtraSmall,
+                title = { Text(mokoString(SharedRes.strings.okt_header_title)) },
+                action = {
+                    TextButton(onClick = { context.openUrl(OktType.KEKTURA_URL) }) {
+                        Text(mokoString(SharedRes.strings.okt_official_website))
+                    }
+                },
+            ) {
+                Text(mokoString(SharedRes.strings.okt_official_info))
+            }
+        },
+        state = tooltipState,
+    ) {
+        IconButton(
+            onClick = {
+                onClick()
+                coroutineScope.launch { tooltipState.show() }
+            },
+            modifier = Modifier.testTag(TestTags.DISCOVER_OKT_INFO_BUTTON),
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_help),
+                contentDescription = mokoString(SharedRes.strings.okt_a11y_info),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -231,6 +316,8 @@ private fun DiscoverContentPreview() {
             onHikeRecommendationClicked = {},
             onBrowseDestinationsClicked = {},
             onInfoClicked = {},
+            onOktTypeClicked = {},
+            onOktInfoClicked = {},
             onCloseClicked = {},
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
         )

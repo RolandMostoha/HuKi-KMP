@@ -5,14 +5,17 @@
 # Default to Dobogókő; override with: ios_fix_location.sh <lat>,<lon>
 LOCATION="${1:-47.7168079,18.8950729}"
 
-BOOTED_DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -1)
+# Every booted simulator is fixed, so a second booted device can't silently take the update
+BOOTED_DEVICE_IDS=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}')
 
-if [ -z "$BOOTED_DEVICE_ID" ]; then
+if [ -z "$BOOTED_DEVICE_IDS" ]; then
     echo "No booted simulator found. Boot a simulator first."
     exit 1
 fi
 
-echo "Setting location on $BOOTED_DEVICE_ID to $LOCATION ..."
-xcrun simctl location "$BOOTED_DEVICE_ID" set "$LOCATION"
+for DEVICE_ID in $BOOTED_DEVICE_IDS; do
+    echo "Setting location on $DEVICE_ID to $LOCATION ..."
+    xcrun simctl location "$DEVICE_ID" set "$LOCATION"
+done
 
 echo "Done. Tap the location button in Apple Maps / the app to confirm the fix landed."

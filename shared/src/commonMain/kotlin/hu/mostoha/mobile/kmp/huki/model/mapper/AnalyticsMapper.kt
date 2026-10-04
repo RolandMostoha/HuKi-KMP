@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.model.mapper
 
+import hu.mostoha.mobile.kmp.huki.model.analytics.BlueTrail
 import hu.mostoha.mobile.kmp.huki.model.analytics.HikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
@@ -9,6 +10,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
@@ -51,6 +53,14 @@ fun Sheet?.toScreen(): Screen =
         is Sheet.RoutePlanner -> Screen.ROUTE_PLANNER
         is Sheet.WhatsNew -> Screen.WHATS_NEW
         Sheet.Discover -> Screen.DISCOVER
+        Sheet.Okt -> Screen.OKT
+    }
+
+fun OktType.toBlueTrail(): BlueTrail =
+    when (this) {
+        OktType.OKT -> BlueTrail.OKT
+        OktType.RPDDK -> BlueTrail.RPDDK
+        OktType.AKT -> BlueTrail.AKT
     }
 
 fun HikeRecommendation.toHikeRecommender(): HikeRecommender =

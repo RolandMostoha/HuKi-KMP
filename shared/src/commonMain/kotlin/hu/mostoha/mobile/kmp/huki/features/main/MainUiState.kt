@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
@@ -15,6 +16,7 @@ data class MainUiState(
     val myLocationState: MyLocationState = MyLocationState.Default,
     val sheet: Sheet? = null,
     val isGpxLoading: Boolean = false,
+    val isOktLoading: Boolean = false,
     val isMyLocationLoading: Boolean = false,
     val mapZoomControlsAlwaysVisible: Boolean = UserPreferences.DEFAULTS.mapZoomControlsVisible,
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
@@ -22,6 +24,7 @@ data class MainUiState(
 ) {
     val isSearchBarVisible: Boolean
         get() = !mapUiState.gpxLayerVisible &&
+            mapUiState.okt == null &&
             myLocationState.myLocationStatus != MyLocationStatus.FollowingLiveCompass
 
     companion object {
@@ -37,6 +40,15 @@ fun MutableStateFlow<MainUiState>.updateMapUiState(reducer: (MapUiState) -> MapU
         uiState.copy(
             mapUiState = reducer(uiState.mapUiState),
         )
+    }
+}
+
+/**
+ * Convenience function for updating nested UI states, a no-op while OKT is not shown.
+ */
+fun MutableStateFlow<MainUiState>.updateOktUiState(reducer: (OktUiState) -> OktUiState) {
+    updateMapUiState { mapUiState ->
+        mapUiState.copy(okt = mapUiState.okt?.let(reducer))
     }
 }
 

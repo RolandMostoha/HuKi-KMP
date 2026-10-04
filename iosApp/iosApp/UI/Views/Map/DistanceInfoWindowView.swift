@@ -7,11 +7,10 @@ struct DistanceInfoWindowView: View {
     private let strings = Strings()
 
     var body: some View {
-        let shape = DistanceInfoWindowShape(
+        let shape = InfoWindowShape(
             cornerRadius: Dimens.infoWindowCornerRadius,
             tailWidth: Dimens.infoWindowTailWidth,
-            tailHeight: Dimens.infoWindowTailHeight,
-            lineWidth: Dimens.infoWindowBorder
+            tailHeight: Dimens.infoWindowTailHeight
         )
         VStack(spacing: 0) {
             Text(info.distance)
@@ -24,12 +23,10 @@ struct DistanceInfoWindowView: View {
         .padding(.horizontal, Dimens.infoWindowHorizontalPadding)
         .padding(.vertical, Dimens.infoWindowVerticalPadding)
         .padding(.bottom, Dimens.infoWindowTailHeight)
-        .background(shape.fill(Color(.systemBackground)))
-        .overlay(
-            shape.stroke(
-                Color(SharedRes.colors().mapSurfaceStroke.getUIColor()),
-                style: StrokeStyle(lineWidth: Dimens.infoWindowBorder, lineCap: .round, lineJoin: .round)
-            )
+        .background(
+            shape
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.2), radius: 6, y: 2)
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel(strings.get(id: SharedRes.strings().gpx_distance_info_window_a11y))
@@ -37,16 +34,15 @@ struct DistanceInfoWindowView: View {
     }
 }
 
-private struct DistanceInfoWindowShape: Shape {
+struct InfoWindowShape: Shape {
     let cornerRadius: CGFloat
     let tailWidth: CGFloat
     let tailHeight: CGFloat
-    let lineWidth: CGFloat
 
     func path(in rect: CGRect) -> Path {
         let radius = cornerRadius
         let bodyBottom = rect.maxY - tailHeight
-        let tipY = rect.maxY - lineWidth / 2
+        let tipY = rect.maxY
         let tailHalf = tailWidth / 2
         var path = Path()
         path.move(to: CGPoint(x: rect.minX, y: rect.minY + radius))

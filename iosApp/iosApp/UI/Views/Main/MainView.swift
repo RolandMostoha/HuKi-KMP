@@ -7,6 +7,8 @@ struct MainView: View {
     @State var viewModel = KoinViewModelProvider.shared.getMainViewModel()
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
+    @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
+    @State var screenHeight: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
     @State var routePlannerHeights = RoutePlannerSheetHeights(
@@ -33,6 +35,10 @@ struct MainView: View {
 
     var isLandscape: Bool { layoutMode.isLandscape }
     var isPad: Bool { layoutMode.isPad }
+
+    var oktDetentHeight: CGFloat {
+        Dimens.oktDetentHeight(screenHeight: screenHeight)
+    }
 
     var routePlannerSheetHeight: CGFloat {
         routePlannerDetent == .minimized ? routePlannerHeights.minimized : routePlannerHeights.expanded
@@ -81,9 +87,22 @@ struct MainView: View {
                     onMapCameraChanged: { cameraPosition in
                         viewModel.onEvent(event: MainUiEventsMapCameraChanged(cameraPosition: cameraPosition))
                     },
+                    onOktLineClicked: { location in
+                        viewModel.onEvent(event: OktUiEventsOktLineClicked(location: location))
+                    },
+                    onOktMarkerClicked: { marker in
+                        viewModel.onEvent(event: OktUiEventsOktMarkerClicked(marker: marker))
+                    },
+                    onOktInfoWindowPlaceDetailsClicked: {
+                        viewModel.onEvent(event: OktUiEventsOktInfoWindowPlaceDetailsClicked.shared)
+                    },
+                    onOktInfoWindowDismissed: {
+                        viewModel.onEvent(event: OktUiEventsOktInfoWindowDismissed.shared)
+                    },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
-                    routePlannerSheetHeight: routePlannerSheetHeight
+                    routePlannerSheetHeight: routePlannerSheetHeight,
+                    oktSheetHeight: oktDetentHeight
                 )
                 VStack {
                     Spacer()
@@ -156,6 +175,7 @@ struct MainView: View {
                     showAlert = newValue
                 }
                 gpxControlMenu(uiState: uiState)
+                oktResumeButton(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -171,6 +191,11 @@ struct MainView: View {
             case .failure(let error):
                 logError(message: "Failed to import GPX file: \(error)")
             }
+        }
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
+        } action: { height in
+            screenHeight = height
         }
     }
 
@@ -266,6 +291,25 @@ private extension MainView {
             .padding(.bottom, isLandscape ? 12 : 0)
             .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
             .transition(.opacity)
+        }
+    }
+
+    @ViewBuilder
+    func oktResumeButton(uiState: MainUiState) -> some View {
+        if uiState.sheet == nil, let okt = uiState.mapUiState.okt {
+            OktResumeButton(
+                strings: strings,
+                section: okt.selectedSection,
+                onClick: {
+                    viewModel.onEvent(event: OktUiEventsOktResumeClicked.shared)
+                }
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            .safeAreaPadding(.horizontal)
+            .padding(.leading, 11)
+            .padding(.bottom, isLandscape ? 12 : 0)
+            .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
+            .transition(.scale.combined(with: .opacity))
         }
     }
 

@@ -203,8 +203,45 @@ appId: ${APP_ID}
     timeout: 15000
 - assertVisible:
     id: HIKE_RECOMMENDATION_CARD
+
+# OKT sheet. Stays on the sheet and the resume FAB, never the Mapbox-rendered markers or info window.
+# Loading the trail parses a 40k-point GPX, which is slow on CI.
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_OKT_CARD
+    timeout: 10000
 - tapOn:
-    id: DISCOVER_CLOSE_BUTTON
+    id: DISCOVER_OKT_CARD
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 30000
+- assertVisible:
+    id: OKT_SECTION_ROW
+    index: 0
+- tapOn:
+    id: OKT_SECTION_ROW
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: OKT_STAMP_CARD
+      index: 0
+    timeout: 15000
+- tapOn:
+    id: OKT_START_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: OKT_RESUME_FAB
+    timeout: 15000
+- tapOn:
+    id: OKT_RESUME_FAB
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 15000
+- tapOn:
+    id: OKT_CLOSE_BUTTON
 - extendedWaitUntil:
     visible:
       id: MAIN_SEARCH_BAR

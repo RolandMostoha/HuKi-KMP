@@ -123,7 +123,7 @@ struct FloatingActionContainer: View {
                         onLayersClicked()
                     }, label: {
                         Group {
-                            if uiState.isGpxLoading {
+                            if uiState.isGpxLoading || uiState.isOktLoading {
                                 ProgressView()
                             } else {
                                 Image(systemName: "map.fill")
@@ -134,7 +134,7 @@ struct FloatingActionContainer: View {
                     })
                     .glassButtonStyle()
                     .glassUnion(id: mainActionGlassID, namespace: mainActionGlassNamespace)
-                    .disabled(uiState.isGpxLoading)
+                    .disabled(uiState.isGpxLoading || uiState.isOktLoading)
                     .accessibilityLabel(strings.get(id: SharedRes.strings().layers_a11y_fab))
                     Button(action: {
                         onMyLocationClicked()

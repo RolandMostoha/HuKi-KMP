@@ -6,12 +6,15 @@ struct DiscoverSheetView: View {
     let onHikeRecommendationClicked: (HikeRecommendation) -> Void
     let onBrowseDestinationsClicked: () -> Void
     let onInfoClicked: () -> Void
+    let onOktTypeClicked: (OktType) -> Void
+    let onOktInfoClicked: () -> Void
     let onDismissRequest: () -> Void
     let onHeightChange: (CGFloat) -> Void
 
     @State private var contentHeight: CGFloat = 0
     @State private var toolbarHeight: CGFloat = 0
     @State private var isInfoPresented = false
+    @State private var isOktInfoPresented = false
     @State private var recommendationsRowWidth: CGFloat = 0
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -23,6 +26,7 @@ struct DiscoverSheetView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     hikeRecommendationsSection
+                    oktSection
                     destinationsSection
                 }
                 .padding(.bottom, 24)
@@ -136,6 +140,63 @@ struct DiscoverSheetView: View {
         }
     }
 
+    private var oktSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: strings.get(id: SharedRes.strings().okt_header_title))
+                .overlay(alignment: .trailing) {
+                    oktInfoButton
+                        .padding(.trailing, 5)
+                }
+            HStack(spacing: Self.cardSpacing) {
+                ForEach(OktType.allCases, id: \.self) { type in
+                    OktTypeCardView(
+                        strings: strings,
+                        type: type,
+                        onClick: { onOktTypeClicked(type) }
+                    )
+                    .accessibilityIdentifier(TestTags.shared.DISCOVER_OKT_CARD)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, Dimens.sectionSpacing)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(TestTags.shared.DISCOVER_OKT_SECTION)
+    }
+
+    private var oktInfoButton: some View {
+        Button {
+            onOktInfoClicked()
+            isOktInfoPresented = true
+        } label: {
+            Image(systemName: "questionmark.circle")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(strings.get(id: SharedRes.strings().okt_a11y_info))
+        .accessibilityIdentifier(TestTags.shared.DISCOVER_OKT_INFO_BUTTON)
+        .popover(isPresented: $isOktInfoPresented) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(strings.get(id: SharedRes.strings().okt_header_title))
+                    .font(.headline)
+                Text(strings.get(id: SharedRes.strings().okt_official_info))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                if let url = URL(string: OktType.companion.KEKTURA_URL) {
+                    Link(strings.get(id: SharedRes.strings().okt_official_website), destination: url)
+                        .font(.subheadline.weight(.semibold))
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(width: 300, alignment: .leading)
+            .padding()
+            .presentationCompactAdaptation(.popover)
+        }
+    }
+
     private var destinationsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeaderView(title: strings.get(id: SharedRes.strings().destinations_section_title))
@@ -158,6 +219,8 @@ struct DiscoverSheetView: View {
         onHikeRecommendationClicked: { _ in },
         onBrowseDestinationsClicked: {},
         onInfoClicked: {},
+        onOktTypeClicked: { _ in },
+        onOktInfoClicked: {},
         onDismissRequest: {},
         onHeightChange: { _ in }
     )

@@ -59,6 +59,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
@@ -195,6 +196,7 @@ class MainViewModelTest {
             settingsRepository = settingsRepository,
             mapCameraStore = mapCameraStore,
             whatsNewRepository = whatsNewRepository,
+            oktRepository = FakeOktRepository(),
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,

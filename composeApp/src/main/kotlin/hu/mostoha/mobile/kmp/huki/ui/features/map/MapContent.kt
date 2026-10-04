@@ -67,6 +67,7 @@ import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
+import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
@@ -114,6 +115,7 @@ fun MapContent(
     onEvent: (MainUiEvents) -> Unit,
     modifier: Modifier = Modifier,
     routePlannerBottomInset: Dp? = null,
+    oktSheetHeight: Dp? = null,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -132,6 +134,7 @@ fun MapContent(
     var isCameraPanelVisible by remember { mutableStateOf(true) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
+    val currentOktSheetHeight by rememberUpdatedState(oktSheetHeight)
 
     LaunchedEffect(mapViewportState) {
         snapshotFlow { mapViewportState.cameraState }
@@ -147,7 +150,13 @@ fun MapContent(
             if (effect is MapUiEffects.UpdateCamera && effect.contentPadding == ContentPadding.MAP_ROUTE_PLANNER) {
                 lastRoutePlannerCamera = effect
             }
-            mapViewportState.handleMapEffect(effect, density, isLandscape, currentRoutePlannerInset)
+            mapViewportState.handleMapEffect(
+                effect,
+                density,
+                isLandscape,
+                currentRoutePlannerInset,
+                currentOktSheetHeight,
+            )
         }
     }
 
@@ -171,14 +180,7 @@ fun MapContent(
             style = { MapBaseStyle(baseLayer = mapUiState.baseLayer, isDarkMode = isDarkMode) },
             mapViewportState = mapViewportState,
             mapState = mapState,
-            onMapClickListener = OnMapClickListener {
-                if (mapUiState.distanceInfoWindows.isNotEmpty()) {
-                    onEvent(MainUiEvents.DistanceInfoWindowDismissed)
-                    true
-                } else {
-                    false
-                }
-            },
+            onMapClickListener = OnMapClickListener { dismissInfoWindows(mapUiState, onEvent) },
             onMapLongClickListener = OnMapLongClickListener { point ->
                 onEvent(MainUiEvents.MapLongClicked(point.toLocation()))
                 true
@@ -285,6 +287,9 @@ fun MapContent(
                     rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
                 }
             }
+            mapUiState.okt?.let { okt ->
+                OktLayer(okt = okt, onEvent = onEvent)
+            }
             if (mapUiState.gpxLayerVisible) {
                 GpxLayer(
                     mapUiState = mapUiState,
@@ -321,14 +326,34 @@ fun MapContent(
     }
 }
 
+private fun dismissInfoWindows(mapUiState: MapUiState, onEvent: (MainUiEvents) -> Unit): Boolean =
+    when {
+        mapUiState.distanceInfoWindows.isNotEmpty() -> {
+            onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            true
+        }
+        mapUiState.okt?.infoWindow != null -> {
+            onEvent(OktUiEvents.OktInfoWindowDismissed)
+            true
+        }
+        else -> false
+    }
+
 private fun MapViewportState.handleMapEffect(
     effect: MapUiEffects,
     density: Density,
     isLandscape: Boolean,
     routePlannerBottomInset: Dp?,
+    oktSheetHeight: Dp?,
 ) {
     when (effect) {
-        is MapUiEffects.UpdateCamera -> moveCamera(density, effect, isLandscape, routePlannerBottomInset)
+        is MapUiEffects.UpdateCamera -> moveCamera(
+            density,
+            effect,
+            isLandscape,
+            routePlannerBottomInset,
+            oktSheetHeight,
+        )
         is MapUiEffects.ShowMyLocation -> followLocation(effect.myLocationStatus, effect.animated)
         is MapUiEffects.Zoom -> zoom(effect.zoomIn)
         is MapUiEffects.ResetBearing -> resetBearing()

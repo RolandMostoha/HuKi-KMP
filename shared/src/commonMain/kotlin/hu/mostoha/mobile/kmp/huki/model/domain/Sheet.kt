@@ -37,9 +37,18 @@ sealed class Sheet {
      * Discover Modal Sheet is shown.
      */
     data object Discover : Sheet()
+
+    /**
+     * OKT Standard Sheet is shown with the sections of the Blue Trail.
+     */
+    data object Okt : Sheet()
 }
 
 fun Sheet.isStandard(): Boolean =
-    this is Sheet.Gpx || this is Sheet.Search || this is Sheet.PlaceDetails || this is Sheet.RoutePlanner
+    this is Sheet.Gpx ||
+        this is Sheet.Search ||
+        this is Sheet.PlaceDetails ||
+        this is Sheet.RoutePlanner ||
+        this is Sheet.Okt
 
 fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew || this is Sheet.Discover

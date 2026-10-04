@@ -1,0 +1,29 @@
+<resources>
+    <string name="okt_header_title">National Blue Trails</string>
+    <string name="okt_a11y_info">About the National Blue Trails</string>
+    <string name="okt_official_info">The National Blue Trails, stamping points and sections are based on the official Blue Trail website. Check it for the latest information before your hike.</string>
+    <string name="okt_official_website">Open kektura.hu</string>
+    <string name="okt_okt_title">OKT</string>
+    <string name="okt_okt_subtitle">National Blue Trail</string>
+    <string name="okt_rpddk_title">RPDDK</string>
+    <string name="okt_rpddk_subtitle">Dél-dunántúli</string>
+    <string name="okt_rpddk_subtitle_long">Rockenbauer Pál Dél-dunántúli Blue Trail</string>
+    <string name="okt_akt_title">AKT</string>
+    <string name="okt_akt_subtitle">Alföldi Blue Trail</string>
+    <string name="okt_loading_error">The trail could not be loaded.</string>
+    <string name="okt_menu_details">Official website</string>
+    <string name="okt_menu_details_subtitle">Useful info and GPX</string>
+    <string name="okt_menu_start">Start section</string>
+    <string name="okt_menu_start_subtitle">Start %s</string>
+    <string name="okt_menu_reverse">Reverse direction</string>
+    <string name="okt_menu_reverse_subtitle">Stamping points in reverse order</string>
+    <string name="okt_stamp_info_window_title">%s stamping point</string>
+    <string name="okt_start_info_window_title">%s (start point)</string>
+    <string name="okt_end_info_window_title">%s (end point)</string>
+    <string name="okt_info_window_navigate">Place details</string>
+    <string name="okt_a11y_start">Start section</string>
+    <string name="okt_a11y_resume">Show %s</string>
+    <string name="okt_a11y_section_menu">%s actions</string>
+    <string name="okt_a11y_reversed_state">Reversed direction</string>
+    <string name="okt_a11y_stamp_distance">%s from the previous stamping point</string>
+</resources>
