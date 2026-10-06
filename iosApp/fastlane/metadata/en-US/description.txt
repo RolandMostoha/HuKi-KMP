@@ -5,4 +5,6 @@ Features:
 • Search for Places and Destinations
 • GPX import, storage and loading
 • Curated list of destinations across Hungary
+• National Blue Trails: OKT, RPDDK and AKT on the map, divided into sections
+• Blue Trail stamping points with distances and estimated travel time
 • Route Planner

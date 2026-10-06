@@ -1,0 +1,3 @@
+- Országos Kéktúra a Felfedező menüben
+- OKT, RPDDK és AKT útvonalak a térképen
+- Bélyegzőhelyek távolsággal és menetidővel

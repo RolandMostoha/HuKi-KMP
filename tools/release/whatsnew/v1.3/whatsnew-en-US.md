@@ -1,0 +1,3 @@
+- National Blue Trails in the Discover menu
+- OKT, RPDDK and AKT trails on the map
+- Stamping points with distance and travel time

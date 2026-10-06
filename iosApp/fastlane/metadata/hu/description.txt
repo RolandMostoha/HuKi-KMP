@@ -5,4 +5,6 @@ Funkciók:
 • Helység és kirándulóhely kereső
 • GPX importálás, tárolás és betöltés
 • Válogatott kirándulóhelyek szerte Magyarországon
+• Kéktúra útvonalak: OKT, RPDDK és AKT a térképen, szakaszokra bontva
+• Kéktúra bélyegzőhelyek távolsággal és becsült menetidővel
 • Útvonaltervező
