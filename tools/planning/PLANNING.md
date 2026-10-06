@@ -156,7 +156,7 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[R]`  | GPX   | Use white stroked route line similarly to OKT ![img_10.png](img_10.png)           |
+| `[x]`  | GPX   | Use white stroked route line similarly to OKT ![img_10.png](img_10.png)           |
 | `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
 | `[ ]`  | GPX   | Colored GPX                                                                       |
 | `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |

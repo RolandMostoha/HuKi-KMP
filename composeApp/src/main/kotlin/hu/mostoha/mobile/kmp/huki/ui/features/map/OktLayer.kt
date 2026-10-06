@@ -161,11 +161,11 @@ private fun OktLineLayer(
     lineWidth: Double,
     lineColor: Color,
 ) {
-    val strokeColor = mokoColor(SharedRes.colors.oktMapStroke)
+    val strokeColor = mokoColor(SharedRes.colors.mapStroke)
     LineLayer(sourceState = sourceState, layerId = layerId) {
         this.lineWidth = DoubleValue(lineWidth)
         this.lineColor = ColorValue(lineColor)
-        lineBorderWidth = DoubleValue(SharedDimens.OKT_STROKE_WIDTH)
+        lineBorderWidth = DoubleValue(SharedDimens.MAP_LINE_STROKE_WIDTH)
         lineBorderColor = ColorValue(strokeColor)
         lineCap = LineCapValue.ROUND
         lineJoin = LineJoinValue.ROUND

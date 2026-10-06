@@ -41,7 +41,7 @@
         <dark>#DEffff</dark>
     </color>
     <color name="mapStroke">
-        <light>#1a1a1a</light>
+        <light>#ffffff</light>
         <dark>#0E0A0F</dark>
     </color>
     <color name="accuracyRing">
@@ -244,10 +244,6 @@
     <color name="onOktBlue">
         <light>#ffffff</light>
         <dark>#232323</dark>
-    </color>
-    <color name="oktMapStroke">
-        <light>#ffffff</light>
-        <dark>#0E0A0F</dark>
     </color>
 
     <!-- Hungarian Trail Symbols -->

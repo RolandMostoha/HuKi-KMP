@@ -35,7 +35,7 @@ fun RouteLineLayer(
         lineColorUseTheme = StringValue(OutdoorsColorTheme.COLOR_USE_THEME_NONE)
         lineBorderColorUseTheme = StringValue(OutdoorsColorTheme.COLOR_USE_THEME_NONE)
         lineEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
-        lineBorderWidth = DoubleValue(SharedDimens.GPX_STROKE_WIDTH)
+        lineBorderWidth = DoubleValue(SharedDimens.MAP_LINE_STROKE_WIDTH)
         lineCap = LineCapValue.ROUND
         lineJoin = LineJoinValue.ROUND
     }
