@@ -715,6 +715,26 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given Discover sheet - When HikeRecommendationsGpxGuideClicked - Then sheet is hidden and NavigateToGpxGuide is emitted`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.DiscoverClicked)
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.HikeRecommendationsGpxGuideClicked)
+
+                awaitItem() shouldBe MainUiEffects.NavigateToGpxGuide
+                ensureAllEventsConsumed()
+            }
+            viewModel.uiState.value.sheet shouldBe null
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HikeRecommendationsGpxGuideClicked)
+        }
+    }
+
+    @Test
     fun `Given Discover sheet - When DiscoverBrowseDestinationsClicked - Then sheet is hidden and NavigateToDestinations is emitted`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

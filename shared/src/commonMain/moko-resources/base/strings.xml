@@ -346,6 +346,7 @@
     <string name="discover_hike_recommendations_title">Hike recommendations</string>
     <string name="discover_hike_recommendations_a11y_info">About hike recommendations</string>
     <string name="discover_hike_recommendations_info">The hike collections below are my personal favourites, and GPX routes downloaded from them can be opened in the app.\n\nHuKi does not use the content of these websites, it only provides a navigation link that opens in an external browser.\n\nThe terms of each website apply to the use of its content.</string>
+    <string name="discover_hike_recommendations_gpx_guide">Open GPX Guide</string>
     <string name="discover_browse_destinations">Browse destinations</string>
 
     <string name="location_iq_a11y_back">Back</string>

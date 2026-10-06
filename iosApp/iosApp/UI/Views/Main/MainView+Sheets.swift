@@ -76,6 +76,9 @@ extension MainView {
             onInfoClicked: {
                 viewModel.onEvent(event: MainUiEventsHikeRecommendationsInfoClicked.shared)
             },
+            onGpxGuideClicked: {
+                viewModel.onEvent(event: MainUiEventsHikeRecommendationsGpxGuideClicked.shared)
+            },
             onOktTypeClicked: { type in
                 viewModel.onEvent(event: OktUiEventsOktTypeClicked(type: type))
             },

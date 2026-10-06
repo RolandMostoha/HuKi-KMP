@@ -170,6 +170,7 @@ class MainViewModel(
             is MainUiEvents.HikeRecommendationClicked -> openHikeRecommendation(event.recommendation)
             MainUiEvents.DiscoverBrowseDestinationsClicked -> browseDestinations()
             MainUiEvents.HikeRecommendationsInfoClicked -> logHikeRecommendationsInfoOpened()
+            MainUiEvents.HikeRecommendationsGpxGuideClicked -> openGpxGuide()
             is OktUiEvents -> onOktEvent(event)
             // Map events
             is MainUiEvents.MapCameraChanged -> mapCameraStore.update(event.cameraPosition)
@@ -241,6 +242,14 @@ class MainViewModel(
 
     private fun logHikeRecommendationsInfoOpened() {
         analyticsService.logEvent(AnalyticsEvent.HikeRecommendationsInfoOpened)
+    }
+
+    private fun openGpxGuide() {
+        analyticsService.logEvent(AnalyticsEvent.HikeRecommendationsGpxGuideClicked)
+        hideSheet()
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.NavigateToGpxGuide)
+        }
     }
 
     private fun browseDestinations() {

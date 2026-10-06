@@ -69,6 +69,7 @@ fun DiscoverBottomSheet(
     onHikeRecommendationClicked: (HikeRecommendation) -> Unit,
     onBrowseDestinationsClicked: () -> Unit,
     onInfoClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
     onOktTypeClicked: (OktType) -> Unit,
     onOktInfoClicked: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -83,6 +84,7 @@ fun DiscoverBottomSheet(
             onHikeRecommendationClicked = onHikeRecommendationClicked,
             onBrowseDestinationsClicked = onBrowseDestinationsClicked,
             onInfoClicked = onInfoClicked,
+            onGpxGuideClicked = onGpxGuideClicked,
             onOktTypeClicked = onOktTypeClicked,
             onOktInfoClicked = onOktInfoClicked,
             onCloseClicked = onDismissRequest,
@@ -95,6 +97,7 @@ fun DiscoverContent(
     onHikeRecommendationClicked: (HikeRecommendation) -> Unit,
     onBrowseDestinationsClicked: () -> Unit,
     onInfoClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
     onOktTypeClicked: (OktType) -> Unit,
     onOktInfoClicked: () -> Unit,
     onCloseClicked: () -> Unit,
@@ -117,7 +120,12 @@ fun DiscoverContent(
         ) {
             SectionHeader(
                 title = mokoString(SharedRes.strings.discover_hike_recommendations_title),
-                trailingContent = { HikeRecommendationsInfoButton(onClick = onInfoClicked) },
+                trailingContent = {
+                    HikeRecommendationsInfoButton(
+                        onClick = onInfoClicked,
+                        onGpxGuideClicked = onGpxGuideClicked,
+                    )
+                },
             )
             BoxWithConstraints(modifier = Modifier.padding(horizontal = Dimens.Large)) {
                 val cardCount = HikeRecommendation.entries.size
@@ -198,7 +206,7 @@ private fun rememberFittingTitleStyle(maxTitleWidth: Dp): TextStyle {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HikeRecommendationsInfoButton(onClick: () -> Unit) {
+private fun HikeRecommendationsInfoButton(onClick: () -> Unit, onGpxGuideClicked: () -> Unit) {
     val tooltipState = rememberTooltipState(isPersistent = true)
     val coroutineScope = rememberCoroutineScope()
     TooltipBox(
@@ -211,6 +219,19 @@ private fun HikeRecommendationsInfoButton(onClick: () -> Unit) {
                 shadowElevation = Dimens.ExtraSmall,
                 modifier = Modifier.testTag(TestTags.DISCOVER_HIKE_RECOMMENDATIONS_INFO_TOOLTIP),
                 title = { Text(mokoString(SharedRes.strings.discover_hike_recommendations_title)) },
+                action = {
+                    TextButton(
+                        onClick = {
+                            tooltipState.dismiss()
+                            onGpxGuideClicked()
+                        },
+                        modifier = Modifier.testTagAsResourceId(
+                            TestTags.DISCOVER_HIKE_RECOMMENDATIONS_GPX_GUIDE_BUTTON,
+                        ),
+                    ) {
+                        Text(mokoString(SharedRes.strings.discover_hike_recommendations_gpx_guide))
+                    }
+                },
             ) {
                 Text(mokoString(SharedRes.strings.discover_hike_recommendations_info))
             }
@@ -316,6 +337,7 @@ private fun DiscoverContentPreview() {
             onHikeRecommendationClicked = {},
             onBrowseDestinationsClicked = {},
             onInfoClicked = {},
+            onGpxGuideClicked = {},
             onOktTypeClicked = {},
             onOktInfoClicked = {},
             onCloseClicked = {},

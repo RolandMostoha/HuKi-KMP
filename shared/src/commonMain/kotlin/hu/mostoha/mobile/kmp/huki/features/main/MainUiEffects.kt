@@ -11,6 +11,7 @@ sealed interface MainUiEffects : UiEffect {
     data class RoutePlannerLocationPicked(val location: Location) : MainUiEffects
     data class OpenUrl(val url: String) : MainUiEffects
     data object NavigateToDestinations : MainUiEffects
+    data object NavigateToGpxGuide : MainUiEffects
     data class ShareGpxFile(
         val fileUri: String,
         val fileName: String,

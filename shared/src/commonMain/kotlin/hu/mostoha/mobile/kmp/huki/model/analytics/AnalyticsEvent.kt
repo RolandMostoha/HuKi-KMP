@@ -214,6 +214,10 @@ sealed interface AnalyticsEvent {
         override val name = "hike_recommendations_info_opened"
     }
 
+    data object HikeRecommendationsGpxGuideClicked : AnalyticsEvent {
+        override val name = "hike_recommendations_gpx_guide_clicked"
+    }
+
     data object DiscoverBrowseDestinationsClicked : AnalyticsEvent {
         override val name = "discover_browse_destinations_clicked"
     }

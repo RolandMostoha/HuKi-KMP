@@ -101,6 +101,7 @@ fun RootNavHost() {
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onDestinationsClicked = { navController.navigate(Routes.DESTINATIONS) },
+                onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
                 openGpxUri = openGpxUri,
                 onOpenGpxConsumed = { entry.savedStateHandle[Routes.EXTRA_GPX_URI_KEY] = null },
                 openPlace = openPlace,

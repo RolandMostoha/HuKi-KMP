@@ -331,6 +331,8 @@ private extension MainView {
             }
         case .navigateToDestinations:
             navigationPath.append(DestinationsRoute.destinations)
+        case .navigateToGpxGuide:
+            navigationPath.append(GpxGuideRoute.gpxGuide)
         }
     }
 

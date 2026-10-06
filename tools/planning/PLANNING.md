@@ -127,9 +127,9 @@ Features (sections inside bottom sheet):
 - OKT routes (OKT, RPDDK, AKT)
 - Landscapes - a button to show landscapes
 
-| Status | Scope    | Task                                                           |
-|--------|----------|----------------------------------------------------------------|
-| `[R]`  | Discover | Add GPX Guide navigation link to Discover->HikeRecomm->Tooltip |
+| Status | Scope    | Task |
+|--------|----------|------|
+| `[ ]`  | Discover |      |
 
 ### FEATURE: OKT
 

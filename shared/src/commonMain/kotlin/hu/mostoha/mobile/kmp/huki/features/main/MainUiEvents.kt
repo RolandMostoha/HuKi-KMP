@@ -43,6 +43,7 @@ sealed interface MainUiEvents {
     data class HikeRecommendationClicked(val recommendation: HikeRecommendation) : MainUiEvents
     data object DiscoverBrowseDestinationsClicked : MainUiEvents
     data object HikeRecommendationsInfoClicked : MainUiEvents
+    data object HikeRecommendationsGpxGuideClicked : MainUiEvents
 
     /**
      * Map events

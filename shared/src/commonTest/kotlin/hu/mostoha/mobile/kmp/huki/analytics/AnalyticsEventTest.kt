@@ -174,6 +174,11 @@ class AnalyticsEventTest {
                     emptyMap(),
                 ),
                 TestCase(
+                    AnalyticsEvent.HikeRecommendationsGpxGuideClicked,
+                    "hike_recommendations_gpx_guide_clicked",
+                    emptyMap(),
+                ),
+                TestCase(
                     AnalyticsEvent.DiscoverBrowseDestinationsClicked,
                     "discover_browse_destinations_clicked",
                     emptyMap(),

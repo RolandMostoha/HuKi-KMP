@@ -1,8 +1,8 @@
 appId: ${APP_ID}
 ---
 # Discover: open the sheet from the map FAB, check the Hike recommendations and
-# Destinations sections, browse to the Destinations screen, then reopen the sheet
-# from the Menu and close it.
+# Destinations sections, browse to the Destinations screen, open the GPX Guide from
+# the Hike recommendations tooltip, then reopen the sheet from the Menu and close it.
 - launchApp:
     clearState: true
     arguments:
@@ -40,6 +40,34 @@ appId: ${APP_ID}
     timeout: 5000
 - tapOn:
     id: DESTINATIONS_BACK_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- assertNotVisible:
+    id: DISCOVER_SHEET
+
+# The Hike recommendations tooltip links to the GPX Guide and closes the sheet.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_HIKE_RECOMMENDATIONS_INFO_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_HIKE_RECOMMENDATIONS_GPX_GUIDE_BUTTON
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_HIKE_RECOMMENDATIONS_GPX_GUIDE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: GPX_GUIDE_SCREEN_ROOT
+    timeout: 5000
+- tapOn:
+    id: GPX_GUIDE_BACK_BUTTON
 - extendedWaitUntil:
     visible:
       id: MAIN_SEARCH_BAR

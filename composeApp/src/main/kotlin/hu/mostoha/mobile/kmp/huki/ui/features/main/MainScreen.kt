@@ -88,6 +88,7 @@ fun MainScreen(
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
     openGpxUri: String? = null,
     onOpenGpxConsumed: () -> Unit = {},
     openPlace: Pair<OsmType, String>? = null,
@@ -149,6 +150,7 @@ fun MainScreen(
         onGpxCollectionClicked = onGpxCollectionClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
         onDestinationsClicked = onDestinationsClicked,
+        onGpxGuideClicked = onGpxGuideClicked,
     )
 }
 
@@ -163,6 +165,7 @@ private fun MainContent(
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onDestinationsClicked: () -> Unit,
+    onGpxGuideClicked: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val currentSheet by rememberUpdatedState(uiState.sheet)
@@ -221,6 +224,7 @@ private fun MainContent(
         mainUiEffects = mainUiEffects,
         onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
         onNavigateToDestinations = onDestinationsClicked,
+        onNavigateToGpxGuide = onGpxGuideClicked,
         onRoutePlannerLocationPicked = { location ->
             routePlannerPick = RoutePlannerPick(id = (routePlannerPick?.id ?: 0L) + 1, location = location)
         },
@@ -590,6 +594,7 @@ private fun MainUiEffectHandler(
     mainUiEffects: Flow<MainUiEffects>,
     onShowGpxFilePicker: () -> Unit,
     onNavigateToDestinations: () -> Unit,
+    onNavigateToGpxGuide: () -> Unit,
     onRoutePlannerLocationPicked: (Location) -> Unit,
 ) {
     val context = LocalContext.current
@@ -603,6 +608,7 @@ private fun MainUiEffectHandler(
                 is MainUiEffects.ShareGpxFile -> context.shareGpxFile(effect.fileUri, effect.fileName)
                 is MainUiEffects.OpenUrl -> context.openUrl(effect.url)
                 MainUiEffects.NavigateToDestinations -> onNavigateToDestinations()
+                MainUiEffects.NavigateToGpxGuide -> onNavigateToGpxGuide()
             }
         }
     }
@@ -637,6 +643,7 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onHikeRecommendationClicked = { onEvent(MainUiEvents.HikeRecommendationClicked(it)) },
                 onBrowseDestinationsClicked = { onEvent(MainUiEvents.DiscoverBrowseDestinationsClicked) },
                 onInfoClicked = { onEvent(MainUiEvents.HikeRecommendationsInfoClicked) },
+                onGpxGuideClicked = { onEvent(MainUiEvents.HikeRecommendationsGpxGuideClicked) },
                 onOktTypeClicked = { onEvent(OktUiEvents.OktTypeClicked(it)) },
                 onOktInfoClicked = { onEvent(OktUiEvents.OktInfoClicked) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
@@ -660,6 +667,7 @@ private fun MainContentPreview() {
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},
             onDestinationsClicked = {},
+            onGpxGuideClicked = {},
         )
     }
 }
@@ -678,6 +686,7 @@ private fun MainContentLoadingPreview() {
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},
             onDestinationsClicked = {},
+            onGpxGuideClicked = {},
         )
     }
 }

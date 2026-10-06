@@ -6,6 +6,7 @@ struct DiscoverSheetView: View {
     let onHikeRecommendationClicked: (HikeRecommendation) -> Void
     let onBrowseDestinationsClicked: () -> Void
     let onInfoClicked: () -> Void
+    let onGpxGuideClicked: () -> Void
     let onOktTypeClicked: (OktType) -> Void
     let onOktInfoClicked: () -> Void
     let onDismissRequest: () -> Void
@@ -131,10 +132,18 @@ struct DiscoverSheetView: View {
                 Text(strings.get(id: SharedRes.strings().discover_hike_recommendations_info))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                Button(strings.get(id: SharedRes.strings().discover_hike_recommendations_gpx_guide)) {
+                    isInfoPresented = false
+                    onGpxGuideClicked()
+                }
+                .font(.subheadline.weight(.semibold))
+                .tint(Color(SharedRes.colors().primary.getUIColor()))
+                .accessibilityIdentifier(TestTags.shared.DISCOVER_HIKE_RECOMMENDATIONS_GPX_GUIDE_BUTTON)
             }
             .fixedSize(horizontal: false, vertical: true)
             .frame(width: 300, alignment: .leading)
             .padding()
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier(TestTags.shared.DISCOVER_HIKE_RECOMMENDATIONS_INFO_TOOLTIP)
             .presentationCompactAdaptation(.popover)
         }
@@ -188,6 +197,7 @@ struct DiscoverSheetView: View {
                 if let url = URL(string: OktType.companion.KEKTURA_URL) {
                     Link(strings.get(id: SharedRes.strings().okt_official_website), destination: url)
                         .font(.subheadline.weight(.semibold))
+                        .tint(Color(SharedRes.colors().primary.getUIColor()))
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -219,6 +229,7 @@ struct DiscoverSheetView: View {
         onHikeRecommendationClicked: { _ in },
         onBrowseDestinationsClicked: {},
         onInfoClicked: {},
+        onGpxGuideClicked: {},
         onOktTypeClicked: { _ in },
         onOktInfoClicked: {},
         onDismissRequest: {},
