@@ -344,6 +344,7 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 
 - `version.properties` is the single source of truth — fastlane reads it, never writes it.
 - Ad-hoc internal TestFlight builds: `bundle exec fastlane beta` locally (never reviewed).
+- Store content only (build already on TestFlight): run the **iOS Release** workflow manually on `main` with `metadata_only` checked.
 - **Tagging convention**: `ios/v<appVersion>`
 
 ## Code Quality & Linting

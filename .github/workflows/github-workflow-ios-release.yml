@@ -5,6 +5,11 @@ on:
     tags:
       - "ios/v*"
   workflow_dispatch:
+    inputs:
+      metadata_only:
+        description: "Skip the TestFlight upload, only push App Store metadata for the build in version.properties"
+        type: boolean
+        default: false
 
 # Never cancel a release in flight: a killed run can leave a half-finished upload.
 concurrency:
@@ -70,6 +75,7 @@ jobs:
           working-directory: iosApp
 
       - name: Upload to TestFlight
+        if: ${{ !inputs.metadata_only }}
         working-directory: iosApp
         env:
           IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
