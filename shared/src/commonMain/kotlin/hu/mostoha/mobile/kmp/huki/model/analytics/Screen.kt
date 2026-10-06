@@ -17,4 +17,5 @@ enum class Screen(val value: String) {
     LOCATION_IQ("location_iq"),
     ROUTE_PLANNER("route_planner"),
     DISCOVER("discover"),
+    OKT("okt"),
 }

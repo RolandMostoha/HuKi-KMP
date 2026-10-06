@@ -47,7 +47,11 @@ extension Array where Element == Shared.Location {
 }
 
 extension Shared.ContentPadding {
-    func edgeInsets(isLandscape: Bool, routePlannerSheetHeight: CGFloat) -> SwiftUI.EdgeInsets {
+    func edgeInsets(
+        isLandscape: Bool,
+        routePlannerSheetHeight: CGFloat,
+        oktSheetHeight: CGFloat
+    ) -> SwiftUI.EdgeInsets {
         switch self {
         case .mapGpx:
             return isLandscape ? Dimens.gpxContentPaddingLandscape : Dimens.gpxContentPaddingPortrait
@@ -59,6 +63,12 @@ extension Shared.ContentPadding {
             return isLandscape
                 ? Dimens.routePlannerContentPaddingLandscape
                 : Dimens.routePlannerContentPaddingPortrait(sheetHeight: routePlannerSheetHeight)
+        case .mapOkt:
+            return isLandscape
+                ? Dimens.oktContentPaddingLandscape
+                : Dimens.oktContentPaddingPortrait(sheetHeight: oktSheetHeight)
+        case .mapOktStarted:
+            return isLandscape ? Dimens.oktContentPaddingLandscape : Dimens.oktStartedContentPaddingPortrait
         }
     }
 }

@@ -79,6 +79,15 @@ Light mode. Destinations view.
 | Camera   | TBD           |
 | Location | TBD           |
 
+## Screenshot #5 — OKT
+
+- OKT 17 opened, Törökmező turistaház stamp selected
+
+|          | Lat/Long/Zoom     |
+|----------|-------------------|
+| Camera   | TBD               |
+| Location | 47.80728,18.94138 |
+
 ## Video demo
 
 Pre-requisites:

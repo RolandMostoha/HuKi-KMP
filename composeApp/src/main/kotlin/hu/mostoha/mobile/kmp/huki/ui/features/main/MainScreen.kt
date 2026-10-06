@@ -43,6 +43,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
+import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
@@ -59,6 +60,8 @@ import hu.mostoha.mobile.kmp.huki.ui.features.discover.DiscoverBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
+import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.okt.rememberOktSheetHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
@@ -175,6 +178,7 @@ private fun MainContent(
     var routePlannerPeekHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
     var routePlannerExpandedHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
     var routePlannerPick by remember { mutableStateOf<RoutePlannerPick?>(null) }
+    val oktSheetHeight = rememberOktSheetHeight()
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -239,6 +243,7 @@ private fun MainContent(
                 onDestinationsClicked = onDestinationsClicked,
                 onLocationIqClicked = onLocationIqClicked,
                 onGpxPeekHeightMeasured = { gpxSheetPeekHeight = it },
+                oktSheetHeight = oktSheetHeight,
             )
         },
         containerColor = Color.Transparent,
@@ -256,6 +261,7 @@ private fun MainContent(
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
                 ),
+                oktSheetHeight = oktSheetHeight,
             )
             FloatingActionContainer(
                 mainUiState = uiState,
@@ -291,6 +297,9 @@ private fun MainContent(
                 },
                 onGpxClearClicked = {
                     onEvent(MainUiEvents.GpxCloseClicked)
+                },
+                onOktResumeClicked = {
+                    onEvent(OktUiEvents.OktResumeClicked)
                 },
                 onMenuClicked = onMenuClicked,
             )
@@ -460,6 +469,7 @@ private fun MainStandardBottomSheet(
     onDestinationsClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxPeekHeightMeasured: (Dp) -> Unit,
+    oktSheetHeight: Dp,
 ) {
     val coroutineScope = rememberCoroutineScope()
     when (val sheet = uiState.sheet) {
@@ -486,6 +496,20 @@ private fun MainStandardBottomSheet(
                 },
                 onCollapsedHeightMeasured = onGpxPeekHeightMeasured,
             )
+        }
+        is Sheet.Okt -> {
+            uiState.mapUiState.okt?.let { okt ->
+                OktBottomSheet(
+                    okt = okt,
+                    sheetHeight = oktSheetHeight,
+                    onSectionClick = { onEvent(OktUiEvents.OktSectionClicked(it)) },
+                    onSectionStartClick = { onEvent(OktUiEvents.OktSectionStartClicked(it)) },
+                    onSectionWebsiteClick = { onEvent(OktUiEvents.OktSectionWebsiteClicked(it)) },
+                    onSectionReverseClick = { onEvent(OktUiEvents.OktSectionReverseClicked(it)) },
+                    onStampClick = { onEvent(OktUiEvents.OktMarkerClicked(it)) },
+                    onCloseClick = { onEvent(OktUiEvents.OktCloseClicked) },
+                )
+            }
         }
         is Sheet.PlaceDetails -> {
             uiState.mapUiState.placeDetails?.let { placeDetails ->
@@ -613,6 +637,8 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onHikeRecommendationClicked = { onEvent(MainUiEvents.HikeRecommendationClicked(it)) },
                 onBrowseDestinationsClicked = { onEvent(MainUiEvents.DiscoverBrowseDestinationsClicked) },
                 onInfoClicked = { onEvent(MainUiEvents.HikeRecommendationsInfoClicked) },
+                onOktTypeClicked = { onEvent(OktUiEvents.OktTypeClicked(it)) },
+                onOktInfoClicked = { onEvent(OktUiEvents.OktInfoClicked) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
             )
         }

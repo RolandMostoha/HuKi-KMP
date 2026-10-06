@@ -61,4 +61,27 @@ class DistanceFormatterTest {
 
         actual shouldBe "500 m"
     }
+
+    @Test
+    fun `Given elevations - When formatting elevation - Then kilometers are shown from ten kilometers`() {
+        listOf(
+            1290 to "1290 m",
+            9999 to "9999 m",
+            10_000 to "10 km",
+            31_455 to "31.5 km",
+        ).forEach { (input, result) ->
+            val actual = DistanceFormatter.formatElevation(input)
+
+            actual shouldBe result
+        }
+    }
+
+    @Test
+    fun `Given distance - When formatting relative - Then a plus sign prefixes it`() {
+        val input = 8240.meters
+
+        val actual = DistanceFormatter.formatRelative(input)
+
+        actual shouldBe "+8.2 km"
+    }
 }

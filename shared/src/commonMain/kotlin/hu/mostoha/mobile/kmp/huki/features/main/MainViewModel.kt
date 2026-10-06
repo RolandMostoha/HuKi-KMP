@@ -11,6 +11,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
@@ -31,16 +32,26 @@ import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
+import hu.mostoha.mobile.kmp.huki.model.domain.OktInfoWindowData
+import hu.mostoha.mobile.kmp.huki.model.domain.OktMarker
+import hu.mostoha.mobile.kmp.huki.model.domain.OktTrail
+import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RouteProgress
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
+import hu.mostoha.mobile.kmp.huki.model.mapper.toBlueTrail
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoWindowTitle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.mapper.toOktLine
+import hu.mostoha.mobile.kmp.huki.model.mapper.toOktMarkers
+import hu.mostoha.mobile.kmp.huki.model.mapper.toOktSectionItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
@@ -52,6 +63,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
+import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
@@ -61,10 +73,13 @@ import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
+import hu.mostoha.mobile.kmp.huki.util.nearestIndexTo
 import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -85,7 +100,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.maplibre.spatialk.units.extensions.inMeters
+import org.maplibre.spatialk.units.extensions.meters
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
@@ -98,6 +116,7 @@ class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val mapCameraStore: MapCameraStore,
     private val whatsNewRepository: WhatsNewRepository,
+    private val oktRepository: OktRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
@@ -114,6 +133,11 @@ class MainViewModel(
     private val selectedWaypoint = MutableStateFlow<GpxWaypoint?>(null)
 
     private var placeDetailsJob: Job? = null
+
+    private var oktTrail: OktTrail? = null
+    private var oktJob: Job? = null
+    private var oktLocationJob: Job? = null
+    private var oktUserPosition: TrackPosition? = null
 
     init {
         initLogging()
@@ -146,6 +170,7 @@ class MainViewModel(
             is MainUiEvents.HikeRecommendationClicked -> openHikeRecommendation(event.recommendation)
             MainUiEvents.DiscoverBrowseDestinationsClicked -> browseDestinations()
             MainUiEvents.HikeRecommendationsInfoClicked -> logHikeRecommendationsInfoOpened()
+            is OktUiEvents -> onOktEvent(event)
             // Map events
             is MainUiEvents.MapCameraChanged -> mapCameraStore.update(event.cameraPosition)
             // Place Details events
@@ -182,6 +207,23 @@ class MainViewModel(
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
             is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
             MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
+        }
+    }
+
+    private fun onOktEvent(event: OktUiEvents) {
+        when (event) {
+            is OktUiEvents.OktTypeClicked -> openOkt(event.type)
+            OktUiEvents.OktInfoClicked -> analyticsService.logEvent(AnalyticsEvent.OktInfoClicked)
+            is OktUiEvents.OktSectionClicked -> selectOktSection(event.sectionId)
+            is OktUiEvents.OktSectionStartClicked -> startOktSection(event.sectionId)
+            is OktUiEvents.OktSectionWebsiteClicked -> openOktSectionWebsite(event.sectionId)
+            is OktUiEvents.OktSectionReverseClicked -> reverseOktSection(event.sectionId)
+            OktUiEvents.OktResumeClicked -> resumeOkt()
+            is OktUiEvents.OktMarkerClicked -> selectOktMarker(event.marker)
+            is OktUiEvents.OktLineClicked -> selectNearestOktSection(event.location)
+            OktUiEvents.OktInfoWindowDismissed -> dismissOktInfoWindow()
+            OktUiEvents.OktInfoWindowPlaceDetailsClicked -> showOktMarkerPlaceDetails()
+            OktUiEvents.OktCloseClicked -> closeOkt()
         }
     }
 
@@ -235,6 +277,9 @@ class MainViewModel(
                     routePlanWaypoints = emptyList(),
                 ),
             )
+        }
+        if (swipedSheet == Sheet.Okt) {
+            refitOktCamera(ContentPadding.MAP_OKT_STARTED)
         }
     }
 
@@ -325,8 +370,8 @@ class MainViewModel(
         }
     }
 
-    private fun showPlaceDetails(location: Location) {
-        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LONG_TAP))
+    private fun showPlaceDetails(location: Location, source: PlaceDetailsSource = PlaceDetailsSource.LONG_TAP) {
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
         showPlaceDetailsSheet(PlaceDetails.Loading(location))
 
         launchPlaceDetailsLoad {
@@ -745,6 +790,8 @@ class MainViewModel(
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
                     selectedWaypoint.value = null
+                    cancelOktJobs()
+                    oktTrail = null
                     _uiState.update { uiState ->
                         uiState.copy(
                             mapUiState = uiState.mapUiState.copy(
@@ -756,6 +803,7 @@ class MainViewModel(
                                 gpxRouteVisible = true,
                                 allDistancesVisible = false,
                                 distanceInfoWindows = emptyList(),
+                                okt = null,
                             ),
                             sheet = Sheet.Gpx(gpxDetails),
                             alert = null,
@@ -821,6 +869,257 @@ class MainViewModel(
         _uiState.updateMapUiState { it.copy(allDistancesVisible = false) }
     }
 
+    private fun openOkt(type: OktType) {
+        analyticsService.logEvent(AnalyticsEvent.OktOpened(type.toBlueTrail()))
+        selectedWaypoint.value = null
+        cancelPlaceDetailsLoad()
+        cancelOktJobs()
+        oktJob = viewModelScope.launch {
+            _uiState.update { it.copy(sheet = null, isOktLoading = true, alert = null) }
+            try {
+                showOktTrail(oktRepository.getOktTrail(type))
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                onOktLoadFailed(exception)
+            }
+        }
+    }
+
+    private suspend fun showOktTrail(trail: OktTrail) {
+        val fullTrail = trail.sections.first { it.section.id == trail.type.fullTrailId }
+        val (sections, baseLine) = withContext(defaultDispatcher) {
+            trail.sections.map { it.toOktSectionItem(trail.type) } to
+                trail.baseLine.toOktLine("okt_base_${trail.type.name}")
+        }
+        oktTrail = trail
+        observeOktUserPosition(trail)
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState
+                    .withoutGpx()
+                    .copy(
+                        placeDetails = null,
+                        routePlan = null,
+                        routePlanWaypoints = emptyList(),
+                        okt = OktUiState(
+                            type = trail.type,
+                            sections = sections,
+                            selectedSectionId = fullTrail.section.id,
+                            baseLine = baseLine,
+                            selectedLine = baseLine,
+                            markers = fullTrail.toOktMarkers(),
+                        ),
+                    ),
+                sheet = Sheet.Okt,
+                isOktLoading = false,
+            )
+        }
+        fitCameraTo(baseLine.bounds, ContentPadding.MAP_OKT)
+    }
+
+    private fun onOktLoadFailed(exception: Exception) {
+        Logger.e(exception) { "Okt: failed to load the trail." }
+        analyticsService.logEvent(AnalyticsEvent.OktLoadFailed)
+        crashlyticsService.recordException(exception)
+        _uiState.update {
+            it.copy(
+                alert = Alert(
+                    title = SharedRes.strings.okt_header_title,
+                    message = SharedRes.strings.okt_loading_error,
+                ),
+                isOktLoading = false,
+            )
+        }
+    }
+
+    private fun selectOktSection(sectionId: String) {
+        analyticsService.logEvent(AnalyticsEvent.OktSectionSelected(sectionId))
+        showOktSection(sectionId, ContentPadding.MAP_OKT)
+    }
+
+    private fun startOktSection(sectionId: String) {
+        analyticsService.logEvent(AnalyticsEvent.OktSectionStarted(sectionId))
+        hideSheet()
+        showOktSection(sectionId, ContentPadding.MAP_OKT_STARTED)
+    }
+
+    private fun showOktSection(sectionId: String, contentPadding: ContentPadding) {
+        val trail = oktTrail ?: return
+        val okt = _uiState.value.mapUiState.okt ?: return
+        val geometry = trail.sections.firstOrNull { it.section.id == sectionId } ?: return
+        oktJob?.cancel()
+        oktJob = viewModelScope.launch {
+            val line = when (sectionId) {
+                okt.selectedSectionId -> okt.selectedLine
+                trail.type.fullTrailId -> okt.baseLine
+                else -> withContext(defaultDispatcher) { geometry.locations.toOktLine("okt_section_$sectionId") }
+            }
+            _uiState.updateOktUiState {
+                it.copy(
+                    selectedSectionId = sectionId,
+                    selectedLine = line,
+                    markers = geometry.toOktMarkers(),
+                    selectedMarkerId = null,
+                    infoWindow = null,
+                )
+            }
+            fitCameraTo(line.bounds, contentPadding)
+        }
+    }
+
+    private fun reverseOktSection(sectionId: String) {
+        val okt = _uiState.value.mapUiState.okt ?: return
+        analyticsService.logEvent(AnalyticsEvent.OktSectionReversed(sectionId))
+        _uiState.updateOktUiState {
+            val reversedSectionIds = if (it.isReversed(sectionId)) {
+                it.reversedSectionIds - sectionId
+            } else {
+                it.reversedSectionIds + sectionId
+            }
+            it.copy(reversedSectionIds = reversedSectionIds)
+        }
+        if (okt.selectedSectionId != sectionId) {
+            showOktSection(sectionId, ContentPadding.MAP_OKT)
+        }
+    }
+
+    private fun openOktSectionWebsite(sectionId: String) {
+        val section = _uiState.value.mapUiState.okt?.sections?.firstOrNull { it.id == sectionId } ?: return
+        analyticsService.logEvent(AnalyticsEvent.OktSectionLinkClicked(sectionId))
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenUrl(section.websiteUrl))
+        }
+    }
+
+    private fun resumeOkt() {
+        showSheet(Sheet.Okt)
+        refitOktCamera(ContentPadding.MAP_OKT)
+    }
+
+    private fun refitOktCamera(contentPadding: ContentPadding) {
+        val okt = _uiState.value.mapUiState.okt ?: return
+        viewModelScope.launch {
+            fitCameraTo(okt.selectedLine.bounds, contentPadding)
+        }
+    }
+
+    private fun selectNearestOktSection(location: Location) {
+        val trail = oktTrail ?: return
+        analyticsService.logEvent(AnalyticsEvent.OktLineClicked)
+        viewModelScope.launch {
+            val nearest = withContext(defaultDispatcher) {
+                trail.sections
+                    .filter { it.section.id != trail.type.fullTrailId }
+                    .minByOrNull { geometry ->
+                        val nearestLocation = geometry.locations[geometry.locations.nearestIndexTo(location)]
+                        nearestLocation.distanceBetween(location).inMeters
+                    }
+            } ?: return@launch
+            val contentPadding = if (_uiState.value.sheet == Sheet.Okt) {
+                ContentPadding.MAP_OKT
+            } else {
+                ContentPadding.MAP_OKT_STARTED
+            }
+            showOktSection(nearest.section.id, contentPadding)
+        }
+    }
+
+    private fun selectOktMarker(marker: OktMarker) {
+        analyticsService.logEvent(AnalyticsEvent.OktStampClicked)
+        val progress = oktProgressTo(marker)
+        _uiState.updateOktUiState {
+            it.copy(
+                selectedMarkerId = marker.id,
+                infoWindow = OktInfoWindowData(marker = marker, title = marker.toInfoWindowTitle())
+                    .withProgress(progress),
+            )
+        }
+        viewModelScope.launch {
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(marker.location),
+                    contentPadding = if (_uiState.value.sheet == Sheet.Okt) {
+                        ContentPadding.MAP_OKT
+                    } else {
+                        ContentPadding.MAP_OKT_STARTED
+                    },
+                ),
+            )
+        }
+    }
+
+    private fun observeOktUserPosition(trail: OktTrail) {
+        oktLocationJob?.cancel()
+        oktLocationJob = locationMonitoringService.locations()
+            .distinctUntilChanged { old, new -> old.distanceBetween(new) < OKT_USER_POSITION_MIN_MOVE }
+            .map { location ->
+                trail.progressIndex.positionOf(location).takeIf { it.offTrackDistance <= OKT_ON_TRAIL_THRESHOLD }
+            }
+            .flowOn(defaultDispatcher)
+            .onEach { position ->
+                oktUserPosition = position
+                refreshOktInfoWindowProgress()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun refreshOktInfoWindowProgress() {
+        val infoWindow = _uiState.value.mapUiState.okt?.infoWindow?.takeIf { it.distance != null } ?: return
+        val progress = oktProgressTo(infoWindow.marker) ?: return
+        _uiState.updateOktUiState { okt ->
+            okt.copy(
+                infoWindow = okt.infoWindow?.takeIf {
+                    it.marker.id == infoWindow.marker.id
+                }?.withProgress(progress),
+            )
+        }
+    }
+
+    private fun OktInfoWindowData.withProgress(progress: RouteProgress?): OktInfoWindowData =
+        copy(
+            distance = progress?.let { DistanceFormatter.formatDistance(it.distance) },
+            travelTime = progress?.let { TravelTimeFormatter.formatTravelTime(it.travelTime) },
+        )
+
+    private fun oktProgressTo(marker: OktMarker): RouteProgress? {
+        val trail = oktTrail ?: return null
+        val userPosition = oktUserPosition ?: return null
+        val markerPosition = trail.markerPositions[marker.id] ?: return null
+        return trail.progressIndex.progress(from = userPosition, to = markerPosition)
+    }
+
+    private fun dismissOktInfoWindow() {
+        _uiState.updateOktUiState { it.copy(selectedMarkerId = null, infoWindow = null) }
+    }
+
+    private fun showOktMarkerPlaceDetails() {
+        val marker = _uiState.value.mapUiState.okt?.infoWindow?.marker ?: return
+        dismissOktInfoWindow()
+        showPlaceDetails(marker.location, PlaceDetailsSource.OKT_STAMP)
+    }
+
+    private fun closeOkt() {
+        analyticsService.logEvent(AnalyticsEvent.OktClosed)
+        cancelOktJobs()
+        oktTrail = null
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.copy(okt = null),
+                sheet = uiState.sheet.takeUnless { it == Sheet.Okt },
+                isOktLoading = false,
+            )
+        }
+    }
+
+    private fun cancelOktJobs() {
+        oktJob?.cancel()
+        oktJob = null
+        oktLocationJob?.cancel()
+        oktLocationJob = null
+        oktUserPosition = null
+    }
+
     private fun showGpxFilePicker() {
         viewModelScope.launch {
             hideSheet()
@@ -851,5 +1150,7 @@ class MainViewModel(
 
     private companion object {
         val PLACE_DETAILS_LOCATION_TIMEOUT = 2.seconds
+        val OKT_ON_TRAIL_THRESHOLD = 500.meters
+        val OKT_USER_POSITION_MIN_MOVE = 50.meters
     }
 }

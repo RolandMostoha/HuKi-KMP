@@ -299,7 +299,6 @@ private fun VisitWebsiteButton(onClick: () -> Unit) {
                 .testTag(TestTags.LOCATION_IQ_VISIT_WEBSITE),
             shape = RoundedCornerShape(percent = 50),
             color = mokoColor(SharedRes.colors.locationIqButton),
-            shadowElevation = Dimens.ExtraSmall,
         ) {
             Row(
                 modifier = Modifier.padding(vertical = Dimens.MediumLarge),

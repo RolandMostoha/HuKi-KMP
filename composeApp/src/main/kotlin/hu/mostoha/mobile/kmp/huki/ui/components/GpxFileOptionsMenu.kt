@@ -55,7 +55,7 @@ fun GpxFileOptionsMenu(
             shape = RoundedCornerShape(Dimens.Large),
             containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = Dimens.ExtraSmall,
+            shadowElevation = Dimens.FloatingActionElevation,
         ) {
             val itemContentPadding = PaddingValues(
                 start = Dimens.Large,

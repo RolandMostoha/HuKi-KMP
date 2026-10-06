@@ -1,0 +1,78 @@
+appId: ${APP_ID}
+---
+# OKT: open the National Blue Trail from Discover, select the first section, open a
+# stamping point InfoWindow from the carousel, start the section, resume and close it.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open the OKT from Discover.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_OKT_CARD
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_OKT_CARD
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 15000
+- assertVisible:
+    id: OKT_SECTION_ROW
+    index: 0
+
+# Select the first section, its stamping points appear.
+- tapOn:
+    id: OKT_SECTION_ROW
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: OKT_STAMP_CARD
+      index: 0
+    timeout: 5000
+- tapOn:
+    id: OKT_STAMP_CARD
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: OKT_INFO_WINDOW
+    timeout: 5000
+
+# Start hides the sheet, the resume FAB brings it back.
+- tapOn:
+    id: OKT_START_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: OKT_RESUME_FAB
+    timeout: 5000
+- assertNotVisible:
+    id: OKT_SHEET
+- tapOn:
+    id: OKT_RESUME_FAB
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 5000
+
+# Close removes the trail.
+- tapOn:
+    id: OKT_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- assertNotVisible:
+    id: OKT_RESUME_FAB

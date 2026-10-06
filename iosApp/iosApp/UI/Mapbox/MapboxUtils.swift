@@ -30,8 +30,14 @@ extension Viewport {
     static func target(
         for effect: MapUiEffectsUpdateCamera,
         isLandscape: Bool = false,
-        routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
+        routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight,
+        oktSheetHeight: CGFloat = Dimens.oktDetentMinHeight
     ) -> Viewport {
+        let padding = effect.contentPadding?.edgeInsets(
+            isLandscape: isLandscape,
+            routePlannerSheetHeight: routePlannerSheetHeight,
+            oktSheetHeight: oktSheetHeight
+        ) ?? .init()
         switch onEnum(of: effect.target) {
         case .center(let target):
             return .camera(
@@ -40,18 +46,17 @@ extension Viewport {
                 bearing: effect.bearing?.cgFloat ?? 0,
                 pitch: effect.pitch?.cgFloat ?? 0
             )
+            .padding(padding)
         case .bounds(let target):
-            let padding = effect.contentPadding?.edgeInsets(
-                isLandscape: isLandscape,
-                routePlannerSheetHeight: routePlannerSheetHeight
-            ) ?? .init()
+            // Mapbox drops geometryPadding entirely when it is large relative to the map, so the sheet
+            // insets go to the camera padding instead
             return .overview(
                 geometry: target.locations.lineString,
                 bearing: effect.bearing?.cgFloat ?? 0,
                 pitch: effect.pitch?.cgFloat ?? 0,
-                geometryPadding: padding,
                 maxZoom: target.maxZoom?.doubleValue
             )
+            .padding(padding)
         }
     }
 

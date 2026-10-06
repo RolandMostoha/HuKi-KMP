@@ -218,6 +218,50 @@ sealed interface AnalyticsEvent {
         override val name = "discover_browse_destinations_clicked"
     }
 
+    data class OktOpened(val trail: BlueTrail) : AnalyticsEvent {
+        override val name = "okt_opened_${trail.value}"
+    }
+
+    data object OktLoadFailed : AnalyticsEvent {
+        override val name = "okt_load_failed"
+    }
+
+    data class OktSectionSelected(val sectionId: String) : AnalyticsEvent {
+        override val name = "okt_section_selected"
+        override val params = mapOf("okt_section" to sectionId)
+    }
+
+    data class OktSectionStarted(val sectionId: String) : AnalyticsEvent {
+        override val name = "okt_section_started"
+        override val params = mapOf("okt_section" to sectionId)
+    }
+
+    data class OktSectionReversed(val sectionId: String) : AnalyticsEvent {
+        override val name = "okt_section_reversed"
+        override val params = mapOf("okt_section" to sectionId)
+    }
+
+    data class OktSectionLinkClicked(val sectionId: String) : AnalyticsEvent {
+        override val name = "okt_section_link_clicked"
+        override val params = mapOf("okt_section" to sectionId)
+    }
+
+    data object OktStampClicked : AnalyticsEvent {
+        override val name = "okt_stamp_clicked"
+    }
+
+    data object OktLineClicked : AnalyticsEvent {
+        override val name = "okt_line_clicked"
+    }
+
+    data object OktInfoClicked : AnalyticsEvent {
+        override val name = "okt_info_clicked"
+    }
+
+    data object OktClosed : AnalyticsEvent {
+        override val name = "okt_closed"
+    }
+
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {
         override val name = "menu_link_${link.value}"
     }

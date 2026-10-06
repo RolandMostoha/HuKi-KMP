@@ -1,8 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -12,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,35 +37,39 @@ fun HikeRecommendationCard(
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     titleStyle: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .background(containerColor)
-            .clickable(onClick = onClick)
-            .padding(vertical = Dimens.MediumLarge, horizontal = Dimens.ExtraSmall),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        color = containerColor,
+        shadowElevation = 0.5.dp,
     ) {
-        Image(
-            painter = painterResource(recommendation.iconRes.drawableResId),
-            contentDescription = null,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape),
-        )
-        Text(
-            text = mokoString(recommendation.title),
-            style = titleStyle,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            autoSize = TextAutoSize.StepBased(
-                minFontSize = 9.sp,
-                maxFontSize = titleStyle.fontSize,
-                stepSize = 0.5.sp,
-            ),
-        )
+        Column(
+            modifier = Modifier.padding(vertical = Dimens.MediumLarge, horizontal = Dimens.ExtraSmall),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+        ) {
+            Image(
+                painter = painterResource(recommendation.iconRes.drawableResId),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+            )
+            Text(
+                text = mokoString(recommendation.title),
+                style = titleStyle,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 9.sp,
+                    maxFontSize = titleStyle.fontSize,
+                    stepSize = 0.5.sp,
+                ),
+            )
+        }
     }
 }
 

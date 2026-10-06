@@ -17,14 +17,17 @@ object TravelTimeFormatter {
             StringDesc.ResourceFormatted(stringResource, *args.toTypedArray())
         }
 
+    /**
+     * Formats travel time as hours and minutes, e.g. "7:28", "344:40", for space constrained rows.
+     */
+    fun formatTravelTimeCompact(duration: Duration): String {
+        val totalMinutes = duration.roundUpToMinutes()
+        return "${totalMinutes / 60}:${(totalMinutes % 60).toString().padStart(2, '0')}"
+    }
+
     @VisibleForTesting
     internal fun selectTemplate(duration: Duration): Pair<StringResource, List<Any>> {
-        val totalSeconds = duration.inWholeSeconds
-        val totalMinutes = if (totalSeconds == 0L) {
-            0L
-        } else {
-            (totalSeconds + 59) / 60
-        }
+        val totalMinutes = duration.roundUpToMinutes()
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
 
@@ -33,5 +36,10 @@ object TravelTimeFormatter {
             minutes == 0L -> SharedRes.strings.travel_time_hours_pattern to listOf(hours)
             else -> SharedRes.strings.travel_time_hours_minutes_pattern to listOf(hours, minutes)
         }
+    }
+
+    private fun Duration.roundUpToMinutes(): Long {
+        val totalSeconds = inWholeSeconds
+        return if (totalSeconds == 0L) 0L else (totalSeconds + 59) / 60
     }
 }

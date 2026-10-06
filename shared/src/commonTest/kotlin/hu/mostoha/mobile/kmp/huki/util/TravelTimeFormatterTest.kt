@@ -4,10 +4,27 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class TravelTimeFormatterTest {
+
+    @Test
+    fun `Given travel times - When formatting compact - Then hours and zero padded minutes are shown`() {
+        listOf(
+            0.minutes to "0:00",
+            45.minutes to "0:45",
+            (7.hours + 5.minutes) to "7:05",
+            (18.hours + 50.minutes) to "18:50",
+            (344.hours + 40.minutes) to "344:40",
+            (2.hours + 1.seconds) to "2:01",
+        ).forEach { (input, result) ->
+            val actual = TravelTimeFormatter.formatTravelTimeCompact(input)
+
+            actual shouldBe result
+        }
+    }
 
     @Test
     fun `Given sub hour travel time in english - When formatting - Then time is shown with hour minute suffixes`() {

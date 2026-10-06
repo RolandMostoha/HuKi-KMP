@@ -26,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
@@ -48,6 +49,7 @@ val iosPlatformModule = module {
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
         )
     }
+    single<BundledFileReader> { BundledFileReader { file -> file.readText() } }
     single<RoomDatabase.Builder<HukiDatabase>> {
         Room.databaseBuilder<HukiDatabase>(name = documentDirectoryPath() + "/${HukiDatabase.DATABASE_NAME}")
     }
