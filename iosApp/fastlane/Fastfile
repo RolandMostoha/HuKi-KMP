@@ -32,7 +32,8 @@ platform :ios do
     upload_to_testflight(
       api_key: api_key,
       groups: ["Friends and Family"],
-      distribute_external: false
+      distribute_external: false,
+      submit_beta_review: false
     )
     upload_crashlytics_symbols
   end
