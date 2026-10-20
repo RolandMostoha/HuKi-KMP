@@ -70,8 +70,7 @@ struct DestinationInfoWindowView: View {
     DestinationInfoWindowView(
         strings: Strings(),
         destination: Destination(
-            osmId: "1",
-            relId: nil,
+            id: "1",
             name: "Fátyol-vízesés",
             town: "Szilvásvárad",
             type: .river,

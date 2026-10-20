@@ -3,8 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 import dev.icerock.moko.resources.StringResource
 
 data class Destination(
-    val osmId: String,
-    val relId: String? = null,
+    val id: String,
     val name: String,
     val town: String,
     val type: DestinationType,

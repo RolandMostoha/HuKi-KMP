@@ -6,6 +6,7 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.platformLogWriter
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
+import hu.mostoha.mobile.kmp.huki.database.migration.Migration1To2
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxcollection.GpxCollectionViewModel
 import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideViewModel
@@ -66,6 +67,7 @@ val appModule = module {
     single {
         get<RoomDatabase.Builder<HukiDatabase>>()
             .setDriver(BundledSQLiteDriver())
+            .addMigrations(Migration1To2)
             .setQueryCoroutineContext(Dispatchers.IO)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()

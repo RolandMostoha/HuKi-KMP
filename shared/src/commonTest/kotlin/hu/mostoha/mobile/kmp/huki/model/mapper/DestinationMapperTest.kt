@@ -16,7 +16,7 @@ class DestinationMapperTest {
     @Test
     fun `Given destination - When toPlace - Then osmType is NODE and address is town`() {
         val destination = Destination(
-            osmId = "456",
+            id = "456",
             name = "Kékestető",
             town = "Mátraszentimre",
             type = DestinationType.PEAK,

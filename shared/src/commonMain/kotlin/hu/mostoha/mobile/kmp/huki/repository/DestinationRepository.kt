@@ -38,7 +38,7 @@ interface DestinationRepository {
 
     fun searchDestinations(query: String, limit: Int): List<Destination>
 
-    fun requireDestination(osmId: String): Destination
+    fun requireDestination(id: String): Destination
 
     fun getLandscapes(): List<Landscape>
 

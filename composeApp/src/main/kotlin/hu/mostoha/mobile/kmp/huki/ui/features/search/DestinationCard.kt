@@ -229,7 +229,7 @@ private fun DestinationCardPreview() {
 }
 
 private val previewDestination = Destination(
-    osmId = "1",
+    id = "1",
     name = "Dobogókő",
     town = "Pilisszentkereszt",
     type = DestinationType.PEAK,

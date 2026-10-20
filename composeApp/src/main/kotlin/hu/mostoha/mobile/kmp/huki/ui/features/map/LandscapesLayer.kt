@@ -113,16 +113,16 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
         LandscapeOutlineLayers(landscapes = landscapes, onEvent = onEvent)
     }
     landscapes.destinations.forEach { destination ->
-        key(destination.osmId) {
+        key(destination.id) {
             DestinationMarkerAnnotation(
                 destination = destination,
-                isSelected = destination.osmId == landscapes.selectedDestinationId,
+                isSelected = destination.id == landscapes.selectedDestinationId,
                 onClick = { onEvent(LandscapesUiEvents.LandscapesDestinationClicked(destination)) },
             )
         }
     }
     landscapes.selectedDestination?.let { destination ->
-        key(destination.osmId) {
+        key(destination.id) {
             val offsetY = with(LocalDensity.current) {
                 (Dimens.DestinationSelectedMarkerSize / 2 + Dimens.InfoWindowMarkerPadding).toPx().toDouble()
             }

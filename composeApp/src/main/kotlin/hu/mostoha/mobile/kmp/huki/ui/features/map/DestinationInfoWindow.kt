@@ -126,7 +126,7 @@ private fun DestinationInfoWindowPreview() {
     HuKiTheme {
         DestinationInfoWindow(
             destination = Destination(
-                osmId = "1",
+                id = "1",
                 name = "Fátyol-vízesés",
                 town = "Szilvásvárad",
                 type = DestinationType.RIVER,

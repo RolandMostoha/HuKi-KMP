@@ -121,8 +121,8 @@ struct LandscapesMapContent: MapContent {
                     .lineEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
             }
         }
-        ForEvery(landscapes.destinations, id: \.osmId) { destination in
-            let isSelected = destination.osmId == landscapes.selectedDestinationId
+        ForEvery(landscapes.destinations, id: \.id) { destination in
+            let isSelected = destination.id == landscapes.selectedDestinationId
             MapViewAnnotation(coordinate: destination.location.coordinate) {
                 DestinationMarkerView(type: destination.type, isSelected: isSelected)
                     .onTapGesture {

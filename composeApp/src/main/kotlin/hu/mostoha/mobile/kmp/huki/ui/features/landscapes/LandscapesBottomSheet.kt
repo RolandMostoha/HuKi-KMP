@@ -377,7 +377,7 @@ private fun LandscapesBottomSheetPreview() {
                 labelsGeoJson = "",
                 hungaryMaskGeoJson = "",
                 selectedLandscapeId = landscape.id,
-                selectedDestinationId = PreviewLandscapeDestination.osmId,
+                selectedDestinationId = PreviewLandscapeDestination.id,
             ),
             sheetHeights = LandscapesSheetHeights(collapsed = 360.dp, expanded = 360.dp, isExpandable = true),
             onLandscapeClick = {},

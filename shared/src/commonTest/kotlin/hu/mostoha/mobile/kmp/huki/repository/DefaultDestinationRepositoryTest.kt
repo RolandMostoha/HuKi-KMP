@@ -32,8 +32,8 @@ class DefaultDestinationRepositoryTest {
         val lookouts = repository.getDestinationsByType(DestinationType.LOOKOUT)
         val arboretums = repository.getDestinationsByType(DestinationType.ARBORETUM).map { it.name }
 
-        lookouts.map { it.osmId } shouldContain "balatonboglar_gombkilato"
-        lookouts.map { it.osmId }.contains("doba_somlo_kilato") shouldBe false
+        lookouts.map { it.id } shouldContain "balatonboglar_gombkilato"
+        lookouts.map { it.id }.contains("doba_somlo_kilato") shouldBe false
         lookouts.all { it.type == DestinationType.LOOKOUT } shouldBe true
         arboretums.contains("Deseda-tó és parkerdő") shouldBe false
     }
@@ -118,7 +118,7 @@ class DefaultDestinationRepositoryTest {
         val actual = repository.getTopDestinations()
 
         actual.size shouldBe 20
-        actual.map { it.osmId }.toSet().size shouldBe 20
+        actual.map { it.id }.toSet().size shouldBe 20
         ALL_DESTINATIONS shouldContainAll actual
     }
 
@@ -211,18 +211,18 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given an existing osmId - When requireDestination - Then the matching destination is returned`() {
+    fun `Given an existing id - When requireDestination - Then the matching destination is returned`() {
         val expected = ALL_DESTINATIONS.first()
 
-        val actual = repository.requireDestination(expected.osmId)
+        val actual = repository.requireDestination(expected.id)
 
         actual shouldBe expected
     }
 
     @Test
-    fun `Given an unknown osmId - When requireDestination - Then NoSuchElementException is thrown`() {
+    fun `Given an unknown id - When requireDestination - Then NoSuchElementException is thrown`() {
         shouldThrow<NoSuchElementException> {
-            repository.requireDestination("unknown_osm_id")
+            repository.requireDestination("unknown_id")
         }
     }
 

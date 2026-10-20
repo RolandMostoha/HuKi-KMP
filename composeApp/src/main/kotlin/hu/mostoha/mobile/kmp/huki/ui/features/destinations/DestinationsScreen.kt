@@ -451,7 +451,7 @@ private fun DestinationsContentPreview() {
                 destinationCount = 2,
                 popularItems = listOf(
                     DestinationListItem(previewDestination),
-                    DestinationListItem(previewDestination.copy(osmId = "2", name = "Pilis-tető")),
+                    DestinationListItem(previewDestination.copy(id = "2", name = "Pilis-tető")),
                 ),
             ),
             uiEffects = emptyFlow(),
@@ -462,7 +462,7 @@ private fun DestinationsContentPreview() {
 }
 
 private val previewDestination = Destination(
-    osmId = "1",
+    id = "1",
     name = "Dobogókő",
     town = "Pilisszentkereszt",
     type = DestinationType.PEAK,

@@ -180,7 +180,7 @@ private fun DestinationCarousel(
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(selectedDestinationId) {
-        val index = destinations.indexOfFirst { it.osmId == selectedDestinationId }
+        val index = destinations.indexOfFirst { it.id == selectedDestinationId }
         if (index >= 0) {
             listState.animateScrollToItem(index)
         }
@@ -190,10 +190,10 @@ private fun DestinationCarousel(
         contentPadding = PaddingValues(horizontal = RowPadding),
         horizontalArrangement = Arrangement.spacedBy(Dimens.SmallMedium),
     ) {
-        items(destinations, key = { it.osmId }) { destination ->
+        items(destinations, key = { it.id }) { destination ->
             LandscapeDestinationCard(
                 destination = destination,
-                isSelected = destination.osmId == selectedDestinationId,
+                isSelected = destination.id == selectedDestinationId,
                 onClick = { onDestinationClick(destination) },
             )
         }
@@ -214,10 +214,10 @@ private fun DestinationGroupRowPreview() {
                 destinationCount = 2,
                 destinations = listOf(
                     PreviewLandscapeDestination,
-                    PreviewLandscapeDestination.copy(osmId = "2", name = "Galya-tető"),
+                    PreviewLandscapeDestination.copy(id = "2", name = "Galya-tető"),
                 ),
                 isSelected = true,
-                selectedDestinationId = PreviewLandscapeDestination.osmId,
+                selectedDestinationId = PreviewLandscapeDestination.id,
                 onClick = {},
                 onDestinationClick = {},
             )

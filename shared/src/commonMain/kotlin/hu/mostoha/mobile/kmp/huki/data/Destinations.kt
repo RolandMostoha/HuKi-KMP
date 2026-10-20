@@ -8,7 +8,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 
 val DESTINATIONS_BUKK = listOf(
     Destination(
-        osmId = "1158963147",
+        id = "szilvasvarad_fatyol_vizeses",
         location = Location(48.0760136, 20.4103492),
         description = SharedRes.strings.bukk_fatyol_vizeses,
         name = "Fátyol-vízesés",
@@ -17,7 +17,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1940001559",
+        id = "lillafured_szent_istvan_barlang",
         location = Location(48.0997102, 20.6213535),
         description = SharedRes.strings.bukk_szent_istvan_barlang,
         name = "Szent István-barlang",
@@ -26,7 +26,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "9600712",
+        id = "lillafured_szinva_vizeses",
         location = Location(48.0951460, 20.7134926),
         description = SharedRes.strings.bukk_szinva_vizeses,
         name = "Szinva-vízesés",
@@ -35,7 +35,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "23016069",
+        id = "lillafured_hamori_to",
         location = Location(48.1078751, 20.6158952),
         description = SharedRes.strings.bukk_hamori_to,
         name = "Hámori-tó",
@@ -44,7 +44,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1940001563",
+        id = "lillafured_anna_barlang",
         location = Location(48.1050648, 20.6249637),
         description = SharedRes.strings.bukk_anna_barlang,
         name = "Anna-barlang",
@@ -53,7 +53,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "2958587525",
+        id = "repashuta_harom_ko",
         location = Location(48.0602517, 20.4733218),
         description = SharedRes.strings.bukk_harom_ko,
         name = "Három-kő",
@@ -63,7 +63,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "2958587526",
+        id = "repashuta_tar_ko",
         location = Location(48.0571011, 20.4612048),
         description = SharedRes.strings.bukk_tar_ko,
         name = "Tar-kő",
@@ -73,7 +73,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "3149664797",
+        id = "belapatfalva_bel_ko",
         location = Location(48.0459197, 20.3832116),
         description = SharedRes.strings.bukk_bel_ko,
         name = "Bél-kő",
@@ -83,7 +83,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "3150878912",
+        id = "szilvasvarad_szalajka_volgy",
         location = Location(48.0900063, 20.4021312),
         description = SharedRes.strings.bukk_szalajka_volgy,
         name = "Szalajka-völgy",
@@ -92,7 +92,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 10,
     ),
     Destination(
-        osmId = "3192010011",
+        id = "lillafured_szeleta_barlang",
         location = Location(48.1082032, 20.6316211),
         description = SharedRes.strings.bukk_szeleta_barlang,
         name = "Szeleta-barlang",
@@ -101,7 +101,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "3437751040",
+        id = "repashuta_balla_barlang",
         location = Location(48.0461757, 20.5309224),
         description = SharedRes.strings.bukk_balla_barlang,
         name = "Balla-barlang",
@@ -110,7 +110,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "3445462419",
+        id = "cserepfalu_hor_volgy",
         location = Location(48.0199530, 20.5385330),
         description = SharedRes.strings.bukk_hor_volgy,
         name = "Hór-völgy",
@@ -119,7 +119,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "2974756570",
+        id = "szarvasko_vara",
         location = Location(47.9670, 20.3732),
         description = SharedRes.strings.bukk_szarvasko_var,
         name = "Szarvaskő vára",
@@ -128,7 +128,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "3445462431",
+        id = "cserepvaralja_kaptarkovek",
         location = Location(47.9595970, 20.5463420),
         description = SharedRes.strings.bukk_kaptar_kovek,
         name = "Kaptárkövek",
@@ -137,7 +137,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "10598868471",
+        id = "felsotarkany_to",
         location = Location(47.981795, 20.434746),
         description = SharedRes.strings.bukk_tarkanyi_to,
         name = "Felsőtárkányi-tó",
@@ -146,7 +146,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3035431322",
+        id = "cserepfalu_suba_lyuk_ordogtorony",
         location = Location(47.9610985, 20.5304855),
         description = SharedRes.strings.bukk_suba_lyuk_ordogtorony,
         name = "Suba-lyuk, Ördögtorony",
@@ -155,7 +155,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3445463324",
+        id = "szomolya_kaptarkovek",
         location = Location(47.8905000, 20.4935220),
         description = SharedRes.strings.bukk_szomolyai_kaptarkovek,
         name = "Szomolyai kaptárkövek",
@@ -164,7 +164,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "295701588",
+        id = "bankut_nagymezo",
         location = Location(48.07789, 20.49783),
         description = SharedRes.strings.bukk_nagymezo,
         name = "Nagymező",
@@ -173,7 +173,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "2656041890",
+        id = "cserepfalu_szilvasi_ko",
         location = Location(48.0710308, 20.4349082),
         description = SharedRes.strings.bukk_szilvasko,
         name = "Szilvási-kő",
@@ -183,7 +183,7 @@ val DESTINATIONS_BUKK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "repashuta_bukki_csillagda",
+        id = "repashuta_bukki_csillagda",
         name = "Bükki Csillagda",
         town = "Répáshuta",
         type = DestinationType.OBSERVATORY,
@@ -192,7 +192,7 @@ val DESTINATIONS_BUKK = listOf(
         description = SharedRes.strings.bukk_csillagda,
     ),
     Destination(
-        osmId = "dedestapolcsany_dedesi_var",
+        id = "dedestapolcsany_dedesi_var",
         name = "Dédesi vár",
         town = "Dédestapolcsány",
         type = DestinationType.CASTLE_RUIN,
@@ -202,7 +202,7 @@ val DESTINATIONS_BUKK = listOf(
         description = SharedRes.strings.bukk_dedesi_var,
     ),
     Destination(
-        osmId = "felsotarkany_erdei_vasut",
+        id = "felsotarkany_erdei_vasut",
         name = "Felsőtárkányi Állami Erdei Vasút",
         town = "Felsőtárkány",
         type = DestinationType.SCENIC_RAILWAY,
@@ -211,7 +211,7 @@ val DESTINATIONS_BUKK = listOf(
         description = SharedRes.strings.bukk_felsotarkanyi_erdei_vasut,
     ),
     Destination(
-        osmId = "miskolc_lillafuredi_erdei_vasut",
+        id = "miskolc_lillafuredi_erdei_vasut",
         name = "Lillafüredi Állami Erdei Vasút",
         town = "Miskolc",
         type = DestinationType.SCENIC_RAILWAY,
@@ -220,7 +220,7 @@ val DESTINATIONS_BUKK = listOf(
         description = SharedRes.strings.bukk_lillafuredi_erdei_vasut,
     ),
     Destination(
-        osmId = "szilvasvarad_erdei_vasut",
+        id = "szilvasvarad_erdei_vasut",
         name = "Szilvásváradi Állami Erdei Vasút",
         town = "Szilvásvárad",
         type = DestinationType.SCENIC_RAILWAY,
@@ -229,7 +229,7 @@ val DESTINATIONS_BUKK = listOf(
         description = SharedRes.strings.bukk_szilvasvaradi_erdei_vasut,
     ),
     Destination(
-        osmId = "szilvasvarad_bobpalya",
+        id = "szilvasvarad_bobpalya",
         name = "Szilvásváradi bobpálya",
         town = "Szilvásvárad",
         type = DestinationType.ADVENTURE_PARK,
@@ -242,7 +242,7 @@ val DESTINATIONS_BUKK = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_MATRA = listOf(
     Destination(
-        osmId = "26863355",
+        id = "gyongyos_kekesteto",
         location = Location(47.8726029, 20.0079794),
         description = SharedRes.strings.matra_kekesteto,
         name = "Kékestető",
@@ -252,7 +252,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 10,
     ),
     Destination(
-        osmId = "3934099936",
+        id = "matraszentimre_galyateto",
         location = Location(47.9173099, 19.9221926),
         description = SharedRes.strings.matra_galyateto,
         name = "Galyatető",
@@ -262,7 +262,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "301197901",
+        id = "paradfurdo_ilona_volgy_es_vizeses",
         location = Location(47.896550, 20.056711),
         description = SharedRes.strings.matra_ilona_volgy,
         name = "Ilona-völgy és vízesés",
@@ -271,7 +271,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "166545871",
+        id = "sirok_var",
         location = Location(47.939081, 20.195765),
         description = SharedRes.strings.matra_siroki_var,
         name = "Siroki vár",
@@ -280,7 +280,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "290740034",
+        id = "apc_tengerszem",
         location = Location(47.812747, 19.713842),
         description = SharedRes.strings.matra_apci_tengerszem,
         name = "Apci tengerszem",
@@ -289,7 +289,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "26539968",
+        id = "matrafured_sas_to",
         location = Location(47.843990, 19.956847),
         description = SharedRes.strings.matra_sas_to,
         name = "Sás-tó",
@@ -298,7 +298,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "587932542",
+        id = "paradsasvar_szakadas_arok",
         location = Location(47.94985, 19.78037),
         description = SharedRes.strings.matra_szakadas_arok,
         name = "Szakadás-árok",
@@ -307,7 +307,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "8083684750",
+        id = "gyongyos_sas_ko",
         location = Location(47.8736133, 20.0303791),
         description = SharedRes.strings.matra_sas_ko,
         name = "Sas-kő",
@@ -317,7 +317,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "2987606409",
+        id = "gyongyos_diszno_ko",
         location = Location(47.8787758, 20.0405544),
         description = SharedRes.strings.matra_disznoko,
         name = "Disznó-kő",
@@ -327,7 +327,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "955768424",
+        id = "matraszentistvan_agasvar",
         location = Location(47.9265605, 19.8274642),
         description = SharedRes.strings.matra_agasvar,
         name = "Ágasvár",
@@ -337,7 +337,7 @@ val DESTINATIONS_MATRA = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "kisnana_var",
+        id = "kisnana_var",
         name = "Kisnánai vár",
         town = "Kisnána",
         type = DestinationType.CASTLE_RUIN,
@@ -346,7 +346,7 @@ val DESTINATIONS_MATRA = listOf(
         description = SharedRes.strings.matra_kisnanai_var,
     ),
     Destination(
-        osmId = "gyongyos_matravasut",
+        id = "gyongyos_matravasut",
         name = "Mátravasút",
         town = "Gyöngyös",
         type = DestinationType.SCENIC_RAILWAY,
@@ -355,7 +355,7 @@ val DESTINATIONS_MATRA = listOf(
         description = SharedRes.strings.matra_matravasut,
     ),
     Destination(
-        osmId = "matrafured_oxygen_adrenalin_park",
+        id = "matrafured_oxygen_adrenalin_park",
         name = "Oxygen Adrenalin Park",
         town = "Mátrafüred",
         type = DestinationType.ADVENTURE_PARK,
@@ -368,7 +368,7 @@ val DESTINATIONS_MATRA = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_HEVES = listOf(
     Destination(
-        osmId = "2207863039",
+        id = "dedestapolcsany_szalamandra_tanosveny",
         location = Location(48.1943720, 20.4738255),
         description = SharedRes.strings.heves_szalamandra_tanosveny,
         name = "Szalamandra tanösvény",
@@ -377,7 +377,7 @@ val DESTINATIONS_HEVES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "3110163226",
+        id = "matraverebely_szentkut",
         location = Location(47.9987907, 19.7718107),
         description = SharedRes.strings.heves_szentkut,
         name = "Szentkút",
@@ -386,7 +386,7 @@ val DESTINATIONS_HEVES = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "5044744072",
+        id = "bukkszenterzsebet_nagy_ko",
         name = "Nagy-kő",
         town = "Bükkszenterzsébet",
         location = Location(48.0750149, 20.1458159),
@@ -396,7 +396,7 @@ val DESTINATIONS_HEVES = listOf(
         description = SharedRes.strings.heves_nagy_ko,
     ),
     Destination(
-        osmId = "1263920822",
+        id = "jardanhaza_gyepes_volgy",
         name = "Gyepes-völgy",
         town = "Járdánháza",
         type = DestinationType.VALLEY,
@@ -405,7 +405,7 @@ val DESTINATIONS_HEVES = listOf(
         description = SharedRes.strings.heves_gyepes_volgy,
     ),
     Destination(
-        osmId = "7727788",
+        id = "hangony_to",
         name = "Hangonyi-tó",
         town = "Hangony",
         type = DestinationType.LAKE,
@@ -414,7 +414,7 @@ val DESTINATIONS_HEVES = listOf(
         description = SharedRes.strings.heves_hangonyi_to,
     ),
     Destination(
-        osmId = "2334890521",
+        id = "banhorvati_harom_berc",
         location = Location(48.2291667, 20.4575000),
         description = SharedRes.strings.heves_harom_berc,
         name = "Három Bérc",
@@ -423,7 +423,7 @@ val DESTINATIONS_HEVES = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "313109365",
+        id = "matraverebely_szent_laszlo_hasadek",
         location = Location(48.0039415, 19.7584346),
         name = "Szent László-hasadék",
         town = "Mátraverebély",
@@ -432,7 +432,7 @@ val DESTINATIONS_HEVES = listOf(
         description = SharedRes.strings.paloc_szent_laszlo_hasadek,
     ),
     Destination(
-        osmId = "11490575",
+        id = "edeleny_kastelysziget",
         location = Location(48.293201, 20.739387),
         description = SharedRes.strings.heves_edenyi_kastelysziget,
         name = "Edelényi Kastélysziget",
@@ -445,7 +445,7 @@ val DESTINATIONS_HEVES = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_AGGTELEK = listOf(
     Destination(
-        osmId = "982610639",
+        id = "aggtelek_baradla_barlang",
         location = Location(48.4845163, 20.5393967),
         description = SharedRes.strings.aggtelek_baradla_barlang,
         name = "Baradla-barlang",
@@ -454,7 +454,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "6319332899",
+        id = "aggtelek_vorosto_barlang",
         location = Location(48.472439, 20.538611),
         description = SharedRes.strings.aggtelek_vorosto_barlang,
         name = "Vöröstó-barlang",
@@ -463,7 +463,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "981545472",
+        id = "josvafo_vass_imre_barlang",
         location = Location(48.4979658, 20.5367921),
         description = SharedRes.strings.aggtelek_vass_imre_barlang,
         name = "Vass Imre-barlang",
@@ -472,7 +472,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "232379657",
+        id = "aggtelek_to",
         location = Location(48.469914, 20.510740),
         description = SharedRes.strings.aggtelek_agteleki_to,
         name = "Aggteleki-tó",
@@ -481,7 +481,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "84484160",
+        id = "josvafo_tengerszem",
         location = Location(48.483138, 20.544640),
         description = SharedRes.strings.aggtelek_tengerszem_to,
         name = "Tengerszem",
@@ -490,7 +490,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "4129795146",
+        id = "szogliget_szadvar",
         location = Location(48.5444066, 20.6625134),
         description = SharedRes.strings.aggtelek_szadvar,
         name = "Szádvár",
@@ -499,7 +499,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "354945036",
+        id = "josvafo_volgy",
         location = Location(48.4823840, 20.5525283),
         description = SharedRes.strings.aggtelek_josva_volgy,
         name = "Jósvafői-völgy",
@@ -508,7 +508,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "593340447",
+        id = "szadelo_volgy",
         location = Location(48.6145835, 20.8325243),
         description = SharedRes.strings.aggtelek_szadelo_volgy,
         name = "Szádelői-völgy",
@@ -517,7 +517,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "372339980",
+        id = "tornaszentandras_templom",
         location = Location(48.518056, 20.779663),
         description = SharedRes.strings.aggtelek_tornaszentandras_templom,
         name = "Tornaszentandrási templom",
@@ -526,7 +526,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "6229900",
+        id = "rudabanya_to",
         location = Location(48.393201, 20.637056),
         description = SharedRes.strings.aggtelek_rudabanyai_to,
         name = "Rudabányai-tó",
@@ -535,7 +535,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "13608762370",
+        id = "bodvarako_esztramos_hegy",
         location = Location(48.5172130, 20.7476808),
         description = SharedRes.strings.aggtelek_esztramos_hegy,
         name = "Esztramos-hegy",
@@ -544,7 +544,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "498372834",
+        id = "martonyi_palos_kolostorrom",
         location = Location(48.485222, 20.734495),
         description = SharedRes.strings.aggtelek_martonyi_palos_kolostor,
         name = "Martonyi pálos kolostorrom",
@@ -553,7 +553,7 @@ val DESTINATIONS_AGGTELEK = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "szalonna_rakacai_viztarozo",
+        id = "szalonna_rakacai_viztarozo",
         name = "Rakacai-víztározó",
         town = "Szalonna",
         type = DestinationType.LAKE,
@@ -567,7 +567,7 @@ val DESTINATIONS_AGGTELEK = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_KARANCS_MEDVES = listOf(
     Destination(
-        osmId = "114694508",
+        id = "somosko_vara",
         location = Location(48.171477, 19.857021),
         description = SharedRes.strings.karancs_medves_somosko_var,
         name = "Somoskő vára",
@@ -576,7 +576,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "333423710",
+        id = "salgotarjan_salgo_vara",
         location = Location(48.144679, 19.847074),
         description = SharedRes.strings.karancs_medves_salgovar,
         name = "Salgó vára",
@@ -585,7 +585,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "salgotarjan_boszorkany_ko",
+        id = "salgotarjan_boszorkany_ko",
         name = "Boszorkány-kő",
         town = "Salgótarján–Salgóbánya",
         type = DestinationType.ROCK,
@@ -595,7 +595,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_boszorkany_ko,
     ),
     Destination(
-        osmId = "5643816578",
+        id = "salgotarjan_medves_fennsik",
         location = Location(48.1560805, 19.8781300),
         description = SharedRes.strings.karancs_medves_medves_fennsik,
         name = "Medves-fennsík",
@@ -604,7 +604,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "457332410",
+        id = "karancslapujto_karancs",
         location = Location(48.1582495, 19.7896803),
         description = SharedRes.strings.karancs_medves_karancs,
         name = "Karancs",
@@ -614,7 +614,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "3629769006",
+        id = "salgotarjan_macskako",
         location = Location(48.1246166, 19.8743214),
         description = SharedRes.strings.karancs_medves_macskako,
         name = "Macskakő",
@@ -623,7 +623,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "salgotarjan_szilvas_ko",
+        id = "salgotarjan_szilvas_ko",
         name = "Szilvás-kői geológiai tanösvény",
         town = "Salgótarján–Rónabánya",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -632,7 +632,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_szilvas_ko_tanosveny,
     ),
     Destination(
-        osmId = "548621440",
+        id = "salgotarjan_baglyasko",
         location = Location(48.108730, 19.789746),
         description = SharedRes.strings.karancs_medves_baglyasko,
         name = "Baglyaskő",
@@ -641,7 +641,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "615210495",
+        id = "kazar_riolittufa",
         location = Location(48.0583285, 19.8743397),
         name = "Kazár, Riolittufa",
         town = "Kazár",
@@ -650,7 +650,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_kazar_riolittufa,
     ),
     Destination(
-        osmId = "ipolytarnoc_osmaradvanyok",
+        id = "ipolytarnoc_osmaradvanyok",
         name = "Ipolytarnóci Ősmaradványok",
         town = "Ipolytarnóc",
         type = DestinationType.GEOLOGICAL_SITE,
@@ -659,7 +659,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_ipolytarnoci_osmaradvanyok,
     ),
     Destination(
-        osmId = "339224931",
+        id = "bukkabrany_osfenyok",
         location = Location(48.2322198, 19.6518717),
         name = "Bükkábrányi ősfenyők",
         town = "Bükkábrány",
@@ -668,7 +668,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_bukkabranyi_osfenyok,
     ),
     Destination(
-        osmId = "nogradszakal_paris_szurdok",
+        id = "nogradszakal_paris_szurdok",
         name = "Páris-patak szurdokvölgye",
         town = "Nógrádszakál",
         type = DestinationType.GORGE,
@@ -677,7 +677,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         description = SharedRes.strings.karancs_medves_paris_szurdok,
     ),
     Destination(
-        osmId = "3681349356",
+        id = "kishartyan_kolyuk",
         location = Location(48.0774060, 19.7100689),
         name = "Kőlyuk",
         town = "Kishartyán",
@@ -689,7 +689,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
 
 val DESTINATIONS_ZEMPLEN = listOf(
     Destination(
-        osmId = "195638075",
+        id = "sarospatak_megyer_hegyi_tengerszem",
         location = Location(48.357247, 21.572852),
         description = SharedRes.strings.zemplen_megyer_hegyi_tengerszem,
         name = "Megyer-hegyi Tengerszem",
@@ -698,7 +698,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "3469932242",
+        id = "tarcal_aldo_krisztus_szobor",
         location = Location(48.1269035, 21.3544100),
         description = SharedRes.strings.zemplen_tarcal_krisztus,
         name = "Áldó Krisztus szobor",
@@ -707,7 +707,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "10956921002",
+        id = "tokaj_kopasz_hegy",
         location = Location(48.1202278, 21.3817809),
         description = SharedRes.strings.zemplen_tokaji_kopasz_hegy,
         name = "Tokaji Kopasz-hegy",
@@ -716,7 +716,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "336056240",
+        id = "hercegkut_gombos_hegyi_kilato",
         location = Location(48.3289944, 21.5382462),
         description = SharedRes.strings.zemplen_gombos_hegyi_kilato,
         name = "Gombos-hegyi kilátó",
@@ -725,7 +725,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "18124569",
+        id = "sarospatak_rakoczi_var",
         location = Location(48.315564, 21.568898),
         description = SharedRes.strings.zemplen_sarospatak_var,
         name = "Rákóczi-vár",
@@ -734,7 +734,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "360207514",
+        id = "regec_var",
         location = Location(48.378584, 21.344274),
         description = SharedRes.strings.zemplen_regeci_var,
         name = "Regéci vár",
@@ -743,7 +743,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "3212847633",
+        id = "regec_solyom_berc",
         location = Location(48.3981619, 21.4044519),
         description = SharedRes.strings.zemplen_solyom_berc,
         name = "Sólyom-bérc",
@@ -753,7 +753,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "615510962",
+        id = "fuzer_nagy_milic",
         location = Location(48.5767710, 21.4581222),
         description = SharedRes.strings.zemplen_nagy_milic,
         name = "Nagy-Milic",
@@ -763,7 +763,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 1,
     ),
     Destination(
-        osmId = "207114467",
+        id = "fuzer_var",
         location = Location(48.541930, 21.459383),
         description = SharedRes.strings.zemplen_fuzeri_var,
         name = "Füzéri vár",
@@ -772,7 +772,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "3456414552",
+        id = "fuzer_kis_milic",
         location = Location(48.5733690, 21.4606020),
         description = SharedRes.strings.zemplen_kis_milic,
         name = "Kis-Milic",
@@ -782,7 +782,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 2,
     ),
     Destination(
-        osmId = "5966499159",
+        id = "satoraljaujhely_szar_hegy_es_fuggohid",
         location = Location(48.3921698, 21.6354297),
         description = SharedRes.strings.zemplen_sar_hegy_fuggohid,
         name = "Szár-hegy és függőhíd",
@@ -791,7 +791,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "1280991",
+        id = "boldogkovaralja",
         location = Location(48.3382138, 21.2378103),
         name = "Boldogkőváralja",
         town = "Boldogkőváralja",
@@ -800,7 +800,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         description = SharedRes.strings.zemplen_boldogkovaralja,
     ),
     Destination(
-        osmId = "palhaza_erdei_vasut",
+        id = "palhaza_erdei_vasut",
         name = "Pálházi Állami Erdei Vasút",
         town = "Pálháza",
         type = DestinationType.SCENIC_RAILWAY,
@@ -809,7 +809,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
         description = SharedRes.strings.zemplen_palhazi_erdei_vasut,
     ),
     Destination(
-        osmId = "satoraljaujhely_zemplen_kalandpark",
+        id = "satoraljaujhely_zemplen_kalandpark",
         name = "Zemplén Kalandpark",
         town = "Sátoraljaújhely",
         type = DestinationType.ADVENTURE_PARK,
@@ -822,8 +822,7 @@ val DESTINATIONS_ZEMPLEN = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_HORTOBAGY = listOf(
     Destination(
-        osmId = "1325195465",
-        relId = "5362813",
+        id = "tiszaorveny_tiszavirag_tanosveny",
         location = Location(47.6061225, 20.7109532),
         description = SharedRes.strings.hortobagy_tiszavirag_tanosveny,
         name = "Tiszavirág Tanösvény",
@@ -832,7 +831,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "289249778",
+        id = "poroszlo_tisza_tavi_okocentrum",
         location = Location(47.645423, 20.660294),
         description = SharedRes.strings.hortobagy_tisza_tavi_okocentrum,
         name = "Tisza-tavi Ökocentrum",
@@ -842,7 +841,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 10,
     ),
     Destination(
-        osmId = "1601159552",
+        id = "hortobagy_vadaspark",
         location = Location(47.5523529, 21.1363850),
         description = SharedRes.strings.hortobagy_vadaspark,
         name = "Hortobágyi Vadaspark",
@@ -851,7 +850,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "632223618",
+        id = "hortobagy_halastavak",
         location = Location(47.605532, 21.071681),
         description = SharedRes.strings.hortobagy_halastavak,
         name = "Hortobágyi halastavak",
@@ -861,7 +860,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "1167858907",
+        id = "hortobagy_pusztai_allatpark",
         location = Location(47.5731710, 21.1437117),
         description = SharedRes.strings.hortobagy_pusztai_allatpark,
         name = "Pusztai Állatpark",
@@ -870,7 +869,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "2858952175",
+        id = "tiszavalk_medence_madarrezervatum",
         location = Location(47.6576842, 20.7002896),
         description = SharedRes.strings.hortobagy_tiszavalki_madarrezervatum,
         name = "Tiszavalki-medence, Madárrezervátum",
@@ -880,7 +879,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "5970159574",
+        id = "kocsujfalu_csillagosegbolt_park",
         location = Location(47.6576842, 20.7002896),
         description = SharedRes.strings.hortobagy_csillagosegbolt_park,
         name = "Csillagoségbolt-Park",
@@ -889,7 +888,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "poroszlo_vizi_setany",
+        id = "poroszlo_vizi_setany",
         name = "Tisza-tavi Vízi Sétány – kikötő",
         town = "Poroszló",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -903,8 +902,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_ALFOLD = listOf(
     Destination(
-        osmId = "3586527987",
-        relId = "15258734",
+        id = "szeged_siraly_tanosveny",
         location = Location(46.3337500, 20.0661000),
         description = SharedRes.strings.alfold_siraly_tanosveny,
         name = "Sirály tanösvény",
@@ -914,7 +912,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "249914845",
+        id = "opusztaszer_csillagosveny_elmenypark",
         location = Location(46.485267, 20.085510),
         description = SharedRes.strings.alfold_csillagosveny_elmenypark,
         name = "Csillagösvény Élménypark",
@@ -923,7 +921,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "697522694",
+        id = "opusztaszer_nemzeti_torteneti_emlekpark",
         location = Location(46.60895, 21.083871),
         description = SharedRes.strings.alfold_opusztaszer_emlekpark,
         name = "Nemzeti Történeti Emlékpark",
@@ -932,7 +930,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "362078639",
+        id = "szabadkigyos_wenckheim_kastely",
         location = Location(46.6089500, 21.0838714),
         description = SharedRes.strings.alfold_wenckheim_kastely_szabadkigyos,
         name = "Wenckheim-kastély",
@@ -941,7 +939,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "24775905",
+        id = "szarvas_arboretum",
         location = Location(46.8789337, 20.5336605),
         description = SharedRes.strings.alfold_szarvasi_arboretum,
         name = "Szarvasi Arborétum",
@@ -950,7 +948,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "990273582",
+        id = "szarvas_korosvolgyi_latogatokozpont_es_allatpark",
         location = Location(46.8575016, 20.5267000),
         description = SharedRes.strings.alfold_korosvolgyi_latogatokozpont,
         name = "Körösvölgyi Látogatóközpont és Állatpark",
@@ -959,7 +957,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "412054712",
+        id = "gyula_almasy_kastely",
         location = Location(46.6444721, 21.2836411),
         description = SharedRes.strings.alfold_gyula_almasy_kastely,
         name = "Almásy-kastély",
@@ -968,7 +966,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "296478269",
+        id = "csongrad_koros_torok",
         location = Location(46.7159415, 20.1862772),
         description = SharedRes.strings.alfold_koros_torok,
         name = "Körös-torok",
@@ -977,7 +975,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "3487655367",
+        id = "mako_lombkorona_setany",
         location = Location(46.1997383, 20.4655268),
         description = SharedRes.strings.alfold_makoi_lombkorona_setany,
         name = "Makói lombkorona sétány",
@@ -986,7 +984,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "8996360922",
+        id = "morahalom_ezer_ev_parkja",
         location = Location(46.2218796, 19.9030468),
         description = SharedRes.strings.alfold_ezer_ev_parkja,
         name = "Ezer Év Parkja",
@@ -995,7 +993,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "fulophaza_baranypirosito",
+        id = "fulophaza_baranypirosito",
         name = "Báránypirosító tanösvény",
         town = "Fülöpháza",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -1004,7 +1002,7 @@ val DESTINATIONS_ALFOLD = listOf(
         description = SharedRes.strings.alfold_baranypirosito_tanosveny,
     ),
     Destination(
-        osmId = "dunapataj_szelidi_to",
+        id = "dunapataj_szelidi_to",
         name = "Szelidi-tó",
         town = "Dunapataj",
         type = DestinationType.LAKE,
@@ -1013,7 +1011,7 @@ val DESTINATIONS_ALFOLD = listOf(
         description = SharedRes.strings.alfold_szelidi_to,
     ),
     Destination(
-        osmId = "izsak_aqua_colun",
+        id = "izsak_aqua_colun",
         name = "Kolon-tó – Aqua Colun tanösvény",
         town = "Izsák",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -1023,7 +1021,7 @@ val DESTINATIONS_ALFOLD = listOf(
         description = SharedRes.strings.alfold_aqua_colun_tanosveny,
     ),
     Destination(
-        osmId = "tiszakurt_arboretum",
+        id = "tiszakurt_arboretum",
         name = "Tiszakürti Arborétum",
         town = "Tiszakürt",
         type = DestinationType.ARBORETUM,
@@ -1036,7 +1034,7 @@ val DESTINATIONS_ALFOLD = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_CSERHAT = listOf(
     Destination(
-        osmId = "8434415450",
+        id = "holloko_kez_kilato",
         location = Location(47.9822493, 19.6027341),
         name = "Hollókő, Kéz-kilátó",
         town = "Hollókő",
@@ -1045,7 +1043,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_holloko_kezkilato,
     ),
     Destination(
-        osmId = "321106908",
+        id = "holloko_var",
         location = Location(47.9977071, 19.5818468),
         name = "Hollókői vár",
         town = "Hollókő",
@@ -1054,7 +1052,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_hollokoi_var,
     ),
     Destination(
-        osmId = "5142701146",
+        id = "alsopeteny_pronay_kilato",
         location = Location(47.8954270, 19.2410927),
         name = "Prónay-kilátó",
         town = "Alsópetény",
@@ -1063,7 +1061,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_pronay_kilato,
     ),
     Destination(
-        osmId = "322236387",
+        id = "bujak_var",
         location = Location(47.8982455, 19.5345142),
         name = "Bujáki vár",
         town = "Buják",
@@ -1072,7 +1070,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_bujaki_var,
     ),
     Destination(
-        osmId = "9182308616",
+        id = "tar_buddha_park",
         location = Location(47.9632982, 19.7446890),
         name = "Buddha Park",
         town = "Tar",
@@ -1081,7 +1079,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_tar_buddha,
     ),
     Destination(
-        osmId = "863252877",
+        id = "bujak_sasberci_kilato",
         location = Location(47.9121377, 19.4954672),
         name = "Sasbérci kilátó",
         town = "Buják",
@@ -1090,7 +1088,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_sasberci_kilato,
     ),
     Destination(
-        osmId = "1006904605",
+        id = "szecseny_tepke_kilato",
         location = Location(47.9490080, 19.6367950),
         name = "Tepke-kilátó",
         town = "Szécsény",
@@ -1099,7 +1097,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_tepke_kilato,
     ),
     Destination(
-        osmId = "322431037",
+        id = "szanda_vara",
         location = Location(47.9114504, 19.4225245),
         name = "Szanda vára",
         town = "Szanda",
@@ -1108,7 +1106,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_szanda_var,
     ),
     Destination(
-        osmId = "919842585",
+        id = "csovar_var",
         location = Location(47.8218597, 19.3069584),
         name = "Csővári vár",
         town = "Csővár",
@@ -1117,7 +1115,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_csovari_var,
     ),
     Destination(
-        osmId = "3137464928",
+        id = "szanda_andezitoszlopok",
         location = Location(47.8661582, 19.4796026),
         name = "Andezitoszlopok",
         town = "Szanda",
@@ -1126,7 +1124,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_andezitoszlopok,
     ),
     Destination(
-        osmId = "4633734",
+        id = "katalinpuszta_gyadai_ret",
         location = Location(47.8463639, 19.1487700),
         name = "Gyadai-rét",
         town = "Katalinpuszta",
@@ -1135,7 +1133,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_gyadai_ret,
     ),
     Destination(
-        osmId = "11761562",
+        id = "vacratot_nemzeti_botanikus_kert",
         location = Location(47.7072443, 19.2347394),
         name = "Nemzeti Botanikus Kert",
         town = "Vácrátót",
@@ -1144,7 +1142,7 @@ val DESTINATIONS_CSERHAT = listOf(
         description = SharedRes.strings.paloc_vacratot_botanikus,
     ),
     Destination(
-        osmId = "kosd_naszaly",
+        id = "kosd_naszaly",
         name = "Naszály",
         town = "Kosd",
         type = DestinationType.PEAK,
@@ -1157,7 +1155,7 @@ val DESTINATIONS_CSERHAT = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_BORZSONY = listOf(
     Destination(
-        osmId = "5997337",
+        id = "nograd_var",
         location = Location(47.9065757, 19.0452978),
         name = "Nógrádi vár",
         town = "Nógrád",
@@ -1166,7 +1164,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_nogradi_var,
     ),
     Destination(
-        osmId = "1376748297",
+        id = "nagymaros_hegyes_teto",
         location = Location(47.7841550, 18.9334140),
         name = "Nagymaros, Hegyes-tető",
         town = "Nagymaros",
@@ -1176,7 +1174,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_hegyes_teto,
     ),
     Destination(
-        osmId = "371166426",
+        id = "nagymaros_julianus_kilato",
         location = Location(47.7840852, 18.9336911),
         name = "Julianus-kilátó",
         town = "Nagymaros",
@@ -1185,7 +1183,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_julianus_kilato,
     ),
     Destination(
-        osmId = "26862755",
+        id = "nograd_csovanyos",
         location = Location(47.9490938, 18.9485328),
         name = "Csóványos",
         town = "Nógrád",
@@ -1195,7 +1193,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_csovanyos,
     ),
     Destination(
-        osmId = "588565403",
+        id = "nograd_nagy_hideg_hegy",
         location = Location(47.9369278, 18.9226626),
         name = "Nagy-Hideg-hegy",
         town = "Nógrád",
@@ -1204,7 +1202,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_nagy_hideg_hegy,
     ),
     Destination(
-        osmId = "910143616",
+        id = "kemence_csarna_volgy",
         location = Location(47.9908212, 18.8981023),
         name = "Csarna-völgy",
         town = "Kemence",
@@ -1213,7 +1211,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_csarna_volgy,
     ),
     Destination(
-        osmId = "1680447315",
+        id = "kospallag_gombolyu_ko",
         location = Location(47.9131995, 18.8338636),
         name = "Gömbölyű-kő",
         town = "Kóspallag",
@@ -1222,7 +1220,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_gombolyu_ko,
     ),
     Destination(
-        osmId = "186692926",
+        id = "szokolya_kiralyret",
         location = Location(47.8950429, 18.9778646),
         description = SharedRes.strings.borzsony_kiralyret,
         name = "Királyrét",
@@ -1231,7 +1229,7 @@ val DESTINATIONS_BORZSONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "955747056",
+        id = "kemence_nagy_mana",
         location = Location(47.9661741, 18.9635693),
         description = SharedRes.strings.borzsony_nagy_mana,
         name = "Nagy-Mána",
@@ -1240,7 +1238,7 @@ val DESTINATIONS_BORZSONY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "286188020",
+        id = "dregelypalank_dregely_vara",
         location = Location(48.0166287, 19.0361010),
         description = SharedRes.strings.borzsony_dregely_vara,
         name = "Drégely vára",
@@ -1249,7 +1247,7 @@ val DESTINATIONS_BORZSONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "4992102465",
+        id = "nagymaros_remete_barlang",
         location = Location(47.77102, 18.92015),
         name = "Remete-barlang",
         town = "Nagymaros",
@@ -1258,7 +1256,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_remete_barlang,
     ),
     Destination(
-        osmId = "371590098",
+        id = "nagyborzsony_szent_istvan_templom",
         location = Location(47.9362201, 18.8176097),
         name = "Szent István-templom",
         town = "Nagybörzsöny",
@@ -1267,7 +1265,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_szent_istvan_templom,
     ),
     Destination(
-        osmId = "3439051380",
+        id = "nagyborzsony_zalog_berc",
         location = Location(47.9242002, 18.8896378),
         name = "Zálog-bérc",
         town = "Nagybörzsöny",
@@ -1277,7 +1275,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_zalog_berc,
     ),
     Destination(
-        osmId = "1680447343",
+        id = "perocseny_hangyas_berc",
         location = Location(47.9408215, 18.9369348),
         name = "Hangyás-bérc",
         town = "Perőcsény",
@@ -1287,7 +1285,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_hangyas_berc,
     ),
     Destination(
-        osmId = "1321972860",
+        id = "nagyborzsony_nagy_koppany",
         location = Location(47.8988967, 18.8524285),
         name = "Nagy-Koppány",
         town = "Nagybörzsöny",
@@ -1297,7 +1295,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_nagy_koppany,
     ),
     Destination(
-        osmId = "1376683212",
+        id = "nagyborzsony_nagy_sas_hegy",
         location = Location(47.8976216, 18.8922039),
         name = "Nagy-Sas-hegy",
         town = "Nagybörzsöny",
@@ -1307,7 +1305,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_nagy_sas_hegy,
     ),
     Destination(
-        osmId = "2807680780",
+        id = "perocseny_hollo_ko",
         location = Location(47.9723590, 18.8829230),
         name = "Holló-kő",
         town = "Perőcsény",
@@ -1317,7 +1315,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_hollo_ko,
     ),
     Destination(
-        osmId = "kemence_muzeumvasut",
+        id = "kemence_muzeumvasut",
         name = "Kemencei Erdei Múzeumvasút",
         town = "Kemence",
         type = DestinationType.SCENIC_RAILWAY,
@@ -1326,7 +1324,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_kemencei_muzeumvasut,
     ),
     Destination(
-        osmId = "szob_bezina_volgyi_erdei_vasut",
+        id = "szob_bezina_volgyi_erdei_vasut",
         name = "Bezina-völgyi Erdei Vasút",
         town = "Szob",
         type = DestinationType.SCENIC_RAILWAY,
@@ -1335,7 +1333,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_bezina_volgyi_erdei_vasut,
     ),
     Destination(
-        osmId = "kismaros_kiralyreti_erdei_vasut",
+        id = "kismaros_kiralyreti_erdei_vasut",
         name = "Királyréti Erdei Vasút",
         town = "Kismaros",
         type = DestinationType.SCENIC_RAILWAY,
@@ -1344,7 +1342,7 @@ val DESTINATIONS_BORZSONY = listOf(
         description = SharedRes.strings.borzsony_kiralyreti_erdei_vasut,
     ),
     Destination(
-        osmId = "nagyborzsony_erdei_vasut",
+        id = "nagyborzsony_erdei_vasut",
         name = "Nagybörzsönyi Erdei Vasút",
         town = "Nagybörzsöny",
         type = DestinationType.SCENIC_RAILWAY,
@@ -1357,7 +1355,7 @@ val DESTINATIONS_BORZSONY = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_VISGERAD = listOf(
     Destination(
-        osmId = "582632083",
+        id = "visegrad_nagy_villam",
         location = Location(47.7954340, 18.9926540),
         name = "Nagy-Villám",
         town = "Visegrád",
@@ -1366,7 +1364,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_nagy_villam,
     ),
     Destination(
-        osmId = "479957518",
+        id = "domos_ram_szakadek",
         location = Location(47.7390279, 18.8939068),
         name = "Rám-szakadék",
         town = "Dömös",
@@ -1375,7 +1373,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_ram_szakadek,
     ),
     Destination(
-        osmId = "5632599623",
+        id = "domos_vadallo_kovek",
         location = Location(47.7403737, 18.9123132),
         name = "Vadálló-kövek",
         town = "Dömös",
@@ -1385,7 +1383,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_vadallo_kovek,
     ),
     Destination(
-        osmId = "1489915696",
+        id = "domos_predikaloszek",
         location = Location(47.7392742, 18.9206526),
         name = "Prédikálószék",
         town = "Dömös",
@@ -1395,7 +1393,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_predikaloszek,
     ),
     Destination(
-        osmId = "3427525466",
+        id = "visegrad_apatkuti_volgy",
         location = Location(47.7468270, 18.9957330),
         name = "Apátkúti-völgy",
         town = "Visegrád",
@@ -1404,7 +1402,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_apatkuti_volgy,
     ),
     Destination(
-        osmId = "3427579100",
+        id = "szentendre_domorkapu",
         location = Location(47.6929615, 19.0053947),
         name = "Dömörkapu",
         town = "Szentendre",
@@ -1413,7 +1411,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_domorkapu,
     ),
     Destination(
-        osmId = "2911026",
+        id = "pomaz_sikarosi_ret",
         location = Location(47.7033313, 18.9502508),
         name = "Sikárosi-rét",
         town = "Pomáz",
@@ -1422,7 +1420,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_sikarosi_ret,
     ),
     Destination(
-        osmId = "358093079",
+        id = "visegrad_pap_ret",
         location = Location(47.7393629, 19.0111318),
         name = "Pap-rét",
         town = "Visegrád",
@@ -1431,7 +1429,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_pap_ret,
     ),
     Destination(
-        osmId = "14377018",
+        id = "visegrad_bertenyi_miklos_fuveszkert",
         location = Location(47.7693904, 18.9855499),
         name = "Bertényi Miklós Füvészkert",
         town = "Visegrád",
@@ -1440,7 +1438,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_bertenyi_fuveszkert,
     ),
     Destination(
-        osmId = "2231891171",
+        id = "visegrad_borjufo",
         location = Location(47.7717652, 19.0011617),
         name = "Borjúfő",
         town = "Visegrád",
@@ -1450,7 +1448,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_borjufo,
     ),
     Destination(
-        osmId = "121239989",
+        id = "visegrad_fellegvar",
         location = Location(47.7935860, 18.9804085),
         name = "Visegrádi fellegvár",
         town = "Visegrád",
@@ -1459,7 +1457,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_fellegvar,
     ),
     Destination(
-        osmId = "694648894",
+        id = "kisoroszi_szigetcsucs",
         location = Location(47.8060243, 18.9850042),
         name = "Kisoroszi szigetcsúcs",
         town = "Kisoroszi",
@@ -1469,7 +1467,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_kisoroszi_szgetcsucs,
     ),
     Destination(
-        osmId = "549435471",
+        id = "pomaz_holdvilag_arok",
         location = Location(47.6743009, 18.9712309),
         name = "Holdvilág-árok",
         town = "Pomáz",
@@ -1478,7 +1476,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_holdvilag_arok,
     ),
     Destination(
-        osmId = "6254613580",
+        id = "szentendre_anna_volgyi_vizeses",
         location = Location(47.6900817, 19.0162235),
         name = "Anna-völgyi vízesés",
         town = "Szentendre",
@@ -1487,7 +1485,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_anna_volgyi_vizeses,
     ),
     Destination(
-        osmId = "1627540897",
+        id = "szentendre_pilisszentlaszlo_hegyteto",
         location = Location(47.7184684, 19.0064610),
         name = "Pilisszentlászló Hegytető",
         town = "Szentendre",
@@ -1496,7 +1494,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_pilisszentlaszlo_hegyteto,
     ),
     Destination(
-        osmId = "130074457",
+        id = "pilisszentkereszt_dobogoko",
         location = Location(47.7193911, 18.8961602),
         name = "Dobogókő",
         town = "Pilisszentkereszt",
@@ -1506,7 +1504,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_dobogoko,
     ),
     Destination(
-        osmId = "706175333",
+        id = "domos_rezso_kilato",
         location = Location(47.7231966, 18.8910871),
         name = "Rezső-kilátó",
         town = "Dömös",
@@ -1516,7 +1514,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_rezso_kilato,
     ),
     Destination(
-        osmId = "2291907571",
+        id = "domos_ram_hegy",
         location = Location(47.7309529, 18.8970441),
         name = "Rám-hegy",
         town = "Dömös",
@@ -1526,7 +1524,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_ram_hegy,
     ),
     Destination(
-        osmId = "612770913",
+        id = "visegrad_hunyadi_kaszalo",
         location = Location(47.7530917, 18.9546680),
         name = "Hunyadi kaszáló",
         town = "Visegrád",
@@ -1535,7 +1533,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_hunyadi_kaszalo,
     ),
     Destination(
-        osmId = "766003261",
+        id = "pilismarot_hirsch_orom",
         location = Location(47.7514013, 18.8441469),
         name = "Hirsch-orom",
         town = "Pilismarót",
@@ -1545,7 +1543,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_hirsch_orom,
     ),
     Destination(
-        osmId = "3763035988",
+        id = "esztergom_feher_szikla",
         location = Location(47.7436947, 18.8257382),
         name = "Fehér-szikla",
         town = "Esztergom",
@@ -1554,7 +1552,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_feher_szikla,
     ),
     Destination(
-        osmId = "2587283783",
+        id = "esztergom_vaskapu",
         location = Location(47.7870183, 18.7750221),
         name = "Vaskapu",
         town = "Esztergom",
@@ -1564,7 +1562,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_vaskapu_esztergom,
     ),
     Destination(
-        osmId = "254262187",
+        id = "szentendre_vasas_szakadek",
         location = Location(47.6830481, 19.0072163),
         name = "Vasas-szakadék",
         town = "Szentendre",
@@ -1573,7 +1571,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_vasas_szakadek_szentendre,
     ),
     Destination(
-        osmId = "77102132",
+        id = "esztergom_bazilika",
         location = Location(47.7991083, 18.7365380),
         name = "Bazilika",
         town = "Esztergom",
@@ -1582,7 +1580,7 @@ val DESTINATIONS_VISGERAD = listOf(
         description = SharedRes.strings.visegrad_esztergom_bazilika,
     ),
     Destination(
-        osmId = "visegrad_bobpalya",
+        id = "visegrad_bobpalya",
         name = "Visegrádi Bobpálya",
         town = "Visegrád",
         type = DestinationType.ADVENTURE_PARK,
@@ -1595,7 +1593,7 @@ val DESTINATIONS_VISGERAD = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_PILIS = listOf(
     Destination(
-        osmId = "5471785404",
+        id = "pilisborosjeno_egri_var_masolata",
         location = Location(47.6183462, 18.9721233),
         name = "Pilisborosjenő Egri vár másolata",
         town = "Pilisborosjenő",
@@ -1604,7 +1602,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_pilisborosjeno_egri,
     ),
     Destination(
-        osmId = "3266194398",
+        id = "pilisborosjeno_nagy_kevely",
         location = Location(47.6227154, 18.9846024),
         name = "Nagy-Kevély",
         town = "Pilisborosjenő",
@@ -1614,7 +1612,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_nagy_kevely,
     ),
     Destination(
-        osmId = "3461930507",
+        id = "pilisborosjeno_kevely_hegyi_kofulke",
         location = Location(47.6241408, 18.9797247),
         name = "Kevély-hegyi kőfülke",
         town = "Pilisborosjenő",
@@ -1623,7 +1621,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_kevely_hegyi_kofulke,
     ),
     Destination(
-        osmId = "6253328490",
+        id = "pilisszentkereszt_pilis_teto",
         location = Location(47.6897278, 18.8702309),
         name = "Pilis-tető",
         town = "Pilisszentkereszt",
@@ -1633,7 +1631,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_pilis_teto,
     ),
     Destination(
-        osmId = "253496077",
+        id = "pilisszentkereszt_boldog_ozseb_kilato",
         location = Location(47.6887733, 18.8727128),
         name = "Boldog Özséb-kilátó",
         town = "Pilisszentkereszt",
@@ -1642,7 +1640,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_boldog_ozseb_kilato,
     ),
     Destination(
-        osmId = "3266195080",
+        id = "csobanka_oszoly_csucs",
         location = Location(47.6465527, 18.9739417),
         name = "Oszoly-csúcs",
         town = "Csobánka",
@@ -1652,7 +1650,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_oszoly_csucs,
     ),
     Destination(
-        osmId = "84224151",
+        id = "pilisszanto_boldogasszony_kapolna",
         location = Location(47.6776103, 18.8790442),
         name = "Boldogasszony-kápolna",
         town = "Pilisszántó",
@@ -1661,7 +1659,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_boldogasszony_kapolna,
     ),
     Destination(
-        osmId = "3812943833",
+        id = "pilisvorosvar_sas_szikla",
         location = Location(47.6341531, 18.8714554),
         name = "Sas-szikla",
         town = "Pilisvörösvár",
@@ -1670,7 +1668,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_sas_szikla,
     ),
     Destination(
-        osmId = "1192434410",
+        id = "esztergom_leany_barlang",
         location = Location(47.6999930, 18.8444428),
         name = "Leány-barlang",
         town = "Esztergom",
@@ -1679,7 +1677,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_leany_barlang,
     ),
     Destination(
-        osmId = "2355731534",
+        id = "esztergom_legeny_barlang",
         location = Location(47.6994059, 18.8441962),
         name = "Legény-barlang",
         town = "Esztergom",
@@ -1688,7 +1686,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_legeny_barlang,
     ),
     Destination(
-        osmId = "6237663974",
+        id = "pilisszentkereszt_dera_szurdok",
         location = Location(47.6845258, 18.9172138),
         name = "Dera-szurdok",
         town = "Pilisszentkereszt",
@@ -1697,7 +1695,7 @@ val DESTINATIONS_PILIS = listOf(
         description = SharedRes.strings.pilis_dera_szurdok,
     ),
     Destination(
-        osmId = "2339028880",
+        id = "pilisborosjeno_teve_szikla",
         location = Location(47.6141202, 18.9780183),
         name = "Teve-szikla",
         town = "Pilisborosjenő",
@@ -1710,8 +1708,7 @@ val DESTINATIONS_PILIS = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_BUDAPEST = listOf(
     Destination(
-        osmId = "3461930465",
-        relId = "3262881",
+        id = "pilisszentivan_jagi_tanosveny",
         location = Location(47.6120670, 18.8845000),
         name = "Jági tanösvény",
         town = "Pilisszentiván",
@@ -1720,7 +1717,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_jagi_tanosveny,
     ),
     Destination(
-        osmId = "1317002039",
+        id = "budapest_sas_hegy",
         location = Location(47.4820789, 19.0175242),
         name = "Sas-hegy",
         town = "Budapest",
@@ -1729,7 +1726,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_sas_hegy,
     ),
     Destination(
-        osmId = "2767103709",
+        id = "budapest_ordog_orom",
         location = Location(47.4818027, 18.9843018),
         name = "Ördög-orom",
         town = "Budapest",
@@ -1739,7 +1736,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_ordog_orom,
     ),
     Destination(
-        osmId = "367708343",
+        id = "budapest_matyashegy",
         location = Location(47.5336215, 19.0228064),
         name = "Mátyáshegy",
         town = "Budapest",
@@ -1748,7 +1745,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_matyashegy,
     ),
     Destination(
-        osmId = "297500719",
+        id = "budapest_apathy_szikla",
         location = Location(47.5314709, 18.9859451),
         name = "Apáthy-szikla",
         town = "Budapest",
@@ -1758,7 +1755,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_apathy_szikla,
     ),
     Destination(
-        osmId = "963923001",
+        id = "budapest_gellert_hegy",
         location = Location(47.4869160, 19.0445620),
         name = "Gellért-hegy",
         town = "Budapest",
@@ -1767,7 +1764,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_gellert_hegy,
     ),
     Destination(
-        osmId = "288796033",
+        id = "budapest_filozofusok_kertje",
         location = Location(47.4892794, 19.0393888),
         name = "Filozófusok kertje",
         town = "Budapest",
@@ -1776,7 +1773,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_filozofusok_kertje,
     ),
     Destination(
-        osmId = "3351742632",
+        id = "biatorbagy_nyakas_ko",
         location = Location(47.4500917, 18.8297693),
         name = "Nyakas-kő",
         town = "Biatorbágy",
@@ -1786,7 +1783,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_nyakas_ko,
     ),
     Destination(
-        osmId = "37126204",
+        id = "budapest_gul_baba_turbeje",
         location = Location(47.5159788, 19.0349256),
         name = "Gül Baba türbéje",
         town = "Budapest",
@@ -1795,7 +1792,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_gul_baba,
     ),
     Destination(
-        osmId = "2087683474",
+        id = "budapest_szechenyi_hegy",
         location = Location(47.4970152, 18.9723446),
         name = "Széchenyi-hegy",
         town = "Budapest",
@@ -1804,7 +1801,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_szechenyi_hegy,
     ),
     Destination(
-        osmId = "7070270",
+        id = "budapest_huvosvolgy",
         location = Location(47.5412106, 18.9636578),
         name = "Hűvösvölgy",
         town = "Budapest",
@@ -1813,7 +1810,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_huvosvolgy,
     ),
     Destination(
-        osmId = "367719989",
+        id = "budapest_normafa",
         location = Location(47.5029967, 18.9663909),
         name = "Normafa",
         town = "Budapest",
@@ -1822,7 +1819,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_normafa,
     ),
     Destination(
-        osmId = "1198650405",
+        id = "solymar_also_jegenye_volgy",
         location = Location(47.5818989, 18.9442720),
         name = "Alsó-Jegenye-völgy",
         town = "Solymár",
@@ -1831,7 +1828,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_also_jegenye,
     ),
     Destination(
-        osmId = "2284298983",
+        id = "solymar_var",
         location = Location(47.5925070, 18.9494009),
         name = "Solymári vár",
         town = "Solymár",
@@ -1840,7 +1837,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_solymari_var,
     ),
     Destination(
-        osmId = "263992077",
+        id = "budapest_arpad_kilato",
         location = Location(47.5351500, 18.9997260),
         name = "Árpád-kilátó",
         town = "Budapest",
@@ -1849,7 +1846,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_arpad_kilato,
     ),
     Destination(
-        osmId = "9119570759",
+        id = "budapest_remete_szurdok",
         location = Location(47.5593812, 18.9367731),
         name = "Remete-szurdok",
         town = "Budapest",
@@ -1858,7 +1855,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_remete_szurdok,
     ),
     Destination(
-        osmId = "268169155",
+        id = "budapest_janos_hegy",
         location = Location(47.5179821, 18.9594632),
         name = "János-hegy",
         town = "Budapest",
@@ -1867,7 +1864,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_janos_hegy,
     ),
     Destination(
-        osmId = "922447468",
+        id = "budapest_nagy_hars_hegy",
         location = Location(47.5336953, 18.9551722),
         name = "Nagy-Hárs-hegy",
         town = "Budapest",
@@ -1876,7 +1873,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_hars_hegy,
     ),
     Destination(
-        osmId = "2189647943",
+        id = "budapest_tunder_szikla",
         location = Location(47.5155290, 18.9691284),
         name = "Tündér-szikla",
         town = "Budapest",
@@ -1885,7 +1882,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_tunder_szikla,
     ),
     Destination(
-        osmId = "964796793",
+        id = "budaors_farkas_hegy",
         location = Location(47.4746771, 18.9392304),
         name = "Farkas-hegy",
         town = "Budaörs",
@@ -1895,7 +1892,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_farkas_hegy,
     ),
     Destination(
-        osmId = "9179976472",
+        id = "paty_tarnai_piheno",
         location = Location(47.5421063, 18.8693726),
         description = SharedRes.strings.budapest_tarnai_piheno,
         name = "Tarnai-pihenő",
@@ -1905,7 +1902,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "393183271",
+        id = "budakeszi_szarvas_arok",
         location = Location(47.5376052, 18.8858662),
         description = SharedRes.strings.budapest_szarvas_arok,
         name = "Szarvas-árok",
@@ -1914,7 +1911,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "9890397",
+        id = "budakeszi_erdeszeti_arboretum",
         location = Location(47.5253315, 18.8771275),
         description = SharedRes.strings.budapest_budakeszi_erdezeti_arbor,
         name = "Budakeszi Erdészeti Arborétum",
@@ -1923,7 +1920,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "2681398667",
+        id = "nagykovacsi_nagy_szenas",
         location = Location(47.5906528, 18.8716382),
         description = SharedRes.strings.budapest_nagy_szenas,
         name = "Nagy-Szénás",
@@ -1933,7 +1930,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "949914263",
+        id = "solymar_sziklas_hegy",
         location = Location(47.5924563, 18.8986714),
         description = SharedRes.strings.budapest_sziklas_hegy,
         name = "Sziklás-hegy",
@@ -1942,7 +1939,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "310405785",
+        id = "nagykovacsi_csergezan_pal_kilato",
         location = Location(47.5518158, 18.8650595),
         description = SharedRes.strings.budapest_csergezan_pal_kilato,
         name = "Csergezán Pál-kilátó",
@@ -1951,7 +1948,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1234567890",
+        id = "nagykovacsi_nagy_kopasz",
         location = Location(47.5518005, 18.8651414),
         description = SharedRes.strings.budapest_nagy_kopasz,
         name = "Nagy-Kopasz",
@@ -1961,7 +1958,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "budapest_pal_volgyi_barlang",
+        id = "budapest_pal_volgyi_barlang",
         name = "Pál-völgyi-barlang",
         town = "Budapest",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -1970,7 +1967,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_pal_volgyi_barlang,
     ),
     Destination(
-        osmId = "budapest_szemlo_hegyi_barlang",
+        id = "budapest_szemlo_hegyi_barlang",
         name = "Szemlő-hegyi-barlang",
         town = "Budapest",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -1979,7 +1976,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         description = SharedRes.strings.budapest_szemlo_hegyi_barlang,
     ),
     Destination(
-        osmId = "budapest_gyermekvasut",
+        id = "budapest_gyermekvasut",
         name = "Széchenyi-hegyi Gyermekvasút",
         town = "Budapest",
         type = DestinationType.SCENIC_RAILWAY,
@@ -1992,7 +1989,7 @@ val DESTINATIONS_BUDAPEST = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_GERECSE = listOf(
     Destination(
-        osmId = "48365232",
+        id = "zsambek_keresztelo_szent_janos_szuletese_templom",
         location = Location(47.5485075, 18.7194797),
         description = SharedRes.strings.gerecse_templom_zsambek,
         name = "Keresztelő Szent János születése templom",
@@ -2001,7 +1998,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "314388189",
+        id = "felsotata_kamalduli_szerzeteshaz",
         location = Location(47.6409773, 18.3130019),
         description = SharedRes.strings.gerecse_kamalduli,
         name = "Kamalduli szerzetesház",
@@ -2010,7 +2007,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "6750553215",
+        id = "tata_fenyes_tanosveny",
         location = Location(47.6679812, 18.3089411),
         description = SharedRes.strings.gerecse_tatai_fenyes,
         name = "Tatai Fényes Tanösvény",
@@ -2019,7 +2016,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1234732011",
+        id = "bajot_oreg_ko",
         location = Location(47.7230582, 18.5743509),
         description = SharedRes.strings.gerecse_oreg_ko,
         name = "Öreg-kő",
@@ -2028,7 +2025,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "1234732151",
+        id = "bajot_jankovich_barlang",
         location = Location(47.7236676, 18.5753373),
         description = SharedRes.strings.gerecse_jankovich,
         name = "Jankovich-barlang",
@@ -2037,7 +2034,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "2274350282",
+        id = "sutto_nagy_gerecse",
         location = Location(47.6807054, 18.4858874),
         description = SharedRes.strings.gerecse_nagy_gerecse,
         name = "Nagy-Gerecse",
@@ -2047,7 +2044,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "944516276",
+        id = "tatabanya_turul_emlekmu",
         location = Location(47.5881562, 18.4077048),
         description = SharedRes.strings.gerecse_turul,
         name = "Turul-emlékmű",
@@ -2056,7 +2053,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1493499609",
+        id = "tatabanya_szelim_barlang",
         location = Location(47.5903539, 18.4068698),
         description = SharedRes.strings.gerecse_szelim,
         name = "Szelim-barlang",
@@ -2065,7 +2062,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "6033264",
+        id = "tata_oreg_to",
         location = Location(47.6400967, 18.3300516),
         description = SharedRes.strings.gerecse_oreg_to,
         name = "Öreg-tó",
@@ -2074,7 +2071,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "3012255062",
+        id = "vertestolna_pesko_barlang",
         location = Location(47.6056915, 18.4727958),
         description = SharedRes.strings.gerecse_pesko_barlang,
         name = "Peskő-barlang",
@@ -2083,7 +2080,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "3360240371",
+        id = "tardos_banya_hegy",
         location = Location(47.6625563, 18.4708988),
         description = SharedRes.strings.gerecse_banya_hegy,
         name = "Bánya-hegy",
@@ -2092,7 +2089,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "775627249",
+        id = "sutto_tardos_lombkorona_tanosveny",
         location = Location(47.6944834, 18.4488966),
         description = SharedRes.strings.gerecse_tardos_lombkorona,
         name = "Tardos Lombkorona-tanösvény",
@@ -2101,7 +2098,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3366287483",
+        id = "hereg_kiraly_kut",
         location = Location(47.6603579, 18.4983323),
         description = SharedRes.strings.gerecse_kiraly_kut,
         name = "Király-kút (Héreg)",
@@ -2110,7 +2107,7 @@ val DESTINATIONS_GERECSE = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "tata_agostyani_arboretum",
+        id = "tata_agostyani_arboretum",
         name = "Agostyáni Arborétum",
         town = "Tata–Agostyán",
         type = DestinationType.ARBORETUM,
@@ -2123,7 +2120,7 @@ val DESTINATIONS_GERECSE = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_VELENCE = listOf(
     Destination(
-        osmId = "9461706899",
+        id = "pakozd_pogany_ko",
         location = Location(47.2356716, 18.5378730),
         description = SharedRes.strings.velence_pogany_ko,
         name = "Pogány-kő",
@@ -2132,7 +2129,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "113488369",
+        id = "pakozd_bella_to",
         location = Location(47.2218972, 18.5365490),
         description = SharedRes.strings.velence_bella_to,
         name = "Bella-tó",
@@ -2141,7 +2138,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "3809570262",
+        id = "sukoro_likasko",
         location = Location(47.2600057, 18.5892902),
         description = SharedRes.strings.velence_likasko,
         name = "Likaskő",
@@ -2150,7 +2147,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "529539505",
+        id = "pakozd_bodza_volgy",
         location = Location(47.2513110, 18.5731491),
         description = SharedRes.strings.velence_bodza_volgy,
         name = "Bodza-völgy",
@@ -2159,7 +2156,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "7271157683",
+        id = "sukoro_nagy_legelo",
         location = Location(47.2564450, 18.5847383),
         description = SharedRes.strings.velence_nagy_lelelo,
         name = "Nagy-legelő",
@@ -2168,7 +2165,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "1494609244",
+        id = "sukoro_meleg_hegy",
         location = Location(47.2586599, 18.5969006),
         description = SharedRes.strings.velence_meleg_hegy,
         name = "Meleg-hegy",
@@ -2178,7 +2175,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "dinnyes_madardal",
+        id = "dinnyes_madardal",
         name = "Dinnyési-fertő – Madárdal tanösvény",
         town = "Gárdony–Dinnyés",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -2192,7 +2189,7 @@ val DESTINATIONS_VELENCE = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_VERTES = listOf(
     Destination(
-        osmId = "3306977",
+        id = "oroszlany_bokodi_to",
         location = Location(47.4952783, 18.2772975),
         description = SharedRes.strings.vertes_bokodi_to,
         name = "Bokodi-tó",
@@ -2201,7 +2198,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "329729862",
+        id = "csakbereny_kokapu_volgy",
         location = Location(47.3665144, 18.2998860),
         description = SharedRes.strings.vertes_kokapu_volgy,
         name = "Kőkapu-völgy",
@@ -2210,7 +2207,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "2334890285",
+        id = "csakbereny_varga_hegy",
         location = Location(47.3616667, 18.3083333),
         description = SharedRes.strings.vertes_varga_hegy,
         name = "Varga-hegy",
@@ -2219,7 +2216,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "5674802621",
+        id = "csakvar_bauxit_banya_kilato",
         location = Location(47.3833434, 18.4093648),
         description = SharedRes.strings.vertes_bauxit_banya,
         name = "Bauxit bánya kilátó",
@@ -2228,7 +2225,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "329955877",
+        id = "tatabanya_maria_szakadek",
         location = Location(47.5149897, 18.4535396),
         description = SharedRes.strings.vertes_maria_szakadek,
         name = "Mária-szakadék",
@@ -2237,7 +2234,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "4083232990",
+        id = "tatabanya_vitanyvar",
         location = Location(47.5160556, 18.4128651),
         description = SharedRes.strings.vertes_vitanyvar,
         name = "Vitányvár",
@@ -2246,8 +2243,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3411274778",
-        relId = "4713367",
+        id = "csakbereny_vertesi_panorama_tanosveny",
         location = Location(47.3551471, 18.3219294),
         description = SharedRes.strings.vertes_panorama_tanosveny,
         name = "Vértesi panoráma tanösvény",
@@ -2256,7 +2252,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "4467185",
+        id = "csokako_vara",
         location = Location(47.3602518, 18.2771472),
         description = SharedRes.strings.vertes_csokakoe_vara,
         name = "Csókakő vára",
@@ -2265,7 +2261,7 @@ val DESTINATIONS_VERTES = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "alcsutdoboz_arboretum",
+        id = "alcsutdoboz_arboretum",
         name = "Alcsúti Arborétum",
         town = "Alcsútdoboz",
         type = DestinationType.ARBORETUM,
@@ -2274,7 +2270,7 @@ val DESTINATIONS_VERTES = listOf(
         description = SharedRes.strings.vertes_alcsuti_arboretum,
     ),
     Destination(
-        osmId = "gant_bauxitfoldtani_park",
+        id = "gant_bauxitfoldtani_park",
         name = "Gánti Bauxitföldtani Park",
         town = "Gánt",
         type = DestinationType.GEOLOGICAL_SITE,
@@ -2283,7 +2279,7 @@ val DESTINATIONS_VERTES = listOf(
         description = SharedRes.strings.vertes_ganti_bauxitfoldtani_park,
     ),
     Destination(
-        osmId = "felcsut_val_volgyi_kisvasut",
+        id = "felcsut_val_volgyi_kisvasut",
         name = "Vál-völgyi Kisvasút",
         town = "Felcsút",
         type = DestinationType.SCENIC_RAILWAY,
@@ -2296,7 +2292,7 @@ val DESTINATIONS_VERTES = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_BAKONY = listOf(
     Destination(
-        osmId = "955665712",
+        id = "bakonyszucs_koris_hegy",
         location = Location(47.2944329, 17.7545048),
         description = SharedRes.strings.bakony_koris_hegy,
         name = "Kőris-hegy",
@@ -2306,7 +2302,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "6085433",
+        id = "ugod_hubertlaki_to",
         location = Location(47.2846081, 17.6782286),
         description = SharedRes.strings.bakony_hubertlaki_to,
         name = "Hubertlaki-tó",
@@ -2315,7 +2311,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1253647884",
+        id = "bakonyszentlaszlo_cuha_volgy",
         location = Location(47.3530579, 17.8312250),
         description = SharedRes.strings.bakony_cuha_volgy,
         name = "Cuha-völgy",
@@ -2324,7 +2320,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "3474939558",
+        id = "bodajk_gaja_szurdok",
         location = Location(47.3137650, 18.2172270),
         description = SharedRes.strings.bakony_gaja_szurdok,
         name = "Gaja-szurdok",
@@ -2333,7 +2329,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "294877695",
+        id = "csesznek_komoso_szurdok",
         location = Location(47.3530424, 17.8778951),
         description = SharedRes.strings.bakony_komoso_szurdok,
         name = "Kőmosó-szurdok",
@@ -2342,7 +2338,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "397939740",
+        id = "dudar_ordog_arok",
         location = Location(47.3260118, 17.9130036),
         description = SharedRes.strings.bakony_ordog_arok,
         name = "Ördög-árok",
@@ -2351,7 +2347,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "209213344",
+        id = "bakonynana_romai_furdo",
         location = Location(47.2701623, 17.9922919),
         description = SharedRes.strings.bakony_romai_furdo,
         name = "Római-fürdő",
@@ -2360,7 +2356,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "2436847",
+        id = "csesznek_var",
         location = Location(47.3511596, 17.8813748),
         description = SharedRes.strings.bakony_cseszneki_var,
         name = "Cseszneki vár",
@@ -2369,7 +2365,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "2262232",
+        id = "zirc_arboretum",
         location = Location(47.2615876, 17.8798781),
         description = SharedRes.strings.bakony_zirci_arboretum,
         name = "Zirci Arborétum",
@@ -2378,7 +2374,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "5779956684",
+        id = "zirc_ciszterci_apatsag",
         location = Location(47.2635746, 17.8743374),
         description = SharedRes.strings.bakony_zirc_apatsag,
         name = "Zirci Ciszterci Apátság",
@@ -2387,7 +2383,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "321108533",
+        id = "bakonybel_kerteskoi_szurdok",
         location = Location(47.2392235, 17.7627033),
         description = SharedRes.strings.bakony_kertesko_szurdok,
         name = "Kerteskői-szurdok",
@@ -2396,7 +2392,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "12736612060",
+        id = "urkut_oskarszt",
         location = Location(47.0841154, 17.6493578),
         description = SharedRes.strings.bakony_urkuti_oskarszt,
         name = "Úrkúti Őskarszt",
@@ -2405,7 +2401,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "7826260",
+        id = "varpalota_thury_var",
         location = Location(47.2011309, 18.1392485),
         description = SharedRes.strings.bakony_thury_var,
         name = "Thury-vár",
@@ -2414,7 +2410,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "1412807488",
+        id = "varpalota_batorko_vara",
         location = Location(47.2267897, 18.0938524),
         description = SharedRes.strings.bakony_batorko_vara,
         name = "Bátorkő vára",
@@ -2423,7 +2419,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "304587231",
+        id = "band_essegvar",
         location = Location(47.1200917, 17.7809269),
         description = SharedRes.strings.bakony_essegvar,
         name = "Essegvár",
@@ -2432,7 +2428,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "118147936",
+        id = "fehervarcsurgo_karolyi_kastely",
         location = Location(47.2865968, 18.2663586),
         description = SharedRes.strings.bakony_karolyi_kastely,
         name = "Károlyi-kastély",
@@ -2441,7 +2437,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "160716960",
+        id = "nadasdladany_nadasdy_kastely",
         location = Location(47.1344710, 18.2415851),
         description = SharedRes.strings.bakony_nadasdy_kastely,
         name = "Nádasdy-kastély",
@@ -2450,7 +2446,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1716600441",
+        id = "varpalota_fajdas_hegy",
         location = Location(47.2188777, 18.0878976),
         description = SharedRes.strings.bakony_fajdas_hegy,
         name = "Fajdas-hegy",
@@ -2459,7 +2455,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "123542583",
+        id = "isztimer_burok_volgy",
         location = Location(47.2705235, 18.1648659),
         description = SharedRes.strings.bakony_burok_volgy,
         name = "Burok-völgy",
@@ -2468,7 +2464,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "6021307507",
+        id = "bodajk_karolyi_kilato",
         location = Location(47.3122223, 18.2265517),
         description = SharedRes.strings.bakony_karolyi_kilato,
         name = "Károlyi-kilátó",
@@ -2477,7 +2473,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3175727330",
+        id = "magyarpolany_kapolna",
         location = Location(47.1735027, 17.5469416),
         description = SharedRes.strings.bakony_magyarpolany_kapolna,
         name = "Kápolna",
@@ -2486,7 +2482,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 2,
     ),
     Destination(
-        osmId = "11716239531",
+        id = "magyarpolany_osember_barlangja",
         location = Location(47.1811138, 17.5351063),
         description = SharedRes.strings.bakony_magyarpolany_osember_barlangja,
         name = "Ősember barlangja",
@@ -2495,7 +2491,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "1133863479",
+        id = "bakonyszucs_odvaskoi_barlang",
         location = Location(47.2881976, 17.7160434),
         description = SharedRes.strings.bakony_odvasko_barlang,
         name = "Odvaskői-barlang",
@@ -2504,7 +2500,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "2969916940",
+        id = "bodajk_sobri_joska_barlangja",
         location = Location(47.3127544, 18.2174977),
         description = SharedRes.strings.bakony_sobri_joska_barlang,
         name = "Sobri Jóska barlangja",
@@ -2513,7 +2509,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "332254600",
+        id = "dobronte_szarvasko_vara",
         location = Location(47.2300269, 17.5486005),
         description = SharedRes.strings.bakony_szarvasko_vara,
         name = "Szarvaskő vára",
@@ -2522,7 +2518,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "2830012209",
+        id = "tes_szechenyi_zsigmond_kilato",
         location = Location(47.2728331, 18.0411150),
         description = SharedRes.strings.bakony_szechenyi_zsigmond_kilato,
         name = "Széchenyi Zsigmond-kilátó",
@@ -2531,7 +2527,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "9946300",
+        id = "veszprem_volgy",
         location = Location(47.0917277, 17.8955319),
         description = SharedRes.strings.bakony_veszprem_volgy,
         name = "Veszprém-völgy",
@@ -2540,7 +2536,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "3489580327",
+        id = "sumeg_feher_kovek",
         location = Location(46.9910881, 17.2923427),
         description = SharedRes.strings.bakony_feher_kovek,
         name = "Fehér-kövek",
@@ -2550,7 +2546,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "3235291672",
+        id = "hegyesd_var",
         location = Location(46.9141299, 17.5113570),
         description = SharedRes.strings.bakony_hegyesdi_var,
         name = "Hegyesdi vár",
@@ -2559,7 +2555,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "bakonybel_pannon_csillagda",
+        id = "bakonybel_pannon_csillagda",
         name = "Pannon Csillagda",
         town = "Bakonybél",
         type = DestinationType.OBSERVATORY,
@@ -2568,7 +2564,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_pannon_csillagda,
     ),
     Destination(
-        osmId = "szentgal_kolik_bazis",
+        id = "szentgal_kolik_bazis",
         name = "Szentgáli-kőlik – túrabázis",
         town = "Szentgál",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -2577,7 +2573,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_szentgali_kolik_bazis,
     ),
     Destination(
-        osmId = "celldomolk_sag_hegy",
+        id = "celldomolk_sag_hegy",
         name = "Ság-hegy és geológiai tanösvény",
         town = "Celldömölk",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -2586,7 +2582,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_sag_hegy,
     ),
     Destination(
-        osmId = "doba_somlo_var",
+        id = "doba_somlo_var",
         name = "Somló vára",
         town = "Doba",
         type = DestinationType.CASTLE_RUIN,
@@ -2596,7 +2592,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_somlo_var,
     ),
     Destination(
-        osmId = "doba_somlo_kilato",
+        id = "doba_somlo_kilato",
         name = "Somló – Szent István-kilátó",
         town = "Doba",
         type = DestinationType.PEAK,
@@ -2605,7 +2601,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_somlo_szent_istvan_kilato,
     ),
     Destination(
-        osmId = "sumeg_var",
+        id = "sumeg_var",
         name = "Sümegi vár",
         town = "Sümeg",
         type = DestinationType.CASTLE,
@@ -2615,7 +2611,7 @@ val DESTINATIONS_BAKONY = listOf(
         description = SharedRes.strings.bakony_sumegi_var,
     ),
     Destination(
-        osmId = "kislod_sobri_joska_elmenypark",
+        id = "kislod_sobri_joska_elmenypark",
         name = "Sobri Jóska Élménypark",
         town = "Kislőd",
         type = DestinationType.ADVENTURE_PARK,
@@ -2628,7 +2624,7 @@ val DESTINATIONS_BAKONY = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_BALATON = listOf(
     Destination(
-        osmId = "844146342",
+        id = "alsoors_somlyo_hegyi_kilato",
         location = Location(46.9970525, 17.9687534),
         description = SharedRes.strings.balaton_somlyo_kilato,
         name = "Somlyó-hegyi kilátó",
@@ -2637,7 +2633,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "8167589",
+        id = "szigliget_var",
         location = Location(46.8046793, 17.4363592),
         description = SharedRes.strings.balaton_szigligeti_var,
         name = "Szigligeti vár",
@@ -2646,7 +2642,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "4529897834",
+        id = "koveskal_eotvos_karoly_kilato",
         location = Location(46.8949651, 17.5861130),
         description = SharedRes.strings.balaton_eotvos_karoly_kilato,
         name = "Eötvös Károly-kilátó",
@@ -2655,7 +2651,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "2422523013",
+        id = "balatonfured_koloska_volgy",
         location = Location(46.9910562, 17.8865656),
         description = SharedRes.strings.balaton_koloska_volgy,
         name = "Koloska-völgy",
@@ -2664,7 +2660,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "690945815",
+        id = "balatonfured_koloska_sziklak",
         location = Location(46.9909287, 17.8845633),
         description = SharedRes.strings.balaton_koloska_sziklak,
         name = "Koloska-sziklák",
@@ -2673,7 +2669,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "232977924",
+        id = "gyulakeszi_csobanc_vara",
         location = Location(46.8712874, 17.5036353),
         description = SharedRes.strings.balaton_csobanc_vara,
         name = "Csobánc vára",
@@ -2682,7 +2678,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1716653280",
+        id = "monoszlo_hegyestu",
         location = Location(46.8893720, 17.6480455),
         description = SharedRes.strings.balaton_hegyestu,
         name = "Hegyestű",
@@ -2692,7 +2688,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1343766389",
+        id = "nemesgulacs_gulacs_tanuhegy",
         location = Location(46.8294560, 17.5009878),
         description = SharedRes.strings.balaton_gulacs,
         name = "Gulács tanúhegy",
@@ -2701,7 +2697,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1132398444",
+        id = "tihany_ovar",
         location = Location(46.9196125, 17.8830237),
         description = SharedRes.strings.balaton_tihany_ovar,
         name = "Óvár",
@@ -2710,7 +2706,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "750019261",
+        id = "badacsonytomaj_badacsony",
         location = Location(46.8032917, 17.4961749),
         description = SharedRes.strings.balaton_badacsony,
         name = "Badacsony",
@@ -2719,7 +2715,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "265195827",
+        id = "raposka_szent_gyorgy_hegyi_bazaltorgonak",
         location = Location(46.8460381, 17.4506960),
         description = SharedRes.strings.balaton_szent_gyorgy_hegyi_bazaltorgonak,
         name = "Szent György hegyi Bazaltorgonák",
@@ -2728,7 +2724,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "3327136520",
+        id = "badacsonytomaj_paholyko_kilatohely",
         location = Location(46.7987280, 17.4991178),
         description = SharedRes.strings.balaton_paholyko_kilatohely,
         name = "Páholykő-kilátóhely",
@@ -2738,7 +2734,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "750019449",
+        id = "badacsonytordemic_egry_jozsef_kilatohely",
         location = Location(46.7968568, 17.4934322),
         description = SharedRes.strings.balaton_egry_jozsef_kilatohely,
         name = "Egry József kilátóhely",
@@ -2748,7 +2744,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "750019338",
+        id = "badacsonytordemic_tordemici_kilato",
         location = Location(46.8008029, 17.4875335),
         description = SharedRes.strings.balaton_tordemici_kilato,
         name = "Tördemici kilátó",
@@ -2758,7 +2754,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "11247301",
+        id = "badacsonyors_folly_arboretum",
         location = Location(46.8108216, 17.5449872),
         description = SharedRes.strings.balaton_folly_arboretum,
         name = "Folly Arborétum",
@@ -2767,7 +2763,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1343748608",
+        id = "kaptalantoti_toti_hegy",
         location = Location(46.8365306, 17.5212229),
         description = SharedRes.strings.balaton_toti_hegy,
         name = "Tóti-hegy",
@@ -2777,7 +2773,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "8196766818",
+        id = "salfold_palos_kolostorrom",
         location = Location(46.8188224, 17.5424275),
         description = SharedRes.strings.balaton_salfoldi_palos_kolostor,
         name = "Salföldi pálos kolostorrom",
@@ -2786,7 +2782,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 5,
     ),
     Destination(
-        osmId = "955654621",
+        id = "raposka_szent_gyorgy_hegy",
         location = Location(46.8415398, 17.4483614),
         description = SharedRes.strings.balaton_szent_gyorgy_hegy,
         name = "Szent György-hegy",
@@ -2795,7 +2791,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "455064758",
+        id = "balatonfured_jokai_kilato",
         location = Location(46.9719101, 17.8814775),
         description = SharedRes.strings.balaton_jokai_kilato,
         name = "Jókai-kilátó",
@@ -2804,7 +2800,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 9,
     ),
     Destination(
-        osmId = "1716738197",
+        id = "hidegkut_recsek_hegy",
         location = Location(47.0014656, 17.8508070),
         description = SharedRes.strings.balaton_recsek_hegy,
         name = "Recsek-hegy",
@@ -2813,7 +2809,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "3741452143",
+        id = "tihany_nyereg_hegy",
         location = Location(46.9105785, 17.8529751),
         description = SharedRes.strings.balaton_nyereg_hegy,
         name = "Nyereg-hegy",
@@ -2822,7 +2818,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "4375104346",
+        id = "tihany_apati_hegy",
         location = Location(46.9122680, 17.8559106),
         description = SharedRes.strings.balaton_apati_hegy,
         name = "Apáti-hegy",
@@ -2831,7 +2827,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "3741452135",
+        id = "tihany_haloereszto",
         location = Location(46.8925401, 17.8771146),
         description = SharedRes.strings.balaton_haloereszto,
         name = "Hálóeresztő",
@@ -2841,7 +2837,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "755673704",
+        id = "tihany_csucs_hegy",
         location = Location(46.9064840, 17.8525883),
         description = SharedRes.strings.balaton_csucs_hegy,
         name = "Csúcs-hegy",
@@ -2851,7 +2847,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "507823023",
+        id = "szentbekkalla_kotenger",
         location = Location(46.8904685, 17.5554531),
         description = SharedRes.strings.balaton_kotenger,
         name = "Kőtenger",
@@ -2860,7 +2856,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "4401245731",
+        id = "szigliget_kiralyne_szoknyaja",
         location = Location(
             46.7888567,
             17.4383458,
@@ -2872,7 +2868,7 @@ val DESTINATIONS_BALATON = listOf(
         popularity = 6,
     ),
     Destination(
-        osmId = "tapolca_tavasbarlang",
+        id = "tapolca_tavasbarlang",
         name = "Tapolcai-tavasbarlang",
         town = "Tapolca",
         type = DestinationType.CAVE_WITHOUT_GUIDE,
@@ -2881,7 +2877,7 @@ val DESTINATIONS_BALATON = listOf(
         description = SharedRes.strings.balaton_tapolcai_tavasbarlang,
     ),
     Destination(
-        osmId = "balatonfured_loczy_barlang",
+        id = "balatonfured_loczy_barlang",
         name = "Lóczy-barlang",
         town = "Balatonfüred",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -2890,7 +2886,7 @@ val DESTINATIONS_BALATON = listOf(
         description = SharedRes.strings.balaton_loczy_barlang,
     ),
     Destination(
-        osmId = "nagyvazsony_kinizsi_var",
+        id = "nagyvazsony_kinizsi_var",
         name = "Kinizsi-vár",
         town = "Nagyvázsony",
         type = DestinationType.CASTLE,
@@ -2899,7 +2895,7 @@ val DESTINATIONS_BALATON = listOf(
         description = SharedRes.strings.balaton_kinizsi_var,
     ),
     Destination(
-        osmId = "balatonfuzfo_balatonibob",
+        id = "balatonfuzfo_balatonibob",
         name = "BalatoniBob Szabadidőpark",
         town = "Balatonfűzfő",
         type = DestinationType.ADVENTURE_PARK,
@@ -2912,7 +2908,7 @@ val DESTINATIONS_BALATON = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_KESZTHELY = listOf(
     Destination(
-        osmId = "955651696",
+        id = "zalaszanto_tatika",
         location = Location(46.9061771, 17.2595827),
         description = SharedRes.strings.keszthely_tatika,
         name = "Tátika",
@@ -2921,7 +2917,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "871643969",
+        id = "balatongyorok_szepkilato",
         location = Location(46.7704333, 17.3623519),
         description = SharedRes.strings.keszthely_szepkilato,
         name = "Szépkilátó",
@@ -2931,7 +2927,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 8,
     ),
     Destination(
-        osmId = "1703153981",
+        id = "balatongyorok_pad_ko",
         location = Location(
             46.8058333,
             17.3275000,
@@ -2944,7 +2940,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 4,
     ),
     Destination(
-        osmId = "3345408573",
+        id = "balatongyorok_batsanyi_kilato",
         location = Location(
             46.7772168,
             17.3570485,
@@ -2956,7 +2952,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 7,
     ),
     Destination(
-        osmId = "817794874",
+        id = "balatongyorok_garga_hegy",
         location = Location(
             46.7684258,
             17.3522568,
@@ -2968,7 +2964,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         popularity = 3,
     ),
     Destination(
-        osmId = "287395162",
+        id = "vallus_budoskuti_pihenohaz",
         name = "Büdöskúti pihenőház",
         town = "Vállus",
         type = DestinationType.CAMP,
@@ -2977,7 +2973,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_budoskuti_pihenohaz,
     ),
     Destination(
-        osmId = "2356365608",
+        id = "gyenesdias_varsas_hegy",
         name = "Varsás-hegy",
         town = "Gyenesdiás",
         type = DestinationType.PEAK,
@@ -2986,7 +2982,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_varsas_hegy,
     ),
     Destination(
-        osmId = "293513451",
+        id = "gyenesdias_nagymezo",
         name = "Nagymező",
         town = "Gyenesdiás",
         type = DestinationType.MEADOW,
@@ -2995,7 +2991,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_nagymezo,
     ),
     Destination(
-        osmId = "1835247253",
+        id = "keszthelyi_hegyseg_koves_teto",
         name = "Köves-tető",
         town = "Keszthelyi-hegység",
         type = DestinationType.PEAK,
@@ -3005,7 +3001,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_koves_teto,
     ),
     Destination(
-        osmId = "2604330783",
+        id = "gyenesdias_festetics_kilato",
         name = "Festetics-kilátó",
         town = "Gyenesdiás",
         type = DestinationType.LOOKOUT,
@@ -3014,7 +3010,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_festetics_kilato,
     ),
     Destination(
-        osmId = "93186707",
+        id = "cserszegtomaj_csoka_ko",
         name = "Csóka-kő",
         town = "Cserszegtomaj",
         type = DestinationType.ROCK,
@@ -3024,7 +3020,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_csoka_ko,
     ),
     Destination(
-        osmId = "98458350",
+        id = "zalaszanto_sztupa",
         name = "Zalaszántói sztúpa",
         town = "Zalaszántó",
         type = DestinationType.RELIGIOUS_SITE,
@@ -3033,7 +3029,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_zalaszantoi_sztupa,
     ),
     Destination(
-        osmId = "1835247300",
+        id = "varvolgy_ko_orra",
         name = "Kő-orra",
         town = "Várvölgy",
         type = DestinationType.ROCK,
@@ -3043,7 +3039,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_ko_orra,
     ),
     Destination(
-        osmId = "balatonederics_csodabogyos_bazis",
+        id = "balatonederics_csodabogyos_bazis",
         name = "Csodabogyós-barlang – túrabázis",
         town = "Balatonederics",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -3052,7 +3048,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_csodabogyos_bazis,
     ),
     Destination(
-        osmId = "balatongyorok_pele_apo",
+        id = "balatongyorok_pele_apo",
         name = "Pele apó ösvénye",
         town = "Balatongyörök",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -3061,7 +3057,7 @@ val DESTINATIONS_KESZTHELY = listOf(
         description = SharedRes.strings.keszthely_pele_apo_osveny,
     ),
     Destination(
-        osmId = "rezi_var",
+        id = "rezi_var",
         name = "Rezi vár",
         town = "Rezi",
         type = DestinationType.CASTLE_RUIN,
@@ -3075,7 +3071,7 @@ val DESTINATIONS_KESZTHELY = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_SZIGETKOZ = listOf(
     Destination(
-        osmId = "4245013118",
+        id = "lipot_vadludak_kemping",
         name = "Vadludak kemping",
         town = "Lipót",
         type = DestinationType.CAMP,
@@ -3084,7 +3080,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_vadludak,
     ),
     Destination(
-        osmId = "72666312",
+        id = "dunasziget_denkpali_hallepcso",
         name = "Denkpáli hallépcső",
         town = "Dunasziget",
         type = DestinationType.RIVER,
@@ -3093,7 +3089,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_denkpali_hallepso,
     ),
     Destination(
-        osmId = "5860114",
+        id = "hedervar_kastely",
         name = "Héderváry-kastély",
         town = "Hédervár",
         type = DestinationType.PALACE,
@@ -3102,7 +3098,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_hedervary_kastely,
     ),
     Destination(
-        osmId = "5206237853",
+        id = "rajka_trianoni_zsilip",
         name = "Trianoni zsilip",
         town = "Rajka",
         type = DestinationType.WATER_TOUR,
@@ -3111,7 +3107,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_trianoni_zsilip,
     ),
     Destination(
-        osmId = "125142613",
+        id = "dunakiliti_vadviz_kemping",
         name = "Vadvíz Kemping",
         town = "Dunakiliti",
         type = DestinationType.CAMP,
@@ -3120,7 +3116,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_vadviz_kemping,
     ),
     Destination(
-        osmId = "10177239",
+        id = "cikolasziget_kisvesszosi_kemping",
         name = "Kisvesszősi kemping",
         town = "Cikolasziget",
         type = DestinationType.CAMP,
@@ -3129,7 +3125,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_kisvesszosi_kemping,
     ),
     Destination(
-        osmId = "12007558996",
+        id = "dunasziget_kajak_kenu_beszallohely",
         name = "Kajak-kenu beszállóhely Dunasziget",
         town = "Dunasziget",
         type = DestinationType.WATER_TOUR,
@@ -3138,7 +3134,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_kajak_kenu_beszallohely,
     ),
     Destination(
-        osmId = "10177241",
+        id = "dunasziget_tundersziget_okopark",
         name = "Tündérsziget Ökopark",
         town = "Dunasziget",
         type = DestinationType.CAMP,
@@ -3147,7 +3143,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_tundersziget_okopark,
     ),
     Destination(
-        osmId = "3456418319",
+        id = "dunaremete_dodo_vadfarm",
         name = "Dodó Vadfarm",
         town = "Dunaremete",
         type = DestinationType.WILDLIFE_PARK,
@@ -3156,7 +3152,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_dodo_vadfarm,
     ),
     Destination(
-        osmId = "87147359",
+        id = "asvanyraro_pokmacskasi_sziget",
         name = "Pókmacskási-sziget",
         town = "Ásványráró",
         type = DestinationType.ISLAND,
@@ -3165,7 +3161,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_pokmacskasi_sziget,
     ),
     Destination(
-        osmId = "1711605",
+        id = "dunaszeg_morotva_to",
         name = "Morotva-tó",
         town = "Dunaszeg",
         type = DestinationType.LAKE,
@@ -3174,7 +3170,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_morotva_to,
     ),
     Destination(
-        osmId = "493103534",
+        id = "asvanyraro_part_camping",
         name = "Part Camping Ásványráró",
         town = "Ásványráró",
         type = DestinationType.CAMP,
@@ -3183,7 +3179,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_part_camping_asvanyraro,
     ),
     Destination(
-        osmId = "556473916",
+        id = "asvanyraro_halrekesztoi_zaras",
         name = "Halrekesztői zárás",
         town = "Ásványráró",
         type = DestinationType.RIVER,
@@ -3192,7 +3188,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_halrekesztoi_zaras,
     ),
     Destination(
-        osmId = "117739131",
+        id = "asvanyraro_farkaslyuki_zaras",
         name = "Farkaslyuki zárás",
         town = "Ásványráró",
         type = DestinationType.RIVER,
@@ -3201,7 +3197,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
         description = SharedRes.strings.szigetkoz_farkaslyuki_zaras,
     ),
     Destination(
-        osmId = "5371412289",
+        id = "kunsziget_bolganyi_hid",
         name = "Bolgányi híd",
         town = "Kunsziget",
         type = DestinationType.RIVER,
@@ -3214,7 +3210,7 @@ val DESTINATIONS_SZIGETKOZ = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_SOPRON = listOf(
     Destination(
-        osmId = "975643338",
+        id = "sopron_karoly_magaslat",
         name = "Károly-magaslat",
         town = "Sopron",
         type = DestinationType.LOOKOUT,
@@ -3223,7 +3219,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_karoly_magaslat,
     ),
     Destination(
-        osmId = "130193141",
+        id = "sopron_szalamandra_to",
         name = "Szalamandra tó",
         town = "Sopron",
         type = DestinationType.LAKE,
@@ -3232,7 +3228,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_szalamandra_to,
     ),
     Destination(
-        osmId = "8591903955",
+        id = "sopron_varhely_hegycsucs",
         name = "Várhely hegycsúcs",
         town = "Sopron",
         type = DestinationType.LOOKOUT,
@@ -3241,7 +3237,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_varhely_hegycsucs,
     ),
     Destination(
-        osmId = "741502100",
+        id = "sopron_faber_ret",
         name = "Fáber-rét",
         town = "Sopron",
         type = DestinationType.MEADOW,
@@ -3250,7 +3246,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_faber_ret,
     ),
     Destination(
-        osmId = "2487847654",
+        id = "sopron_magas_berc",
         name = "Magas-bérc",
         town = "Sopron",
         type = DestinationType.PEAK,
@@ -3260,7 +3256,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_magas_berc,
     ),
     Destination(
-        osmId = "1123368979",
+        id = "sopron_erdo_haza_okoturisztikai_latogatokozpont",
         name = "Erdő Háza Ökoturisztikai Látogatóközpont",
         town = "Sopron",
         type = DestinationType.VISITOR_CENTRE,
@@ -3269,7 +3265,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_erdo_haza,
     ),
     Destination(
-        osmId = "83796198",
+        id = "sopron_lover_kalandpark",
         name = "Lővér kalandpark",
         town = "Sopron",
         type = DestinationType.ADVENTURE_PARK,
@@ -3278,7 +3274,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_lover_kalandpark,
     ),
     Destination(
-        osmId = "392323088",
+        id = "sopron_tolvaj_arok",
         name = "Tolvaj-árok",
         town = "Sopron",
         type = DestinationType.GORGE,
@@ -3287,7 +3283,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_tolvaj_arok,
     ),
     Destination(
-        osmId = "3470004310",
+        id = "sopron_cserkeszkapolna",
         name = "Cserkészkápolna",
         town = "Sopron",
         type = DestinationType.CHURCH,
@@ -3296,7 +3292,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_cserkeszkapolna,
     ),
     Destination(
-        osmId = "3086979997",
+        id = "sopron_tarodi_var",
         name = "Taródi vár",
         town = "Sopron",
         type = DestinationType.CASTLE,
@@ -3305,7 +3301,7 @@ val DESTINATIONS_SOPRON = listOf(
         description = SharedRes.strings.sopron_tarodi_var,
     ),
     Destination(
-        osmId = "108481384",
+        id = "sopron_autos_piheno",
         name = "Autós pihenő",
         town = "Sopron",
         type = DestinationType.CAMP,
@@ -3318,7 +3314,7 @@ val DESTINATIONS_SOPRON = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_FERTO = listOf(
     Destination(
-        osmId = "sarrod_sziki_oszirozsa",
+        id = "sarrod_sziki_oszirozsa",
         name = "Sziki őszirózsa tanösvény",
         town = "Sarród–Fertőújlak",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -3328,7 +3324,7 @@ val DESTINATIONS_FERTO = listOf(
         description = SharedRes.strings.ferto_sziki_oszirozsa_tanosveny,
     ),
     Destination(
-        osmId = "ferto_kecske_hegyi_kilato",
+        id = "ferto_kecske_hegyi_kilato",
         name = "Kecske-hegyi kilátó",
         town = "Fertőrákos",
         type = DestinationType.LOOKOUT,
@@ -3337,7 +3333,7 @@ val DESTINATIONS_FERTO = listOf(
         description = SharedRes.strings.ferto_kecske_hegyi_kilato,
     ),
     Destination(
-        osmId = "ferto_fertorakosi_kofejto",
+        id = "ferto_fertorakosi_kofejto",
         name = "Fertőrákosi kőfejtő",
         town = "Fertőrákos",
         type = DestinationType.GEOLOGICAL_SITE,
@@ -3346,7 +3342,7 @@ val DESTINATIONS_FERTO = listOf(
         description = SharedRes.strings.ferto_fertorakosi_kofejto,
     ),
     Destination(
-        osmId = "ferto_laszlomajor",
+        id = "ferto_laszlomajor",
         name = "Lászlómajor",
         town = "Sarród",
         type = DestinationType.VISITOR_CENTRE,
@@ -3355,7 +3351,7 @@ val DESTINATIONS_FERTO = listOf(
         description = SharedRes.strings.ferto_laszlomajor,
     ),
     Destination(
-        osmId = "ferto_kocsagvar",
+        id = "ferto_kocsagvar",
         name = "Kócsagvár",
         town = "Sarród",
         type = DestinationType.VISITOR_CENTRE,
@@ -3364,7 +3360,7 @@ val DESTINATIONS_FERTO = listOf(
         description = SharedRes.strings.ferto_kocsagvar,
     ),
     Destination(
-        osmId = "nagycenk_muzeumvasut",
+        id = "nagycenk_muzeumvasut",
         name = "Széchenyi Múzeumvasút",
         town = "Nagycenk",
         type = DestinationType.SCENIC_RAILWAY,
@@ -3377,7 +3373,7 @@ val DESTINATIONS_FERTO = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_KOSZEG = listOf(
     Destination(
-        osmId = "3596115326",
+        id = "bozsok_irott_ko",
         name = "Írott-kő",
         town = "Bozsok",
         type = DestinationType.PEAK,
@@ -3387,7 +3383,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_irott_ko,
     ),
     Destination(
-        osmId = "104050391",
+        id = "koszeg_jurisics_var",
         name = "Jurisics-vár",
         town = "Kőszeg",
         type = DestinationType.CASTLE,
@@ -3396,7 +3392,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_jurisics_var,
     ),
     Destination(
-        osmId = "3465143449",
+        id = "koszeg_kopasz_kendig",
         name = "Kopasz-Kendig",
         town = "Kőszeg",
         type = DestinationType.PEAK,
@@ -3405,7 +3401,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_kopasz_kendig,
     ),
     Destination(
-        osmId = "136982344",
+        id = "koszeg_ohaz_teto",
         name = "Óház-tető",
         town = "Kőszeg",
         type = DestinationType.LOOKOUT,
@@ -3414,7 +3410,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_ohaz_teto,
     ),
     Destination(
-        osmId = "1068903632",
+        id = "velem_hormann_forras",
         name = "Hörmann-forrás",
         town = "Velem",
         type = DestinationType.SPRING,
@@ -3423,7 +3419,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_hormann_forras,
     ),
     Destination(
-        osmId = "863091209",
+        id = "koszeg_hetforras",
         name = "Hétforrás",
         town = "Kőszeg",
         type = DestinationType.SPRING,
@@ -3432,7 +3428,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_hetforras,
     ),
     Destination(
-        osmId = "3465143451",
+        id = "koszeg_kalvaria_hegy",
         name = "Kálvária-hegy",
         town = "Kőszeg",
         type = DestinationType.PEAK,
@@ -3441,7 +3437,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_kalvaria_hegy,
     ),
     Destination(
-        osmId = "366174726",
+        id = "lockenhaus_leka_vara",
         name = "Léka vára",
         town = "Lockenhaus - Ausztria",
         type = DestinationType.CASTLE,
@@ -3450,7 +3446,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_leka_vara,
     ),
     Destination(
-        osmId = "11506012",
+        id = "rechnitz_rohonci_furdoto",
         name = "Rohonci-fürdőtó",
         town = "Rechnitz - Ausztria",
         type = DestinationType.LAKE,
@@ -3459,7 +3455,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_rohonci_furdoto,
     ),
     Destination(
-        osmId = "1112762210",
+        id = "cak_pincesor",
         name = "Cáki pincesor",
         town = "Cák",
         type = DestinationType.MUSEUM,
@@ -3468,7 +3464,7 @@ val DESTINATIONS_KOSZEG = listOf(
         description = SharedRes.strings.koszeg_caki_pincesor,
     ),
     Destination(
-        osmId = "velem_szent_vid",
+        id = "velem_szent_vid",
         name = "Szent Vid-kápolna",
         town = "Velem",
         type = DestinationType.CHURCH,
@@ -3482,7 +3478,7 @@ val DESTINATIONS_KOSZEG = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_ORSEG = listOf(
     Destination(
-        osmId = "236433422",
+        id = "szentgotthard_harsas_to",
         name = "Hársas-tó",
         town = "Szentgotthárd",
         type = DestinationType.LAKE,
@@ -3491,7 +3487,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_harsas_to,
     ),
     Destination(
-        osmId = "6433865666",
+        id = "csakanydoroszlo_raba_parti_kikotes",
         name = "Rába-parti kikötés",
         town = "Csákánydoroszló",
         type = DestinationType.WATER_TOUR,
@@ -3500,7 +3496,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_raba_kikotes,
     ),
     Destination(
-        osmId = "339559100",
+        id = "gussing_leka_vara",
         name = "Léka vára",
         town = "Güssing - Ausztria",
         type = DestinationType.CASTLE,
@@ -3509,7 +3505,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_burg_gussing,
     ),
     Destination(
-        osmId = "3009518816",
+        id = "magyarszombatfa_fazekas_haz",
         name = "Fazekas ház",
         town = "Magyarszombatfa",
         type = DestinationType.MUSEUM,
@@ -3518,7 +3514,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_fazekas_haz,
     ),
     Destination(
-        osmId = "3682897224",
+        id = "ketvolgy_katalin_hegy",
         name = "Katalin-hegy",
         town = "Kétvölgy",
         type = DestinationType.LOOKOUT,
@@ -3527,7 +3523,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_katalin_hegy,
     ),
     Destination(
-        osmId = "1039029900",
+        id = "szalafo_pityerszer",
         name = "Pityerszer",
         town = "Szalafő",
         type = DestinationType.MUSEUM,
@@ -3536,7 +3532,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_pityerszer,
     ),
     Destination(
-        osmId = "373716091",
+        id = "velemer_szentharomsag_templom",
         name = "Szentháromság-templom",
         town = "Velemér",
         type = DestinationType.CHURCH,
@@ -3545,7 +3541,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_szentharomsag_templom,
     ),
     Destination(
-        osmId = "3287592",
+        id = "hegyhatszentjakab_vadasa_to",
         name = "Vadása-tó",
         town = "Hegyhátszentjakab",
         type = DestinationType.LAKE,
@@ -3554,7 +3550,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_vadasa_to,
     ),
     Destination(
-        osmId = "278760958",
+        id = "pankasz_szoknyas_haranglab",
         name = "Szoknyás harangláb",
         town = "Pankasz",
         type = DestinationType.HISTORIC_SITE,
@@ -3563,7 +3559,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_szoknyas_haranglab,
     ),
     Destination(
-        osmId = "924961087",
+        id = "szalafo_bolenyles",
         name = "Szalafői bölényles",
         town = "Szalafő",
         type = DestinationType.WILDLIFE_PARK,
@@ -3572,7 +3568,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_szalafoi_bolenyles,
     ),
     Destination(
-        osmId = "474882790",
+        id = "felsoszolnok_harmashatarko",
         name = "Hármashatárkő",
         town = "Felsőszölnök",
         type = DestinationType.HISTORIC_SITE,
@@ -3581,7 +3577,7 @@ val DESTINATIONS_ORSEG = listOf(
         description = SharedRes.strings.orseg_harmashatarko,
     ),
     Destination(
-        osmId = "szoce_tozegmohas_tanosveny",
+        id = "szoce_tozegmohas_tanosveny",
         name = "Tőzegmohás láprét tanösvény",
         town = "Szőce",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -3594,8 +3590,7 @@ val DESTINATIONS_ORSEG = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_ZALA = listOf(
     Destination(
-        osmId = "1333129351",
-        relId = "5621422",
+        id = "zalakaros_csiga_tura_tanosveny",
         name = "Csiga-túra tanösvény",
         town = "Zalakaros",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -3604,7 +3599,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_csiga_tura_tanosveny,
     ),
     Destination(
-        osmId = "3804672702",
+        id = "iklodbordoce_lovegbunker",
         name = "Lövegbunker",
         town = "Iklódbördőce",
         type = DestinationType.HISTORIC_SITE,
@@ -3613,7 +3608,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_lovegbunker,
     ),
     Destination(
-        osmId = "3188865199",
+        id = "pusztaszentlaszlo_uj_hegy_kilato",
         name = "Új hegy kilátó",
         town = "Pusztaszentlászló",
         type = DestinationType.LOOKOUT,
@@ -3622,7 +3617,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_ujhegy_kilato,
     ),
     Destination(
-        osmId = "278755300",
+        id = "zalaegerszeg_gocseji_falumuzeum",
         name = "Göcseji Falumúzeum",
         town = "Zalaegerszeg",
         type = DestinationType.MUSEUM,
@@ -3631,7 +3626,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_gocseji_falumuzeum,
     ),
     Destination(
-        osmId = "1357191",
+        id = "egervar",
         name = "Egervár",
         town = "Egervár",
         type = DestinationType.CASTLE,
@@ -3640,7 +3635,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_egervar,
     ),
     Destination(
-        osmId = "2484951288",
+        id = "ujudvar_tukora_teto",
         name = "Tukora-tető",
         town = "Újudvar",
         type = DestinationType.PEAK,
@@ -3649,7 +3644,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_tukora_teto,
     ),
     Destination(
-        osmId = "5259394921",
+        id = "ujudvar_koszikla_szurdok",
         name = "Kőszikla-szurdok",
         town = "Újudvar",
         type = DestinationType.GORGE,
@@ -3658,7 +3653,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_koszikla_szurdok,
     ),
     Destination(
-        osmId = "3421982756",
+        id = "nagybakonak_eszperanto_forras",
         name = "Eszperantó forrás",
         town = "Nagybakónak",
         type = DestinationType.SPRING,
@@ -3667,7 +3662,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_kalocsay_forras,
     ),
     Destination(
-        osmId = "2900595027",
+        id = "zalaegerszeg_bazitai_tevetorony",
         name = "Bazitai tévétorony",
         town = "Zalaegerszeg",
         type = DestinationType.LOOKOUT,
@@ -3676,7 +3671,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_tv_torony,
     ),
     Destination(
-        osmId = "2924466664",
+        id = "vetyem_osbukkos",
         name = "Vétyemi-ősbükkös",
         town = "Vétyem",
         type = DestinationType.FOREST,
@@ -3685,7 +3680,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_vetyem_erdo,
     ),
     Destination(
-        osmId = "3298256",
+        id = "szecsisziget_bivalyrezervatum",
         name = "Bivalyrezervátum",
         town = "Szécsisziget",
         type = DestinationType.WILDLIFE_PARK,
@@ -3694,7 +3689,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_bivalyrezervatum,
     ),
     Destination(
-        osmId = "4466463",
+        id = "budafapuszta_arboretum",
         name = "Arborétum",
         town = "Budafapuszta",
         type = DestinationType.ARBORETUM,
@@ -3703,7 +3698,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_budafai_arboretum,
     ),
     Destination(
-        osmId = "2561608567",
+        id = "oltarc_var_hegy",
         name = "Vár-hegy",
         town = "Oltárc",
         type = DestinationType.PEAK,
@@ -3713,7 +3708,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_var_hegy,
     ),
     Destination(
-        osmId = "balatonmagyarod_kanyavari_sziget",
+        id = "balatonmagyarod_kanyavari_sziget",
         name = "Kányavári-sziget – Búbos vöcsök tanösvény",
         town = "Balatonmagyaród",
         type = DestinationType.ISLAND,
@@ -3723,7 +3718,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_kanyavari_sziget,
     ),
     Destination(
-        osmId = "zalakomar_bivalyrezervatum",
+        id = "zalakomar_bivalyrezervatum",
         name = "Kápolnapusztai Bivalyrezervátum",
         town = "Zalakomár–Kápolnapuszta",
         type = DestinationType.WILDLIFE_PARK,
@@ -3732,7 +3727,7 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_kapolnapusztai_bivalyrezervatum,
     ),
     Destination(
-        osmId = "csomoder_erdei_vasut",
+        id = "csomoder_erdei_vasut",
         name = "Csömödéri Állami Erdei Vasút",
         town = "Csömödér",
         type = DestinationType.SCENIC_RAILWAY,
@@ -3745,7 +3740,7 @@ val DESTINATIONS_ZALA = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
     Destination(
-        osmId = "balatonboglar_gombkilato",
+        id = "balatonboglar_gombkilato",
         name = "Xantus János Gömbkilátó",
         town = "Balatonboglár",
         type = DestinationType.LOOKOUT,
@@ -3755,7 +3750,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_gombkilato,
     ),
     Destination(
-        osmId = "fonyod_szaplonczay_setany",
+        id = "fonyod_szaplonczay_setany",
         name = "Szaplonczay sétány",
         town = "Fonyód",
         type = DestinationType.LOOKOUT,
@@ -3765,7 +3760,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_szaplonczay_setany,
     ),
     Destination(
-        osmId = "balatonlelle_kishegyi_kilato",
+        id = "balatonlelle_kishegyi_kilato",
         name = "Kishegyi kilátó",
         town = "Balatonlelle",
         type = DestinationType.LOOKOUT,
@@ -3775,7 +3770,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_kishegyi_kilato,
     ),
     Destination(
-        osmId = "zamardi_kohegyi_kilato",
+        id = "zamardi_kohegyi_kilato",
         name = "Kő-hegyi kilátó",
         town = "Zamárdi",
         type = DestinationType.LOOKOUT,
@@ -3785,7 +3780,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_kohegyi_kilato,
     ),
     Destination(
-        osmId = "balatonvilagos_csok_istvan_setany",
+        id = "balatonvilagos_csok_istvan_setany",
         name = "Csók István sétány – Magaspart",
         town = "Balatonvilágos",
         type = DestinationType.LOOKOUT,
@@ -3795,7 +3790,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_csok_istvan_setany,
     ),
     Destination(
-        osmId = "siofok_toreki_tavak",
+        id = "siofok_toreki_tavak",
         name = "Töreki-tavak tanösvény",
         town = "Siófok",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -3805,7 +3800,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_toreki_tavak,
     ),
     Destination(
-        osmId = "kereki_feherko_vara",
+        id = "kereki_feherko_vara",
         name = "Fehérkő vára",
         town = "Kereki",
         type = DestinationType.CASTLE_RUIN,
@@ -3814,7 +3809,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_feherko_vara,
     ),
     Destination(
-        osmId = "koroshegy_volgyhid_kilato",
+        id = "koroshegy_volgyhid_kilato",
         name = "Kőröshegyi völgyhíd kilátópont",
         town = "Kőröshegy",
         type = DestinationType.LOOKOUT,
@@ -3824,7 +3819,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_koroshegyi_volgyhid,
     ),
     Destination(
-        osmId = "4429755650",
+        id = "ropolypuszta_ropolyi_to",
         name = "Ropolyi-tó",
         town = "Ropolypuszta, Bőszénfa",
         type = DestinationType.LAKE,
@@ -3833,7 +3828,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_ropolyi_to,
     ),
     Destination(
-        osmId = "223357335",
+        id = "szigetvar_var",
         name = "Szigetvári vár",
         town = "Szigetvár",
         type = DestinationType.CASTLE,
@@ -3842,7 +3837,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_szigetvari_var,
     ),
     Destination(
-        osmId = "331095992",
+        id = "bukkosd_okopark",
         name = "Ökopark",
         town = "Bükkösd",
         type = DestinationType.WILDLIFE_PARK,
@@ -3851,7 +3846,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_okopark,
     ),
     Destination(
-        osmId = "361316060",
+        id = "zselickisfalud_zselici_csillagpark",
         name = "Zselici Csillagpark",
         town = "Zselickisfalud",
         type = DestinationType.OBSERVATORY,
@@ -3860,7 +3855,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_csillagpark,
     ),
     Destination(
-        osmId = "3106887",
+        id = "patca_katica_tanya",
         name = "Katica Tanya",
         town = "Patca",
         type = DestinationType.ADVENTURE_PARK,
@@ -3869,7 +3864,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_katica_tanya,
     ),
     Destination(
-        osmId = "1656398607",
+        id = "bakoca_hollofeszek",
         name = "Hollófészek",
         town = "Bakóca",
         type = DestinationType.PEAK,
@@ -3879,7 +3874,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_hollofeszek_kilato,
     ),
     Destination(
-        osmId = "kaszo_lombkorona_tanosveny",
+        id = "kaszo_lombkorona_tanosveny",
         name = "Kaszói Lombkorona Tanösvény",
         town = "Kaszó",
         type = DestinationType.CANOPY_WALK,
@@ -3888,7 +3883,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_kaszoi_lombkorona_tanosveny,
     ),
     Destination(
-        osmId = "kaposvar_deseda",
+        id = "kaposvar_deseda",
         name = "Deseda-tó és parkerdő",
         town = "Kaposvár",
         type = DestinationType.LAKE,
@@ -3897,7 +3892,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_deseda_to,
     ),
     Destination(
-        osmId = "labod_petesmalmi_vidrapark",
+        id = "labod_petesmalmi_vidrapark",
         name = "Petesmalmi Vidrapark",
         town = "Lábod–Petesmalom",
         type = DestinationType.WILDLIFE_PARK,
@@ -3906,7 +3901,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_petesmalmi_vidrapark,
     ),
     Destination(
-        osmId = "almamellek_erdei_vasut",
+        id = "almamellek_erdei_vasut",
         name = "Almamelléki Állami Erdei Vasút",
         town = "Almamellék",
         type = DestinationType.SCENIC_RAILWAY,
@@ -3915,7 +3910,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.zselic_almamelleki_erdei_vasut,
     ),
     Destination(
-        osmId = "balatonfenyves_gazdasagi_vasut",
+        id = "balatonfenyves_gazdasagi_vasut",
         name = "Balatonfenyvesi Gazdasági Vasút",
         town = "Balatonfenyves",
         type = DestinationType.SCENIC_RAILWAY,
@@ -3924,7 +3919,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_balatonfenyvesi_kisvasut,
     ),
     Destination(
-        osmId = "kaszo_erdei_vasut",
+        id = "kaszo_erdei_vasut",
         name = "Kaszói Állami Erdei Vasút",
         town = "Kaszó",
         type = DestinationType.SCENIC_RAILWAY,
@@ -3933,7 +3928,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         description = SharedRes.strings.somogyi_dombsag_kaszoi_erdei_vasut,
     ),
     Destination(
-        osmId = "balatonboglar_kalandpark",
+        id = "balatonboglar_kalandpark",
         name = "Balatonboglári Kalandpark",
         town = "Balatonboglár",
         type = DestinationType.ADVENTURE_PARK,
@@ -3946,7 +3941,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_MECSEK = listOf(
     Destination(
-        osmId = "707254947",
+        id = "abaliget_barlang",
         name = "Abaligeti Barlang",
         town = "Abaliget",
         type = DestinationType.CAVE_GUIDE_REQUIRED,
@@ -3955,7 +3950,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_abaligeti_barlang,
     ),
     Destination(
-        osmId = "3440814422",
+        id = "orfu_balazs_hegy",
         name = "Balázs-hegy",
         town = "Orfű",
         type = DestinationType.PEAK,
@@ -3964,7 +3959,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_balazs_hegy,
     ),
     Destination(
-        osmId = "538736357",
+        id = "pecs_flora_piheno",
         name = "Flóra pihenő",
         town = "Pécs",
         type = DestinationType.LOOKOUT,
@@ -3973,7 +3968,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_flora_piheno,
     ),
     Destination(
-        osmId = "347570607",
+        id = "pecs_misina_csucs",
         name = "Misina csúcs",
         town = "Pécs",
         type = DestinationType.PEAK,
@@ -3982,7 +3977,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_misina,
     ),
     Destination(
-        osmId = "347570897",
+        id = "pecs_tubes_csucs",
         name = "Tubes csúcs",
         town = "Pécs",
         type = DestinationType.PEAK,
@@ -3991,7 +3986,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_tubes,
     ),
     Destination(
-        osmId = "536482014",
+        id = "hosszuheteny_zengo",
         name = "Zengő",
         town = "Hosszúhetény",
         type = DestinationType.PEAK,
@@ -4001,7 +3996,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_zengo,
     ),
     Destination(
-        osmId = "334558240",
+        id = "hosszuheteny_hidasi_volgy",
         name = "Hidasi-völgy",
         town = "Hosszúhetény",
         type = DestinationType.VALLEY,
@@ -4010,7 +4005,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_hidasi_volgy,
     ),
     Destination(
-        osmId = "72524498",
+        id = "magyaregregy_mare_vara",
         name = "Máré vára",
         town = "Magyaregregy",
         type = DestinationType.CASTLE,
@@ -4019,7 +4014,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_mare_vara,
     ),
     Destination(
-        osmId = "765098839",
+        id = "manfa_agnes_vizeses",
         name = "Ágnes-vízesés",
         town = "Mánfa",
         type = DestinationType.WATERFALL,
@@ -4028,7 +4023,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_agnes_vizeses,
     ),
     Destination(
-        osmId = "334494840",
+        id = "pecs_melegmanyi_volgy",
         name = "Melegmányi-völgy",
         town = "Pécs",
         type = DestinationType.VALLEY,
@@ -4037,7 +4032,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_melegmanyi_volgy,
     ),
     Destination(
-        osmId = "334494841",
+        id = "pecs_nagy_mely_volgy",
         name = "Nagy-Mély-völgy",
         town = "Pécs",
         type = DestinationType.VALLEY,
@@ -4046,7 +4041,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_nagy_mely_volgy,
     ),
     Destination(
-        osmId = "12604219193",
+        id = "kovagoszolos_babas_szerkovek",
         name = "Babás szerkövek",
         town = "Kővágószőlős",
         type = DestinationType.ROCK,
@@ -4055,7 +4050,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_babas_szerkovek,
     ),
     Destination(
-        osmId = "538390422",
+        id = "kovagoszolos_zsongor_ko",
         name = "Zsongor kő",
         town = "Kővágószőlős",
         type = DestinationType.ROCK,
@@ -4065,7 +4060,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_zsongor_ko,
     ),
     Destination(
-        osmId = "459123191",
+        id = "hosszuheteny_kis_toti_volgy",
         name = "Kis-tóti-völgy",
         town = "Hosszúhetény",
         type = DestinationType.VALLEY,
@@ -4074,7 +4069,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_kis_toti_volgy,
     ),
     Destination(
-        osmId = "8698898758",
+        id = "hosszuheteny_komorzsolo_orias",
         name = "Kőmorzsoló óriás",
         town = "Hosszúhetény",
         type = DestinationType.STATUE,
@@ -4083,7 +4078,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_komorzsolo_orias,
     ),
     Destination(
-        osmId = "459123187",
+        id = "obanya_volgy",
         name = "Óbányai-völgy",
         town = "Óbánya",
         type = DestinationType.VALLEY,
@@ -4092,7 +4087,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_obanyai_volgy,
     ),
     Destination(
-        osmId = "3442312434",
+        id = "hosszuheteny_ferde_vizeses",
         name = "Ferde vízesés",
         town = "Hosszúhetény",
         type = DestinationType.WATERFALL,
@@ -4101,7 +4096,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_ferde_vizeses,
     ),
     Destination(
-        osmId = "2334890185",
+        id = "komlo_koves_teto",
         name = "Köves-tető",
         town = "Komló",
         type = DestinationType.PEAK,
@@ -4110,7 +4105,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_koves_teto,
     ),
     Destination(
-        osmId = "4931896935",
+        id = "orfu_cigany_hegy",
         name = "Cigány-hegy",
         town = "Orfű",
         type = DestinationType.PEAK,
@@ -4119,7 +4114,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_cigany_hegy,
     ),
     Destination(
-        osmId = "348252305",
+        id = "kovagoszolos_jakab_hegy",
         name = "Jakab hegy",
         town = "Kővágószőlős",
         type = DestinationType.PEAK,
@@ -4128,7 +4123,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_jakab_hegy,
     ),
     Destination(
-        osmId = "orfu_malmok",
+        id = "orfu_malmok",
         name = "Orfűi Malmok",
         town = "Orfű",
         type = DestinationType.MUSEUM,
@@ -4137,7 +4132,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_orfui_malmok,
     ),
     Destination(
-        osmId = "hosszuheteny_puspokszentlaszlo",
+        id = "hosszuheteny_puspokszentlaszlo",
         name = "Püspökszentlászlói kastély és arborétum",
         town = "Hosszúhetény–Püspökszentlászló",
         type = DestinationType.ARBORETUM,
@@ -4146,7 +4141,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_puspokszentlaszlo_arboretum,
     ),
     Destination(
-        osmId = "pecs_mecseki_kisvasut",
+        id = "pecs_mecseki_kisvasut",
         name = "Mecseki Kisvasút",
         town = "Pécs",
         type = DestinationType.SCENIC_RAILWAY,
@@ -4155,7 +4150,7 @@ val DESTINATIONS_MECSEK = listOf(
         description = SharedRes.strings.mecsek_mecseki_kisvasut,
     ),
     Destination(
-        osmId = "pecs_mecsextrem_park",
+        id = "pecs_mecsextrem_park",
         name = "Mecsextrém Park",
         town = "Pécs",
         type = DestinationType.ADVENTURE_PARK,
@@ -4168,7 +4163,7 @@ val DESTINATIONS_MECSEK = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_VILLANY = listOf(
     Destination(
-        osmId = "3445424849",
+        id = "harkany_kopasz_hegy_siklosi",
         name = "Kopasz-hegy Siklósi",
         town = "Harkány",
         type = DestinationType.PEAK, // Nem a legmagasabb
@@ -4177,7 +4172,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_kopasz_hegy,
     ),
     Destination(
-        osmId = "16271309",
+        id = "nagyharsany_szoborpark",
         name = "Nagyharsányi szoborpark",
         town = "Nagyharsány",
         type = DestinationType.MUSEUM,
@@ -4186,7 +4181,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_nagyharsanyi_szoborpark,
     ),
     Destination(
-        osmId = "263411441",
+        id = "siklos_malkocs_bej_dzsami",
         name = "Malkocs-bej dzsámi",
         town = "Siklós",
         type = DestinationType.CHURCH,
@@ -4195,7 +4190,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_malkocs_bej_dzsami,
     ),
     Destination(
-        osmId = "2334890170",
+        id = "kistotfalu_csukma_hegy",
         name = "Csukma-hegy",
         town = "Kistótfalu",
         type = DestinationType.PEAK,
@@ -4204,8 +4199,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_csukma_hegy,
     ),
     Destination(
-        osmId = "3445424830",
-        relId = "12883946",
+        id = "mariagyud_csodabogyo_tanosveny",
         name = "Csodabogyó tanösvény",
         town = "Máriagyűd",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -4214,7 +4208,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_csodabogyo_tanosveny,
     ),
     Destination(
-        osmId = "1075894355",
+        id = "nagyharsany_szarsomlyo",
         name = "Szársomlyó",
         town = "Nagyharsány",
         type = DestinationType.PEAK,
@@ -4224,7 +4218,7 @@ val DESTINATIONS_VILLANY = listOf(
         description = SharedRes.strings.villany_szarsomlyo,
     ),
     Destination(
-        osmId = "1370571",
+        id = "siklos_var",
         name = "Siklósi Vár",
         town = "Siklós",
         type = DestinationType.CASTLE,
@@ -4236,7 +4230,7 @@ val DESTINATIONS_VILLANY = listOf(
 
 val DESTINATIONS_GEMENC = listOf(
     Destination(
-        osmId = "porboly_gemenci_vasut",
+        id = "porboly_gemenci_vasut",
         name = "Gemenci Erdei Vasút",
         town = "Pörböly",
         type = DestinationType.SCENIC_RAILWAY,
@@ -4245,7 +4239,7 @@ val DESTINATIONS_GEMENC = listOf(
         description = SharedRes.strings.gemenc_erdei_vasut,
     ),
     Destination(
-        osmId = "porboly_titan",
+        id = "porboly_titan",
         name = "Pörbölyi Titán",
         town = "Pörböly",
         type = DestinationType.FOREST,
@@ -4254,7 +4248,7 @@ val DESTINATIONS_GEMENC = listOf(
         description = SharedRes.strings.gemenc_porbolyi_titan,
     ),
     Destination(
-        osmId = "gemenc_dunapart_forgo_tavi_tanosveny",
+        id = "gemenc_dunapart_forgo_tavi_tanosveny",
         name = "Gemenc-Dunapart és a Forgó-tavi tanösvény",
         town = "Gemenc",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -4264,7 +4258,7 @@ val DESTINATIONS_GEMENC = listOf(
         description = SharedRes.strings.gemenc_dunapart_forgo_tavi_tanosveny,
     ),
     Destination(
-        osmId = "gemenc_nagyrezet",
+        id = "gemenc_nagyrezet",
         name = "Nagyrezét – Vadmegfigyelő és Méhészeti Gyűjtemény",
         town = "Gemenc",
         type = DestinationType.MUSEUM,
@@ -4274,7 +4268,7 @@ val DESTINATIONS_GEMENC = listOf(
         description = SharedRes.strings.gemenc_nagyrezet,
     ),
     Destination(
-        osmId = "porboly_gemenci_okoturisztikai_kozpont",
+        id = "porboly_gemenci_okoturisztikai_kozpont",
         name = "Gemenci Ökoturisztikai Központ",
         town = "Pörböly",
         type = DestinationType.VISITOR_CENTRE,
@@ -4287,7 +4281,7 @@ val DESTINATIONS_GEMENC = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
     Destination(
-        osmId = "ocsa_selyem_reti_tanosveny",
+        id = "ocsa_selyem_reti_tanosveny",
         name = "Selyem-réti tanösvény",
         town = "Ócsa",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -4296,7 +4290,7 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         description = SharedRes.strings.no_landscape_selyem_reti_tanosveny,
     ),
     Destination(
-        osmId = "debrecen_zsuzsi_erdei_vasut",
+        id = "debrecen_zsuzsi_erdei_vasut",
         name = "Zsuzsi Erdei Vasút",
         town = "Debrecen",
         type = DestinationType.SCENIC_RAILWAY,
@@ -4305,7 +4299,7 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         description = SharedRes.strings.no_landscape_zsuzsi_erdei_vasut,
     ),
     Destination(
-        osmId = "kam_jeli_arboretum",
+        id = "kam_jeli_arboretum",
         name = "Jeli Arborétum",
         town = "Kám",
         type = DestinationType.ARBORETUM,
@@ -4314,7 +4308,7 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         description = SharedRes.strings.no_landscape_jeli_arboretum,
     ),
     Destination(
-        osmId = "pannonhalma_lombkoronaosveny",
+        id = "pannonhalma_lombkoronaosveny",
         name = "Pannonhalmi lombkoronaösvény",
         town = "Pannonhalma",
         type = DestinationType.CANOPY_WALK,
@@ -4323,7 +4317,7 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         description = SharedRes.strings.no_landscape_pannonhalmi_lombkoronaosveny,
     ),
     Destination(
-        osmId = "lengyel_annafurdo_lombkorona",
+        id = "lengyel_annafurdo_lombkorona",
         name = "Annafürdői lombkoronaösvény",
         town = "Lengyel–Annafürdő",
         type = DestinationType.CANOPY_WALK,

@@ -134,7 +134,7 @@ class RoutePlannerViewModelTest {
 
     private fun destination(name: String): Destination =
         Destination(
-            osmId = name,
+            id = name,
             name = name,
             town = "Pilisszentkereszt",
             type = DestinationType.WATERFALL,

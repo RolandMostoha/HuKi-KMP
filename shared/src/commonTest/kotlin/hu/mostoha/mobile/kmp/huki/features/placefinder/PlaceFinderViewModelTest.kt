@@ -68,7 +68,7 @@ class PlaceFinderViewModelTest {
     private val analyticsService = FakeAnalyticsService()
     private val mapCameraStore = DefaultMapCameraStore()
     private val kekesteto = Destination(
-        osmId = "1",
+        id = "1",
         name = "Kékestető",
         town = "Mátraszentimre",
         type = DestinationType.PEAK,
@@ -786,7 +786,7 @@ class PlaceFinderViewModelTest {
                 location = Location(47.7181, 18.8948),
             )
             val destination = Destination(
-                osmId = "d1",
+                id = "d1",
                 name = "Dobogó-tető",
                 town = "Pilisszentkereszt",
                 type = DestinationType.PEAK,

@@ -461,4 +461,4 @@ val Landscapes = listOf(
 )
 
 val LandscapeByDestinationId: Map<String, Landscape> =
-    Landscapes.flatMap { landscape -> landscape.destinations.map { it.osmId to landscape } }.toMap()
+    Landscapes.flatMap { landscape -> landscape.destinations.map { it.id to landscape } }.toMap()

@@ -287,13 +287,13 @@ class DestinationsViewModelTest {
                 areaTags = emptyMap(),
             )
 
-        fun destination(osmId: String, name: String, popularity: Int): Destination =
+        fun destination(id: String, name: String, popularity: Int): Destination =
             Destination(
-                osmId = osmId,
+                id = id,
                 name = name,
-                town = "Town $osmId",
+                town = "Town $id",
                 type = DestinationType.PEAK,
-                location = Location(47.0 + osmId.toInt() / 100.0, 19.0),
+                location = Location(47.0 + id.toInt() / 100.0, 19.0),
                 description = SharedRes.strings.bukk_fatyol_vizeses,
                 popularity = popularity,
             )

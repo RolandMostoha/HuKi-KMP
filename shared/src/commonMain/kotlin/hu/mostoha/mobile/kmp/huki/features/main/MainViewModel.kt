@@ -173,7 +173,7 @@ class MainViewModel(
             is MainUiEvents.SearchDestinationSelected -> showSearchDestination(event.destination)
             is MainUiEvents.SearchResultPlaceHistorySelected -> showSearchResultPlaceHistory(event.place)
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
-            is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
+            is MainUiEvents.DestinationSelected -> showDestinationById(event.id)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // Discover events
             MainUiEvents.DiscoverClicked -> showSheet(Sheet.Discover)
@@ -390,8 +390,8 @@ class MainViewModel(
         showPlace(destination.toPlace(), PlaceDetailsSource.DESTINATION)
     }
 
-    private fun showDestinationById(osmId: String) {
-        val destination = destinationRepository.requireDestination(osmId)
+    private fun showDestinationById(id: String) {
+        val destination = destinationRepository.requireDestination(id)
         analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
         showDestination(destination)
     }
@@ -1285,7 +1285,7 @@ class MainViewModel(
 
     private fun selectLandscapesDestination(destination: Destination) {
         analyticsService.logEvent(AnalyticsEvent.LandscapesDestinationClicked(destination.name))
-        _uiState.updateLandscapesUiState { it.copy(selectedDestinationId = destination.osmId) }
+        _uiState.updateLandscapesUiState { it.copy(selectedDestinationId = destination.id) }
         viewModelScope.launch {
             centerCameraOn(destination)
         }

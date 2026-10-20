@@ -89,7 +89,7 @@ private fun DestinationPreviewBottomSheetPreview() {
 }
 
 private val previewDestination = Destination(
-    osmId = "1",
+    id = "1",
     name = "Kékestető",
     town = "Mátraszentimre",
     type = DestinationType.PEAK,

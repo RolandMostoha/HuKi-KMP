@@ -56,7 +56,7 @@ class DefaultDestinationRepository(private val random: Random = Random.Default) 
             .take(limit)
     }
 
-    override fun requireDestination(osmId: String): Destination = ALL_DESTINATIONS.first { it.osmId == osmId }
+    override fun requireDestination(id: String): Destination = ALL_DESTINATIONS.first { it.id == id }
 
     override fun getLandscapes(): List<Landscape> = Landscapes
 

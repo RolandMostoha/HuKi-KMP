@@ -72,14 +72,14 @@ struct DestinationGroupRowView: View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 8) {
-                    ForEach(destinations, id: \.osmId) { destination in
+                    ForEach(destinations, id: \.id) { destination in
                         LandscapeDestinationCardView(
                             strings: strings,
                             destination: destination,
-                            isSelected: destination.osmId == selectedDestinationId,
+                            isSelected: destination.id == selectedDestinationId,
                             onClick: { onDestinationClick(destination) }
                         )
-                        .id(destination.osmId)
+                        .id(destination.id)
                     }
                 }
                 .padding(.horizontal, 12)

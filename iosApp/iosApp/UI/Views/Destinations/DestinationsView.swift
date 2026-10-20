@@ -132,7 +132,7 @@ struct DestinationsView: View {
                 .padding(.bottom, 6)
                 .padding(.top, 12)
             VStack(spacing: 0) {
-                ForEach(Array(landscape.destinations.enumerated()), id: \.element.osmId) { index, destination in
+                ForEach(Array(landscape.destinations.enumerated()), id: \.element.id) { index, destination in
                     DestinationRowView(
                         strings: strings,
                         destination: destination,
@@ -172,7 +172,7 @@ struct DestinationsView: View {
 
     private func tabRows(_ items: [DestinationListItem], prefix: String) -> [TabRow] {
         items.enumerated().map { offset, item in
-            TabRow(id: "\(prefix)-\(item.destination.osmId)", index: offset, item: item)
+            TabRow(id: "\(prefix)-\(item.destination.id)", index: offset, item: item)
         }
     }
 
@@ -336,7 +336,7 @@ private struct DestinationPreviewItem: Identifiable {
     let landscapeText: String?
     let distanceText: String?
 
-    var id: String { destination.osmId }
+    var id: String { destination.id }
 }
 
 private extension View {

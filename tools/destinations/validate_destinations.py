@@ -21,9 +21,11 @@ def display_length(text):
 
 def validate():
     source = (DATA / "Destinations.kt").read_text()
-    ids = re.findall(r'osmId = "([^"]+)"', source)
+    ids = re.findall(r'^        id = "([^"]+)"', source, re.M)
     duplicates = [tag for tag, count in Counter(ids).items() if count > 1]
     assert not duplicates, f"Duplicate destination IDs: {duplicates}"
+    invalid_ids = [tag for tag in ids if not re.fullmatch(r"[a-z0-9]+(?:_[a-z0-9]+)*", tag)]
+    assert not invalid_ids, f"Destination IDs must be snake_case slugs: {invalid_ids}"
     descriptions = {}
     for locale in ("base", "hu"):
         items = ET.parse(RESOURCES / locale / "strings_destinations.xml").getroot()

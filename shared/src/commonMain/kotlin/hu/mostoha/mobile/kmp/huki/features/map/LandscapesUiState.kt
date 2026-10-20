@@ -39,5 +39,5 @@ data class LandscapesUiState(
     }
 
     val selectedDestination: Destination?
-        get() = destinations.firstOrNull { it.osmId == selectedDestinationId }
+        get() = destinations.firstOrNull { it.id == selectedDestinationId }
 }

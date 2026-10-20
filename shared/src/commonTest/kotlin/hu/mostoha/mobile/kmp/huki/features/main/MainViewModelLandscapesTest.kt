@@ -74,7 +74,7 @@ class MainViewModelLandscapesTest {
 
     private companion object {
         private val TEST_DESTINATION_PEAK = Destination(
-            osmId = "1",
+            id = "1",
             name = "Kékestető",
             town = "Mátraszentimre",
             type = DestinationType.PEAK,
@@ -83,7 +83,7 @@ class MainViewModelLandscapesTest {
             popularity = 10,
         )
         private val TEST_DESTINATION_RIVER = Destination(
-            osmId = "2",
+            id = "2",
             name = "Fátyol-vízesés",
             town = "Szilvásvárad",
             type = DestinationType.RIVER,

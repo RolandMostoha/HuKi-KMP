@@ -97,7 +97,7 @@ fun MainScreen(
     onOpenGpxConsumed: () -> Unit = {},
     openPlace: Pair<OsmType, String>? = null,
     onOpenPlaceConsumed: () -> Unit = {},
-    openDestinationOsmId: String? = null,
+    openDestinationId: String? = null,
     onOpenDestinationConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
@@ -123,9 +123,9 @@ fun MainScreen(
         }
     }
 
-    LaunchedEffect(openDestinationOsmId) {
-        openDestinationOsmId?.let { osmId ->
-            viewModel.onEvent(MainUiEvents.DestinationSelected(osmId))
+    LaunchedEffect(openDestinationId) {
+        openDestinationId?.let { id ->
+            viewModel.onEvent(MainUiEvents.DestinationSelected(id))
             onOpenDestinationConsumed()
         }
     }

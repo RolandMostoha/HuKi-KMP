@@ -100,7 +100,7 @@ class MainViewModelTest {
 
     private companion object {
         private val TEST_DESTINATION = Destination(
-            osmId = "1",
+            id = "1",
             name = "Kékestető",
             town = "Mátraszentimre",
             type = DestinationType.PEAK,
@@ -1517,16 +1517,16 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given known osmId - When DestinationSelected - Then UpdateCamera to destination location and visit recorded`() {
+    fun `Given known id - When DestinationSelected - Then UpdateCamera to destination location and visit recorded`() {
         runTest {
-            every { destinationRepository.requireDestination(TEST_DESTINATION.osmId) } returns TEST_DESTINATION
+            every { destinationRepository.requireDestination(TEST_DESTINATION.id) } returns TEST_DESTINATION
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
 
-                viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.osmId))
+                viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.id))
 
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
                     target = CameraTarget.Center(TEST_DESTINATION.location, zoom = 16.0),

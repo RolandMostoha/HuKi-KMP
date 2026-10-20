@@ -69,7 +69,7 @@ class DefaultPlaceHistoryRepositoryTest {
     fun `Given destination place - When recordVisit - Then dao upsert is called with the mapped entity`() {
         runTest {
             val destination = Destination(
-                osmId = "456",
+                id = "456",
                 name = "Kékestető",
                 town = "Mátraszentimre",
                 type = DestinationType.PEAK,

@@ -61,8 +61,7 @@ struct LandscapeDestinationCardView: View {
 
 #Preview {
     let destination = Destination(
-        osmId: "1",
-        relId: nil,
+        id: "1",
         name: "Kékestető",
         town: "Mátraszentimre",
         type: .peak,
