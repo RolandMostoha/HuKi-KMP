@@ -10,6 +10,8 @@ struct DestinationCardView: View {
 
     private let cardWidth: CGFloat = 180
     private let cardHeight: CGFloat = 190
+    private let contentPadding: CGFloat = 14
+    private let expandedTextTopInset: CGFloat = -6
 
     var body: some View {
         ZStack {
@@ -26,38 +28,27 @@ struct DestinationCardView: View {
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        ZStack(alignment: .top) {
+            textBlock
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                .padding(.top, expanded ? expandedTextTopInset : 0)
             HStack(alignment: .center, spacing: 2) {
                 if !expanded {
-                    typeChip
+                    DestinationTypeChipView(
+                        strings: strings,
+                        type: destination.type,
+                        font: .system(size: 11, weight: .semibold),
+                        horizontalPadding: 10,
+                        verticalPadding: 6
+                    )
                 }
                 Spacer(minLength: 0)
                 expandButton
             }
-            Spacer(minLength: 12)
-            textBlock
         }
-        .padding(14)
+        .padding(contentPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .animation(.easeInOut(duration: 0.2), value: expanded)
-    }
-
-    private var typeChip: some View {
-        HStack(spacing: 6) {
-            Image(uiImage: destination.type.iconRes.toUIImage()!)
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 16, height: 16)
-                .foregroundStyle(chipTint)
-            Text(strings.get(id: destination.type.title))
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(chipTint)
-                .lineLimit(1)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(SwiftUI.Color(.systemBackground), in: .capsule)
     }
 
     private var textBlock: some View {
@@ -67,6 +58,7 @@ struct DestinationCardView: View {
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+                .layoutPriority(1)
             HStack(alignment: .center, spacing: 4) {
                 Image(systemName: "mappin.and.ellipse")
                     .font(.system(size: 11, weight: .medium))
@@ -76,12 +68,12 @@ struct DestinationCardView: View {
                     .padding(.leading, 2)
             }
             .foregroundStyle(.white.opacity(0.9))
+            .layoutPriority(1)
             Text(strings.get(id: destination.description_))
                 .font(.system(size: 12))
                 .foregroundStyle(.white.opacity(0.85))
-                .padding(.top, 4)
+                .padding(.top, expanded ? 0 : 4)
                 .lineLimit(expanded ? nil : 1)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -91,7 +83,7 @@ struct DestinationCardView: View {
                 .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(width: 24, height: 24)
-                .background(.black.opacity(0.28), in: .circle)
+                .background(.black.opacity(0.6), in: .circle)
         })
         .buttonStyle(.plain)
         .accessibilityLabel(strings.get(id: SharedRes.strings().destinations_a11y_info))
@@ -100,10 +92,6 @@ struct DestinationCardView: View {
 
     private var typeColor: SwiftUI.Color {
         SwiftUI.Color(destination.type.colorRes.getUIColor())
-    }
-
-    private var chipTint: SwiftUI.Color {
-        SwiftUI.Color(destination.type.colorRes.getUIColor().categoryTint())
     }
 
     private var gradientOverlay: some View {

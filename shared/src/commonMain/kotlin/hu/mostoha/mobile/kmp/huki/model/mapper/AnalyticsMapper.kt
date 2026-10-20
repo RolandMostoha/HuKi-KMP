@@ -54,6 +54,7 @@ fun Sheet?.toScreen(): Screen =
         is Sheet.WhatsNew -> Screen.WHATS_NEW
         Sheet.Discover -> Screen.DISCOVER
         Sheet.Okt -> Screen.OKT
+        Sheet.Landscapes -> Screen.LANDSCAPES
     }
 
 fun OktType.toBlueTrail(): BlueTrail =

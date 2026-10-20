@@ -22,6 +22,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
+import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
@@ -33,6 +34,7 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
+import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
@@ -60,6 +62,7 @@ val appModule = module {
     single<DestinationRepository> { DefaultDestinationRepository() }
     single<MapCameraStore> { DefaultMapCameraStore() }
     single<OktRepository> { DefaultOktRepository(get(), get(named(Dispatcher.Default))) }
+    single<LandscapeRepository> { DefaultLandscapeRepository(get(), get(named(Dispatcher.Default))) }
     single {
         get<RoomDatabase.Builder<HukiDatabase>>()
             .setDriver(BundledSQLiteDriver())
@@ -80,7 +83,7 @@ val appModule = module {
 val viewModelModule = module {
     viewModel {
         MainViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
             get(named(Dispatcher.Default)),
         )
     }

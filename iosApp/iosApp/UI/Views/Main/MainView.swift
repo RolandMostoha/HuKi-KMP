@@ -8,6 +8,7 @@ struct MainView: View {
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
     @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
+    @State var landscapesDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var screenHeight: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
@@ -38,6 +39,10 @@ struct MainView: View {
 
     var oktDetentHeight: CGFloat {
         Dimens.oktDetentHeight(screenHeight: screenHeight)
+    }
+
+    var landscapesDetentHeight: CGFloat {
+        Dimens.landscapesDetentHeight(screenHeight: screenHeight)
     }
 
     var routePlannerSheetHeight: CGFloat {
@@ -99,10 +104,13 @@ struct MainView: View {
                     onOktInfoWindowDismissed: {
                         viewModel.onEvent(event: OktUiEventsOktInfoWindowDismissed.shared)
                     },
+                    onLandscapesEvent: { event in
+                        viewModel.onEvent(event: event)
+                    },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
                     routePlannerSheetHeight: routePlannerSheetHeight,
-                    oktSheetHeight: oktDetentHeight
+                    listSheetHeight: uiState.mapUiState.landscapes != nil ? landscapesDetentHeight : oktDetentHeight
                 )
                 VStack {
                     Spacer()
@@ -176,6 +184,7 @@ struct MainView: View {
                 }
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
+                landscapesResumeButton(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -304,6 +313,21 @@ private extension MainView {
                     viewModel.onEvent(event: OktUiEventsOktResumeClicked.shared)
                 }
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            .safeAreaPadding(.horizontal)
+            .padding(.leading, 11)
+            .padding(.bottom, isLandscape ? 12 : 0)
+            .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
+            .transition(.scale.combined(with: .opacity))
+        }
+    }
+
+    @ViewBuilder
+    func landscapesResumeButton(uiState: MainUiState) -> some View {
+        if uiState.sheet == nil, let landscapes = uiState.mapUiState.landscapes {
+            LandscapesResumeButton(strings: strings, grouping: landscapes.grouping) {
+                viewModel.onEvent(event: LandscapesUiEventsLandscapesResumeClicked.shared)
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             .safeAreaPadding(.horizontal)
             .padding(.leading, 11)

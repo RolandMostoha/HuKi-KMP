@@ -71,7 +71,7 @@ class PlaceFinderViewModelTest {
         osmId = "1",
         name = "Kékestető",
         town = "Mátraszentimre",
-        type = DestinationType.HIGHEST_PEAK,
+        type = DestinationType.PEAK,
         location = Location(47.8721, 20.0102),
         description = SharedRes.strings.destinations_type_peak,
         popularity = 10,

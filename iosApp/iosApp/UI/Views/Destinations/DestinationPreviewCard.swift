@@ -16,11 +16,18 @@ struct DestinationPreviewCard: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 8) {
-                typeChip
+                DestinationTypeChipView(strings: strings, type: destination.type)
                 Spacer(minLength: 8)
                 if let distanceText {
                     distanceChip(distanceText)
                 }
+            }
+            if !destination.challenges.isEmpty {
+                Text(challengesText)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 8)
             }
             Spacer(minLength: 0)
                 .frame(height: 56)
@@ -37,22 +44,11 @@ struct DestinationPreviewCard: View {
         }
     }
 
-    private var typeChip: some View {
-        HStack(spacing: 6) {
-            Image(uiImage: destination.type.iconRes.toUIImage()!)
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 16, height: 16)
-                .foregroundStyle(chipTint)
-            Text(strings.get(id: destination.type.title))
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(chipTint)
-                .lineLimit(1)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .background(SwiftUI.Color(.systemBackground), in: .capsule)
+    private var challengesText: String {
+        destination.challenges
+            .sorted { $0.ordinal < $1.ordinal }
+            .map { strings.get(id: $0.title) }
+            .joined(separator: " · ")
     }
 
     private func distanceChip(_ text: String) -> some View {

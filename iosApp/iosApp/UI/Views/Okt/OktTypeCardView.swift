@@ -16,6 +16,8 @@ struct OktTypeCardView: View {
                 type.icon.swiftUIImage
                     .resizable()
                     .scaledToFit()
+                    .frame(height: 40)
+                    .padding(.horizontal, 8)
                     .frame(height: 44)
                     .accessibilityHidden(true)
                 Text(title)

@@ -50,7 +50,7 @@ extension Shared.ContentPadding {
     func edgeInsets(
         isLandscape: Bool,
         routePlannerSheetHeight: CGFloat,
-        oktSheetHeight: CGFloat
+        listSheetHeight: CGFloat
     ) -> SwiftUI.EdgeInsets {
         switch self {
         case .mapGpx:
@@ -66,9 +66,17 @@ extension Shared.ContentPadding {
         case .mapOkt:
             return isLandscape
                 ? Dimens.oktContentPaddingLandscape
-                : Dimens.oktContentPaddingPortrait(sheetHeight: oktSheetHeight)
+                : Dimens.oktContentPaddingPortrait(sheetHeight: listSheetHeight)
         case .mapOktStarted:
             return isLandscape ? Dimens.oktContentPaddingLandscape : Dimens.oktStartedContentPaddingPortrait
+        case .mapLandscapes:
+            return isLandscape
+                ? Dimens.landscapesContentPaddingLandscape
+                : Dimens.landscapesContentPaddingPortrait(sheetHeight: listSheetHeight)
+        case .mapLandscapesDestination:
+            return isLandscape
+                ? Dimens.landscapesContentPaddingLandscape
+                : Dimens.landscapesDestinationContentPaddingPortrait(sheetHeight: listSheetHeight)
         }
     }
 }

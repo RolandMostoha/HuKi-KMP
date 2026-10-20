@@ -166,6 +166,15 @@ enum class PlaceCategory(
         iconRes = SharedRes.images.ic_place_category_museum,
         categoryColorRes = SharedRes.colors.colorPlaceCategoryMuseum,
     ),
+    SCENIC_RAILWAY(
+        osmTags = listOf(
+            "narrow_gauge",
+        ),
+        categoryGroup = PlaceCategoryGroup.ATTRACTIONS,
+        title = SharedRes.strings.place_category_scenic_railway,
+        iconRes = SharedRes.images.ic_place_category_scenic_railway,
+        categoryColorRes = SharedRes.colors.colorPlaceCategoryScenicRailway,
+    ),
     SHOP(
         osmClasses = listOf("shop"),
         osmTags = listOf(

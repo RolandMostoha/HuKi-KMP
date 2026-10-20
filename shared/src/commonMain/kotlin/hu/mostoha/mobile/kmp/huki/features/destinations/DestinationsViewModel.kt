@@ -9,6 +9,7 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
+import hu.mostoha.mobile.kmp.huki.logger.toLogString
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
@@ -150,7 +151,7 @@ class DestinationsViewModel(
 
     private fun initLogging() {
         uiState
-            .onEach { Logger.d { "DestinationsState: ${it.toString().trimLongLists()}" } }
+            .onEach { Logger.d { "DestinationsState: ${it.toLogString()}" } }
             .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
     }

@@ -1,7 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.destinations
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,9 +33,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.DestinationTypeChip
 import hu.mostoha.mobile.kmp.huki.util.categoryTint
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
-import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 private val CardCornerRadius = 20.dp
@@ -72,11 +71,22 @@ fun DestinationPreviewCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
             ) {
-                TypeChip(type = destination.type, typeColor = chipTint)
+                DestinationTypeChip(type = destination.type)
                 Spacer(modifier = Modifier.weight(1f))
                 if (distanceText != null) {
                     DistanceChip(text = distanceText, typeColor = chipTint)
                 }
+            }
+            if (destination.challenges.isNotEmpty()) {
+                Text(
+                    text = destination.challenges
+                        .sortedBy { it.ordinal }
+                        .map { mokoString(it.title) }
+                        .joinToString(" · "),
+                    modifier = Modifier.padding(top = Dimens.Small),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White,
+                )
             }
             Spacer(modifier = Modifier.height(ChipSpacing))
             Text(
@@ -111,32 +121,6 @@ fun DestinationPreviewCard(
                 color = Color.White.copy(alpha = 0.9f),
             )
         }
-    }
-}
-
-@Composable
-private fun TypeChip(type: DestinationType, typeColor: Color) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(percent = 50))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = Dimens.MediumLarge, vertical = Dimens.Small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
-    ) {
-        Icon(
-            modifier = Modifier.size(16.dp),
-            imageVector = mokoImage(type.iconRes),
-            contentDescription = null,
-            tint = typeColor,
-        )
-        Text(
-            text = mokoString(type.title),
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = typeColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 

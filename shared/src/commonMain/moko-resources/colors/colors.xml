@@ -143,6 +143,14 @@
         <light>#724CB5</light>
         <dark>#724CB5</dark>
     </color>
+    <color name="colorPlaceCategoryScenicRailway">
+        <light>#9E3B32</light>
+        <dark>#9E3B32</dark>
+    </color>
+    <color name="colorDestinationTypeScenicRailway">
+        <light>#1D4F91</light>
+        <dark>#1D4F91</dark>
+    </color>
     <color name="colorPlaceCategoryChurch">
         <light>#9C7413</light>
         <dark>#9C7413</dark>
@@ -269,5 +277,121 @@
     <color name="locationIqButton">
         <light>#F93B3B</light>
         <dark>#E5564B</dark>
+    </color>
+    <color name="landscapeAggtelekiKarszt">
+        <light>#424242</light>
+        <dark>#424242</dark>
+    </color>
+    <color name="landscapeAlfold">
+        <light>#85A552</light>
+        <dark>#85A552</dark>
+    </color>
+    <color name="landscapeBakony">
+        <light>#673AB6</light>
+        <dark>#673AB6</dark>
+    </color>
+    <color name="landscapeBalatonFelvidek">
+        <light>#2096F3</light>
+        <dark>#2096F3</dark>
+    </color>
+    <color name="landscapeBorzsony">
+        <light>#F47C01</light>
+        <dark>#F47C01</dark>
+    </color>
+    <color name="landscapeBudaiHegyseg">
+        <light>#D50001</light>
+        <dark>#D50001</dark>
+    </color>
+    <color name="landscapeBukk">
+        <light>#885129</light>
+        <dark>#885129</dark>
+    </color>
+    <color name="landscapeCserhat">
+        <light>#015398</light>
+        <dark>#015398</dark>
+    </color>
+    <color name="landscapeGemenc">
+        <light>#2E7D32</light>
+        <dark>#2E7D32</dark>
+    </color>
+    <color name="landscapeGerecseHegyseg">
+        <light>#9E9D24</light>
+        <dark>#9E9D24</dark>
+    </color>
+    <color name="landscapeHevesBorsodiDombsag">
+        <light>#EE534F</light>
+        <dark>#EE534F</dark>
+    </color>
+    <color name="landscapeHortobagy">
+        <light>#01796B</light>
+        <dark>#01796B</dark>
+    </color>
+    <color name="landscapeKeszthelyiHegyseg">
+        <light>#F6B005</light>
+        <dark>#F6B005</dark>
+    </color>
+    <color name="landscapeKoszegiHegyseg">
+        <light>#593217</light>
+        <dark>#593217</dark>
+    </color>
+    <color name="landscapeMatra">
+        <light>#593217</light>
+        <dark>#593217</dark>
+    </color>
+    <color name="landscapeMecsek">
+        <light>#593217</light>
+        <dark>#593217</dark>
+    </color>
+    <color name="landscapeOrseg">
+        <light>#01796B</light>
+        <dark>#01796B</dark>
+    </color>
+    <color name="landscapePilisHegyseg">
+        <light>#01796B</light>
+        <dark>#01796B</dark>
+    </color>
+    <color name="landscapeSoproniHegyseg">
+        <light>#885129</light>
+        <dark>#885129</dark>
+    </color>
+    <color name="landscapeFertoToVideke">
+        <light>#00ACC1</light>
+        <dark>#00ACC1</dark>
+    </color>
+    <color name="landscapeSzigetkoz">
+        <light>#0D47A0</light>
+        <dark>#0D47A0</dark>
+    </color>
+    <color name="landscapeVelenceiHegyseg">
+        <light>#F47C01</light>
+        <dark>#F47C01</dark>
+    </color>
+    <color name="landscapeVertes">
+        <light>#E91E62</light>
+        <dark>#E91E62</dark>
+    </color>
+    <color name="landscapeVillanyiHegyseg">
+        <light>#01796B</light>
+        <dark>#01796B</dark>
+    </color>
+    <color name="landscapeVisegradiHegyseg">
+        <light>#757575</light>
+        <dark>#757575</dark>
+    </color>
+    <color name="landscapeZalaiDombsag">
+        <light>#85A552</light>
+        <dark>#85A552</dark>
+    </color>
+    <color name="landscapeZempleniHegyseg">
+        <light>#F6B005</light>
+        <dark>#F6B005</dark>
+    </color>
+    <color name="landscapeSomogyiDombsag">
+        <light>#EE534F</light>
+        <dark>#EE534F</dark>
+    </color>
+    <color name="landscapeKarancsMedves">
+        <light>#8E24AA</light>
+        <dark>#8E24AA</dark>
     </color>
 </resources>

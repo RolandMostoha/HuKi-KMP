@@ -11,6 +11,7 @@ data class Destination(
     val location: Location,
     val description: StringResource,
     val popularity: Int,
+    val challenges: Set<DestinationChallenge> = emptySet(),
 ) {
     init {
         require(popularity in 1..10) { "Popularity must be between 1 and 10" }

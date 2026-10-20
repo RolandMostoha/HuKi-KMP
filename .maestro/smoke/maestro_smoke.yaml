@@ -247,6 +247,38 @@ appId: ${APP_ID}
       id: MAIN_SEARCH_BAR
     timeout: 15000
 
+# Landscapes sheet. Stays on the sheet, never the Mapbox-rendered outlines or markers.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+    timeout: 10000
+- tapOn:
+    id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_SHEET
+    timeout: 20000
+- tapOn:
+    id: LANDSCAPES_ROW
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_DESTINATION_CARD
+      index: 0
+    timeout: 15000
+- tapOn:
+    id: LANDSCAPES_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
+
 # Menu
 - tapOn: "Menu"
 - extendedWaitUntil:

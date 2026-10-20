@@ -266,6 +266,37 @@ sealed interface AnalyticsEvent {
         override val name = "okt_closed"
     }
 
+    data object LandscapesOpened : AnalyticsEvent {
+        override val name = "landscapes_opened"
+    }
+
+    data class LandscapeSelected(val landscapeId: String) : AnalyticsEvent {
+        override val name = "landscape_selected"
+        override val params = mapOf("selected_landscape" to landscapeId)
+    }
+
+    data class LandscapesDestinationClicked(val destinationName: String) : AnalyticsEvent {
+        override val name = "landscapes_destination_clicked"
+        override val params = mapOf("selected_destination" to destinationName)
+    }
+
+    data object LandscapesClosed : AnalyticsEvent {
+        override val name = "landscapes_closed"
+    }
+
+    data object CategoriesOpened : AnalyticsEvent {
+        override val name = "categories_opened"
+    }
+
+    data class CategorySelected(val categoryId: String) : AnalyticsEvent {
+        override val name = "category_selected"
+        override val params = mapOf("selected_category" to categoryId)
+    }
+
+    data object CategoriesClosed : AnalyticsEvent {
+        override val name = "categories_closed"
+    }
+
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {
         override val name = "menu_link_${link.value}"
     }

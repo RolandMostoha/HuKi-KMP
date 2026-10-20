@@ -42,6 +42,11 @@ sealed class Sheet {
      * OKT Standard Sheet is shown with the sections of the Blue Trail.
      */
     data object Okt : Sheet()
+
+    /**
+     * Landscapes Standard Sheet is shown with the landscapes and their destinations.
+     */
+    data object Landscapes : Sheet()
 }
 
 fun Sheet.isStandard(): Boolean =
@@ -49,6 +54,7 @@ fun Sheet.isStandard(): Boolean =
         this is Sheet.Search ||
         this is Sheet.PlaceDetails ||
         this is Sheet.RoutePlanner ||
-        this is Sheet.Okt
+        this is Sheet.Okt ||
+        this is Sheet.Landscapes
 
 fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew || this is Sheet.Discover

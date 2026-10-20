@@ -97,4 +97,17 @@ class LocationUtilsTest {
             .inMeters.plusOrMinus(0.001)
         legDistances[2] shouldBe 0.meters
     }
+
+    @Test
+    fun `Given scattered locations - when sortedAlongPath - then the walk starts south-west and hops to the nearest`() {
+        val east = Location(47.0, 19.0)
+        val southWest = Location(46.0, 17.0)
+        val west = Location(46.9, 17.1)
+        val farEast = Location(47.1, 21.0)
+        val locations = listOf(east, farEast, west, southWest)
+
+        val sorted = locations.sortedAlongPath { it }
+
+        sorted shouldBe listOf(southWest, west, east, farEast)
+    }
 }

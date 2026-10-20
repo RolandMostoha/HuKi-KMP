@@ -20,7 +20,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
@@ -277,11 +276,11 @@ class DestinationsViewModelTest {
             destination("2", "Dobogókő", popularity = 8),
         )
 
-        fun landscape(osmId: String, destinations: List<Destination>): Landscape =
+        fun landscape(id: String, destinations: List<Destination>): Landscape =
             Landscape(
-                osmId = osmId,
-                osmType = OsmType.WAY,
+                id = id,
                 nameRes = SharedRes.strings.landscape_bukk,
+                colorRes = SharedRes.colors.landscapeBukk,
                 landscapeType = LandscapeType.MOUNTAIN_HIGH,
                 center = Location(47.0, 19.0),
                 destinations = destinations,

@@ -111,7 +111,7 @@ struct DestinationsView: View {
     }
 
     private var landscapesList: some View {
-        ForEach(sortedLandscapes, id: \.osmId) { landscape in
+        ForEach(sortedLandscapes, id: \.id) { landscape in
             landscapeSection(landscape)
         }
     }

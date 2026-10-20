@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import dev.icerock.moko.resources.desc.Raw
 import dev.icerock.moko.resources.desc.StringDesc
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
@@ -36,5 +37,31 @@ class MapUiStateMapperTest {
             baseLayer = BaseLayer.SATELLITE,
             hikingLayerVisible = false,
         )
+    }
+
+    @Test
+    fun `Given open Landscapes with hidden hiking layer - When withoutLandscapes - Then landscapes are removed and hiking layer is shown`() {
+        val state = MapUiState(
+            hikingLayerVisible = false,
+            landscapes = LandscapesUiState(
+                landscapes = emptyList(),
+                outlinesGeoJson = "{}",
+                labelsGeoJson = "{}",
+                hungaryMaskGeoJson = "{}",
+            ),
+        )
+
+        val actual = state.withoutLandscapes()
+
+        actual shouldBe MapUiState(hikingLayerVisible = true)
+    }
+
+    @Test
+    fun `Given no Landscapes and hidden hiking layer - When withoutLandscapes - Then state is unchanged`() {
+        val state = MapUiState(hikingLayerVisible = false)
+
+        val actual = state.withoutLandscapes()
+
+        actual shouldBe state
     }
 }

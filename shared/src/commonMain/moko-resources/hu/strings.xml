@@ -304,6 +304,7 @@
     <string name="place_category_wildlife_park">Vadaspark</string>
     <string name="place_category_observatory">Csillagvizsgáló</string>
     <string name="place_category_farm">Tanya</string>
+    <string name="place_category_scenic_railway">Kisvasút</string>
 
     <string name="destinations_section_title">Kirándulóhelyek</string>
     <string name="destinations_section_nearby_title">Közeli kirándulóhelyek</string>
@@ -323,17 +324,18 @@
     <string name="destinations_a11y_back">Vissza</string>
     <string name="destinations_action_show_on_map">Megtekintés a térképen</string>
     <string name="destinations_a11y_preview_dismiss">Előnézet bezárása</string>
-    <string name="destinations_type_highest_peak">Táj csúcsa</string>
     <string name="destinations_type_peak">Csúcs</string>
     <string name="destinations_type_national_park">Nemzeti park</string>
     <string name="destinations_type_castle">Vár</string>
     <string name="destinations_type_town">Település</string>
     <string name="destinations_type_river">Folyó</string>
     <string name="destinations_type_lookout">Kilátó</string>
-    <string name="destinations_type_rock_with_lookout">Sziklakilátó</string>
+    <string name="destinations_type_panoramic_viewpoint">Panorámás kilátóhelyek</string>
     <string name="destinations_type_statue">Szobor</string>
     <string name="destinations_type_memorial_park">Emlékpark</string>
-    <string name="destinations_type_arboretum">Arborétum</string>
+    <string name="destinations_type_arboretum">Arborétumok és kertek</string>
+    <string name="destinations_type_forest">Különleges erdők</string>
+    <string name="destinations_type_scenic_railway">Kisvasutak</string>
     <string name="destinations_type_gorge">Szurdok</string>
     <string name="destinations_type_camp">Kemping</string>
 
@@ -348,6 +350,22 @@
     <string name="discover_hike_recommendations_info">Az alábbi túragyűjtemények a személyes kedvenceim, amelyekből letöltött GPX útvonalak megnyithatóak az alkalmazással.\n\nA HuKi a weboldalak tartalmát nem használja fel, csak egy navigációs linket nyújt, ami külső böngészőben nyílik meg.\n\nA weboldalakon elérhető tartalom felhasználásához az adott oldal feltételei érvényesek.</string>
     <string name="discover_hike_recommendations_gpx_guide">GPX útmutató megnyitása</string>
     <string name="discover_browse_destinations">Kirándulóhelyek megnyitása</string>
+    <string name="discover_landscapes_title">Tájegységek</string>
+    <string name="discover_show_landscapes">Tájegységek megjelenítése</string>
+    <string name="discover_show_landscapes_description">Összes kirándulóhely a térképen</string>
+    <string name="landscapes_a11y_close">Tájegységek bezárása</string>
+    <string name="discover_destinations_by_landscape">Tájak</string>
+    <string name="discover_destinations_by_category">Kategóriák</string>
+    <string name="discover_destinations_in_list">Lista</string>
+    <string name="landscapes_title">Tájegységek</string>
+    <string name="landscapes_a11y_show_all">Összes tájegység megjelenítése</string>
+    <string name="landscapes_a11y_resume">Tájegységek megjelenítése</string>
+    <string name="categories_title">Kategóriák</string>
+    <string name="categories_a11y_show_all">Az egész ország megjelenítése</string>
+    <string name="categories_a11y_close">Kategóriák bezárása</string>
+    <string name="categories_a11y_resume">Kategóriák megjelenítése</string>
+    <string name="a11y_expand_sheet">Kinyitás</string>
+    <string name="a11y_collapse_sheet">Összecsukás</string>
 
     <string name="location_iq_a11y_back">Vissza</string>
     <string name="location_iq_a11y_logo">LocationIQ logó</string>
@@ -368,4 +386,26 @@
     <string name="whats_new_a11y_app_icon">HuKi alkalmazás ikon</string>
     <string name="whats_new_message_signature">— A HuKi fejlesztője</string>
 
+    <string name="destinations_type_highest_peak_per_landscape">Tájegység legmagasabb csúcsa</string>
+    <string name="destinations_type_educational_trail">Tanösvény</string>
+    <string name="destinations_type_canopy_walk">Lombkoronasétány</string>
+    <string name="destinations_type_geological_site">Földtani látnivaló</string>
+    <string name="destinations_type_wetland">Vizes élőhely</string>
+    <string name="destinations_type_birdwatching">Madármegfigyelő hely</string>
+    <string name="destinations_type_notable_tree">Különleges fa</string>
+    <string name="destinations_type_watermill">Vízimalom</string>
+    <string name="destinations_type_visitor_centre">Látogatóközpont</string>
+    <string name="destinations_type_historic_site">Történelmi emlékhely</string>
+    <string name="landscape_gemenc">Gemenc</string>
+    <string name="destinations_type_palace">Kastélyok és kúriák</string>
+    <string name="destinations_type_castle_ruin">Várromok</string>
+    <string name="destinations_type_adventure_park">Kaland- és élményparkok</string>
+    <string name="destinations_type_religious_site">Vallási emlékhelyek</string>
+    <string name="destinations_type_water_tour">Vízitúrák</string>
+    <string name="destinations_type_cave_without_guide">Önállóan látogatható barlangok</string>
+    <string name="destinations_type_cave_guide_required">Barlang (vezetett)</string>
+    <string name="destinations_challenge_highest_peaks">Tájegységek legmagasabb csúcsai</string>
+    <string name="destinations_challenge_panoramic_views">Panorámás kilátóhelyek</string>
+    <string name="destinations_challenge_birdwatching">Madármegfigyelő helyek</string>
+    <string name="destinations_type_stargazing">Csillagmegfigyelés</string>
 </resources>

@@ -48,7 +48,6 @@ object Dimens {
 
     val SearchBarLandscapeWidth = 350.dp
 
-    val OktSheetMinHeight = 300.dp
     val OktBadgeSize = 48.dp
     val OktStampCardWidth = 148.dp
     val OktStampCardHeight = 112.dp
@@ -59,6 +58,14 @@ object Dimens {
     val OktTypeIconHeight = 44.dp
     val OktInfoWindowWidth = 290.dp
     val OktResumeFabSize = 56.dp
+
+    val DestinationMarkerSize = 30.dp
+    val DestinationSelectedMarkerSize = 40.dp
+    val DestinationInfoWindowWidth = 290.dp
+    val LandscapeIconSize = 48.dp
+    val LandscapeDestinationCardWidth = 148.dp
+    val LandscapeDestinationCardHeight = 112.dp
+    val LandscapesDestinationSheetCameraBottomOffset = 44.dp
 
     val GpxContentPaddingPortrait = PaddingValues(
         top = 150.dp,
@@ -106,6 +113,25 @@ object Dimens {
         top = 120.dp,
         start = 40.dp,
         bottom = 140.dp,
+        end = 40.dp,
+    )
+    val LandscapesContentPaddingPortrait = PaddingValues(
+        top = 120.dp,
+        start = 42.dp,
+        bottom = 156.dp,
+        end = 42.dp,
+    )
+
+    val LandscapesDestinationContentPaddingPortrait = PaddingValues(
+        top = 300.dp,
+        start = 40.dp,
+        bottom = 156.dp,
+        end = 40.dp,
+    )
+    val LandscapesContentPaddingLandscape = PaddingValues(
+        top = 40.dp,
+        start = 40.dp,
+        bottom = 40.dp,
         end = 40.dp,
     )
     val OktContentPaddingLandscape = PaddingValues(

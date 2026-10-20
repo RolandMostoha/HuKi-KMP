@@ -1,4 +1,5 @@
 import CoreGraphics
+import Shared
 import SwiftUI
 
 enum Dimens {
@@ -79,12 +80,39 @@ enum Dimens {
         trailing: 40
     )
 
-    static let oktDetentMinHeight: CGFloat = 300
-    private static let oktDetentScreenFraction: CGFloat = 0.45
+    static func landscapesContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
+        EdgeInsets(
+            top: 134,
+            leading: 42,
+            bottom: sheetHeight + 24,
+            trailing: 42
+        )
+    }
+    static func landscapesDestinationContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
+        EdgeInsets(
+            top: 300,
+            leading: 40,
+            bottom: sheetHeight + 44,
+            trailing: 40
+        )
+    }
+    static let landscapesContentPaddingLandscape = EdgeInsets(
+        top: 40,
+        leading: 40,
+        bottom: 40,
+        trailing: 40
+    )
 
-    /// Share of the screen, so the map keeps room for the trail on small iPhones.
+    static let oktDetentMinHeight = CGFloat(SharedDimens.shared.OKT_SHEET_MIN_HEIGHT)
+
     static func oktDetentHeight(screenHeight: CGFloat) -> CGFloat {
-        max(screenHeight * oktDetentScreenFraction, oktDetentMinHeight)
+        max(screenHeight * SharedDimens.shared.OKT_SHEET_FRACTION, oktDetentMinHeight)
+    }
+    static func landscapesDetentHeight(screenHeight: CGFloat) -> CGFloat {
+        max(
+            screenHeight * SharedDimens.shared.LANDSCAPES_SHEET_FRACTION,
+            SharedDimens.shared.LANDSCAPES_SHEET_MIN_HEIGHT
+        )
     }
     static let oktBadgeSize: CGFloat = 48
     static let oktStampCardWidth: CGFloat = 148
@@ -95,6 +123,12 @@ enum Dimens {
     static let oktEdgeMarkerSize: CGFloat = 36
     static let oktInfoWindowWidth: CGFloat = 290
     static let oktStopFabSize: CGFloat = 56
+    static let destinationMarkerSize: CGFloat = 30
+    static let destinationSelectedMarkerSize: CGFloat = 40
+    static let destinationInfoWindowWidth: CGFloat = 290
+    static let landscapeIconSize: CGFloat = 48
+    static let landscapeDestinationCardWidth: CGFloat = 148
+    static let landscapeDestinationCardHeight: CGFloat = 112
 
     static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
     static let gpxDetailsExpandedDetentHeight: CGFloat = 382
@@ -112,6 +146,9 @@ enum Dimens {
     static let placeDetailsDetentHeight: CGFloat = 215
 
     static let discoverDetentHeight: CGFloat = 400
+
+    static let layersDetentHeight: CGFloat = 360
+    static let layersPadDetentHeight: CGFloat = 400
 
     static let routePlannerDetentHeight: CGFloat = 520
     static let routePlannerMinimizedDetentHeight: CGFloat = 190

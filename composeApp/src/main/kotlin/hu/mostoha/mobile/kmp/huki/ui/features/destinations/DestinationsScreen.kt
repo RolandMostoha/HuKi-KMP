@@ -298,13 +298,13 @@ private fun LazyListScope.landscapesContent(
 ) {
     val strings = Strings(context)
     landscapes.forEach { landscape ->
-        item(key = "landscape_header_${landscape.osmId}") {
+        item(key = "landscape_header_${landscape.id}") {
             DestinationsSectionHeader(text = strings.get(landscape.nameRes))
         }
         val landscapeText = strings.get(landscape.nameRes)
         destinationCardItems(
             count = landscape.destinations.size,
-            key = { "${landscape.osmId}_$it" },
+            key = { "${landscape.id}_$it" },
         ) { index ->
             val destination = landscape.destinations[index]
             DestinationRow(

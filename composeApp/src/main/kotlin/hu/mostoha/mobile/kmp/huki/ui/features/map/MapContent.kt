@@ -66,6 +66,7 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.main.LandscapesUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
@@ -115,7 +116,7 @@ fun MapContent(
     onEvent: (MainUiEvents) -> Unit,
     modifier: Modifier = Modifier,
     routePlannerBottomInset: Dp? = null,
-    oktSheetHeight: Dp? = null,
+    listSheetHeight: Dp? = null,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -134,7 +135,7 @@ fun MapContent(
     var isCameraPanelVisible by remember { mutableStateOf(true) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
-    val currentOktSheetHeight by rememberUpdatedState(oktSheetHeight)
+    val currentListSheetHeight by rememberUpdatedState(listSheetHeight)
 
     LaunchedEffect(mapViewportState) {
         snapshotFlow { mapViewportState.cameraState }
@@ -155,7 +156,7 @@ fun MapContent(
                 density,
                 isLandscape,
                 currentRoutePlannerInset,
-                currentOktSheetHeight,
+                currentListSheetHeight,
             )
         }
     }
@@ -274,6 +275,10 @@ fun MapContent(
                     pulsingColor = primaryLightColor.toArgb()
                 }
             }
+            BaseLabelsVisibilityEffect(isHidden = mapUiState.isBaseLabelsHidden)
+            mapUiState.landscapes?.let { landscapes ->
+                LandscapesLayer(landscapes = landscapes, onEvent = onEvent)
+            }
             if (mapUiState.hikingLayerVisible) {
                 RasterLayer(
                     layerId = OverlayLayer.TURISTAUTAK.layerId,
@@ -336,6 +341,10 @@ private fun dismissInfoWindows(mapUiState: MapUiState, onEvent: (MainUiEvents) -
             onEvent(OktUiEvents.OktInfoWindowDismissed)
             true
         }
+        mapUiState.landscapes?.selectedDestinationId != null -> {
+            onEvent(LandscapesUiEvents.LandscapesInfoWindowDismissed)
+            true
+        }
         else -> false
     }
 
@@ -344,7 +353,7 @@ private fun MapViewportState.handleMapEffect(
     density: Density,
     isLandscape: Boolean,
     routePlannerBottomInset: Dp?,
-    oktSheetHeight: Dp?,
+    listSheetHeight: Dp?,
 ) {
     when (effect) {
         is MapUiEffects.UpdateCamera -> moveCamera(
@@ -352,7 +361,7 @@ private fun MapViewportState.handleMapEffect(
             effect,
             isLandscape,
             routePlannerBottomInset,
-            oktSheetHeight,
+            listSheetHeight,
         )
         is MapUiEffects.ShowMyLocation -> followLocation(effect.myLocationStatus, effect.animated)
         is MapUiEffects.Zoom -> zoom(effect.zoomIn)

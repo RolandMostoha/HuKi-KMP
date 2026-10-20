@@ -1,6 +1,13 @@
 package hu.mostoha.mobile.kmp.huki.logger
 
+import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsUiState
+import hu.mostoha.mobile.kmp.huki.features.destinations.NearbyState
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import kotlin.test.Test
 
 class LoggerUtilsTest {
@@ -57,5 +64,43 @@ class LoggerUtilsTest {
         val actual = input.trimLongLists(limit = 5)
 
         actual shouldBe "Data(items=[])"
+    }
+
+    @Test
+    fun `Given open landscapes - When logging the main state - Then the GeoJSON is summarised`() {
+        val geoJson = "{\"type\":\"FeatureCollection\"}"
+        val landscapes = LandscapesUiState(
+            landscapes = emptyList(),
+            outlinesGeoJson = geoJson,
+            labelsGeoJson = geoJson,
+            hungaryMaskGeoJson = geoJson,
+            selectedLandscapeId = "bukk",
+        )
+        val state = MainUiState().copy(mapUiState = MapUiState().copy(landscapes = landscapes))
+
+        val actual = state.toLogString()
+
+        actual shouldNotContain "FeatureCollection"
+        actual shouldContain "selectedLandscapeId=bukk"
+        actual shouldContain "outlinesGeoJson=${geoJson.length} chars"
+    }
+
+    @Test
+    fun `Given no landscapes - When logging the main state - Then it matches the trimmed string`() {
+        val state = MainUiState()
+
+        val actual = state.toLogString()
+
+        actual shouldBe state.toString().trimLongLists()
+    }
+
+    @Test
+    fun `Given loaded nearby items - When logging the destinations state - Then only counts are logged`() {
+        val state = DestinationsUiState(nearbyState = NearbyState.Loaded(emptyList()))
+
+        val actual = state.toLogString()
+
+        actual shouldContain "nearbyState=Loaded(items=0)"
+        actual shouldContain "popularItems=0"
     }
 }

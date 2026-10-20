@@ -75,6 +75,7 @@ private fun RoutePlanMarkerAnnotation(waypoint: GpxWaypoint) {
             .annotatedFeature(AnnotatedFeature(waypoint.location.toPoint()))
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
             .build(),
     ) {
         Image(

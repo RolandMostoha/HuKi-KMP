@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.ui.features.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,21 +57,25 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.DestinationTypeChip
 import hu.mostoha.mobile.kmp.huki.util.TestTags
-import hu.mostoha.mobile.kmp.huki.util.categoryTint
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
-import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 private val CardWidth = 180.dp
 private val CardHeight = 200.dp
 private val CategoryRowHeight = 32.dp
+private val ContentPadding = 14.dp
+private val ExpandedContentTopPadding = 2.dp
 
 @Composable
 fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
+    val contentTopPadding by animateDpAsState(
+        targetValue = if (expanded) ExpandedContentTopPadding else ContentPadding,
+        label = "contentTopPadding",
+    )
     val typeColor = mokoColor(destination.type.colorRes)
-    val chipTint = typeColor.categoryTint()
 
     Box(
         modifier = modifier
@@ -90,13 +96,24 @@ fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Mod
                     ),
                 ),
         )
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(14.dp),
+                .padding(
+                    start = ContentPadding,
+                    top = contentTopPadding,
+                    end = ContentPadding,
+                    bottom = ContentPadding,
+                ),
         ) {
+            DestinationTexts(
+                destination = destination,
+                expanded = expanded,
+                modifier = Modifier.align(Alignment.BottomStart),
+            )
             Row(
                 modifier = Modifier
+                    .padding(top = ContentPadding - contentTopPadding)
                     .fillMaxWidth()
                     .heightIn(min = CategoryRowHeight),
                 verticalAlignment = Alignment.CenterVertically,
@@ -106,7 +123,11 @@ fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Mod
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
-                    TypeChip(type = destination.type, typeColor = chipTint)
+                    DestinationTypeChip(
+                        type = destination.type,
+                        textStyle = MaterialTheme.typography.labelSmall,
+                        contentPadding = PaddingValues(horizontal = Dimens.Medium, vertical = Dimens.Small),
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 ExpandButton(
@@ -114,42 +135,17 @@ fun DestinationCard(destination: Destination, onClick: () -> Unit, modifier: Mod
                     onClick = { expanded = !expanded },
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            DestinationTexts(destination = destination, expanded = expanded)
         }
     }
 }
 
 @Composable
-private fun TypeChip(type: DestinationType, typeColor: Color) {
-    Row(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = Dimens.Medium, vertical = Dimens.Small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
+private fun DestinationTexts(destination: Destination, expanded: Boolean, modifier: Modifier = Modifier) {
+    val descriptionMaxLines = if (expanded) Int.MAX_VALUE else 1
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
     ) {
-        Icon(
-            modifier = Modifier.size(16.dp),
-            imageVector = mokoImage(type.iconRes),
-            contentDescription = null,
-            tint = typeColor,
-        )
-        Text(
-            text = mokoString(type.title),
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = typeColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-private fun DestinationTexts(destination: Destination, expanded: Boolean) {
-    val descriptionMaxLines = if (expanded) 6 else 1
-    Column(verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall)) {
         Text(
             text = destination.name,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -186,7 +182,7 @@ private fun DestinationTexts(destination: Destination, expanded: Boolean) {
         Text(
             text = mokoString(destination.description),
             modifier = Modifier
-                .padding(top = Dimens.ExtraSmall)
+                .padding(top = if (expanded) 0.dp else Dimens.ExtraSmall)
                 .animateContentSize(animationSpec = tween(durationMillis = 250)),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = Color.White.copy(alpha = 0.85f),
@@ -203,7 +199,7 @@ private fun ExpandButton(expanded: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .size(24.dp)
             .clip(CircleShape)
-            .background(Color.Black.copy(alpha = 0.28f))
+            .background(Color.Black.copy(alpha = 0.6f))
             .clickable(onClick = onClick)
             .semantics {
                 contentDescription = infoLabel

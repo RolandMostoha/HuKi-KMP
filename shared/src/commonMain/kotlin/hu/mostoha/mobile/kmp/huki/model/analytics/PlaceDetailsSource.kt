@@ -6,4 +6,5 @@ enum class PlaceDetailsSource(val value: String) {
     DESTINATION("destination"),
     HISTORY("history"),
     OKT_STAMP("okt_stamp"),
+    LANDSCAPES("landscapes"),
 }

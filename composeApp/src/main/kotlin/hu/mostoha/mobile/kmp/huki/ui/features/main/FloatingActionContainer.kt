@@ -32,10 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -50,9 +46,11 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesResumeFab
 import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktResumeFab
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import hu.mostoha.mobile.kmp.huki.util.rememberLastNonNull
 
 @Composable
 fun FloatingActionContainer(
@@ -69,6 +67,7 @@ fun FloatingActionContainer(
     onGpxOverviewClicked: () -> Unit,
     onGpxClearClicked: () -> Unit,
     onOktResumeClicked: () -> Unit,
+    onLandscapesResumeClicked: () -> Unit,
     onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,8 +98,7 @@ fun FloatingActionContainer(
         }
         val okt = mainUiState.mapUiState.okt
         // Keeps the last section so the FAB can still slide out after OKT is cleared
-        var resumeSection by remember { mutableStateOf(okt?.selectedSection) }
-        okt?.selectedSection?.let { resumeSection = it }
+        val resumeSection = rememberLastNonNull(okt?.selectedSection)
         AnimatedVisibility(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -113,6 +111,22 @@ fun FloatingActionContainer(
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
         ) {
             resumeSection?.let { OktResumeFab(section = it, onClick = onOktResumeClicked) }
+        }
+        val landscapes = mainUiState.mapUiState.landscapes
+        // Keeps the last grouping so the FAB can still slide out after Landscapes are closed
+        val resumeGrouping = rememberLastNonNull(landscapes?.grouping)
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = Dimens.Medium + Dimens.Medium,
+                    bottom = if (isLandscape) Dimens.Small else Dimens.Small + Dimens.Large,
+                ),
+            visible = mainUiState.sheet == null && landscapes != null,
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
+        ) {
+            resumeGrouping?.let { LandscapesResumeFab(grouping = it, onClick = onLandscapesResumeClicked) }
         }
         if (isLandscape) {
             // Landscape: search bar bottom-start with a fixed width, FABs dropped to bottom-end.
@@ -364,6 +378,7 @@ private fun MainContentPreview() {
             onGpxOverviewClicked = {},
             onGpxClearClicked = {},
             onOktResumeClicked = {},
+            onLandscapesResumeClicked = {},
             onMenuClicked = {},
         )
     }

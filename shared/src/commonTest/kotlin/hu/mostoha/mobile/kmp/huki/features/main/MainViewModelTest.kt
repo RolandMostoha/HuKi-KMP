@@ -59,6 +59,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -102,7 +103,7 @@ class MainViewModelTest {
             osmId = "1",
             name = "Kékestető",
             town = "Mátraszentimre",
-            type = DestinationType.HIGHEST_PEAK,
+            type = DestinationType.PEAK,
             location = Location(47.8721, 20.0102),
             description = SharedRes.strings.destinations_type_peak,
             popularity = 10,
@@ -197,6 +198,7 @@ class MainViewModelTest {
             mapCameraStore = mapCameraStore,
             whatsNewRepository = whatsNewRepository,
             oktRepository = FakeOktRepository(),
+            landscapeRepository = FakeLandscapeRepository(),
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
