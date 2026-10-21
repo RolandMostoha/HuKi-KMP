@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>ZT, Forgó-tavi tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>ZT, Forgó-tavi tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/8106665"/>
+    <type>ztfl</type>
+    <trkseg>
+      <trkpt lat="46.320466" lon="18.901950"><ele>89.9</ele></trkpt>
+      <trkpt lat="46.320750" lon="18.901606"><ele>92.8</ele></trkpt>
+      <trkpt lat="46.321006" lon="18.901457"><ele>96.3</ele></trkpt>
+      <trkpt lat="46.321225" lon="18.901233"><ele>97.6</ele></trkpt>
+      <trkpt lat="46.321529" lon="18.901370"><ele>98.2</ele></trkpt>
+      <trkpt lat="46.321634" lon="18.901340"><ele>98.4</ele></trkpt>
+      <trkpt lat="46.322020" lon="18.901475"><ele>99.9</ele></trkpt>
+      <trkpt lat="46.322170" lon="18.901757"><ele>100.8</ele></trkpt>
+      <trkpt lat="46.322164" lon="18.902128"><ele>101.6</ele></trkpt>
+      <trkpt lat="46.322328" lon="18.902152"><ele>100.4</ele></trkpt>
+      <trkpt lat="46.322612" lon="18.902556"><ele>102.2</ele></trkpt>
+      <trkpt lat="46.322470" lon="18.902943"><ele>103.1</ele></trkpt>
+      <trkpt lat="46.322405" lon="18.903339"><ele>102.7</ele></trkpt>
+      <trkpt lat="46.322405" lon="18.903655"><ele>102.1</ele></trkpt>
+      <trkpt lat="46.322323" lon="18.903829"><ele>101.6</ele></trkpt>
+      <trkpt lat="46.322290" lon="18.904288"><ele>100.4</ele></trkpt>
+      <trkpt lat="46.322126" lon="18.904572"><ele>99.5</ele></trkpt>
+      <trkpt lat="46.322006" lon="18.904936"><ele>98.6</ele></trkpt>
+      <trkpt lat="46.322017" lon="18.905118"><ele>98.3</ele></trkpt>
+      <trkpt lat="46.321902" lon="18.905355"><ele>97.9</ele></trkpt>
+      <trkpt lat="46.321864" lon="18.905766"><ele>97.0</ele></trkpt>
+      <trkpt lat="46.321891" lon="18.906494"><ele>92.5</ele></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="46.321864" lon="18.905766"><ele>97.0</ele></trkpt>
+      <trkpt lat="46.321813" lon="18.905526"><ele>97.7</ele></trkpt>
+      <trkpt lat="46.321835" lon="18.904978"><ele>98.4</ele></trkpt>
+      <trkpt lat="46.321708" lon="18.904626"><ele>98.8</ele></trkpt>
+      <trkpt lat="46.321920" lon="18.904165"><ele>100.3</ele></trkpt>
+      <trkpt lat="46.321940" lon="18.903949"><ele>100.9</ele></trkpt>
+      <trkpt lat="46.322040" lon="18.903643"><ele>101.8</ele></trkpt>
+      <trkpt lat="46.321984" lon="18.903387"><ele>102.1</ele></trkpt>
+      <trkpt lat="46.322079" lon="18.902676"><ele>102.5</ele></trkpt>
+      <trkpt lat="46.321823" lon="18.901734"><ele>99.7</ele></trkpt>
+      <trkpt lat="46.321640" lon="18.901565"><ele>98.6</ele></trkpt>
+      <trkpt lat="46.321529" lon="18.901370"><ele>98.2</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

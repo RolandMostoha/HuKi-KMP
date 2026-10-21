@@ -409,14 +409,18 @@ private fun GpxLayer(
         )
     }
     WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->
-        val waypointIcon = MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer)
-        val rememberIconImage = rememberIconImage(waypointIcon.drawableResId)
+        val jelSymbol = MarkerIcons.waypointJelSymbol(waypoint.type, gpxDetails.jelSymbol)
+        val waypointIconImage = if (jelSymbol != null) {
+            rememberJelMarkerIconImage(MarkerIcons.jelMarkerFrame(isDarkMode, mapUiState.baseLayer), jelSymbol)
+        } else {
+            rememberIconImage(MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer).drawableResId)
+        }
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {
                 onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
                 true
             }
-            iconImage = rememberIconImage
+            iconImage = waypointIconImage
             iconSize = waypoint.type.markerScale
             iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
         }

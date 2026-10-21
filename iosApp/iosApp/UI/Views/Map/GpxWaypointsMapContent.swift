@@ -4,6 +4,7 @@ import SwiftUI
 
 struct GpxWaypointsMapContent: MapContent {
     let waypoints: [GpxWaypoint]
+    let jelSymbol: JelSymbol?
     let baseLayer: Shared.BaseLayer
     let colorScheme: ColorScheme
     let onWaypointClicked: (GpxWaypoint) -> Void
@@ -11,14 +12,7 @@ struct GpxWaypointsMapContent: MapContent {
     var body: some MapContent {
         PointAnnotationGroup(WaypointMarkerOrder.shared.sort(waypoints: waypoints), id: \.location.id) { waypoint in
             PointAnnotation(coordinate: waypoint.location.coordinate)
-                .image(
-                    MarkerIcons.shared.waypointSymbol(
-                        type: waypoint.type,
-                        isDarkMode: colorScheme == .dark,
-                        baseLayer: baseLayer
-                    )
-                    .annotationImage(for: colorScheme)
-                )
+                .image(markerImage(for: waypoint))
                 .iconSize(
                     waypoint.type == .intermediate
                         ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
@@ -29,5 +23,17 @@ struct GpxWaypointsMapContent: MapContent {
                     onWaypointClicked(waypoint)
                 }
         }
+    }
+
+    private func markerImage(for waypoint: GpxWaypoint) -> PointAnnotation.Image {
+        let isDarkMode = colorScheme == .dark
+        if let jelSymbol = MarkerIcons.shared.waypointJelSymbol(type: waypoint.type, jelSymbol: jelSymbol) {
+            return jelSymbol.markerImage(
+                background: MarkerIcons.shared.jelMarkerFrame(isDarkMode: isDarkMode, baseLayer: baseLayer),
+                for: colorScheme
+            )
+        }
+        return MarkerIcons.shared.waypointSymbol(type: waypoint.type, isDarkMode: isDarkMode, baseLayer: baseLayer)
+            .annotationImage(for: colorScheme)
     }
 }

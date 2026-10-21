@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Fényes tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Fényes tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://turistautak.openstreetmap.hu/mentettutv-155652855985im"/>
+    <trkseg>
+      <trkpt lat="47.667939" lon="18.308786"><ele>126.3</ele></trkpt>
+      <trkpt lat="47.666979" lon="18.308252"><ele>126.7</ele></trkpt>
+      <trkpt lat="47.667204" lon="18.307540"><ele>126.1</ele></trkpt>
+      <trkpt lat="47.667247" lon="18.307485"><ele>125.9</ele></trkpt>
+      <trkpt lat="47.667591" lon="18.307466"><ele>125.6</ele></trkpt>
+      <trkpt lat="47.667690" lon="18.307146"><ele>125.9</ele></trkpt>
+      <trkpt lat="47.668071" lon="18.307001"><ele>125.3</ele></trkpt>
+      <trkpt lat="47.668099" lon="18.306755"><ele>125.1</ele></trkpt>
+      <trkpt lat="47.667625" lon="18.306578"><ele>126.7</ele></trkpt>
+      <trkpt lat="47.667057" lon="18.306708"><ele>129.2</ele></trkpt>
+      <trkpt lat="47.666772" lon="18.306899"><ele>130.5</ele></trkpt>
+      <trkpt lat="47.666652" lon="18.306816"><ele>131.1</ele></trkpt>
+      <trkpt lat="47.666575" lon="18.306521"><ele>131.6</ele></trkpt>
+      <trkpt lat="47.666456" lon="18.306424"><ele>131.8</ele></trkpt>
+      <trkpt lat="47.666305" lon="18.306417"><ele>131.8</ele></trkpt>
+      <trkpt lat="47.666119" lon="18.306513"><ele>131.6</ele></trkpt>
+      <trkpt lat="47.666305" lon="18.306417"><ele>131.8</ele></trkpt>
+      <trkpt lat="47.666297" lon="18.306262"><ele>131.9</ele></trkpt>
+      <trkpt lat="47.666378" lon="18.306072"><ele>131.8</ele></trkpt>
+      <trkpt lat="47.666575" lon="18.305875"><ele>131.8</ele></trkpt>
+      <trkpt lat="47.666582" lon="18.305427"><ele>131.1</ele></trkpt>
+      <trkpt lat="47.666780" lon="18.304986"><ele>129.9</ele></trkpt>
+      <trkpt lat="47.667066" lon="18.304992"><ele>129.6</ele></trkpt>
+      <trkpt lat="47.667077" lon="18.304904"><ele>129.3</ele></trkpt>
+      <trkpt lat="47.666971" lon="18.304640"><ele>128.3</ele></trkpt>
+      <trkpt lat="47.666934" lon="18.304405"><ele>127.2</ele></trkpt>
+      <trkpt lat="47.666979" lon="18.303634"><ele>124.7</ele></trkpt>
+      <trkpt lat="47.667246" lon="18.303174"><ele>123.9</ele></trkpt>
+      <trkpt lat="47.667332" lon="18.303267"><ele>124.5</ele></trkpt>
+      <trkpt lat="47.667223" lon="18.303675"><ele>125.4</ele></trkpt>
+      <trkpt lat="47.667186" lon="18.304454"><ele>127.3</ele></trkpt>
+      <trkpt lat="47.667300" lon="18.304717"><ele>128.2</ele></trkpt>
+      <trkpt lat="47.667509" lon="18.304448"><ele>126.8</ele></trkpt>
+      <trkpt lat="47.667776" lon="18.304685"><ele>126.8</ele></trkpt>
+      <trkpt lat="47.667821" lon="18.304940"><ele>127.3</ele></trkpt>
+      <trkpt lat="47.667636" lon="18.305540"><ele>128.4</ele></trkpt>
+      <trkpt lat="47.668145" lon="18.305884"><ele>125.4</ele></trkpt>
+      <trkpt lat="47.668210" lon="18.305844"><ele>125.4</ele></trkpt>
+      <trkpt lat="47.668145" lon="18.305884"><ele>125.4</ele></trkpt>
+      <trkpt lat="47.668166" lon="18.306072"><ele>125.2</ele></trkpt>
+      <trkpt lat="47.668071" lon="18.307001"><ele>125.3</ele></trkpt>
+      <trkpt lat="47.668155" lon="18.307536"><ele>125.9</ele></trkpt>
+      <trkpt lat="47.668151" lon="18.308201"><ele>126.7</ele></trkpt>
+      <trkpt lat="47.667994" lon="18.308645"><ele>126.5</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

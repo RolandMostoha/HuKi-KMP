@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>ZT, Szilvás-kői geológiai tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>ZT, Szilvás-kői geológiai tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/10156055"/>
+    <type>zt</type>
+    <trkseg>
+      <trkpt lat="48.124150" lon="19.895348"><ele>503.0</ele></trkpt>
+      <trkpt lat="48.124092" lon="19.895172"><ele>503.1</ele></trkpt>
+      <trkpt lat="48.123973" lon="19.895122"><ele>504.1</ele></trkpt>
+      <trkpt lat="48.123622" lon="19.895186"><ele>508.4</ele></trkpt>
+      <trkpt lat="48.123390" lon="19.895327"><ele>512.7</ele></trkpt>
+      <trkpt lat="48.123255" lon="19.895830"><ele>522.7</ele></trkpt>
+      <trkpt lat="48.122417" lon="19.897255"><ele>543.1</ele></trkpt>
+      <trkpt lat="48.122135" lon="19.897929"><ele>550.3</ele></trkpt>
+      <trkpt lat="48.121353" lon="19.898522"><ele>575.7</ele></trkpt>
+      <trkpt lat="48.120852" lon="19.898402"><ele>579.9</ele></trkpt>
+      <trkpt lat="48.120573" lon="19.899260"><ele>583.8</ele></trkpt>
+      <trkpt lat="48.120520" lon="19.899264"><ele>584.1</ele></trkpt>
+      <trkpt lat="48.120450" lon="19.899165"><ele>584.5</ele></trkpt>
+      <trkpt lat="48.120469" lon="19.898917"><ele>584.3</ele></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="48.120852" lon="19.898402"><ele>579.9</ele></trkpt>
+      <trkpt lat="48.120727" lon="19.898385"><ele>580.8</ele></trkpt>
+      <trkpt lat="48.120401" lon="19.898491"><ele>583.8</ele></trkpt>
+      <trkpt lat="48.119472" lon="19.898204"><ele>583.0</ele></trkpt>
+      <trkpt lat="48.119628" lon="19.898737"><ele>587.5</ele></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="48.119472" lon="19.898204"><ele>583.0</ele></trkpt>
+      <trkpt lat="48.118507" lon="19.899313"><ele>590.3</ele></trkpt>
+      <trkpt lat="48.118293" lon="19.899422"><ele>590.8</ele></trkpt>
+      <trkpt lat="48.117954" lon="19.900013"><ele>605.4</ele></trkpt>
+      <trkpt lat="48.117858" lon="19.899815"><ele>598.9</ele></trkpt>
+      <trkpt lat="48.117756" lon="19.900034"><ele>604.9</ele></trkpt>
+      <trkpt lat="48.117696" lon="19.900223"><ele>610.2</ele></trkpt>
+      <trkpt lat="48.117688" lon="19.900443"><ele>614.2</ele></trkpt>
+      <trkpt lat="48.117775" lon="19.901307"><ele>611.4</ele></trkpt>
+      <trkpt lat="48.117922" lon="19.901874"><ele>597.6</ele></trkpt>
+      <trkpt lat="48.117865" lon="19.901880"><ele>598.5</ele></trkpt>
+      <trkpt lat="48.117757" lon="19.901762"><ele>602.4</ele></trkpt>
+      <trkpt lat="48.117625" lon="19.901754"><ele>604.2</ele></trkpt>
+      <trkpt lat="48.117577" lon="19.901636"><ele>607.2</ele></trkpt>
+      <trkpt lat="48.116533" lon="19.901461"><ele>604.8</ele></trkpt>
+      <trkpt lat="48.116437" lon="19.901353"><ele>604.8</ele></trkpt>
+      <trkpt lat="48.116446" lon="19.901215"><ele>605.1</ele></trkpt>
+      <trkpt lat="48.116204" lon="19.901483"><ele>601.7</ele></trkpt>
+      <trkpt lat="48.116519" lon="19.901928"><ele>597.5</ele></trkpt>
+      <trkpt lat="48.117097" lon="19.902588"><ele>585.5</ele></trkpt>
+      <trkpt lat="48.117259" lon="19.902691"><ele>583.0</ele></trkpt>
+      <trkpt lat="48.117570" lon="19.902778"><ele>580.2</ele></trkpt>
+      <trkpt lat="48.117859" lon="19.902579"><ele>582.3</ele></trkpt>
+      <trkpt lat="48.118369" lon="19.902366"><ele>578.2</ele></trkpt>
+      <trkpt lat="48.118418" lon="19.902269"><ele>579.0</ele></trkpt>
+      <trkpt lat="48.118476" lon="19.901825"><ele>586.6</ele></trkpt>
+      <trkpt lat="48.118289" lon="19.900880"><ele>606.8</ele></trkpt>
+      <trkpt lat="48.118243" lon="19.900003"><ele>605.2</ele></trkpt>
+      <trkpt lat="48.118324" lon="19.899563"><ele>594.9</ele></trkpt>
+      <trkpt lat="48.118444" lon="19.899344"><ele>590.3</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Csiga-túra tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Csiga-túra tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/5621422"/>
+    <trkseg>
+      <trkpt lat="46.558406" lon="17.109161"><ele>195.7</ele></trkpt>
+      <trkpt lat="46.558676" lon="17.109134"><ele>194.9</ele></trkpt>
+      <trkpt lat="46.559504" lon="17.106515"><ele>212.9</ele></trkpt>
+      <trkpt lat="46.558357" lon="17.105961"><ele>208.5</ele></trkpt>
+      <trkpt lat="46.558113" lon="17.105481"><ele>204.5</ele></trkpt>
+      <trkpt lat="46.557899" lon="17.105352"><ele>200.1</ele></trkpt>
+      <trkpt lat="46.557778" lon="17.104398"><ele>197.9</ele></trkpt>
+      <trkpt lat="46.557559" lon="17.104087"><ele>196.1</ele></trkpt>
+      <trkpt lat="46.557063" lon="17.103711"><ele>200.9</ele></trkpt>
+      <trkpt lat="46.556674" lon="17.103946"><ele>202.9</ele></trkpt>
+      <trkpt lat="46.556285" lon="17.104335"><ele>203.9</ele></trkpt>
+      <trkpt lat="46.556004" lon="17.104916"><ele>201.8</ele></trkpt>
+      <trkpt lat="46.555842" lon="17.105858"><ele>194.8</ele></trkpt>
+      <trkpt lat="46.555694" lon="17.106176"><ele>194.1</ele></trkpt>
+      <trkpt lat="46.554408" lon="17.107583"><ele>183.0</ele></trkpt>
+      <trkpt lat="46.554052" lon="17.108040"><ele>178.8</ele></trkpt>
+      <trkpt lat="46.553962" lon="17.108309"><ele>177.2</ele></trkpt>
+      <trkpt lat="46.553902" lon="17.108746"><ele>175.0</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

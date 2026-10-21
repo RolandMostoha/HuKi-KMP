@@ -24,6 +24,7 @@ class GpxOriginTest {
                 TestCase("/data/files/gpx/external/dera_szurdok.gpx", GpxOrigin.EXTERNAL),
                 TestCase("/data/files/gpx/routeplanner/dobogoko.gpx", GpxOrigin.ROUTE_PLANNER),
                 TestCase("gpx/routeplanner/dobogoko (2).gpx", GpxOrigin.ROUTE_PLANNER),
+                TestCase("/data/files/gpx/bundled/edut_jagi_tanosveny.gpx", GpxOrigin.BUNDLED),
                 TestCase("/data/files/gpx/unknown/dera_szurdok.gpx", GpxOrigin.EXTERNAL),
                 TestCase("dera_szurdok.gpx", GpxOrigin.EXTERNAL),
             )

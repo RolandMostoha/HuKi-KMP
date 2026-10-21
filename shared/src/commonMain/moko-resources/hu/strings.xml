@@ -198,6 +198,7 @@
     <string name="gpx_collection_a11y_options">További lehetőségek</string>
     <string name="gpx_collection_origin_external">Importált</string>
     <string name="gpx_collection_origin_route_planner">Útvonaltervező</string>
+    <string name="gpx_collection_origin_bundled">HuKi útvonal</string>
     <string name="gpx_collection_action_rename">Átnevezés</string>
     <string name="gpx_collection_action_share">Megosztás</string>
     <string name="gpx_collection_action_delete">Törlés</string>
@@ -322,6 +323,7 @@
     <string name="destinations_nearby_error_message">Nem sikerült meghatározni a helyzetedet. Ellenőrizd, hogy a helymeghatározás be van-e kapcsolva, majd próbáld újra.</string>
     <string name="destinations_nearby_error_action">Újrapróbálkozás</string>
     <string name="destinations_a11y_back">Vissza</string>
+    <string name="destinations_action_open_route">Útvonal megnyitása</string>
     <string name="destinations_action_show_on_map">Megtekintés a térképen</string>
     <string name="destinations_a11y_preview_dismiss">Előnézet bezárása</string>
     <string name="destinations_type_peak">Csúcs</string>

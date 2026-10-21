@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.gpx
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +37,7 @@ import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.JelSymbol
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
@@ -119,15 +123,27 @@ fun GpxDetailsBottomSheet(
                                 overflow = TextOverflow.Ellipsis,
                             )
                         }
-                        Text(
-                            text = gpxDetails.title ?: gpxDetails.fileName,
-                            modifier = Modifier.testTag(TestTags.GPX_DETAILS_TITLE),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                            ),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            gpxDetails.jelSymbol?.let { jelSymbol ->
+                                Image(
+                                    painter = painterResource(jelSymbol.icon.drawableResId),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(Dimens.GpxDetailsJelSymbolSize),
+                                )
+                            }
+                            Text(
+                                text = gpxDetails.title ?: gpxDetails.fileName,
+                                modifier = Modifier.testTag(TestTags.GPX_DETAILS_TITLE),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     }
                     IconButton(
                         onClick = onCloseClick,
@@ -229,6 +245,7 @@ private fun GpxDetailsBottomSheetPreview() {
                 altitudeRange = 63 to 313,
                 incline = 250,
                 decline = 63,
+                jelSymbol = JelSymbol.ZT,
             ),
             onStartClick = {},
             onNavigateToStart = {},

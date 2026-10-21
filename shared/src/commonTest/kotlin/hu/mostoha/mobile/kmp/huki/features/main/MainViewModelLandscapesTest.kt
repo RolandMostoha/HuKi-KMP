@@ -10,6 +10,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.features.map.LandscapesGrouping
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
@@ -91,6 +92,17 @@ class MainViewModelLandscapesTest {
             description = SharedRes.strings.destinations_type_river,
             popularity = 8,
         )
+        private val TEST_TRAIL_GPX_FILE = SharedRes.files.edut_jagi_tanosveny_gpx
+        private val TEST_DESTINATION_TRAIL = Destination(
+            id = "3",
+            name = "Jági tanösvény",
+            town = "Pilisszentiván",
+            type = DestinationType.EDUCATIONAL_TRAIL,
+            location = Location(47.6120670, 18.8845000),
+            description = SharedRes.strings.destinations_type_educational_trail,
+            popularity = 4,
+            routeGpxFile = TEST_TRAIL_GPX_FILE,
+        )
         private val TEST_LANDSCAPE_MATRA = Landscape(
             id = "matra",
             nameRes = SharedRes.strings.landscape_matra,
@@ -106,7 +118,7 @@ class MainViewModelLandscapesTest {
             colorRes = SharedRes.colors.landscapeBukk,
             landscapeType = LandscapeType.MOUNTAIN_HIGH,
             center = Location(48.03, 20.52),
-            destinations = emptyList(),
+            destinations = listOf(TEST_DESTINATION_TRAIL),
             areaTags = emptyMap(),
         )
         private val TEST_LANDSCAPES = listOf(TEST_LANDSCAPE_MATRA, TEST_LANDSCAPE_BUKK)
@@ -125,6 +137,9 @@ class MainViewModelLandscapesTest {
     private val destinationRepository = mock<DestinationRepository>(MockMode.autoUnit) {
         every { getLandscapes() } returns TEST_LANDSCAPES
         every { getDestinationCategories() } returns TEST_CATEGORIES
+    }
+    private val gpxRepository = mock<GpxRepository> {
+        everySuspend { readBundledGpxFile(TEST_TRAIL_GPX_FILE) } returns TEST_GPX_DETAILS
     }
     private val geocodingRepository = object : GeocodingRepository {
         override suspend fun autocomplete(searchText: String) = NetworkResult.Success(emptyList<LocationIqPlace>())
@@ -150,7 +165,7 @@ class MainViewModelLandscapesTest {
                 allow = setOf(Permission.LOCATION),
                 granted = setOf(Permission.LOCATION),
             ),
-            gpxRepository = mock<GpxRepository>(),
+            gpxRepository = gpxRepository,
             placeHistoryRepository = mock<PlaceHistoryRepository>(MockMode.autoUnit),
             destinationRepository = destinationRepository,
             geocodingRepository = geocodingRepository,
@@ -484,6 +499,44 @@ class MainViewModelLandscapesTest {
     }
 
     @Test
+    fun `Given selected trail destination - When route clicked - Then its bundled GPX opens and Landscapes closes`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_BUKK.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_TRAIL))
+            advanceUntilIdle()
+            analyticsService.loggedEvents.clear()
+
+            viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowRouteClicked)
+            advanceUntilIdle()
+
+            val uiState = viewModel.uiState.value
+            uiState.sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
+            uiState.mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            uiState.mapUiState.landscapes.shouldBeNull()
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationEduTrailOpened(TEST_DESTINATION_TRAIL.name),
+            )
+        }
+    }
+
+    @Test
+    fun `Given selected destination without route - When route clicked - Then nothing changes`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_PEAK))
+            advanceUntilIdle()
+            val expected = viewModel.uiState.value
+            analyticsService.loggedEvents.clear()
+
+            viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowRouteClicked)
+            advanceUntilIdle()
+
+            viewModel.uiState.value shouldBe expected
+            analyticsService.loggedEvents shouldBe emptyList()
+        }
+    }
+
+    @Test
     fun `Given swiped Landscapes sheet - When LandscapesResumeClicked - Then the sheet is shown again`() {
         runTest {
             val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
@@ -531,7 +584,6 @@ class MainViewModelLandscapesTest {
             uiState.mapUiState.landscapes.shouldBeNull()
             uiState.mapUiState.hikingLayerVisible shouldBe true
             uiState.isSearchBarVisible shouldBe true
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LandscapesClosed)
         }
     }
 
@@ -650,18 +702,6 @@ class MainViewModelLandscapesTest {
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.landscapes.shouldNotBeNull().selectedCategoryId.shouldBeNull()
-        }
-    }
-
-    @Test
-    fun `Given Categories - When LandscapesCloseClicked - Then CategoriesClosed is logged`() {
-        runTest {
-            val viewModel = createOpenedCategoriesViewModel(selectedCategoryId = TEST_CATEGORY_PEAK.id)
-
-            viewModel.onEvent(LandscapesUiEvents.LandscapesCloseClicked)
-
-            viewModel.uiState.value.mapUiState.landscapes.shouldBeNull()
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.CategoriesClosed)
         }
     }
 }

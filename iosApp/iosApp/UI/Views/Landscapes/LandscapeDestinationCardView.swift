@@ -68,7 +68,8 @@ struct LandscapeDestinationCardView: View {
         location: Location(latitude: 47.8721, longitude: 20.0102, altitude: nil),
         description: SharedRes.strings().destinations_type_peak,
         popularity: 10,
-        challenges: [DestinationChallenge.highestPeaks]
+        challenges: [DestinationChallenge.highestPeaks],
+        routeGpxFile: nil
     )
     HStack {
         LandscapeDestinationCardView(strings: Strings(), destination: destination, isSelected: true, onClick: {})

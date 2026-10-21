@@ -280,8 +280,9 @@ sealed interface AnalyticsEvent {
         override val params = mapOf("selected_destination" to destinationName)
     }
 
-    data object LandscapesClosed : AnalyticsEvent {
-        override val name = "landscapes_closed"
+    data class DestinationEduTrailOpened(val destinationName: String) : AnalyticsEvent {
+        override val name = "destination_edutrail_opened"
+        override val params = mapOf("selected_destination" to destinationName)
     }
 
     data object CategoriesOpened : AnalyticsEvent {
@@ -291,10 +292,6 @@ sealed interface AnalyticsEvent {
     data class CategorySelected(val categoryId: String) : AnalyticsEvent {
         override val name = "category_selected"
         override val params = mapOf("selected_category" to categoryId)
-    }
-
-    data object CategoriesClosed : AnalyticsEvent {
-        override val name = "categories_closed"
     }
 
     data class MenuLinkClicked(val link: MenuLink) : AnalyticsEvent {

@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 class DefaultLandscapeRepositoryTest {
 
     private val repository = DefaultLandscapeRepository(
-        bundledFileReader = { file -> file.readText(appContext) },
+        bundledFileReader = AndroidBundledFileReader(appContext),
         dispatcher = Dispatchers.IO,
     )
 

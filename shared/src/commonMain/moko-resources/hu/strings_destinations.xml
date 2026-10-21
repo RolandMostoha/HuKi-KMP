@@ -55,7 +55,6 @@
     <string name="heves_hangonyi_to">Erdős dombokkal körülvett tó Hangony közelében. A tóparti séta során a vízfelület és a környező erdős táj figyelhető meg.</string>
     <string name="heves_tarnavideki_tajvedelmi">Védett táj változatos élővilággal, ritka növény- és állatfajokkal, túraútvonalakkal.</string>
     <string name="heves_harom_berc">Három kiemelkedő dombcsúcs a Heves–Borsodi-dombságban, panorámás túraútvonalakkal és erdős környezettel.</string>
-    <string name="heves_szalamandra_tanosveny">A Lázbérci-tó mellől induló erdei tanösvény. Táblái a környék élőhelyeit és állatait mutatják be, a séta tóparti szakaszt is érint.</string>
     <string name="heves_edenyi_kastelysziget">Barokk kastély Edelényben, a Bódva melletti szigeten. A kastély építészete és szigeti környezete a terület bejárásakor látható.</string>
 
     <string name="aggtelek_baradla_barlang">Az Aggteleki Nemzeti Park legismertebb látnivalója, monumentális cseppkőbarlang több bejárattal és túraútvonalakkal.</string>
@@ -375,7 +374,6 @@
     <string name="sopron_cserkeszkapolna">A Cserkészkápolna Sopronbánfalván található kis templom, történelmi és vallási jelentőséggel.</string>
     <string name="sopron_tarodi_var">A Taródi vár Felsőlövérekben található, mesés, egyedi építészeti stílusú kastély, amely látogatható a városban.</string>
     <string name="sopron_autos_piheno">Pihenőhely a Brennberg-völgyben, piknikezővel, tűzrakóhellyel és játszótérrel. A környék erdei útvonalain tett séta során is elérhető.</string>
-    <string name="ferto_sziki_oszirozsa_tanosveny">3,8 km-es útvonal a Fertő menti szikes pusztán, sekély tavak, legelő állatok és madármegfigyelő tornyok mellett.</string>
     <string name="ferto_kecske_hegyi_kilato">Kilátó a Fertőrákos és Tómalom közötti erdős részen, kilátással a Fertőre és a környező dombokra.</string>
     <string name="ferto_fertorakosi_kofejto">Egykori mészkőfejtő látványos sziklafalakkal, barlangszínházzal és a Fertő vidékének földtanát, ősmaradványait bemutató kiállítással.</string>
     <string name="ferto_laszlomajor">Sarród melletti egykori major, ahol kiállítás mutatja be a hagyományos állattartást, a vidéki életet és a természetvédelmet.</string>

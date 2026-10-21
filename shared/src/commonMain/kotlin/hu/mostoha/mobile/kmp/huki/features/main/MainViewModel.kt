@@ -29,6 +29,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
@@ -249,6 +250,7 @@ class MainViewModel(
             is LandscapesUiEvents.LandscapesDestinationClicked -> selectLandscapesDestination(event.destination)
             LandscapesUiEvents.LandscapesInfoWindowDismissed -> dismissLandscapesInfoWindow()
             LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked -> showLandscapesDestinationPlaceDetails()
+            LandscapesUiEvents.LandscapesInfoWindowRouteClicked -> openLandscapesDestinationRoute()
             LandscapesUiEvents.LandscapesResumeClicked -> resumeLandscapes()
             LandscapesUiEvents.LandscapesCloseClicked -> closeLandscapes()
         }
@@ -813,6 +815,10 @@ class MainViewModel(
     }
 
     private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent?) {
+        loadGpx(analyticsEvent) { gpxRepository.readGpxFile(uri) }
+    }
+
+    private fun loadGpx(analyticsEvent: AnalyticsEvent?, readGpx: suspend () -> GpxDetails) {
         cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update {
@@ -821,7 +827,7 @@ class MainViewModel(
                     alert = null,
                 )
             }
-            runCatching { gpxRepository.readGpxFile(uri) }
+            runCatching { readGpx() }
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
                     selectedWaypoint.value = null
@@ -1310,6 +1316,14 @@ class MainViewModel(
         showPlace(destination.toPlace(), PlaceDetailsSource.LANDSCAPES)
     }
 
+    private fun openLandscapesDestinationRoute() {
+        val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        val routeGpxFile = destination.routeGpxFile ?: return
+        loadGpx(AnalyticsEvent.DestinationEduTrailOpened(destination.name)) {
+            gpxRepository.readBundledGpxFile(routeGpxFile)
+        }
+    }
+
     private fun resumeLandscapes() {
         val landscapes = _uiState.value.mapUiState.landscapes ?: return
         showSheet(Sheet.Landscapes)
@@ -1320,11 +1334,6 @@ class MainViewModel(
     }
 
     private fun closeLandscapes() {
-        val closedEvent = when (_uiState.value.mapUiState.landscapes?.grouping) {
-            LandscapesGrouping.CATEGORY -> AnalyticsEvent.CategoriesClosed
-            else -> AnalyticsEvent.LandscapesClosed
-        }
-        analyticsService.logEvent(closedEvent)
         cancelLandscapesJob()
         _uiState.update { uiState ->
             uiState.copy(

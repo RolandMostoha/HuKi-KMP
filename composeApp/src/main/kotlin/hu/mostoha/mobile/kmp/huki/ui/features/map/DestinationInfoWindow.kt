@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,7 +30,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.ButtonSize
 import hu.mostoha.mobile.kmp.huki.ui.components.DestinationTypeChip
+import hu.mostoha.mobile.kmp.huki.ui.components.SecondaryButton
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.categoryTint
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
@@ -40,7 +43,12 @@ private const val DESCRIPTION_MAX_LINES = 4
 private const val SECONDARY_TEXT_ALPHA = 0.7f
 
 @Composable
-fun DestinationInfoWindow(destination: Destination, onPlaceDetailsClick: () -> Unit, modifier: Modifier = Modifier) {
+fun DestinationInfoWindow(
+    destination: Destination,
+    onPlaceDetailsClick: () -> Unit,
+    onRouteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val chipTint = mokoColor(destination.type.colorRes).categoryTint()
     val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = SECONDARY_TEXT_ALPHA)
     Surface(
@@ -116,7 +124,41 @@ fun DestinationInfoWindow(destination: Destination, onPlaceDetailsClick: () -> U
                 maxLines = DESCRIPTION_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (destination.routeGpxFile != null) {
+                SecondaryButton(
+                    iconResId = R.drawable.ic_route,
+                    text = mokoString(SharedRes.strings.destinations_action_open_route),
+                    onClick = onRouteClick,
+                    size = ButtonSize.SMALL,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Dimens.MediumLarge)
+                        .testTagAsResourceId(TestTags.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON),
+                )
+            }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun DestinationInfoWindowRoutePreview() {
+    HuKiTheme {
+        DestinationInfoWindow(
+            destination = Destination(
+                id = "1",
+                name = "Jági tanösvény",
+                town = "Pilisszentiván",
+                type = DestinationType.EDUCATIONAL_TRAIL,
+                location = Location(47.6120670, 18.8845000),
+                description = SharedRes.strings.destinations_description,
+                popularity = 4,
+                routeGpxFile = SharedRes.files.edut_jagi_tanosveny_gpx,
+            ),
+            onPlaceDetailsClick = {},
+            onRouteClick = {},
+            modifier = Modifier.padding(Dimens.Large),
+        )
     }
 }
 
@@ -135,6 +177,7 @@ private fun DestinationInfoWindowPreview() {
                 popularity = 8,
             ),
             onPlaceDetailsClick = {},
+            onRouteClick = {},
             modifier = Modifier.padding(Dimens.Large),
         )
     }

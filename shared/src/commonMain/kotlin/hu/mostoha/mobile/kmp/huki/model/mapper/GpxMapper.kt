@@ -4,13 +4,21 @@ import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
+import hu.mostoha.mobile.kmp.huki.model.domain.JelSymbol
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.util.toInstantFromIsoOffset
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
+import org.maplibre.spatialk.gpx.Document
 import org.maplibre.spatialk.units.extensions.inMeters
 import org.maplibre.spatialk.units.extensions.meters
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+
+/**
+ * The track `<type>` holds the trail marking as an OSM `jel` value.
+ */
+fun Document.toJelSymbol(): JelSymbol? =
+    tracks.firstNotNullOfOrNull { it.type }?.let { JelSymbol.fromOsmValue(it.trim()) }
 
 fun GpxDetails.toGpxFileItem(trackId: String, lastModified: Instant, lastOpened: Instant?): GpxFileItem =
     GpxFileItem(

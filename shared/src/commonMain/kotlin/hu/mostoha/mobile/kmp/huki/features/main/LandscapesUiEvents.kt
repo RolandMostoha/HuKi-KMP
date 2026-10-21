@@ -11,6 +11,7 @@ sealed interface LandscapesUiEvents : MainUiEvents {
     data class LandscapesDestinationClicked(val destination: Destination) : LandscapesUiEvents
     data object LandscapesInfoWindowDismissed : LandscapesUiEvents
     data object LandscapesInfoWindowPlaceDetailsClicked : LandscapesUiEvents
+    data object LandscapesInfoWindowRouteClicked : LandscapesUiEvents
     data object LandscapesResumeClicked : LandscapesUiEvents
     data object LandscapesCloseClicked : LandscapesUiEvents
 }

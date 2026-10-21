@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Sirály tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Sirály tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/15258734"/>
+    <trkseg>
+      <trkpt lat="46.333838" lon="20.066024"><ele>84.9</ele></trkpt>
+      <trkpt lat="46.334027" lon="20.066509"><ele>84.7</ele></trkpt>
+      <trkpt lat="46.333951" lon="20.066582"><ele>84.6</ele></trkpt>
+      <trkpt lat="46.334051" lon="20.066889"><ele>84.5</ele></trkpt>
+      <trkpt lat="46.334809" lon="20.068718"><ele>83.1</ele></trkpt>
+      <trkpt lat="46.334927" lon="20.069122"><ele>82.7</ele></trkpt>
+      <trkpt lat="46.334058" lon="20.069664"><ele>81.7</ele></trkpt>
+      <trkpt lat="46.333059" lon="20.070542"><ele>82.4</ele></trkpt>
+      <trkpt lat="46.331108" lon="20.072614"><ele>81.5</ele></trkpt>
+      <trkpt lat="46.328996" lon="20.075202"><ele>80.6</ele></trkpt>
+      <trkpt lat="46.329006" lon="20.075417"><ele>80.5</ele></trkpt>
+      <trkpt lat="46.329839" lon="20.079420"><ele>80.4</ele></trkpt>
+      <trkpt lat="46.329636" lon="20.079592"><ele>80.2</ele></trkpt>
+      <trkpt lat="46.328633" lon="20.079976"><ele>80.7</ele></trkpt>
+      <trkpt lat="46.327933" lon="20.080111"><ele>80.5</ele></trkpt>
+      <trkpt lat="46.327377" lon="20.080130"><ele>80.6</ele></trkpt>
+      <trkpt lat="46.327188" lon="20.080203"><ele>80.7</ele></trkpt>
+      <trkpt lat="46.325313" lon="20.081962"><ele>80.4</ele></trkpt>
+      <trkpt lat="46.325380" lon="20.082333"><ele>80.4</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -4,6 +4,7 @@ import SwiftUI
 struct PrimaryButton: View {
     let icon: Shared.ImageResource
     let title: String
+    var size: ButtonSize = .regular
     let action: () -> Void
 
     var body: some View {
@@ -12,7 +13,7 @@ struct PrimaryButton: View {
             title: title,
             foregroundColor: SwiftUI.Color(SharedRes.colors().onPrimary.getUIColor()),
             backgroundColor: SwiftUI.Color(SharedRes.colors().primary.getUIColor()),
-            verticalPadding: 12,
+            size: size,
             action: action
         )
     }
@@ -22,6 +23,16 @@ struct PrimaryButton: View {
     PrimaryButton(
         icon: .system("location.north.fill"),
         title: "Show on map",
+        action: {}
+    )
+    .padding()
+}
+
+#Preview("Small") {
+    PrimaryButton(
+        icon: .system("map.fill"),
+        title: "Show on map",
+        size: .small,
         action: {}
     )
     .padding()

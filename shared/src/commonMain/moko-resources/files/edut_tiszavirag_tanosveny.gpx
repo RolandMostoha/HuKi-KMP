@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>KT, Tiszavirág ártéri tanösvény és sétaút</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>KT, Tiszavirág ártéri tanösvény és sétaút</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/5362813"/>
+    <type>kt</type>
+    <trkseg>
+      <trkpt lat="47.614694" lon="20.707459"><ele>90.3</ele></trkpt>
+      <trkpt lat="47.614491" lon="20.707602"><ele>90.7</ele></trkpt>
+      <trkpt lat="47.613991" lon="20.708283"><ele>92.5</ele></trkpt>
+      <trkpt lat="47.613725" lon="20.708308"><ele>93.7</ele></trkpt>
+      <trkpt lat="47.613624" lon="20.708378"><ele>94.1</ele></trkpt>
+      <trkpt lat="47.613105" lon="20.709062"><ele>94.8</ele></trkpt>
+      <trkpt lat="47.612955" lon="20.709468"><ele>94.7</ele></trkpt>
+      <trkpt lat="47.612740" lon="20.709743"><ele>95.4</ele></trkpt>
+      <trkpt lat="47.612665" lon="20.710221"><ele>95.7</ele></trkpt>
+      <trkpt lat="47.612004" lon="20.711104"><ele>97.0</ele></trkpt>
+      <trkpt lat="47.611869" lon="20.711463"><ele>97.4</ele></trkpt>
+      <trkpt lat="47.611630" lon="20.711812"><ele>98.2</ele></trkpt>
+      <trkpt lat="47.611278" lon="20.712233"><ele>98.2</ele></trkpt>
+      <trkpt lat="47.610667" lon="20.712880"><ele>97.9</ele></trkpt>
+      <trkpt lat="47.610253" lon="20.713032"><ele>97.5</ele></trkpt>
+      <trkpt lat="47.610027" lon="20.713175"><ele>97.9</ele></trkpt>
+      <trkpt lat="47.609841" lon="20.713453"><ele>98.8</ele></trkpt>
+      <trkpt lat="47.609336" lon="20.713707"><ele>99.9</ele></trkpt>
+      <trkpt lat="47.609118" lon="20.713619"><ele>99.8</ele></trkpt>
+      <trkpt lat="47.608968" lon="20.713278"><ele>99.2</ele></trkpt>
+      <trkpt lat="47.608667" lon="20.713003"><ele>96.9</ele></trkpt>
+      <trkpt lat="47.608578" lon="20.712632"><ele>95.5</ele></trkpt>
+      <trkpt lat="47.608229" lon="20.711666"><ele>95.2</ele></trkpt>
+      <trkpt lat="47.607881" lon="20.711231"><ele>93.7</ele></trkpt>
+      <trkpt lat="47.607645" lon="20.710812"><ele>92.7</ele></trkpt>
+      <trkpt lat="47.607452" lon="20.710163"><ele>92.7</ele></trkpt>
+      <trkpt lat="47.607301" lon="20.709880"><ele>92.5</ele></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="47.606122" lon="20.710953"><ele>90.0</ele></trkpt>
+      <trkpt lat="47.606277" lon="20.710860"><ele>90.6</ele></trkpt>
+      <trkpt lat="47.607041" lon="20.710110"><ele>93.2</ele></trkpt>
+      <trkpt lat="47.607532" lon="20.708660"><ele>89.7</ele></trkpt>
+      <trkpt lat="47.608652" lon="20.706307"><ele>87.7</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

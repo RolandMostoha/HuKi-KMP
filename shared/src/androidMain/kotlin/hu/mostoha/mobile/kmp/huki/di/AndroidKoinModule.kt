@@ -9,6 +9,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.datastore.SETTINGS_DATA_STORE_FILE_NAME
 import hu.mostoha.mobile.kmp.huki.datastore.createDataStore
+import hu.mostoha.mobile.kmp.huki.repository.AndroidBundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.service.AndroidLocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
@@ -33,10 +34,7 @@ val androidPlatformModule = module {
         val context = get<Context>()
         createDataStore { context.filesDir.resolve(SETTINGS_DATA_STORE_FILE_NAME).absolutePath }
     }
-    single<BundledFileReader> {
-        val context = get<Context>()
-        BundledFileReader { file -> file.readText(context) }
-    }
+    single<BundledFileReader> { AndroidBundledFileReader(context = get()) }
     single<LocationMonitoringService> {
         AndroidLocationMonitoringService(
             context = get(),

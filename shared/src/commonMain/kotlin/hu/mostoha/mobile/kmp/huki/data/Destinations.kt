@@ -368,15 +368,6 @@ val DESTINATIONS_MATRA = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_HEVES = listOf(
     Destination(
-        id = "dedestapolcsany_szalamandra_tanosveny",
-        location = Location(48.1943720, 20.4738255),
-        description = SharedRes.strings.heves_szalamandra_tanosveny,
-        name = "Szalamandra tanösvény",
-        town = "Dédestapolcsány",
-        type = DestinationType.EDUCATIONAL_TRAIL,
-        popularity = 4,
-    ),
-    Destination(
         id = "matraverebely_szentkut",
         location = Location(47.9987907, 19.7718107),
         description = SharedRes.strings.heves_szentkut,
@@ -630,6 +621,7 @@ val DESTINATIONS_KARANCS_MEDVES = listOf(
         popularity = 7,
         location = Location(48.124713, 19.894014),
         description = SharedRes.strings.karancs_medves_szilvas_ko_tanosveny,
+        routeGpxFile = SharedRes.files.edut_szilvas_koi_geologiai_tanosveny_gpx,
     ),
     Destination(
         id = "salgotarjan_baglyasko",
@@ -825,6 +817,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         id = "tiszaorveny_tiszavirag_tanosveny",
         location = Location(47.6061225, 20.7109532),
         description = SharedRes.strings.hortobagy_tiszavirag_tanosveny,
+        routeGpxFile = SharedRes.files.edut_tiszavirag_tanosveny_gpx,
         name = "Tiszavirág Tanösvény",
         town = "Tiszaörvény",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -896,6 +889,7 @@ val DESTINATIONS_HORTOBAGY = listOf(
         popularity = 7,
         location = Location(47.643547, 20.658839),
         description = SharedRes.strings.hortobagy_tisza_tavi_vizi_setany,
+        routeGpxFile = SharedRes.files.edut_tisza_tavi_vizi_setany_gpx,
     ),
 )
 
@@ -905,6 +899,7 @@ val DESTINATIONS_ALFOLD = listOf(
         id = "szeged_siraly_tanosveny",
         location = Location(46.3337500, 20.0661000),
         description = SharedRes.strings.alfold_siraly_tanosveny,
+        routeGpxFile = SharedRes.files.edut_siraly_tanosveny_gpx,
         name = "Sirály tanösvény",
         town = "Szeged, Fehér-tó",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -1000,6 +995,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 7,
         location = Location(46.868540, 19.425890),
         description = SharedRes.strings.alfold_baranypirosito_tanosveny,
+        routeGpxFile = SharedRes.files.edut_baranypirosito_tanosveny_gpx,
     ),
     Destination(
         id = "dunapataj_szelidi_to",
@@ -1019,6 +1015,7 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 7,
         location = Location(46.809550, 19.338428),
         description = SharedRes.strings.alfold_aqua_colun_tanosveny,
+        routeGpxFile = SharedRes.files.edut_aqua_colun_tanosveny_gpx,
     ),
     Destination(
         id = "tiszakurt_arboretum",
@@ -1715,6 +1712,7 @@ val DESTINATIONS_BUDAPEST = listOf(
         type = DestinationType.EDUCATIONAL_TRAIL,
         popularity = 4,
         description = SharedRes.strings.budapest_jagi_tanosveny,
+        routeGpxFile = SharedRes.files.edut_jagi_tanosveny_gpx,
     ),
     Destination(
         id = "budapest_sas_hegy",
@@ -2010,6 +2008,7 @@ val DESTINATIONS_GERECSE = listOf(
         id = "tata_fenyes_tanosveny",
         location = Location(47.6679812, 18.3089411),
         description = SharedRes.strings.gerecse_tatai_fenyes,
+        routeGpxFile = SharedRes.files.edut_fenyes_tanosveny_gpx,
         name = "Tatai Fényes Tanösvény",
         town = "Tata",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -2183,6 +2182,7 @@ val DESTINATIONS_VELENCE = listOf(
         popularity = 7,
         location = Location(47.173173, 18.562502),
         description = SharedRes.strings.velence_madardal_tanosveny,
+        routeGpxFile = SharedRes.files.edut_madardal_tanosveny_gpx,
     ),
 )
 
@@ -2246,6 +2246,7 @@ val DESTINATIONS_VERTES = listOf(
         id = "csakbereny_vertesi_panorama_tanosveny",
         location = Location(47.3551471, 18.3219294),
         description = SharedRes.strings.vertes_panorama_tanosveny,
+        routeGpxFile = SharedRes.files.edut_vertesi_panorama_tanosveny_gpx,
         name = "Vértesi panoráma tanösvény",
         town = "Csákberény",
         type = DestinationType.EDUCATIONAL_TRAIL,
@@ -2580,6 +2581,7 @@ val DESTINATIONS_BAKONY = listOf(
         popularity = 7,
         location = Location(47.23028, 17.11583),
         description = SharedRes.strings.bakony_sag_hegy,
+        routeGpxFile = SharedRes.files.edut_sag_hegy_tanosveny_gpx,
     ),
     Destination(
         id = "doba_somlo_var",
@@ -3314,16 +3316,6 @@ val DESTINATIONS_SOPRON = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_FERTO = listOf(
     Destination(
-        id = "sarrod_sziki_oszirozsa",
-        name = "Sziki őszirózsa tanösvény",
-        town = "Sarród–Fertőújlak",
-        type = DestinationType.EDUCATIONAL_TRAIL,
-        challenges = setOf(DestinationChallenge.BIRDWATCHING),
-        popularity = 7,
-        location = Location(47.678418, 16.847888),
-        description = SharedRes.strings.ferto_sziki_oszirozsa_tanosveny,
-    ),
-    Destination(
         id = "ferto_kecske_hegyi_kilato",
         name = "Kecske-hegyi kilátó",
         town = "Fertőrákos",
@@ -3584,6 +3576,7 @@ val DESTINATIONS_ORSEG = listOf(
         popularity = 7,
         location = Location(46.899599, 16.572713),
         description = SharedRes.strings.orseg_tozegmohas_tanosveny,
+        routeGpxFile = SharedRes.files.edut_tozegmohas_lapret_tanosveny_gpx,
     ),
 )
 
@@ -3597,6 +3590,7 @@ val DESTINATIONS_ZALA = listOf(
         popularity = 4,
         location = Location(46.5584093, 17.1092024),
         description = SharedRes.strings.zala_csiga_tura_tanosveny,
+        routeGpxFile = SharedRes.files.edut_csiga_tura_tanosveny_gpx,
     ),
     Destination(
         id = "iklodbordoce_lovegbunker",
@@ -3798,6 +3792,7 @@ val DESTINATIONS_SOMOGYI_DOMBSAG = listOf(
         popularity = 7,
         location = Location(46.891848, 18.001324),
         description = SharedRes.strings.somogyi_dombsag_toreki_tavak,
+        routeGpxFile = SharedRes.files.edut_toreki_tavak_tanosveny_gpx,
     ),
     Destination(
         id = "kereki_feherko_vara",
@@ -4206,6 +4201,7 @@ val DESTINATIONS_VILLANY = listOf(
         popularity = 6,
         location = Location(45.8776305, 18.2732115),
         description = SharedRes.strings.villany_csodabogyo_tanosveny,
+        routeGpxFile = SharedRes.files.edut_csodabogyo_tanosveny_gpx,
     ),
     Destination(
         id = "nagyharsany_szarsomlyo",
@@ -4256,6 +4252,7 @@ val DESTINATIONS_GEMENC = listOf(
         popularity = 7,
         location = Location(46.3206917, 18.9083306),
         description = SharedRes.strings.gemenc_dunapart_forgo_tavi_tanosveny,
+        routeGpxFile = SharedRes.files.edut_forgo_tavi_tanosveny_gpx,
     ),
     Destination(
         id = "gemenc_nagyrezet",
@@ -4288,6 +4285,7 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         popularity = 7,
         location = Location(47.268265, 19.23046),
         description = SharedRes.strings.no_landscape_selyem_reti_tanosveny,
+        routeGpxFile = SharedRes.files.edut_selyem_reti_tanosveny_gpx,
     ),
     Destination(
         id = "debrecen_zsuzsi_erdei_vasut",

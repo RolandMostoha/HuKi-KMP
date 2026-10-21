@@ -144,6 +144,9 @@ struct LandscapesMapContent: MapContent {
                     destination: destination,
                     onPlaceDetailsClick: {
                         onEvent(LandscapesUiEventsLandscapesInfoWindowPlaceDetailsClicked.shared)
+                    },
+                    onRouteClick: {
+                        onEvent(LandscapesUiEventsLandscapesInfoWindowRouteClicked.shared)
                     }
                 )
             }

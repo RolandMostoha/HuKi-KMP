@@ -51,6 +51,17 @@ class DefaultGpxStorage : GpxStorage {
             destination
         }
 
+    override suspend fun replaceInSandbox(source: GpxFileSource, origin: GpxOrigin): GpxReplacement =
+        withContext(Dispatchers.IO) {
+            val destination = gpxDir(origin) / source.fileName
+            val existingContent = destination.takeIf { it.exists() }?.readBytes()
+            val isUpToDate = existingContent?.contentEquals(source.content) == true
+            if (!isUpToDate) {
+                destination.write(source.content)
+            }
+            GpxReplacement(file = destination, replacedContent = existingContent.takeUnless { isUpToDate })
+        }
+
     override suspend fun listGpxFiles(): List<PlatformFile> =
         withContext(Dispatchers.IO) {
             GpxOrigin.entries.flatMap { gpxDir(it).list() }

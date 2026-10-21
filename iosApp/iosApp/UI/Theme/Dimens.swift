@@ -135,6 +135,7 @@ enum Dimens {
     static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 412
     static let gpxDetailsPadExpandedDetentHeight: CGFloat = 382
     static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 442
+    static let gpxDetailsJelSymbolSize: CGFloat = 20
 
     static func gpxDetailsExpandedHeight(hasEnd: Bool, isPad: Bool) -> CGFloat {
         if isPad {

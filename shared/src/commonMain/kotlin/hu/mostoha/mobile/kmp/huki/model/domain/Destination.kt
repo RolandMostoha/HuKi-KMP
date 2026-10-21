@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.model.domain
 
+import dev.icerock.moko.resources.FileResource
 import dev.icerock.moko.resources.StringResource
 
 data class Destination(
@@ -11,6 +12,7 @@ data class Destination(
     val description: StringResource,
     val popularity: Int,
     val challenges: Set<DestinationChallenge> = emptySet(),
+    val routeGpxFile: FileResource? = null,
 ) {
     init {
         require(popularity in 1..10) { "Popularity must be between 1 and 10" }

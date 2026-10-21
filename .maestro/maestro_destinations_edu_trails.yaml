@@ -1,0 +1,85 @@
+appId: ${APP_ID}
+---
+# Destinations educational trails: select an educational trail with a bundled route in the Landscapes,
+# open its route from the InfoWindow, then close the GPX.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open the Landscapes from Discover.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_SHEET
+    timeout: 5000
+
+# Expand the Budai-hegység and select the Jági tanösvény.
+- swipe:
+    start: 50%, 75%
+    end: 50%, 35%
+    duration: 1000
+- repeat:
+    while:
+      notVisible:
+        text: "(Budai-hegység|Buda Hills).*"
+    times: 20
+    commands:
+      - swipe:
+          start: 50%, 88%
+          end: 50%, 78%
+          duration: 800
+- tapOn:
+    text: "(Budai-hegység|Buda Hills).*"
+- repeat:
+    while:
+      notVisible:
+        text: "Jági tanösvény.*"
+    times: 15
+    commands:
+      - swipe:
+          from:
+            id: LANDSCAPES_DESTINATION_CARD
+          direction: LEFT
+- tapOn:
+    text: "Jági tanösvény.*"
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW
+    timeout: 5000
+
+# The route button opens the bundled trail GPX and leaves the Landscapes.
+- tapOn:
+    id: LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_TITLE
+    timeout: 5000
+- assertVisible:
+    text: "Jági tanösvény.*"
+- assertVisible:
+    text: "edut_jagi_tanosveny.gpx"
+- assertNotVisible:
+    id: LANDSCAPES_RESUME_FAB
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000

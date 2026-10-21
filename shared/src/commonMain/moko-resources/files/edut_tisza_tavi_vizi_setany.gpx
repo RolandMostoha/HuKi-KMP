@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Tisza-tavi Vízi Sétány</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Tisza-tavi Vízi Sétány</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/way/117675955"/>
+    <trkseg>
+      <trkpt lat="47.642677" lon="20.663752"><ele>85.7</ele></trkpt>
+      <trkpt lat="47.642392" lon="20.663933"><ele>86.2</ele></trkpt>
+      <trkpt lat="47.641900" lon="20.663505"><ele>87.3</ele></trkpt>
+      <trkpt lat="47.641332" lon="20.662797"><ele>89.1</ele></trkpt>
+      <trkpt lat="47.640394" lon="20.662166"><ele>89.0</ele></trkpt>
+      <trkpt lat="47.639964" lon="20.661997"><ele>89.6</ele></trkpt>
+      <trkpt lat="47.639941" lon="20.662329"><ele>89.4</ele></trkpt>
+      <trkpt lat="47.639819" lon="20.662809"><ele>89.1</ele></trkpt>
+      <trkpt lat="47.639879" lon="20.663323"><ele>89.2</ele></trkpt>
+      <trkpt lat="47.639730" lon="20.663971"><ele>88.6</ele></trkpt>
+      <trkpt lat="47.639671" lon="20.664023"><ele>88.6</ele></trkpt>
+      <trkpt lat="47.639268" lon="20.663909"><ele>89.0</ele></trkpt>
+      <trkpt lat="47.638826" lon="20.663503"><ele>89.1</ele></trkpt>
+      <trkpt lat="47.638333" lon="20.663909"><ele>89.5</ele></trkpt>
+      <trkpt lat="47.637609" lon="20.665275"><ele>89.8</ele></trkpt>
+      <trkpt lat="47.637315" lon="20.665670"><ele>90.2</ele></trkpt>
+      <trkpt lat="47.637065" lon="20.665807"><ele>89.8</ele></trkpt>
+      <trkpt lat="47.636763" lon="20.665600"><ele>89.6</ele></trkpt>
+      <trkpt lat="47.636736" lon="20.665524"><ele>89.6</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -198,6 +198,7 @@
     <string name="gpx_collection_a11y_options">More options</string>
     <string name="gpx_collection_origin_external">Imported</string>
     <string name="gpx_collection_origin_route_planner">Route planner</string>
+    <string name="gpx_collection_origin_bundled">HuKi route</string>
     <string name="gpx_collection_action_rename">Rename</string>
     <string name="gpx_collection_action_share">Share</string>
     <string name="gpx_collection_action_delete">Delete</string>
@@ -322,6 +323,7 @@
     <string name="destinations_nearby_error_message">We couldn\'t determine your location. Make sure location services are on and try again.</string>
     <string name="destinations_nearby_error_action">Try again</string>
     <string name="destinations_a11y_back">Back</string>
+    <string name="destinations_action_open_route">Open route</string>
     <string name="destinations_action_show_on_map">Show on map</string>
     <string name="destinations_a11y_preview_dismiss">Close preview</string>
     <string name="destinations_type_peak">Peak</string>

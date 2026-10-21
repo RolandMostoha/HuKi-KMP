@@ -34,6 +34,8 @@ object Dimens {
     val SectionHeaderSpacing = 8.dp
 
     val GpxNavButtonPeek = 16.dp
+    val GpxDetailsJelSymbolSize = 20.dp
+    val ButtonSmallMinHeight = 32.dp
 
     val RoutePlannerPeekHeight = 200.dp
     val RoutePlannerRowHeight = 52.dp

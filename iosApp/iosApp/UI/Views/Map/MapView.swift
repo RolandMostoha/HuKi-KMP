@@ -114,6 +114,7 @@ struct MapView: View {
 
                             GpxWaypointsMapContent(
                                 waypoints: gpxDetails.waypoints,
+                                jelSymbol: gpxDetails.jelSymbol,
                                 baseLayer: uiState.mapUiState.baseLayer,
                                 colorScheme: colorScheme,
                                 onWaypointClicked: onWaypointClicked

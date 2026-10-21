@@ -134,12 +134,14 @@ private val GpxOrigin.iconResId: Int
     get() = when (this) {
         GpxOrigin.EXTERNAL -> R.drawable.ic_download
         GpxOrigin.ROUTE_PLANNER -> R.drawable.ic_touch_long
+        GpxOrigin.BUNDLED -> R.drawable.ic_route
     }
 
 private val GpxOrigin.label: StringResource
     get() = when (this) {
         GpxOrigin.EXTERNAL -> SharedRes.strings.gpx_collection_origin_external
         GpxOrigin.ROUTE_PLANNER -> SharedRes.strings.gpx_collection_origin_route_planner
+        GpxOrigin.BUNDLED -> SharedRes.strings.gpx_collection_origin_bundled
     }
 
 @Composable

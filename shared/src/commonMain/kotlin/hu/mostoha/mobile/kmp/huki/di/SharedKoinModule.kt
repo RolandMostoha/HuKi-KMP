@@ -59,7 +59,7 @@ import kotlin.time.Clock
 val appModule = module {
     single<GpxStorage> { DefaultGpxStorage() }
     single<GpxMetadataStore> { DefaultGpxMetadataStore(get()) }
-    single<GpxRepository> { DefaultGpxRepository(get(), get(), get()) }
+    single<GpxRepository> { DefaultGpxRepository(get(), get(), get(), get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
     single<MapCameraStore> { DefaultMapCameraStore() }
     single<OktRepository> { DefaultOktRepository(get(), get(named(Dispatcher.Default))) }

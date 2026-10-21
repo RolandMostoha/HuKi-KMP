@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import dev.icerock.moko.resources.FileResource
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
@@ -7,6 +8,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 
 interface GpxRepository {
     suspend fun readGpxFile(uri: String): GpxDetails
+
+    suspend fun readBundledGpxFile(file: FileResource): GpxDetails
 
     suspend fun saveRoutePlan(
         routePlan: RoutePlan,

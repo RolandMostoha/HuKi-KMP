@@ -5,6 +5,7 @@ struct DestinationInfoWindowView: View {
     let strings: Strings
     let destination: Destination
     let onPlaceDetailsClick: () -> Void
+    let onRouteClick: () -> Void
 
     private static let descriptionLineLimit = 4
 
@@ -50,6 +51,16 @@ struct DestinationInfoWindowView: View {
                 .lineLimit(Self.descriptionLineLimit)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 2)
+            if destination.routeGpxFile != nil {
+                SecondaryButton(
+                    icon: .system("point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"),
+                    title: strings.get(id: SharedRes.strings().destinations_action_open_route),
+                    size: .small,
+                    action: onRouteClick
+                )
+                .accessibilityIdentifier(TestTags.shared.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON)
+                .padding(.top, 10)
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -77,9 +88,31 @@ struct DestinationInfoWindowView: View {
             location: Location(latitude: 48.0855, longitude: 20.3889, altitude: nil),
             description: SharedRes.strings().destinations_description,
             popularity: 8,
-            challenges: []
+            challenges: [],
+            routeGpxFile: nil
         ),
-        onPlaceDetailsClick: {}
+        onPlaceDetailsClick: {},
+        onRouteClick: {}
+    )
+    .padding()
+}
+
+#Preview("Route") {
+    DestinationInfoWindowView(
+        strings: Strings(),
+        destination: Destination(
+            id: "1",
+            name: "Jági tanösvény",
+            town: "Pilisszentiván",
+            type: .educationalTrail,
+            location: Location(latitude: 47.6120670, longitude: 18.8845000, altitude: nil),
+            description: SharedRes.strings().destinations_description,
+            popularity: 4,
+            challenges: [],
+            routeGpxFile: SharedRes.files().edut_jagi_tanosveny_gpx
+        ),
+        onPlaceDetailsClick: {},
+        onRouteClick: {}
     )
     .padding()
 }

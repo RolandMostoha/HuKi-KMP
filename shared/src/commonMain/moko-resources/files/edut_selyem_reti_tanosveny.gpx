@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Selyem-réti tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Selyem-réti tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://turistautak.openstreetmap.hu/mentettutv-1569515572gwex"/>
+    <trkseg>
+      <trkpt lat="47.268411" lon="19.230859"><ele>109.6</ele></trkpt>
+      <trkpt lat="47.268155" lon="19.230807"><ele>110.5</ele></trkpt>
+      <trkpt lat="47.268001" lon="19.230875"><ele>111.5</ele></trkpt>
+      <trkpt lat="47.267546" lon="19.231408"><ele>114.8</ele></trkpt>
+      <trkpt lat="47.267403" lon="19.231366"><ele>114.8</ele></trkpt>
+      <trkpt lat="47.266867" lon="19.230957"><ele>113.3</ele></trkpt>
+      <trkpt lat="47.266321" lon="19.230802"><ele>111.7</ele></trkpt>
+      <trkpt lat="47.265440" lon="19.231338"><ele>111.8</ele></trkpt>
+      <trkpt lat="47.263898" lon="19.231493"><ele>111.4</ele></trkpt>
+      <trkpt lat="47.262711" lon="19.232284"><ele>110.2</ele></trkpt>
+      <trkpt lat="47.262577" lon="19.232269"><ele>109.9</ele></trkpt>
+      <trkpt lat="47.262278" lon="19.232097"><ele>108.8</ele></trkpt>
+      <trkpt lat="47.262081" lon="19.232234"><ele>108.1</ele></trkpt>
+      <trkpt lat="47.261751" lon="19.232845"><ele>108.3</ele></trkpt>
+      <trkpt lat="47.261540" lon="19.233055"><ele>108.4</ele></trkpt>
+      <trkpt lat="47.260597" lon="19.235158"><ele>112.4</ele></trkpt>
+      <trkpt lat="47.260312" lon="19.235659"><ele>111.1</ele></trkpt>
+      <trkpt lat="47.260212" lon="19.235945"><ele>110.5</ele></trkpt>
+      <trkpt lat="47.260193" lon="19.236156"><ele>110.6</ele></trkpt>
+      <trkpt lat="47.260367" lon="19.236858"><ele>113.0</ele></trkpt>
+      <trkpt lat="47.260370" lon="19.237014"><ele>113.2</ele></trkpt>
+      <trkpt lat="47.260305" lon="19.237151"><ele>113.0</ele></trkpt>
+      <trkpt lat="47.259149" lon="19.238316"><ele>109.8</ele></trkpt>
+      <trkpt lat="47.258818" lon="19.238721"><ele>108.8</ele></trkpt>
+      <trkpt lat="47.258443" lon="19.239003"><ele>108.6</ele></trkpt>
+      <trkpt lat="47.258079" lon="19.238619"><ele>106.6</ele></trkpt>
+      <trkpt lat="47.257844" lon="19.238689"><ele>106.6</ele></trkpt>
+      <trkpt lat="47.256822" lon="19.240005"><ele>106.5</ele></trkpt>
+      <trkpt lat="47.257844" lon="19.238689"><ele>106.6</ele></trkpt>
+      <trkpt lat="47.258079" lon="19.238619"><ele>106.6</ele></trkpt>
+      <trkpt lat="47.258443" lon="19.239003"><ele>108.6</ele></trkpt>
+      <trkpt lat="47.258818" lon="19.238721"><ele>108.8</ele></trkpt>
+      <trkpt lat="47.259149" lon="19.238316"><ele>109.8</ele></trkpt>
+      <trkpt lat="47.260305" lon="19.237151"><ele>113.0</ele></trkpt>
+      <trkpt lat="47.260370" lon="19.237014"><ele>113.2</ele></trkpt>
+      <trkpt lat="47.260367" lon="19.236858"><ele>113.0</ele></trkpt>
+      <trkpt lat="47.260193" lon="19.236156"><ele>110.6</ele></trkpt>
+      <trkpt lat="47.260212" lon="19.235945"><ele>110.5</ele></trkpt>
+      <trkpt lat="47.260312" lon="19.235659"><ele>111.1</ele></trkpt>
+      <trkpt lat="47.260597" lon="19.235158"><ele>112.4</ele></trkpt>
+      <trkpt lat="47.261540" lon="19.233055"><ele>108.4</ele></trkpt>
+      <trkpt lat="47.261751" lon="19.232845"><ele>108.3</ele></trkpt>
+      <trkpt lat="47.262081" lon="19.232234"><ele>108.1</ele></trkpt>
+      <trkpt lat="47.262278" lon="19.232097"><ele>108.8</ele></trkpt>
+      <trkpt lat="47.262577" lon="19.232269"><ele>109.9</ele></trkpt>
+      <trkpt lat="47.262711" lon="19.232284"><ele>110.2</ele></trkpt>
+      <trkpt lat="47.263898" lon="19.231493"><ele>111.4</ele></trkpt>
+      <trkpt lat="47.265440" lon="19.231338"><ele>111.8</ele></trkpt>
+      <trkpt lat="47.266321" lon="19.230802"><ele>111.7</ele></trkpt>
+      <trkpt lat="47.266867" lon="19.230957"><ele>113.3</ele></trkpt>
+      <trkpt lat="47.267403" lon="19.231366"><ele>114.8</ele></trkpt>
+      <trkpt lat="47.267546" lon="19.231408"><ele>114.8</ele></trkpt>
+      <trkpt lat="47.268001" lon="19.230875"><ele>111.5</ele></trkpt>
+      <trkpt lat="47.268155" lon="19.230807"><ele>110.5</ele></trkpt>
+      <trkpt lat="47.268423" lon="19.230862"><ele>109.5</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
