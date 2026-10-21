@@ -47,6 +47,7 @@ fun DestinationInfoWindow(
     destination: Destination,
     onPlaceDetailsClick: () -> Unit,
     onRouteClick: () -> Unit,
+    onWebsiteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val chipTint = mokoColor(destination.type.colorRes).categoryTint()
@@ -124,17 +125,34 @@ fun DestinationInfoWindow(
                 maxLines = DESCRIPTION_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (destination.routeGpxFile != null) {
-                SecondaryButton(
-                    iconResId = R.drawable.ic_route,
-                    text = mokoString(SharedRes.strings.destinations_action_open_route),
-                    onClick = onRouteClick,
-                    size = ButtonSize.SMALL,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = Dimens.MediumLarge)
-                        .testTagAsResourceId(TestTags.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON),
-                )
+            if (destination.routeGpxFile != null || destination.website != null) {
+                Column(
+                    modifier = Modifier.padding(top = Dimens.MediumLarge),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+                ) {
+                    if (destination.routeGpxFile != null) {
+                        SecondaryButton(
+                            iconResId = R.drawable.ic_route,
+                            text = mokoString(SharedRes.strings.destinations_action_open_route),
+                            onClick = onRouteClick,
+                            size = ButtonSize.SMALL,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTagAsResourceId(TestTags.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON),
+                        )
+                    }
+                    if (destination.website != null) {
+                        SecondaryButton(
+                            iconResId = R.drawable.ic_language,
+                            text = mokoString(SharedRes.strings.destinations_action_open_website),
+                            onClick = onWebsiteClick,
+                            size = ButtonSize.SMALL,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTagAsResourceId(TestTags.LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON),
+                        )
+                    }
+                }
             }
         }
     }
@@ -157,6 +175,30 @@ private fun DestinationInfoWindowRoutePreview() {
             ),
             onPlaceDetailsClick = {},
             onRouteClick = {},
+            onWebsiteClick = {},
+            modifier = Modifier.padding(Dimens.Large),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DestinationInfoWindowWebsitePreview() {
+    HuKiTheme {
+        DestinationInfoWindow(
+            destination = Destination(
+                id = "1",
+                name = "Zselici Csillagpark",
+                town = "Zselickisfalud",
+                type = DestinationType.OBSERVATORY,
+                location = Location(46.2363960, 17.7651457),
+                description = SharedRes.strings.destinations_description,
+                popularity = 7,
+                website = "https://zselicicsillagpark.hu",
+            ),
+            onPlaceDetailsClick = {},
+            onRouteClick = {},
+            onWebsiteClick = {},
             modifier = Modifier.padding(Dimens.Large),
         )
     }
@@ -178,6 +220,7 @@ private fun DestinationInfoWindowPreview() {
             ),
             onPlaceDetailsClick = {},
             onRouteClick = {},
+            onWebsiteClick = {},
             modifier = Modifier.padding(Dimens.Large),
         )
     }

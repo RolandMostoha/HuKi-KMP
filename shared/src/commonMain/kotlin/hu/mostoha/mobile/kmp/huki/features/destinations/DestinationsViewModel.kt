@@ -67,6 +67,7 @@ class DestinationsViewModel(
             is DestinationsUiEvents.TabSelected -> _uiState.update { it.copy(selectedTab = event.tab) }
             DestinationsUiEvents.GrantLocationClicked -> requestLocationPermission()
             DestinationsUiEvents.RetryNearbyClicked -> viewModelScope.launch { refreshNearby() }
+            is DestinationsUiEvents.WebsiteClicked -> openWebsite(event.destination)
         }
     }
 
@@ -140,6 +141,12 @@ class DestinationsViewModel(
                     }
                 }
         }
+    }
+
+    private fun openWebsite(destination: Destination) {
+        val website = destination.website ?: return
+        analyticsService.logEvent(AnalyticsEvent.DestinationWebsiteOpened(destination.id))
+        sendEffect(DestinationsUiEffects.OpenUrl(website))
     }
 
     private fun sendEffect(uiEffect: DestinationsUiEffects) {

@@ -136,22 +136,11 @@ enum class DestinationType(
         placeCategory = PlaceCategory.RIVER,
         titleOverride = SharedRes.strings.destinations_type_water_tour,
     ),
-    CAVE_WITHOUT_GUIDE(
-        placeCategory = PlaceCategory.CAVE,
-        titleOverride = SharedRes.strings.destinations_type_cave_without_guide,
-    ),
     CAVE_GUIDE_REQUIRED(
         placeCategory = PlaceCategory.CAVE,
         titleOverride = SharedRes.strings.destinations_type_cave_guide_required,
     ),
     ;
-
-    val parent: DestinationType?
-        get() = when (this) {
-            CASTLE_RUIN -> CASTLE
-            CAVE_WITHOUT_GUIDE, CAVE_GUIDE_REQUIRED -> CAVE
-            else -> null
-        }
 
     val title: StringResource
         get() = titleOverride

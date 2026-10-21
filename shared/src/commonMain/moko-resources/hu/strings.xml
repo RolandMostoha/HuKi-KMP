@@ -324,6 +324,7 @@
     <string name="destinations_nearby_error_action">Újrapróbálkozás</string>
     <string name="destinations_a11y_back">Vissza</string>
     <string name="destinations_action_open_route">Útvonal megnyitása</string>
+    <string name="destinations_action_open_website">Weboldal</string>
     <string name="destinations_action_show_on_map">Megtekintés a térképen</string>
     <string name="destinations_a11y_preview_dismiss">Előnézet bezárása</string>
     <string name="destinations_type_peak">Csúcs</string>
@@ -404,7 +405,6 @@
     <string name="destinations_type_adventure_park">Kaland- és élményparkok</string>
     <string name="destinations_type_religious_site">Vallási emlékhelyek</string>
     <string name="destinations_type_water_tour">Vízitúrák</string>
-    <string name="destinations_type_cave_without_guide">Önállóan látogatható barlangok</string>
     <string name="destinations_type_cave_guide_required">Barlang (vezetett)</string>
     <string name="destinations_challenge_highest_peaks">Tájegységek legmagasabb csúcsai</string>
     <string name="destinations_challenge_panoramic_views">Panorámás kilátóhelyek</string>

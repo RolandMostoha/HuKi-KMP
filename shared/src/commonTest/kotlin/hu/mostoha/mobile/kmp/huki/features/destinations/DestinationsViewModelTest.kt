@@ -231,6 +231,44 @@ class DestinationsViewModelTest {
     }
 
     @Test
+    fun `Given destination with website - When website clicked - Then OpenUrl effect is emitted and logged`() {
+        stubPermissionState(PermissionState.NotDetermined)
+        val destination = POPULAR.first().copy(website = "https://www.kekesteto.hu")
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(DestinationsUiEvents.WebsiteClicked(destination))
+
+                awaitItem() shouldBe DestinationsUiEffects.OpenUrl("https://www.kekesteto.hu")
+            }
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationWebsiteOpened(destination.id),
+            )
+        }
+    }
+
+    @Test
+    fun `Given destination without website - When website clicked - Then nothing happens`() {
+        stubPermissionState(PermissionState.NotDetermined)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(DestinationsUiEvents.WebsiteClicked(POPULAR.first()))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                expectNoEvents()
+            }
+
+            analyticsService.loggedEvents shouldBe emptyList()
+        }
+    }
+
+    @Test
     fun `Given permission denied always - When permission requested - Then NavigateToAppSettings effect is emitted`() {
         stubPermissionState(PermissionState.NotDetermined)
         val deniedAlways = DeniedAlwaysException(Permission.LOCATION)

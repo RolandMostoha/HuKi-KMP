@@ -6,6 +6,7 @@ struct DestinationInfoWindowView: View {
     let destination: Destination
     let onPlaceDetailsClick: () -> Void
     let onRouteClick: () -> Void
+    let onWebsiteClick: () -> Void
 
     private static let descriptionLineLimit = 4
 
@@ -51,14 +52,27 @@ struct DestinationInfoWindowView: View {
                 .lineLimit(Self.descriptionLineLimit)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 2)
-            if destination.routeGpxFile != nil {
-                SecondaryButton(
-                    icon: .system("point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"),
-                    title: strings.get(id: SharedRes.strings().destinations_action_open_route),
-                    size: .small,
-                    action: onRouteClick
-                )
-                .accessibilityIdentifier(TestTags.shared.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON)
+            if destination.routeGpxFile != nil || destination.website != nil {
+                VStack(spacing: 6) {
+                    if destination.routeGpxFile != nil {
+                        SecondaryButton(
+                            icon: .system("point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"),
+                            title: strings.get(id: SharedRes.strings().destinations_action_open_route),
+                            size: .small,
+                            action: onRouteClick
+                        )
+                        .accessibilityIdentifier(TestTags.shared.LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON)
+                    }
+                    if destination.website != nil {
+                        SecondaryButton(
+                            icon: .system("globe"),
+                            title: strings.get(id: SharedRes.strings().destinations_action_open_website),
+                            size: .small,
+                            action: onWebsiteClick
+                        )
+                        .accessibilityIdentifier(TestTags.shared.LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON)
+                    }
+                }
                 .padding(.top, 10)
             }
         }
@@ -89,10 +103,12 @@ struct DestinationInfoWindowView: View {
             description: SharedRes.strings().destinations_description,
             popularity: 8,
             challenges: [],
-            routeGpxFile: nil
+            routeGpxFile: nil,
+            website: nil
         ),
         onPlaceDetailsClick: {},
-        onRouteClick: {}
+        onRouteClick: {},
+        onWebsiteClick: {}
     )
     .padding()
 }
@@ -109,10 +125,34 @@ struct DestinationInfoWindowView: View {
             description: SharedRes.strings().destinations_description,
             popularity: 4,
             challenges: [],
-            routeGpxFile: SharedRes.files().edut_jagi_tanosveny_gpx
+            routeGpxFile: SharedRes.files().edut_jagi_tanosveny_gpx,
+            website: nil
         ),
         onPlaceDetailsClick: {},
-        onRouteClick: {}
+        onRouteClick: {},
+        onWebsiteClick: {}
+    )
+    .padding()
+}
+
+#Preview("Website") {
+    DestinationInfoWindowView(
+        strings: Strings(),
+        destination: Destination(
+            id: "1",
+            name: "Zselici Csillagpark",
+            town: "Zselickisfalud",
+            type: .observatory,
+            location: Location(latitude: 46.2363960, longitude: 17.7651457, altitude: nil),
+            description: SharedRes.strings().destinations_description,
+            popularity: 7,
+            challenges: [],
+            routeGpxFile: nil,
+            website: "https://zselicicsillagpark.hu"
+        ),
+        onPlaceDetailsClick: {},
+        onRouteClick: {},
+        onWebsiteClick: {}
     )
     .padding()
 }

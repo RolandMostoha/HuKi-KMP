@@ -91,6 +91,7 @@ class MainViewModelLandscapesTest {
             location = Location(48.0855, 20.3889),
             description = SharedRes.strings.destinations_type_river,
             popularity = 8,
+            website = "https://www.bnpi.hu/hu/reszletek/fatyol-vizeses",
         )
         private val TEST_TRAIL_GPX_FILE = SharedRes.files.edut_jagi_tanosveny_gpx
         private val TEST_DESTINATION_TRAIL = Destination(
@@ -452,7 +453,7 @@ class MainViewModelLandscapesTest {
             }
             viewModel.uiState.value.mapUiState.landscapes?.selectedDestination shouldBe TEST_DESTINATION_RIVER
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.LandscapesDestinationClicked(TEST_DESTINATION_RIVER.name),
+                AnalyticsEvent.LandscapesDestinationClicked(TEST_DESTINATION_RIVER.id),
             )
         }
     }
@@ -514,7 +515,28 @@ class MainViewModelLandscapesTest {
             uiState.mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
             uiState.mapUiState.landscapes.shouldBeNull()
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.DestinationEduTrailOpened(TEST_DESTINATION_TRAIL.name),
+                AnalyticsEvent.DestinationEduTrailOpened(TEST_DESTINATION_TRAIL.id),
+            )
+        }
+    }
+
+    @Test
+    fun `Given trail destination id - When DestinationRouteSelected - Then its bundled GPX opens`() {
+        every { destinationRepository.requireDestination(TEST_DESTINATION_TRAIL.id) } returns TEST_DESTINATION_TRAIL
+
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+            analyticsService.loggedEvents.clear()
+
+            viewModel.onEvent(MainUiEvents.DestinationRouteSelected(TEST_DESTINATION_TRAIL.id))
+            advanceUntilIdle()
+
+            val uiState = viewModel.uiState.value
+            uiState.sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
+            uiState.mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationEduTrailOpened(TEST_DESTINATION_TRAIL.id),
             )
         }
     }
@@ -531,6 +553,47 @@ class MainViewModelLandscapesTest {
             viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowRouteClicked)
             advanceUntilIdle()
 
+            viewModel.uiState.value shouldBe expected
+            analyticsService.loggedEvents shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given selected destination with website - When website clicked - Then the website is opened`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_RIVER))
+            advanceUntilIdle()
+            val expected = viewModel.uiState.value
+            analyticsService.loggedEvents.clear()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowWebsiteClicked)
+
+                awaitItem() shouldBe MainUiEffects.OpenUrl("https://www.bnpi.hu/hu/reszletek/fatyol-vizeses")
+            }
+            viewModel.uiState.value shouldBe expected
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationWebsiteOpened(TEST_DESTINATION_RIVER.id),
+            )
+        }
+    }
+
+    @Test
+    fun `Given selected destination without website - When website clicked - Then nothing happens`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_PEAK))
+            advanceUntilIdle()
+            val expected = viewModel.uiState.value
+            analyticsService.loggedEvents.clear()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowWebsiteClicked)
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
             viewModel.uiState.value shouldBe expected
             analyticsService.loggedEvents shouldBe emptyList()
         }

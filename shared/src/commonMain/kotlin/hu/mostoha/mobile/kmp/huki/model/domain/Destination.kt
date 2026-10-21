@@ -13,6 +13,7 @@ data class Destination(
     val popularity: Int,
     val challenges: Set<DestinationChallenge> = emptySet(),
     val routeGpxFile: FileResource? = null,
+    val website: String? = null,
 ) {
     init {
         require(popularity in 1..10) { "Popularity must be between 1 and 10" }

@@ -147,6 +147,9 @@ struct LandscapesMapContent: MapContent {
                     },
                     onRouteClick: {
                         onEvent(LandscapesUiEventsLandscapesInfoWindowRouteClicked.shared)
+                    },
+                    onWebsiteClick: {
+                        onEvent(LandscapesUiEventsLandscapesInfoWindowWebsiteClicked.shared)
                     }
                 )
             }

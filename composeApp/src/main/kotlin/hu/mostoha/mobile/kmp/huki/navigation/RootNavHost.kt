@@ -40,6 +40,7 @@ private object Routes {
     const val EXTRA_PLACE_OSM_TYPE_KEY = "extra_place_osm_type"
     const val EXTRA_PLACE_OSM_ID_KEY = "extra_place_osm_id"
     const val EXTRA_DESTINATION_ID_KEY = "extra_destination_id"
+    const val EXTRA_DESTINATION_ROUTE_ID_KEY = "extra_destination_route_id"
 }
 
 @Composable
@@ -89,6 +90,9 @@ fun RootNavHost() {
             val openDestinationId by entry.savedStateHandle
                 .getStateFlow<String?>(Routes.EXTRA_DESTINATION_ID_KEY, null)
                 .collectAsStateWithLifecycle()
+            val openDestinationRouteId by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.EXTRA_DESTINATION_ROUTE_ID_KEY, null)
+                .collectAsStateWithLifecycle()
             val openRoutePlanner by entry.savedStateHandle
                 .getStateFlow(Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY, false)
                 .collectAsStateWithLifecycle()
@@ -111,6 +115,10 @@ fun RootNavHost() {
                 },
                 openDestinationId = openDestinationId,
                 onOpenDestinationConsumed = { entry.savedStateHandle[Routes.EXTRA_DESTINATION_ID_KEY] = null },
+                openDestinationRouteId = openDestinationRouteId,
+                onOpenDestinationRouteConsumed = {
+                    entry.savedStateHandle[Routes.EXTRA_DESTINATION_ROUTE_ID_KEY] = null
+                },
                 openRoutePlanner = openRoutePlanner,
                 onOpenRoutePlannerConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = false },
                 openDiscover = openDiscover,
@@ -147,6 +155,11 @@ fun RootNavHost() {
                 onBack = { navController.popBackStack() },
                 onShowOnMap = { destination ->
                     navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_DESTINATION_ID_KEY] =
+                        destination.id
+                    navController.popBackStack<Main>(inclusive = false)
+                },
+                onOpenRoute = { destination ->
+                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_DESTINATION_ROUTE_ID_KEY] =
                         destination.id
                     navController.popBackStack<Main>(inclusive = false)
                 },

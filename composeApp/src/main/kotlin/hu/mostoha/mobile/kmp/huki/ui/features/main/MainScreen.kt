@@ -99,6 +99,8 @@ fun MainScreen(
     onOpenPlaceConsumed: () -> Unit = {},
     openDestinationId: String? = null,
     onOpenDestinationConsumed: () -> Unit = {},
+    openDestinationRouteId: String? = null,
+    onOpenDestinationRouteConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
     openDiscover: Boolean = false,
@@ -127,6 +129,13 @@ fun MainScreen(
         openDestinationId?.let { id ->
             viewModel.onEvent(MainUiEvents.DestinationSelected(id))
             onOpenDestinationConsumed()
+        }
+    }
+
+    LaunchedEffect(openDestinationRouteId) {
+        openDestinationRouteId?.let { id ->
+            viewModel.onEvent(MainUiEvents.DestinationRouteSelected(id))
+            onOpenDestinationRouteConsumed()
         }
     }
 

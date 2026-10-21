@@ -35,4 +35,6 @@ Examples:
    - key prefixed with the landscape, e.g. `matra_kekesteto`,
    - placed beside the landscape's other entries, in the same order in both files.
 3. Verify facts (elevation, location, access) against a reliable source before writing them.
-4. Run `python3 tools/destinations/validate_destinations.py`.
+4. If the place has an operator (railway, park, guided cave, observatory), add its website with the
+   `destination-website` skill.
+5. Run `python3 tools/destinations/validate_destinations.py`.

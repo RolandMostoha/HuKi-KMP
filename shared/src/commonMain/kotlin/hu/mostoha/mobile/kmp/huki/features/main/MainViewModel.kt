@@ -175,6 +175,7 @@ class MainViewModel(
             is MainUiEvents.SearchResultPlaceHistorySelected -> showSearchResultPlaceHistory(event.place)
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.id)
+            is MainUiEvents.DestinationRouteSelected -> openDestinationRouteById(event.id)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // Discover events
             MainUiEvents.DiscoverClicked -> showSheet(Sheet.Discover)
@@ -251,6 +252,7 @@ class MainViewModel(
             LandscapesUiEvents.LandscapesInfoWindowDismissed -> dismissLandscapesInfoWindow()
             LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked -> showLandscapesDestinationPlaceDetails()
             LandscapesUiEvents.LandscapesInfoWindowRouteClicked -> openLandscapesDestinationRoute()
+            LandscapesUiEvents.LandscapesInfoWindowWebsiteClicked -> openLandscapesDestinationWebsite()
             LandscapesUiEvents.LandscapesResumeClicked -> resumeLandscapes()
             LandscapesUiEvents.LandscapesCloseClicked -> closeLandscapes()
         }
@@ -379,12 +381,12 @@ class MainViewModel(
     }
 
     private fun showSearchDestination(destination: Destination) {
-        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.id))
         showDestination(destination)
     }
 
     private fun showSearchResultDestination(destination: Destination) {
-        analyticsService.logEvent(AnalyticsEvent.SearchDestinationSelected(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.SearchDestinationSelected(destination.id))
         showDestination(destination)
     }
 
@@ -394,8 +396,12 @@ class MainViewModel(
 
     private fun showDestinationById(id: String) {
         val destination = destinationRepository.requireDestination(id)
-        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.id))
         showDestination(destination)
+    }
+
+    private fun openDestinationRouteById(id: String) {
+        openDestinationRoute(destinationRepository.requireDestination(id))
     }
 
     private fun handleMapLongClick(location: Location) {
@@ -1290,7 +1296,7 @@ class MainViewModel(
     }
 
     private fun selectLandscapesDestination(destination: Destination) {
-        analyticsService.logEvent(AnalyticsEvent.LandscapesDestinationClicked(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.LandscapesDestinationClicked(destination.id))
         _uiState.updateLandscapesUiState { it.copy(selectedDestinationId = destination.id) }
         viewModelScope.launch {
             centerCameraOn(destination)
@@ -1318,9 +1324,22 @@ class MainViewModel(
 
     private fun openLandscapesDestinationRoute() {
         val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        openDestinationRoute(destination)
+    }
+
+    private fun openDestinationRoute(destination: Destination) {
         val routeGpxFile = destination.routeGpxFile ?: return
-        loadGpx(AnalyticsEvent.DestinationEduTrailOpened(destination.name)) {
+        loadGpx(AnalyticsEvent.DestinationEduTrailOpened(destination.id)) {
             gpxRepository.readBundledGpxFile(routeGpxFile)
+        }
+    }
+
+    private fun openLandscapesDestinationWebsite() {
+        val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        val website = destination.website ?: return
+        analyticsService.logEvent(AnalyticsEvent.DestinationWebsiteOpened(destination.id))
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenUrl(website))
         }
     }
 

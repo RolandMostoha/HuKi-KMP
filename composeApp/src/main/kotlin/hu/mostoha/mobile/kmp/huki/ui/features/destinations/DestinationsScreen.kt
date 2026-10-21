@@ -76,6 +76,7 @@ import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
+import hu.mostoha.mobile.kmp.huki.util.openUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -84,6 +85,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DestinationsScreen(
     onBack: () -> Unit,
     onShowOnMap: (Destination) -> Unit,
+    onOpenRoute: (Destination) -> Unit,
     viewModel: DestinationsViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -95,6 +97,7 @@ fun DestinationsScreen(
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onShowOnMap = onShowOnMap,
+        onOpenRoute = onOpenRoute,
         distanceText = viewModel::distanceText,
     )
 }
@@ -107,6 +110,7 @@ private fun DestinationsContent(
     onEvent: (DestinationsUiEvents) -> Unit,
     onBack: () -> Unit,
     onShowOnMap: (Destination) -> Unit = {},
+    onOpenRoute: (Destination) -> Unit = {},
     distanceText: (Destination) -> String? = { null },
 ) {
     val context = LocalContext.current
@@ -117,6 +121,7 @@ private fun DestinationsContent(
             when (effect) {
                 DestinationsUiEffects.NavigateBack -> onBack()
                 DestinationsUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
+                is DestinationsUiEffects.OpenUrl -> context.openUrl(effect.url)
             }
         }
     }
@@ -208,6 +213,11 @@ private fun DestinationsContent(
                 onShowOnMap(current.destination)
                 preview = null
             },
+            onRouteClick = {
+                onOpenRoute(current.destination)
+                preview = null
+            },
+            onWebsiteClick = { onEvent(DestinationsUiEvents.WebsiteClicked(current.destination)) },
             onDismissRequest = { preview = null },
         )
     }

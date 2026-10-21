@@ -224,6 +224,10 @@ private extension MainView {
                     onShowOnMap: { destination in
                         viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
                         navigationPath = NavigationPath()
+                    },
+                    onOpenRoute: { destination in
+                        viewModel.onEvent(event: MainUiEventsDestinationRouteSelected(id: destination.id))
+                        navigationPath = NavigationPath()
                     }
                 )
             }

@@ -15,7 +15,7 @@ interface DestinationRepository {
     fun getPopularDestinations(): List<Destination>
 
     fun getDestinationsByType(type: DestinationType): List<Destination> =
-        getPopularDestinations().filter { it.type == type || it.type.parent == type }
+        getPopularDestinations().filter { it.type == type }
 
     fun getDestinationsByChallenge(challenge: DestinationChallenge): List<Destination> =
         getPopularDestinations().filter { challenge in it.challenges }

@@ -11,6 +11,9 @@
     <string name="somogyi_dombsag_kaszoi_lombkorona_tanosveny">124 méteres magasösvény a gyertyános-tölgyes lombszintjén. A hozzá kapcsolódó erdei tanösvény az erdő élővilágát mutatja be.</string>
     <string name="somogyi_dombsag_deseda_to">Tó Kaposvár közelében, tóparti sétautakkal, arborétummal és lombkoronasétánnyal. Az útvonalak vízi és erdei élőhelyeket érintenek.</string>
     <string name="somogyi_dombsag_petesmalmi_vidrapark">Vidrákat bemutató park somogyi erdei tavak között. A mentett állatok és a környező vizes élőhelyek a sétaútról figyelhetők meg.</string>
+    <string name="somogyi_dombsag_balatonfenyvesi_kisvasut">Egykori gazdasági kisvasút Balatonfenyvesről Somogyszentpálra és Csisztafürdőre. A vonal a Nagyberek rétjein és legelőin halad át.</string>
+    <string name="somogyi_dombsag_kaszoi_erdei_vasut">Erdei vasút Kaszón, Belső-Somogy legnagyobb összefüggő erdejében. A vonal végig erdőben halad, a Baláta-tó védett területe közelében.</string>
+    <string name="somogyi_balatonboglari_kalandpark">Kalandpark a balatonboglári Várdombon, a Gömbkilátó mellett. Alpesi bob, kötélpálya, szabadesés-torony, mászófal és íjászat.</string>
 
     <string name="bukk_fatyol_vizeses">Lépcsőzetes mésztufa-vízesés a Szalajka-völgyben. A patak menti sétaútról a vízesés és a környező bükkös is látható.</string>
     <string name="bukk_szent_istvan_barlang">Cseppkőbarlang Lillafüreden, cseppkőoszlopokkal és nagy termekkel. Kiépített útvonalon, vezetett túrán látogatható.</string>
@@ -34,6 +37,11 @@
     <string name="bukk_szilvasko">A Bükk legmagasabb pontja (961 m), a Bükk-fennsík erdős részén. A csúcs erdei túraútvonalakon közelíthető meg.</string>
     <string name="bukk_csillagda">Csillagászati központ Répáshután, planetáriummal, meteoritokkal és távcsöves programokkal. A környező erdőben bolygóösvény vezet.</string>
     <string name="bukk_dedesi_var">Középkori várfalak maradványai egy meredek sziklahegy tetején. Erdei ösvény vezet fel, a romok mellől az északi Bükkre látni.</string>
+    <string name="bukk_egri_var">Eger óvárosa fölötti végvár, amelyet 1552-ben Dobó István védett meg a török ostrom ellen. Falai között a Dobó István Vármúzeum működik.</string>
+    <string name="bukk_felsotarkanyi_erdei_vasut">Erdei vasút a Bükkben, Egertől északra, Felsőtárkányból indulva. A vonal mentén vadaskert, a végállomásnál tanösvény található.</string>
+    <string name="bukk_lillafuredi_erdei_vasut">Erdei vasút Miskolcról a Szinva völgyében Lillafüredre és Garadnára. A vonal a Hámori-tó mellett, a Bükk erdei között halad.</string>
+    <string name="bukk_szilvasvaradi_erdei_vasut">Meredek erdei vasút a Szalajka-völgyben. Szilvásvárad szélétől a Fátyol-vízesés feletti tisztásig visz, a halastónál is megáll.</string>
+    <string name="bukk_szilvasvaradi_bobpalya">Egycsöves bobpálya a Szalajka-völgy bejáratánál, a sípálya melletti erdőben. Az első ilyen típusú pálya volt Magyarországon.</string>
 
     <string name="matra_kekesteto">A Mátra és Magyarország legmagasabb pontja (1014 m), kilátótoronnyal. A toronyból a Mátra hegyeire és a környező tájra látni.</string>
     <string name="matra_galyateto">Magas mátrai hegycsúcs a Galya-kilátóval. A toronyból a Mátra erdős gerinceire látni; a csúcs több túraútvonalon érhető el.</string>
@@ -48,6 +56,8 @@
     <string name="matra_disznoko">Sziklás kilátópont a Mátrában, erdei túraútvonalak mellett. A szikláról a hegységtől északra fekvő erdős tájra látni.</string>
     <string name="matra_agasvar">Hegycsúcs a Mátrában, vármaradványokkal. A magaslatról a környező hegyekre látni, erdei ösvények vezetnek a csúcsra.</string>
     <string name="matra_kisnanai_var">Várrom a Mátra lábánál, gótikus templomtoronnyal és kőtárral. Történelmi kiállításai a középkori nemesi birtok életét mutatják be.</string>
+    <string name="matra_matravasut">Kisvasút a gyöngyösi Orczy-kert széléről két vonalon, Mátrafüredre és Szalajkaházra. Mindkét vonal meredeken emelkedik ki a városból.</string>
+    <string name="matra_oxygen_adrenalin_park">Kalandpark a Mátra déli lejtőjén, Mátrafüred felett. 930 méteres bobpálya, függőhíd a sástói kőfejtő felett, libegő a Sástóhoz.</string>
 
     <string name="heves_nagy_ko">Homokkőcsúcs (392 m), meredek sziklafallal. Az oromról a környező dombokra, a Mátrára és a Bükk vonulataira látni.</string>
     <string name="heves_szentkut">Zarándokhely erdős völgyben, bazilikával és forrásokkal. A kegyhely bejárása a környék erdei ösvényein tett sétával kapcsolható össze.</string>
@@ -83,6 +93,9 @@
     <string name="zemplen_kis_milic">Hegycsúcs a Nagy-Milic mellett, a Károlyi-kilátóval. A toronyból a füzéri vár és a Zemplén erdős hegyei látszanak.</string>
     <string name="zemplen_sar_hegy_fuggohid">Gyalogos függőhíd két hegy között, Sátoraljaújhely fölött. A hídról az alatta fekvő völgyre és a környező hegyekre látni.</string>
     <string name="zemplen_boldogkovaralja">Középkori várrom a Zemplénben, sziklás gerincre építve. Falai és sziklapárkánya a környező dombokra néző kilátópontok.</string>
+    <string name="zemplen_palhazi_erdei_vasut">Erdei vasút Pálházáról a Zemplén erdeibe, Kishután és Kőkapun át Rostallóig. A 9 km hosszú vonalon egy alagút is van.</string>
+    <string name="zemplen_zemplen_kalandpark">Kalandpark Sátoraljaújhelyen, az ország leghosszabb üléses libegőjével. Felső állomásán kilátó áll, a parkban bobpálya és mászófal van.</string>
+    <string name="zemplen_fuzerradvanyi_karolyi_kastely">A Károlyi család kastélya a Zempléni-hegység lábánál, romantikus stílusban átépítve. Védett angolparkja díjmentesen látogatható.</string>
 
     <string name="hortobagy_tiszavirag_tanosveny">Csónakkal megközelíthető tanösvény a Tisza-tónál, a Szabics-kikötőből indulva. A gyalogút a tó vízi élőhelyeit mutatja be.</string>
     <string name="hortobagy_oreg_pakasz_tanosveny">Mocsaras élőhelyek között vezető tanösvény. Táblái a pákászok életmódját, a nádasok növényeit és a vízi állatokat mutatják be.</string>
@@ -100,14 +113,18 @@
     <string name="alfold_szarvasi_arboretum">Arborétum a Holt-Körös partján, idős fákkal és távoli tájak növényeivel. Sétaútjai a gyűjtemény különböző részeit kapcsolják össze.</string>
     <string name="alfold_korosvolgyi_latogatokozpont">Látogatóközpont és állatpark a Körös–Maros Nemzeti Parkban. Kiállításai és állatai a Körösök és a Maros élővilágát mutatják be.</string>
     <string name="alfold_gyula_almasy_kastely">Felújított barokk kastély Gyulán, történelmi kiállításokkal. A kiállítások a kastély múltját és az egykori kastélyéletet mutatják be.</string>
+    <string name="alfold_gyulai_var">Közép-Európa egyetlen épen maradt síkvidéki téglavára, a 15. századból. Az 1566-os ostromban török kézre került, ma múzeum működik benne.</string>
     <string name="alfold_koros_torok">A Körös és a Tisza találkozása homokos folyóparttal. A partról mindkét folyóra látni; a homokos terület mérete a vízállástól függ.</string>
     <string name="alfold_makoi_lombkorona_setany">Lombkoronaszintű sétány kilátóval, ahonnan a Maros árterének világát fedezhetjük fel.</string>
+    <string name="alfold_gyomaendrodi_lombkorona_setany">Lombkoronasétány és 15 m magas kilátó Gyomaendrőd Erzsébet-ligetében, 1 km-es tanösvénnyel. Belépőjegyes, esőben zárva tart.</string>
+    <string name="alfold_karcagi_lombkorona_setany">314 m hosszú lombkoronasétány a Karcagi Parkerdőben, a Liget út végén. A tölgyek között 6 m magasan halad, szabadon látogatható.</string>
     <string name="alfold_ezer_ev_parkja">Szabadtéri makettpark magyarországi várak, templomok és kastélyok másolataival. A kiállítás ezer év építészeti emlékeit mutatja be.</string>
     <string name="alfold_siraly_tanosveny">A szegedi Fehér-tó madárvilágát bemutató tanösvény. Nádasok és halastavak mellett halad, ősszel daruvonulás figyelhető meg.</string>
     <string name="alfold_baranypirosito_tanosveny">Tanösvény a Kiskunság szél formálta homokbuckái között. Táblái az árvalányhajas gyepeket és a szárazságtűrő növényeket mutatják be.</string>
     <string name="alfold_szelidi_to">Tó a Duna egykori medrében, strandokkal és a Kékmoszat tanösvénnyel. Nádasok és vízi élőhelyek találhatók a part mentén.</string>
     <string name="alfold_aqua_colun_tanosveny">Tanösvény a Kolon-tó nádasai és láprétjei mellett. Madárlesei és táblái a gémek, nádi énekesek és ritka növények élőhelyeit mutatják be.</string>
     <string name="alfold_tiszakurti_arboretum">Angolpark jellegű kert a Tisza mellett, idős tölgyekkel és díszfákkal. Sétaútjai évszakonként változó virágok között vezetnek.</string>
+    <string name="alfold_tiszadobi_andrassy_kastely">Az Andrássy család francia kastélyokat idéző, romantikus kastélya a Tisza mellett. 2023-ban megújult, termeiben kiállítások láthatók.</string>
 
     <string name="paloc_holloko_kezkilato">Kéz alakú kilátó Hollókő közelében, a Cserhát dombjai között. A kézfejet formázó teraszról a környező vidékre látni.</string>
     <string name="paloc_hollokoi_var">Világörökségi helyszín része, középkori vár, mely Hollókő egyik legfőbb látványossága.</string>
@@ -124,6 +141,7 @@
     <string name="paloc_gyadai_ret">Erdei rét a Naszály lábánál, tanösvénnyel és függőhíddal. A gyalogos útvonal a tisztás és a környező erdő élővilágát mutatja be.</string>
     <string name="paloc_vacratot_botanikus">Botanikus kert tavakkal, sétautakkal és üvegházakkal. Gyűjteménye távoli tájak növényeit, valamint évszakos virágokat mutat be.</string>
     <string name="paloc_naszaly">652 méteres mészkőhegy meredek erdei ösvényekkel és karsztos formákkal. A közeli Látó-hegyről a Dunakanyar látható.</string>
+
     <string name="karancs_medves_somosko_var">Várrom a határ szlovák oldalán, kilátással a Medves vidékére. A vár alatti bazaltorgonák a környék vulkáni eredetét mutatják.</string>
     <string name="karancs_medves_salgovar">Középkori várrom Salgótarján fölött, sziklás hegytetőn. A falmaradványok mellől a Karancs–Medves vidékre nyílik kilátás.</string>
     <string name="karancs_medves_boszorkany_ko">Bazaltos sziklagerinc vulkáni bombákkal és sziklaalakzatokkal. Kilátópontjairól Salgó vára és a Medves vidékének dombjai látszanak.</string>
@@ -157,6 +175,9 @@
     <string name="borzsony_nagy_sas_hegy">Hegycsúcs Nagybörzsöny közelében, a Börzsönyben. A magaslat kilátópontjáról a környező erdős hegyek és völgyek látszanak.</string>
     <string name="borzsony_hollo_ko">Sziklás kilátópont a Börzsönyben, a környező gerincekre és völgyekre néző panorámával. A sziklaperem erdei túrán érhető el.</string>
     <string name="borzsony_kemencei_muzeumvasut">Keskeny nyomtávú vasút a Börzsöny erdei völgyében. A kemencei végállomás mozdonyai és kiállítása az erdei szállítás történetét mutatják be.</string>
+    <string name="borzsony_bezina_volgyi_erdei_vasut">Erdei vasút Szobtól Márianosztrán át Nagyirtáspusztáig. Csúcsfordítókkal és hurkokkal kapaszkodik fel a Dunától a Börzsöny belsejébe.</string>
+    <string name="borzsony_kiralyreti_erdei_vasut">Erdei vasút a Duna-parti Kismaros és Királyrét között, a Börzsöny legforgalmasabb kisvasútja. Királyréten több turistaút találkozik.</string>
+    <string name="borzsony_nagyborzsonyi_erdei_vasut">Erdei vasút Nagybörzsöny és Nagyirtáspuszta között, egykori fa- és kőszállító vonalon. Nagyirtáspusztán át lehet szállni a szobi vonatra.</string>
 
     <string name="visegrad_spartacus_osveny">Hegyoldali ösvény a Visegrádi-hegységben, kilátással a Dunakanyarra. A gyalogút az erdős lejtőkön, a hegyek között vezet.</string>
     <string name="visegrad_nagy_villam">Kilátópont Visegrád fölött. A magaslatról a Dunakanyarra és a környező hegyekre látni, erdei útvonalak vezetnek hozzá.</string>
@@ -183,6 +204,7 @@
     <string name="visegrad_vaskapu_esztergom">Kilátópont az Esztergom fölötti hegyen. A bazilika, a Mária Valéria híd, a Duna és a túlparti dombok látszanak innen.</string>
     <string name="visegrad_vasas_szakadek_szentendre">Szűk szurdok a Visegrádi-hegységben, Szentendre közelében. Meredek sziklafalai között gyalogösvény vezet az erdős hegyoldalban.</string>
     <string name="visegrad_esztergom_bazilika">Az esztergomi bazilika Magyarország legnagyobb temploma, impozáns építészeti műemlék.</string>
+    <string name="visegrad_esztergomi_var">Árpád-kori királyi székhely a Várhegyen, a Bazilika mellett. A királyi palota maradványaiban a Magyar Nemzeti Múzeum Vármúzeuma működik.</string>
     <string name="visegrad_visegradi_bobpalya">Két bobpálya a Nagy-Villám kilátó mellett, Visegrád felett: egy betoncsatornás nyári pálya és egy időjárástól független alpesi bob.</string>
 
     <string name="pilis_pilisborosjeno_egri">A pilisborosjenői Egri vár másolata népszerű kirándulóhely és filmes forgatási helyszín.</string>
@@ -227,6 +249,7 @@
     <string name="budapest_nagy_kopasz">A Budai-hegység legmagasabb pontja (559 m), a Csergezán Pál-kilátóval. A toronyból a budai hegyekre és Budapest felé látni.</string>
     <string name="budapest_pal_volgyi_barlang">Budapest leghosszabb barlangrendszerének látogatható szakasza. A vezetett túrán cseppkövek, kagylólenyomatok és magas hasadékok láthatók.</string>
     <string name="budapest_szemlo_hegyi_barlang">Hévíz eredetű barlang Budapesten, borsókövekkel és karfiolszerű ásványkiválásokkal. Kiépített útvonalon, vezetett túrán látogatható.</string>
+    <string name="budapest_szechenyi_hegyi_gyermekvasut">Gyermekek által üzemeltetett kisvasút a Budai-hegységben, Széchenyi-hegy és Hűvösvölgy között. Megállói közelében kilátók és turistautak vannak.</string>
 
     <string name="gerecse_templom_zsambek">Középkori templomrom a zsámbéki dombon, két toronnyal. Falain román és gótikus építészeti részletek figyelhetők meg.</string>
     <string name="gerecse_kamalduli">Kamalduli erdőkkel körülvett szerzetesház Tatán, nyugodt környezet és kulturális érték.</string>
@@ -237,6 +260,8 @@
     <string name="gerecse_turul">Turul-emlékmű Tatabánya fölött, sziklás kilátóponton. A város és a környező hegyek látszanak innen, a Szelim-barlang rövid sétára van.</string>
     <string name="gerecse_szelim">Nagy barlangterem Tatabánya fölött, mennyezeti nyílásokkal. Természetes sziklaablakából a város és a környező táj látható.</string>
     <string name="gerecse_oreg_to">Tó Tata történelmi városrészében, a vár mellett. Tóparti sétaút vezet a nádasok és madárélőhelyek mentén, kilátással a vízre.</string>
+    <string name="gerecse_tatai_var">Vízivár az Öreg-tó partján, Zsigmond király építtette, Mátyás király bővítette. Falai között a Kuny Domokos Múzeum működik.</string>
+    <string name="gerecse_tatai_esterhazy_kastely">Az Esterházy család barokk kastélya Tatán, Fellner Jakab tervei alapján. Felújítás után nyílt meg újra, termeiben kiállítások láthatók.</string>
     <string name="gerecse_pesko_barlang">Barlangbejárat a Gerecse sziklás hegyoldalában. Erdei ösvény vezet hozzá, a környező mészkőfelszínek a hegység kőzeteit mutatják.</string>
     <string name="gerecse_banya_hegy">Erdős hegy Tardos fölött, több gerecsei túraútvonal találkozásánál. A környéken a kőfejtés nyomai és erdei ösvények láthatók.</string>
     <string name="gerecse_tardos_lombkorona">Fák közé emelt sétány Tardos környékén. A magasösvényről az erdő lombszintje, a fatörzsek és a környező erdős terület látható.</string>
@@ -261,6 +286,7 @@
     <string name="vertes_csokakoe_vara">Vár a Vértes peremének szikláján, középkori falakkal és kápolnával. A várból a Móri-árok és a környező hegyek látszanak.</string>
     <string name="vertes_alcsuti_arboretum">Történelmi angolpark hóvirágokkal, idős fákkal és kastélyromokkal. Felújítás miatt várhatóan 2027 elejéig zárva.</string>
     <string name="vertes_ganti_bauxitfoldtani_park">Egykori bauxitbánya vörös sziklafalakkal és bányagödrökkel. A területen vezető tanösvény a bauxit keletkezését magyarázza.</string>
+    <string name="vertes_val_volgyi_kisvasut">Kisvasút Felcsúton, a Váli-víz völgyében, végig természetes környezetben. Késő tavasztól kora őszig hétvégenként közlekedik.</string>
 
     <string name="bakony_koris_hegy">A Bakony legmagasabb pontja (709 m), kilátóval. A toronyból a környező erdős hegyekre és a Pannonhalmi-dombság felé látni.</string>
     <string name="bakony_hubertlaki_to">Erdei tó a Bakonyban, a vízből kiálló elárasztott fatörzsekkel. Bakonyi Gyilkos-tónak is nevezik, erdei útvonalon érhető el.</string>
@@ -298,6 +324,7 @@
     <string name="bakony_somlo_szent_istvan_kilato">Bazaltból épült kilátó a Somlón, szőlőskertekre és távoli hegyekre nyíló kilátással. A felvezető úton vulkáni kőzetek láthatók.</string>
     <string name="bakony_sumegi_var">Vár a Sümeg fölötti hegyen, falakkal, tornyokkal és történelmi kiállításokkal. A várból a városra és a környező tájra látni.</string>
     <string name="bakony_sobri_joska_elmenypark">Nagy kalandpark Kislődön, a Bakonyban, közel 50 játékkal: nyári bob, megacsúszda, kötélpálya és kisvasút. A vasútállomás 900 méterre van.</string>
+    <string name="bakony_papai_esterhazy_kastely">Barokk Esterházy-kastély Pápa belvárosának szélén, mögötte kiterjedt angolparkkal. Termeiben kastélymúzeum működik.</string>
 
     <string name="balaton_somlyo_kilato">Kilátó a Somlyó-hegyen, a Balaton mellett. A toronyból a tó keleti medencéje és a Tihanyi-félsziget látszik a környező tájjal.</string>
     <string name="balaton_szigligeti_var">Várrom Szigliget hegytetőjén, a Balaton mellett. A várfalakból a tóra és a környező tanúhegyekre nyílik kilátás.</string>
@@ -345,11 +372,12 @@
     <string name="keszthely_ko_orra">Sziklás kilátópont Várvölgy fölött, a Keszthelyi-hegységben. A szikláról a környező dombokra és erdős völgyekre látni.</string>
     <string name="keszthely_csodabogyos_bazis">Overallos, vezetett barlangtúra szűk hasadékokon és létrákon át, cseppköves termekkel. A túra a balatonedericsi bázisról indul.</string>
     <string name="keszthely_pele_apo_osveny">Erdei tanösvény a pelefigurás táblákkal, az erdő állatairól. Rövidebb körök is bejárhatók, az útvonal balatoni kilátókat érint.</string>
+    <string name="keszthely_hevizi_lombkorona_setany">Lombkoronasétány a Hévízi-tavat övező véderdőben, 6–8 m magasan a fák között. A sétány legmagasabb pontjáról a tó is látszik.</string>
     <string name="keszthely_rezi_var">Középkori várrom dolomitoromra építve, erdei úton elérhető. A falak mellől a Zalaszántói-medence és a környező hegyek látszanak.</string>
+    <string name="keszthely_festetics_kastely">A Festetics család barokk kastélya Keszthelyen, a Helikon Könyvtárral és angolkerttel. Termei és kiállításai múzeumként látogathatók.</string>
 
     <string name="szigetkoz_vadludak">Kemping Lipóton, a Szigetközben. Sátorozóhely és vízitúrákhoz használható bázis, a környék folyóágainak közelében.</string>
     <string name="szigetkoz_denkpali_hallepso">A Denkpáli hallépcső a Duna egyik különleges műtárgya, amely lehetővé teszi a halak szabad vándorlását, és kedvelt kirándulóhely Dunasziget közelében.</string>
-    <string name="szigetkoz_hedervary_kastely">Történelmi kastély Héderváron, parkkal. A kastély épülete és a körülötte fekvő zöldterület a település építészeti emlékei közé tartozik.</string>
     <string name="szigetkoz_trianoni_zsilip">A Trianoni zsilip közkedvelt vízitúra-kiindulópont Rajkánál, ahonnan a Szigetköz vízi útjai könnyen elérhetők.</string>
     <string name="szigetkoz_vadviz_kemping">A Vadvíz Kemping Dunakiliti határában található, kedvelt kiindulópont vízitúrákhoz és családi táborozáshoz.</string>
     <string name="szigetkoz_kisvesszosi_kemping">A Kisvesszősi Kemping Cikolaszigetnél található, vízitúrázók és természetkedvelők gyakori pihenőhelye.</string>
@@ -369,15 +397,18 @@
     <string name="sopron_faber_ret">Erdei tisztás a soproni Lövérekben. A nyitott rétet gyalogösvények kapcsolják a környező erdőhöz, a túra során pihenőként használható.</string>
     <string name="sopron_magas_berc">A Magas-bérc Sopron térségében található, Magyarország legmagasabb pontja a Soproni-hegységben (557 m), kirándulóknak kötelező célpont.</string>
     <string name="sopron_erdo_haza">Ökoturisztikai látogatóközpont Sopronban. Kiállításai a soproni erdők növényeit és állatait mutatják be, természetismereti programokkal.</string>
-    <string name="sopron_lover_kalandpark">Szabadtéri kalandpark a soproni Felsőlövérekben. Családok és fiatalok számára kialakított játékok és kalandprogramok találhatók benne.</string>
     <string name="sopron_tolvaj_arok">A Tolvaj-árok Sopron környékén található szurdokvölgy, népszerű túrázók és természetkedvelők körében.</string>
     <string name="sopron_cserkeszkapolna">A Cserkészkápolna Sopronbánfalván található kis templom, történelmi és vallási jelentőséggel.</string>
     <string name="sopron_tarodi_var">A Taródi vár Felsőlövérekben található, mesés, egyedi építészeti stílusú kastély, amely látogatható a városban.</string>
     <string name="sopron_autos_piheno">Pihenőhely a Brennberg-völgyben, piknikezővel, tűzrakóhellyel és játszótérrel. A környék erdei útvonalain tett séta során is elérhető.</string>
+
     <string name="ferto_kecske_hegyi_kilato">Kilátó a Fertőrákos és Tómalom közötti erdős részen, kilátással a Fertőre és a környező dombokra.</string>
     <string name="ferto_fertorakosi_kofejto">Egykori mészkőfejtő látványos sziklafalakkal, barlangszínházzal és a Fertő vidékének földtanát, ősmaradványait bemutató kiállítással.</string>
     <string name="ferto_laszlomajor">Sarród melletti egykori major, ahol kiállítás mutatja be a hagyományos állattartást, a vidéki életet és a természetvédelmet.</string>
     <string name="ferto_kocsagvar">Nagy kócsagot formázó látogatóközpont Sarródon, a nemzeti park egyik jellegzetes épülete és kiindulópontja.</string>
+    <string name="ferto_nagycenki_muzeumvasut">Múzeumvasút Nagycenken, a Kastély állomás és Fertőboz között. Dízel- és gőzmozdonyos szerelvények járnak, az állomásnál skanzen van.</string>
+    <string name="ferto_fertodi_esterhazy_kastely">Magyarország legnagyobb barokk kastélya, a „magyar Versailles”, Esterházy Miklós herceg építtette. Joseph Haydn évtizedekig itt dolgozott.</string>
+    <string name="ferto_nagycenki_szechenyi_kastely">A Széchényi család kastélya, Széchenyi István otthona. 2023-as felújítása óta nemzeti emlékhely, a család történetét bemutató kiállítással.</string>
 
     <string name="koszeg_irott_ko">A Dunántúl legmagasabb pontja (883 m), az osztrák határon. Kilátótornya panorámát ad a környékre, az Országos Kéktúra innen indul.</string>
     <string name="koszeg_jurisics_var">A Jurisics-vár Kőszeg jelképe, amely a 16. századi török ostrom idején vált híressé hősies védelméről, ma múzeumként és kulturális központként működik.</string>
@@ -419,6 +450,7 @@
     <string name="zala_csiga_tura_tanosveny">Erdei tanösvény Zalakaroson, gombákat, állatokat és madárhangokat bemutató táblákkal. A séta mentén hullámos padok is találhatók.</string>
     <string name="zala_kanyavari_sziget">Sziget a Kis-Balatonban, íves fahíddal megközelíthető. Madárlesei és a Búbos vöcsök tanösvény a nádasok madárvilágát mutatják be.</string>
     <string name="zala_kapolnapusztai_bivalyrezervatum">Bivalyokat bemutató terület a Kis-Balatonnál, legelő és dagonyázó állatokkal. A sétaút és kiállítás a helyi állattartást is bemutatja.</string>
+    <string name="zala_csomoderi_erdei_vasut">Zalai erdei vasút Lenti és Kistolmács között, 33 km-es személyforgalmi vonallal. A kistolmácsi végállomás a víztározó strandja mellett van.</string>
 
     <string name="zselic_csillagpark">Csillagászati központ a Zselicben, planetáriummal és távcsöves bemutatókkal. Programjai a csillagokat és az éjszakai ég jelenségeit mutatják be.</string>
     <string name="zselic_ropolyi_to">Erdei tó a Zselicben, part menti pihenőhellyel. A vízfelületet környező fák és erdei utak a környéken tett gyalogtúra során láthatók.</string>
@@ -426,6 +458,7 @@
     <string name="zselic_okopark">Park Bükkösd mellett, legelőkkel, háziállatokkal és erdei ösvényekkel. A séta során a környék vidéki tája és állatai ismerhetők meg.</string>
     <string name="zselic_katica_tanya">Családi élménypark Patcán, állatokkal, csúszdákkal és szabadtéri játékokkal. A tanyasi környezetben a falusi állattartás is látható.</string>
     <string name="zselic_hollofeszek_kilato">A Zselic legmagasabb pontja (358 m), kilátóval. A toronyból a környező erdős dombokra, völgyekre és a Mecsek felé látni.</string>
+    <string name="zselic_almamelleki_erdei_vasut">600 mm nyomtávú erdei vasút a Zselicben, Almamellék és Sasrét között. 1901 óta szállít utasokat a lankás, erdős dombok között.</string>
 
     <string name="mecsek_abaligeti_barlang">Cseppkőbarlang a Mecsekben, föld alatti patakkal. A kanyargó járat kiépített útvonalán vezetett túrán láthatók a képződmények.</string>
     <string name="mecsek_balazs_hegy">Magaslat az Orfűi-tavak közelében. Kilátópontjából a tórendszer és a Nyugat-Mecsek vonulatai látszanak, gyalogos útvonalról elérhető.</string>
@@ -449,6 +482,9 @@
     <string name="mecsek_jakab_hegy">A Jakab-hegy (602 m) tetején ősi földvár sáncai és pálos kolostorromok találhatók. Az erdei útvonal mindkét történelmi helyszínt érinti.</string>
     <string name="mecsek_orfui_malmok">Működő vízimalom, szárazmalom és papírmalom Orfűn. A vezetett túra a régi mesterségeket mutatja be, a környéken patakparti sétaút vezet.</string>
     <string name="mecsek_puspokszentlaszlo_arboretum">Kastély, kápolna és arborétum a Zengő alatti völgyben, fenyőgyűjteménnyel. A kert a Mecsek erdei útvonalairól is elérhető.</string>
+    <string name="mecsek_mecseki_kisvasut">Az ország legrövidebb kisvasútja a Mecseki Parkerdőben, az állatkert és Dömörkapu között. Több turistaút találkozásánál közlekedik.</string>
+    <string name="mecsek_mecsextrem_park">Erdei kalandpark Pécs felett, Árpádtetőn, a komlói út mellett. Kötélpályák a fák között, erdei bob, mászófal és íjászat.</string>
+    <string name="mecsek_sas_volgyi_lombkorona_tanosveny">Lombkoronasétány a Nyugat-Mecsekben, a hetvehelyi Erdő Háza mellett. Az 50 m hosszú ösvény 6 m magasan halad a fák között, ingyenes.</string>
 
     <string name="villany_kopasz_hegy">Magaslat Harkány fölött, kilátással a Dráva síkjára és a Villányi-hegységre. A hegyoldali sétaútról a borvidék dombjai látszanak.</string>
     <string name="villany_nagyharsanyi_szoborpark">Szabadtéri szoborgyűjtemény egykori kőbányában, a Szársomlyónál. A kőszobrok a bánya sziklafalai között tekinthetők meg.</string>
@@ -463,31 +499,15 @@
     <string name="gemenc_dunapart_forgo_tavi_tanosveny">Duna-parti megálló a Forgó-tó madárleséhez és pallós tanösvényéhez. Jelenleg nem közlekedik menetrend szerinti vonat a megállóhoz.</string>
     <string name="gemenc_nagyrezet">Vadmegfigyelő hely Gemenc ártéri erdejében, a méhekről, a méhészetről és az ember kapcsolatáról szóló közeli kiállítással.</string>
     <string name="gemenc_okoturisztikai_kozpont">Gemenc pörbölyi látogatóközpontja erdei kisvasúttal, élővilágot bemutató kiállításokkal, erdei iskolával és ártéri sétautakkal.</string>
-    <string name="zselic_almamelleki_erdei_vasut">600 mm nyomtávú erdei vasút a Zselicben, Almamellék és Sasrét között. 1901 óta szállít utasokat a lankás, erdős dombok között.</string>
-    <string name="somogyi_dombsag_balatonfenyvesi_kisvasut">Egykori gazdasági kisvasút Balatonfenyvesről Somogyszentpálra és Csisztafürdőre. A vonal a Nagyberek rétjein és legelőin halad át.</string>
-    <string name="borzsony_bezina_volgyi_erdei_vasut">Erdei vasút Szobtól Márianosztrán át Nagyirtáspusztáig. Csúcsfordítókkal és hurkokkal kapaszkodik fel a Dunától a Börzsöny belsejébe.</string>
-    <string name="zala_csomoderi_erdei_vasut">Zalai erdei vasút Lenti és Kistolmács között, 33 km-es személyforgalmi vonallal. A kistolmácsi végállomás a víztározó strandja mellett van.</string>
-    <string name="bukk_felsotarkanyi_erdei_vasut">Erdei vasút a Bükkben, Egertől északra, Felsőtárkányból indulva. A vonal mentén vadaskert, a végállomásnál tanösvény található.</string>
-    <string name="somogyi_dombsag_kaszoi_erdei_vasut">Erdei vasút Kaszón, Belső-Somogy legnagyobb összefüggő erdejében. A vonal végig erdőben halad, a Baláta-tó védett területe közelében.</string>
-    <string name="somogyi_balatonboglari_kalandpark">Kalandpark a balatonboglári Várdombon, a Gömbkilátó mellett. Alpesi bob, kötélpálya, szabadesés-torony, mászófal és íjászat.</string>
-    <string name="borzsony_kiralyreti_erdei_vasut">Erdei vasút a Duna-parti Kismaros és Királyrét között, a Börzsöny legforgalmasabb kisvasútja. Királyréten több turistaút találkozik.</string>
-    <string name="bukk_lillafuredi_erdei_vasut">Erdei vasút Miskolcról a Szinva völgyében Lillafüredre és Garadnára. A vonal a Hámori-tó mellett, a Bükk erdei között halad.</string>
-    <string name="matra_matravasut">Kisvasút a gyöngyösi Orczy-kert széléről két vonalon, Mátrafüredre és Szalajkaházra. Mindkét vonal meredeken emelkedik ki a városból.</string>
-    <string name="matra_oxygen_adrenalin_park">Kalandpark a Mátra déli lejtőjén, Mátrafüred felett. 930 méteres bobpálya, függőhíd a sástói kőfejtő felett, libegő a Sástóhoz.</string>
-    <string name="budapest_szechenyi_hegyi_gyermekvasut">Gyermekek által üzemeltetett kisvasút a Budai-hegységben, Széchenyi-hegy és Hűvösvölgy között. Megállói közelében kilátók és turistautak vannak.</string>
-    <string name="mecsek_mecseki_kisvasut">Az ország legrövidebb kisvasútja a Mecseki Parkerdőben, az állatkert és Dömörkapu között. Több turistaút találkozásánál közlekedik.</string>
-    <string name="mecsek_mecsextrem_park">Erdei kalandpark Pécs felett, Árpádtetőn, a komlói út mellett. Kötélpályák a fák között, erdei bob, mászófal és íjászat.</string>
-    <string name="borzsony_nagyborzsonyi_erdei_vasut">Erdei vasút Nagybörzsöny és Nagyirtáspuszta között, egykori fa- és kőszállító vonalon. Nagyirtáspusztán át lehet szállni a szobi vonatra.</string>
-    <string name="ferto_nagycenki_muzeumvasut">Múzeumvasút Nagycenken, a Kastély állomás és Fertőboz között. Dízel- és gőzmozdonyos szerelvények járnak, az állomásnál skanzen van.</string>
-    <string name="zemplen_palhazi_erdei_vasut">Erdei vasút Pálházáról a Zemplén erdeibe, Kishután és Kőkapun át Rostallóig. A 9 km hosszú vonalon egy alagút is van.</string>
-    <string name="zemplen_zemplen_kalandpark">Kalandpark Sátoraljaújhelyen, az ország leghosszabb üléses libegőjével. Felső állomásán kilátó áll, a parkban bobpálya és mászófal van.</string>
-    <string name="bukk_szilvasvaradi_erdei_vasut">Meredek erdei vasút a Szalajka-völgyben. Szilvásvárad szélétől a Fátyol-vízesés feletti tisztásig visz, a halastónál is megáll.</string>
-    <string name="bukk_szilvasvaradi_bobpalya">Egycsöves bobpálya a Szalajka-völgy bejáratánál, a sípálya melletti erdőben. Az első ilyen típusú pálya volt Magyarországon.</string>
-    <string name="vertes_val_volgyi_kisvasut">Kisvasút Felcsúton, a Váli-víz völgyében, végig természetes környezetben. Késő tavasztól kora őszig hétvégenként közlekedik.</string>
 
     <string name="no_landscape_selyem_reti_tanosveny">Rövid tanösvény lábas égerfák és láperdei növények között, tavasszal tőzikékkel. A réti tisztáson piknikezőhely található.</string>
     <string name="no_landscape_zsuzsi_erdei_vasut">Az ország legrégebben működő kisvasútja Debrecenből az Erdőspusztákra. Hármashegyalján kilátó, tanösvény, erdei játszótér és tó van.</string>
     <string name="no_landscape_jeli_arboretum">Arborétum óriásfenyőkkel és lombkoronasétánnyal. Tavasszal rododendronok virágoznak, az erdei utak a növénygyűjteményen át vezetnek.</string>
     <string name="no_landscape_pannonhalmi_lombkoronaosveny">Hal alakú, fák fölé nyúló sétány Pannonhalmán, az apátság közelében. A magasösvényről a város házaira és a Sokoró dombjaira látni.</string>
     <string name="no_landscape_annafurdoi_lombkoronaosveny">Rétisasfészek-kilátó, a hozzá kapcsolódó lombkoronaösvénnyel. A magasból a fák lombszintje és a Tolnai-hegyhát erdős tája látható.</string>
+    <string name="no_landscape_sarvari_nadasdy_var">Ötszög alaprajzú vár, a Nádasdy család egykori székhelye. Díszterme 17. századi freskókkal díszített, falai között a Nádasdy Ferenc Múzeum működik.</string>
+    <string name="no_landscape_simontornyai_var">A Sió völgyében álló, 13. századi vár, amelyet Móré László reneszánsz stílusban építtetett át. Falai között vármúzeum működik.</string>
+    <string name="no_landscape_ozorai_pipo_varkastely">Ozorai Pipó, Zsigmond király firenzei születésű hadvezére építtette a 15. század elején. Az emeleti termek csak vezetéssel látogathatók.</string>
+    <string name="no_landscape_godolloi_kiralyi_kastely">Grassalkovich Antal barokk kastélya, később Ferenc József és Erzsébet királyné kedvelt rezidenciája. A királyi lakosztályok múzeumként látogathatók.</string>
+    <string name="no_landscape_degi_festetics_kastely">A Festetics család klasszicista kastélya a Mezőföldön, Pollack Mihály tervei alapján. Kiterjedt angolkertjében tavak és szigetek vannak.</string>
 </resources>

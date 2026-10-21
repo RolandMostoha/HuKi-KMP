@@ -147,6 +147,7 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
                     destination = destination,
                     onPlaceDetailsClick = { onEvent(LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked) },
                     onRouteClick = { onEvent(LandscapesUiEvents.LandscapesInfoWindowRouteClicked) },
+                    onWebsiteClick = { onEvent(LandscapesUiEvents.LandscapesInfoWindowWebsiteClicked) },
                 )
             }
         }

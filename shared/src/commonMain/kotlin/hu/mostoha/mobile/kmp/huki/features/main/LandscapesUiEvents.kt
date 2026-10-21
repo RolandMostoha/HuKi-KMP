@@ -12,6 +12,7 @@ sealed interface LandscapesUiEvents : MainUiEvents {
     data object LandscapesInfoWindowDismissed : LandscapesUiEvents
     data object LandscapesInfoWindowPlaceDetailsClicked : LandscapesUiEvents
     data object LandscapesInfoWindowRouteClicked : LandscapesUiEvents
+    data object LandscapesInfoWindowWebsiteClicked : LandscapesUiEvents
     data object LandscapesResumeClicked : LandscapesUiEvents
     data object LandscapesCloseClicked : LandscapesUiEvents
 }

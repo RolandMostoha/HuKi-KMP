@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DestinationsView: View {
     let onShowOnMap: (Destination) -> Void
+    let onOpenRoute: (Destination) -> Void
 
     @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getDestinationsViewModel)
     private var viewModel: DestinationsViewModel { holder.viewModel }
@@ -62,7 +63,13 @@ struct DestinationsView: View {
                 handleEffect(effect)
             }
         }
-        .destinationPreview(item: $preview, strings: strings, onShowOnMap: onShowOnMap)
+        .destinationPreview(
+            item: $preview,
+            strings: strings,
+            onShowOnMap: onShowOnMap,
+            onOpenRoute: onOpenRoute,
+            onOpenWebsite: { viewModel.onEvent(event: DestinationsUiEventsWebsiteClicked(destination: $0)) }
+        )
     }
 
     private func inlineSubtitle(destinationCount: Int32) -> some View {
@@ -301,6 +308,10 @@ private extension DestinationsView {
             dismiss()
         case .navigateToAppSettings:
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        case .openUrl(let effect):
+            if let url = URL(string: effect.url) {
+                UIApplication.shared.open(url)
+            }
         }
     }
 }
@@ -309,7 +320,9 @@ private extension View {
     func destinationPreview(
         item: Binding<DestinationPreviewItem?>,
         strings: Strings,
-        onShowOnMap: @escaping (Destination) -> Void
+        onShowOnMap: @escaping (Destination) -> Void,
+        onOpenRoute: @escaping (Destination) -> Void,
+        onOpenWebsite: @escaping (Destination) -> Void
     ) -> some View {
         fullScreenCover(item: item) { previewItem in
             DestinationPreviewOverlay(
@@ -318,6 +331,8 @@ private extension View {
                 landscapeText: previewItem.landscapeText,
                 distanceText: previewItem.distanceText,
                 onShowOnMap: { onShowOnMap(previewItem.destination) },
+                onOpenRoute: { onOpenRoute(previewItem.destination) },
+                onOpenWebsite: { onOpenWebsite(previewItem.destination) },
                 onDismiss: { item.wrappedValue = nil }
             )
         }

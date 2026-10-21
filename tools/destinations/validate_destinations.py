@@ -55,7 +55,9 @@ def validate():
         categories = re.search(r"categories = setOf\((.*?)\)", block, re.S)
         members = set(re.findall(r"DestinationType\.(\w+)", categories[1])) if categories else {primary}
         assert primary in members, f"Missing primary category: {primary}"
-        assert not {"CAVE_WITHOUT_GUIDE", "CAVE_GUIDE_REQUIRED"} <= members, "Conflicting cave access tags"
+        assert not {"CAVE", "CAVE_GUIDE_REQUIRED"} <= members, "Conflicting cave access tags"
+        website = re.search(r'website = "([^"]*)"', block)
+        assert not website or re.fullmatch(r"https://[^\s\"]+", website[1]), f"Website must be an https URL: {website[1]}"
     groups = re.findall(r"val (DESTINATIONS_\w+) = listOf", source)
     all_groups = re.findall(r"    (DESTINATIONS_\w+),", source.split("val ALL_DESTINATIONS =")[1])
     landscape_groups = re.findall(r"destinations = (DESTINATIONS_\w+)", (DATA / "Landscapes.kt").read_text())

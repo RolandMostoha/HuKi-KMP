@@ -324,6 +324,7 @@
     <string name="destinations_nearby_error_action">Try again</string>
     <string name="destinations_a11y_back">Back</string>
     <string name="destinations_action_open_route">Open route</string>
+    <string name="destinations_action_open_website">Website</string>
     <string name="destinations_action_show_on_map">Show on map</string>
     <string name="destinations_a11y_preview_dismiss">Close preview</string>
     <string name="destinations_type_peak">Peak</string>
@@ -404,8 +405,7 @@
     <string name="destinations_type_adventure_park">Adventure parks</string>
     <string name="destinations_type_religious_site">Religious sites</string>
     <string name="destinations_type_water_tour">Water tours</string>
-    <string name="destinations_type_cave_without_guide">Caves without a guide</string>
-    <string name="destinations_type_cave_guide_required">Caves with a guide</string>
+    <string name="destinations_type_cave_guide_required">Cave (guided)</string>
     <string name="destinations_challenge_highest_peaks">Highest peaks of the landscapes</string>
     <string name="destinations_challenge_panoramic_views">Panoramic viewpoints</string>
     <string name="destinations_challenge_birdwatching">Birdwatching spots</string>

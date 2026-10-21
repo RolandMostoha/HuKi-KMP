@@ -63,14 +63,14 @@ sealed interface AnalyticsEvent {
         override val name = "history_gpx_selected"
     }
 
-    data class DestinationSelected(val destinationName: String) : AnalyticsEvent {
+    data class DestinationSelected(val destinationId: String) : AnalyticsEvent {
         override val name = "destination_selected"
-        override val params = mapOf("selected_destination" to destinationName)
+        override val params = mapOf("selected_destination" to destinationId)
     }
 
-    data class SearchDestinationSelected(val destinationName: String) : AnalyticsEvent {
+    data class SearchDestinationSelected(val destinationId: String) : AnalyticsEvent {
         override val name = "search_destination_selected"
-        override val params = mapOf("selected_destination" to destinationName)
+        override val params = mapOf("selected_destination" to destinationId)
     }
 
     data class ScreenView(val screen: Screen) : AnalyticsEvent {
@@ -275,14 +275,19 @@ sealed interface AnalyticsEvent {
         override val params = mapOf("selected_landscape" to landscapeId)
     }
 
-    data class LandscapesDestinationClicked(val destinationName: String) : AnalyticsEvent {
+    data class LandscapesDestinationClicked(val destinationId: String) : AnalyticsEvent {
         override val name = "landscapes_destination_clicked"
-        override val params = mapOf("selected_destination" to destinationName)
+        override val params = mapOf("selected_destination" to destinationId)
     }
 
-    data class DestinationEduTrailOpened(val destinationName: String) : AnalyticsEvent {
+    data class DestinationEduTrailOpened(val destinationId: String) : AnalyticsEvent {
         override val name = "destination_edutrail_opened"
-        override val params = mapOf("selected_destination" to destinationName)
+        override val params = mapOf("selected_destination" to destinationId)
+    }
+
+    data class DestinationWebsiteOpened(val destinationId: String) : AnalyticsEvent {
+        override val name = "destination_website_opened"
+        override val params = mapOf("selected_destination" to destinationId)
     }
 
     data object CategoriesOpened : AnalyticsEvent {

@@ -11,6 +11,9 @@
     <string name="somogyi_dombsag_kaszoi_lombkorona_tanosveny">A 124-metre elevated path among hornbeam and oak crowns, connected to a woodland nature trail with information about forest wildlife.</string>
     <string name="somogyi_dombsag_deseda_to">A lake near Kaposvár with shoreline paths, an arboretum and a canopy walkway, with routes passing woodland and waterside habitats.</string>
     <string name="somogyi_dombsag_petesmalmi_vidrapark">An otter park among woodland ponds in Somogy, with rescued animals and surrounding wetland habitats observed from the walking path.</string>
+    <string name="somogyi_dombsag_balatonfenyvesi_kisvasut">A former farm railway from Balatonfenyves to Somogyszentpál and Csisztafürdő. The line crosses the meadows and pastures of the Nagyberek.</string>
+    <string name="somogyi_dombsag_kaszoi_erdei_vasut">A forest railway at Kaszó, in the largest continuous woodland of Inner Somogy. The line runs through forest near the protected Baláta-tó.</string>
+    <string name="somogyi_balatonboglari_kalandpark">An adventure park on Balatonboglár’s Vár-domb, next to the Gömbkilátó. It has an alpine coaster, rope course, free-fall tower and archery.</string>
 
     <string name="bukk_fatyol_vizeses">A stepped travertine waterfall in the Szalajka Valley, visible from the streamside walking path through the beech woodland.</string>
     <string name="bukk_szent_istvan_barlang">A stalactite cave in Lillafüred with large chambers and limestone columns. Guided tours follow a developed visitor route.</string>
@@ -34,6 +37,11 @@
     <string name="bukk_szilvasko">The highest point of the Bükk (961 m), in a wooded part of the Bükk Plateau. The summit is reached along forest hiking trails.</string>
     <string name="bukk_csillagda">An astronomy centre in Répáshuta with a planetarium, meteorites and telescope programmes, and a planetary trail in the surrounding woodland.</string>
     <string name="bukk_dedesi_var">Remains of medieval castle walls on a steep rocky summit, reached by a forest path, with views across the northern Bükk from the ruins.</string>
+    <string name="bukk_egri_var">Border fortress above the old town of Eger, defended by István Dobó against the Ottoman siege of 1552. It houses the Dobó István Castle Museum.</string>
+    <string name="bukk_felsotarkanyi_erdei_vasut">A forest railway in the Bükk north of Eger, starting from Felsőtárkány. A game park lies along the line and a nature trail at the terminus.</string>
+    <string name="bukk_lillafuredi_erdei_vasut">A forest railway from Miskolc up the Szinva valley to Lillafüred and Garadna. The line passes Lake Hámori and runs through the Bükk forests.</string>
+    <string name="bukk_szilvasvaradi_erdei_vasut">A steep forest railway in the Szalajka valley, from the edge of Szilvásvárad to a clearing above the Fátyol waterfall, with a stop at the fish pond.</string>
+    <string name="bukk_szilvasvaradi_bobpalya">A single-tube bobsled track in the forest by the ski slope at the entrance to the Szalajka Valley. It was the first of its type in Hungary.</string>
 
     <string name="matra_kekesteto">The highest point of the Mátra and Hungary (1014 m), with a lookout tower overlooking the mountains and surrounding landscape.</string>
     <string name="matra_galyateto">A high summit in the Mátra with the Galya lookout tower. The tower overlooks wooded ridges, and several hiking trails lead to the peak.</string>
@@ -48,6 +56,8 @@
     <string name="matra_disznoko">A rocky viewpoint beside forest hiking trails in the Mátra, overlooking the wooded landscape to the north of the mountain range.</string>
     <string name="matra_agasvar">A summit in the Mátra with castle remains, reached by woodland paths, with views of the surrounding mountains from the top.</string>
     <string name="matra_kisnanai_var">Castle ruins below the Mátra with a Gothic church tower and carved stones, with historical displays about life on a medieval noble estate.</string>
+    <string name="matra_matravasut">A scenic railway from the edge of Gyöngyös’s Orczy park on two lines, to Mátrafüred and Szalajkaház. Both climb steeply out of town.</string>
+    <string name="matra_oxygen_adrenalin_park">An adventure park on the Mátra’s southern slope above Mátrafüred. A 930 m bobsled, a bridge over the Sástó quarry and a chairlift to Sástó.</string>
 
     <string name="heves_nagy_ko">A sandstone peak (392 m) with a steep cliff. The ridge overlooks the surrounding hills and the Mátra and Bükk ranges.</string>
     <string name="heves_szentkut">A pilgrimage site in a wooded valley with a basilica and springs. A visit can be combined with walks along the surrounding forest paths.</string>
@@ -83,6 +93,9 @@
     <string name="zemplen_kis_milic">A summit beside Nagy-Milic with the Károlyi lookout tower, overlooking Füzér Castle and the wooded hills of the Zemplén.</string>
     <string name="zemplen_sar_hegy_fuggohid">A pedestrian suspension bridge between two hills above Sátoraljaújhely, with views of the valley below and the surrounding mountains.</string>
     <string name="zemplen_boldogkovaralja">Medieval castle ruins on a rocky ridge in the Zemplén, with viewpoints overlooking the surrounding hills from the walls and rock ledge.</string>
+    <string name="zemplen_palhazi_erdei_vasut">A forest railway from Pálháza into the Zemplén woods, via Kishuta and Kőkapu to Rostalló. The 9 km line passes through a tunnel.</string>
+    <string name="zemplen_zemplen_kalandpark">An adventure park in Sátoraljaújhely with Hungary’s longest chairlift. A lookout tower stands at its top station; there is a bobsled track too.</string>
+    <string name="zemplen_fuzerradvanyi_karolyi_kastely">Károlyi family palace at the foot of the Zemplén Mountains, rebuilt in Romantic style. Its protected English park is free to enter.</string>
 
     <string name="hortobagy_tiszavirag_tanosveny">A nature trail at Lake Tisza, reached by boat from Szabics port. The walking route has information about the aquatic habitats of the lake.</string>
     <string name="hortobagy_oreg_pakasz_tanosveny">A nature trail through wetland habitats, with information about traditional marsh foragers, reed-bed plants and aquatic animals.</string>
@@ -100,14 +113,18 @@
     <string name="alfold_szarvasi_arboretum">An arboretum beside an old Körös river branch, with mature trees and plants from distant regions, connected by walking paths.</string>
     <string name="alfold_korosvolgyi_latogatokozpont">A visitor centre and wildlife park in the Körös–Maros National Park, with exhibitions and animals representing the river habitats of the region.</string>
     <string name="alfold_gyula_almasy_kastely">A restored Baroque castle in Gyula with historical exhibitions about the building and the lives of its former residents.</string>
+    <string name="alfold_gyulai_var">Central Europe\'s only intact lowland brick castle, built in the 15th century. It fell to the Ottomans in the 1566 siege and now houses a museum.</string>
     <string name="alfold_koros_torok">The meeting point of the Körös and Tisza rivers, with a sandy shore. Both rivers are visible, and the size of the beach varies with water level.</string>
     <string name="alfold_makoi_lombkorona_setany">A canopy walkway with a lookout tower, exploring the floodplain forests of the Maros River.</string>
+    <string name="alfold_gyomaendrodi_lombkorona_setany">A canopy walkway and 15 m lookout tower in Erzsébet Park, Gyomaendrőd, on a 1 km nature trail. Paid entry; closed in rain.</string>
+    <string name="alfold_karcagi_lombkorona_setany">A 314 m canopy walkway in the Karcag forest park, at the end of Liget út. It runs 6 m up among the oaks and is free to visit.</string>
     <string name="alfold_ezer_ev_parkja">An outdoor model park with replicas of Hungarian castles, churches and palaces, displaying architectural landmarks from a thousand years.</string>
     <string name="alfold_siraly_tanosveny">A nature trail about the birdlife of Fehér-tó near Szeged, passing reed beds and fishponds where migrating cranes can be seen in autumn.</string>
     <string name="alfold_baranypirosito_tanosveny">A nature trail among wind-shaped sand dunes in the Kiskunság, with boards describing feather-grass meadows and drought-tolerant plants.</string>
     <string name="alfold_szelidi_to">A lake formed in an old Danube channel, with beaches and the Kékmoszat nature trail beside reed beds and aquatic habitats.</string>
     <string name="alfold_aqua_colun_tanosveny">A nature trail beside the reed beds and marsh meadows of Lake Kolon, with bird hides and boards about herons, reed warblers and rare plants.</string>
     <string name="alfold_tiszakurti_arboretum">An English-style landscape garden beside the River Tisza, with mature oaks, ornamental trees and paths among seasonal flowers.</string>
+    <string name="alfold_tiszadobi_andrassy_kastely">Romantic palace of the Andrássy family near the Tisza, modelled on French châteaux. Restored in 2023, its halls house exhibitions.</string>
 
     <string name="paloc_holloko_kezkilato">A hand-shaped lookout near Hollókő in the Cserhát hills, with a terrace shaped like a palm overlooking the surrounding countryside.</string>
     <string name="paloc_hollokoi_var">Part of a UNESCO World Heritage Site, this medieval castle is Hollókő’s main attraction.</string>
@@ -124,6 +141,7 @@
     <string name="paloc_gyadai_ret">A meadow at the foot of Naszály with a nature trail and a suspension bridge, with information about wildlife in the clearing and surrounding forest.</string>
     <string name="paloc_vacratot_botanikus">A botanical garden with ponds, walking paths and greenhouses, displaying plants from distant regions and flowers that change with the seasons.</string>
     <string name="paloc_naszaly">A 652-metre limestone mountain with steep woodland trails and karst features. The nearby Látó-hegy viewpoint overlooks the Danube Bend.</string>
+
     <string name="karancs_medves_somosko_var">Castle ruins on the Slovak side of the border, overlooking the Medves area. Basalt columns below the castle show its volcanic origins.</string>
     <string name="karancs_medves_salgovar">Medieval castle ruins on a rocky summit above Salgótarján, with views of the Karancs–Medves landscape from the remaining walls.</string>
     <string name="karancs_medves_boszorkany_ko">A basalt ridge with volcanic bombs and rock formations, with viewpoints overlooking Salgó Castle and the hills of the Medves area.</string>
@@ -157,6 +175,9 @@
     <string name="borzsony_nagy_sas_hegy">A summit near Nagybörzsöny in the Börzsöny, with a viewpoint overlooking the surrounding wooded mountains and valleys.</string>
     <string name="borzsony_hollo_ko">A rocky viewpoint in the Börzsöny, with views of the surrounding ridges and valleys, reached on a hike through the forest.</string>
     <string name="borzsony_kemencei_muzeumvasut">A scenic railway in a wooded Börzsöny valley, with locomotives and exhibits about forest transport at the Kemence terminus.</string>
+    <string name="borzsony_bezina_volgyi_erdei_vasut">A forest railway from Szob via Márianosztra to Nagyirtáspuszta. It climbs from the Danube into the Börzsöny with switchbacks and loops.</string>
+    <string name="borzsony_kiralyreti_erdei_vasut">A forest railway between Kismaros on the Danube and Királyrét, the busiest in the Börzsöny. Several hiking trails meet at Királyrét.</string>
+    <string name="borzsony_nagyborzsonyi_erdei_vasut">A forest railway between Nagybörzsöny and Nagyirtáspuszta, on a former timber and stone line. At Nagyirtáspuszta it connects to the Szob train.</string>
 
     <string name="visegrad_spartacus_osveny">A hillside trail in the Visegrád Hills with views of the Danube Bend, following the wooded slopes between the mountains.</string>
     <string name="visegrad_nagy_villam">A viewpoint above Visegrád, reached on woodland routes, with views of the Danube Bend and the surrounding mountains.</string>
@@ -183,6 +204,7 @@
     <string name="visegrad_vaskapu_esztergom">A viewpoint on the hill above Esztergom, overlooking the basilica, the Mária Valéria Bridge, the Danube and hills across the river.</string>
     <string name="visegrad_vasas_szakadek_szentendre">A narrow gorge in the Visegrád Hills near Szentendre, with a walking path between steep rock walls on the wooded hillside.</string>
     <string name="visegrad_esztergom_bazilika">The Esztergom Basilica is Hungary\'s largest church, an imposing architectural landmark.</string>
+    <string name="visegrad_esztergomi_var">Árpád-era royal seat on Castle Hill, beside the Basilica. The Castle Museum of the Hungarian National Museum occupies the royal palace remains.</string>
     <string name="visegrad_visegradi_bobpalya">Two bobsled tracks beside the Nagy-Villám lookout above Visegrád: a concrete-channel summer track and an all-weather alpine coaster.</string>
 
     <string name="pilis_pilisborosjeno_egri">The Egri Castle replica near Pilisborosjenő is a popular hiking spot and film location.</string>
@@ -227,6 +249,7 @@
     <string name="budapest_nagy_kopasz">The highest point of the Buda Hills (559 m), with the Csergezán Pál lookout, overlooking the surrounding hills and Budapest.</string>
     <string name="budapest_pal_volgyi_barlang">A visitor section of Budapest's longest cave system, with stalactites, fossil shells and high fissures visible on a guided tour.</string>
     <string name="budapest_szemlo_hegyi_barlang">A thermal cave in Budapest with pea-shaped mineral clusters and cauliflower-like formations, visited on a guided, paved route.</string>
+    <string name="budapest_szechenyi_hegyi_gyermekvasut">A railway run by children in the Buda Hills, between Széchenyi-hegy and Hűvösvölgy. Lookouts and hiking trails lie close to its stops.</string>
 
     <string name="gerecse_templom_zsambek">A medieval church ruin on the hill in Zsámbék, with twin towers and surviving walls showing Romanesque and Gothic architectural details.</string>
     <string name="gerecse_kamalduli">Kamalduli monastery in Tata surrounded by forests, calm environment and cultural value.</string>
@@ -237,6 +260,8 @@
     <string name="gerecse_turul">The Turul monument on a rocky viewpoint above Tatabánya, overlooking the city and nearby hills, with Szelim Cave a short walk away.</string>
     <string name="gerecse_szelim">A large cave chamber above Tatabánya with openings in its ceiling and a natural rock window overlooking the city and surrounding landscape.</string>
     <string name="gerecse_oreg_to">A lake beside the castle in historic Tata, with a shoreline walking path past reed beds and bird habitats, overlooking the water.</string>
+    <string name="gerecse_tatai_var">Water castle on the shore of Öreg-tó, built by King Sigismund and extended by King Matthias. It houses the Kuny Domokos Museum.</string>
+    <string name="gerecse_tatai_esterhazy_kastely">Baroque palace of the Esterházy family in Tata, designed by Jakab Fellner. Reopened after restoration, its halls house exhibitions.</string>
     <string name="gerecse_pesko_barlang">A cave entrance on a rocky slope of the Gerecse, reached by a forest path among limestone outcrops showing the rocks of the range.</string>
     <string name="gerecse_banya_hegy">A wooded hill above Tardos where several Gerecse hiking routes meet, with traces of quarrying and woodland paths in the surrounding area.</string>
     <string name="gerecse_tardos_lombkorona">An elevated walkway among the trees near Tardos, with views of the canopy, tree trunks and the surrounding woodland from above ground level.</string>
@@ -261,6 +286,7 @@
     <string name="vertes_csokakoe_vara">A castle on a rock at the edge of the Vértes, with medieval walls and a chapel, overlooking the Mór valley and the surrounding hills.</string>
     <string name="vertes_alcsuti_arboretum">A historic landscape garden with snowdrops, mature trees and palace ruins. Closed for restoration until early 2027, as planned.</string>
     <string name="vertes_ganti_bauxitfoldtani_park">A former bauxite mine with red rock walls and quarry pits, with a geological trail explaining how the bauxite deposits formed.</string>
+    <string name="vertes_val_volgyi_kisvasut">A scenic railway at Felcsút in the Váli-víz valley, running through open countryside. It operates at weekends from late spring to early autumn.</string>
 
     <string name="bakony_koris_hegy">The highest point of the Bakony (709 m), with a lookout tower overlooking wooded mountains and the hills towards Pannonhalma.</string>
     <string name="bakony_hubertlaki_to">A woodland lake in the Bakony with submerged tree trunks rising from the water, also known as the Bakony Dead Lake, reached on forest routes.</string>
@@ -298,6 +324,7 @@
     <string name="bakony_somlo_szent_istvan_kilato">A basalt-built lookout on Somló with views over vineyards and distant hills. Volcanic rock formations are visible on the approach.</string>
     <string name="bakony_sumegi_var">A castle on the hill above Sümeg with ramparts, towers and historical exhibitions, overlooking the town and the surrounding landscape.</string>
     <string name="bakony_sobri_joska_elmenypark">A large adventure park in Kislőd in the Bakony with almost 50 activities: summer bobsled, mega zipline and rope course. The station is 900 m away.</string>
+    <string name="bakony_papai_esterhazy_kastely">Baroque Esterházy palace at the edge of the old town of Pápa, with a large English park behind it. It houses a palace museum.</string>
 
     <string name="balaton_somlyo_kilato">A lookout on Somlyó Hill beside Lake Balaton, with views of the eastern lake basin, the Tihany Peninsula and the surrounding landscape.</string>
     <string name="balaton_szigligeti_var">Castle ruins on the hilltop at Szigliget beside Lake Balaton, with views of the lake and surrounding volcanic hills from the walls.</string>
@@ -345,11 +372,12 @@
     <string name="keszthely_ko_orra">A rocky viewpoint above Várvölgy in the Keszthely Hills, overlooking the surrounding wooded valleys and rolling hills.</string>
     <string name="keszthely_csodabogyos_bazis">A guided caving tour through narrow fissures and ladders to stalactite chambers, in caving overalls, starting at the Balatonederics base.</string>
     <string name="keszthely_pele_apo_osveny">A woodland nature trail with dormouse-themed boards about forest animals, with shorter loops and routes passing Lake Balaton viewpoints.</string>
+    <string name="keszthely_hevizi_lombkorona_setany">A canopy walkway in the protective forest around Lake Hévíz, 6–8 m up among the trees. The lake is visible from its highest point.</string>
     <string name="keszthely_rezi_var">Medieval castle ruins on a dolomite ridge, reached by a woodland path, overlooking the Zalaszántó basin and the surrounding hills.</string>
+    <string name="keszthely_festetics_kastely">Baroque palace of the Festetics family in Keszthely, with the Helikon Library and an English garden. Its halls and exhibitions are open as a museum.</string>
 
     <string name="szigetkoz_vadludak">A campsite in Lipót in Szigetköz, with camping space and a base for canoe trips near the river branches of the surrounding area.</string>
     <string name="szigetkoz_denkpali_hallepso">The Denkpál fish ladder is a unique structure on the Danube that allows fish to migrate freely and is a popular excursion spot near Dunasziget.</string>
-    <string name="szigetkoz_hedervary_kastely">A historic castle in Hédervár with a park, with the building and its surrounding grounds forming part of the village's architectural heritage.</string>
     <string name="szigetkoz_trianoni_zsilip">The Trianon sluice in Rajka is a popular starting point for canoe tours exploring the waterways of Szigetköz.</string>
     <string name="szigetkoz_vadviz_kemping">Vadvíz Camping near Dunakiliti is a favored base for canoe tours and family camping in the heart of Szigetköz.</string>
     <string name="szigetkoz_kisvesszosi_kemping">Kisvesszősi Camping near Cikolasziget is a popular canoe launch site and rest spot for nature enthusiasts.</string>
@@ -369,15 +397,18 @@
     <string name="sopron_faber_ret">A clearing in the Lövérek woodland near Sopron, with an open meadow linked to surrounding forest paths and space for a rest during a hike.</string>
     <string name="sopron_magas_berc">Magas-bérc near Sopron is the highest point in Hungary’s Sopron Mountains (557 m) and a must-visit for hikers.</string>
     <string name="sopron_erdo_haza">An ecotourism visitor centre in Sopron with exhibitions about the plants and animals of the local forests and nature education programmes.</string>
-    <string name="sopron_lover_kalandpark">An outdoor adventure park in the Felsőlövérek area of Sopron, with games and adventure activities designed for families and young people.</string>
     <string name="sopron_tolvaj_arok">Tolvaj-árok is a gorge near Sopron, popular among hikers and nature enthusiasts.</string>
     <string name="sopron_cserkeszkapolna">The Cserkész Chapel in Sopronbánfalva is a small church with historical and religious significance.</string>
     <string name="sopron_tarodi_var">Taródi Castle in Felsőlövérek is a unique architectural gem open to visitors in Sopron.</string>
     <string name="sopron_autos_piheno">A rest area in the Brennberg Valley with picnic spots, a fire pit and a playground, also reached on walks along the nearby woodland routes.</string>
+
     <string name="ferto_kecske_hegyi_kilato">A lookout above the woodland between Fertőrákos and Tómalom, with views over Lake Fertő and the surrounding hills.</string>
     <string name="ferto_fertorakosi_kofejto">A former limestone quarry with dramatic rock walls, a cave theatre and exhibits on the geology and fossils of the Fertő region.</string>
     <string name="ferto_laszlomajor">A former estate farm near Sarród with exhibits about traditional livestock, rural life and nature conservation in the Fertő region.</string>
     <string name="ferto_kocsagvar">A distinctive visitor centre in Sarród, built in the shape of a great egret and serving as a gateway to the national park.</string>
+    <string name="ferto_nagycenki_muzeumvasut">A heritage railway at Nagycenk, between Kastély station and Fertőboz. Diesel and steam trains run, with an open-air museum at the station.</string>
+    <string name="ferto_fertodi_esterhazy_kastely">Hungary\'s largest Baroque palace, called the \'Hungarian Versailles\', built by Prince Nikolaus Esterházy. Joseph Haydn worked here for decades.</string>
+    <string name="ferto_nagycenki_szechenyi_kastely">Seat of the Széchényi family and home of István Széchenyi. Restored in 2023, it is a national memorial site with an exhibition on the family.</string>
 
     <string name="koszeg_irott_ko">The highest point of Transdanubia (883 m), on the Austrian border. Its lookout overlooks the area, and the National Blue Trail starts here.</string>
     <string name="koszeg_jurisics_var">The Jurisics Castle is Kőszeg’s symbol, known for its heroic defense during the 16th-century Ottoman siege; today it functions as a museum and cultural center.</string>
@@ -419,6 +450,7 @@
     <string name="zala_csiga_tura_tanosveny">A woodland nature trail in Zalakaros with boards about fungi, animals and birdsong, and wave-shaped benches along the walking route.</string>
     <string name="zala_kanyavari_sziget">An island in Kis-Balaton reached by a curved wooden bridge, with birdwatching towers and a nature trail about the birds of the reed beds.</string>
     <string name="zala_kapolnapusztai_bivalyrezervatum">A buffalo reserve at Kis-Balaton with grazing and wallowing animals, and a walking trail and displays about traditional livestock keeping.</string>
+    <string name="zala_csomoderi_erdei_vasut">A Zala forest railway between Lenti and Kistolmács, with 33 km open to passengers. The Kistolmács terminus is beside the reservoir beach.</string>
 
     <string name="zselic_csillagpark">An astronomy centre in the Zselic with a planetarium and telescope sessions, with programmes about stars and other night-sky phenomena.</string>
     <string name="zselic_ropolyi_to">A woodland lake in the Zselic with a shoreline rest area, surrounded by trees and forest routes that can be included in a hike.</string>
@@ -426,6 +458,7 @@
     <string name="zselic_okopark">A park near Bükkösd with pastures, domestic animals and woodland paths, where a walk follows the rural landscape and animal enclosures.</string>
     <string name="zselic_katica_tanya">A family adventure park in Patca with animals, slides and outdoor games, set on a farm with displays of traditional livestock keeping.</string>
     <string name="zselic_hollofeszek_kilato">The highest point of the Zselic (358 m), with a lookout tower overlooking wooded hills and valleys towards the Mecsek.</string>
+    <string name="zselic_almamelleki_erdei_vasut">A 600 mm gauge forest railway in the Zselic, between Almamellék and Sasrét. It has carried passengers through the wooded hills since 1901.</string>
 
     <string name="mecsek_abaligeti_barlang">A limestone cave in the Mecsek with an underground stream. Guided tours follow a developed route through the winding passage and formations.</string>
     <string name="mecsek_balazs_hegy">A hill near the Orfű Lakes with a viewpoint overlooking the lake system and the ridges of the western Mecsek, reached on foot.</string>
@@ -449,6 +482,9 @@
     <string name="mecsek_jakab_hegy">The summit of Jakab Hill (602 m) has ancient earthworks and Pauline monastery ruins. A woodland route passes both historical sites.</string>
     <string name="mecsek_orfui_malmok">Working water, dry and paper mills in Orfű, with guided tours explaining traditional crafts and a streamside walking path nearby.</string>
     <string name="mecsek_puspokszentlaszlo_arboretum">A palace, chapel and arboretum with a conifer collection in a valley below Zengő, also reached from woodland routes in the Mecsek.</string>
+    <string name="mecsek_mecseki_kisvasut">Hungary’s shortest scenic railway, in the Mecsek forest park between the zoo and Dömörkapu. It runs where several hiking trails meet.</string>
+    <string name="mecsek_mecsextrem_park">A forest adventure park on Árpádtető above Pécs, by the road to Komló. It has treetop rope courses, a forest bobsled, climbing wall and archery.</string>
+    <string name="mecsek_sas_volgyi_lombkorona_tanosveny">A canopy walkway in the Western Mecsek, beside the Erdő Háza lodge at Hetvehely. The 50 m path runs 6 m up among the trees; entry is free.</string>
 
     <string name="villany_kopasz_hegy">A hill above Harkány with views of the Drava plain and the Villány Hills, with a hillside walking route overlooking the wine region.</string>
     <string name="villany_nagyharsanyi_szoborpark">An outdoor sculpture collection in a former quarry beside Szársomlyó, with stone sculptures displayed among the quarry rock walls.</string>
@@ -463,31 +499,15 @@
     <string name="gemenc_dunapart_forgo_tavi_tanosveny">A riverside stop beside the Danube, with a bird hide and boardwalk trail at Forgó Lake. No scheduled trains currently serve the stop.</string>
     <string name="gemenc_nagyrezet">A wildlife observation site in the floodplain forest, near an exhibition on beekeeping, honey and the relationship between bees and people.</string>
     <string name="gemenc_okoturisztikai_kozpont">Gemenc’s visitor hub at Pörböly, with forest railway access, wildlife exhibitions, a forest school and walking routes into the floodplain.</string>
-    <string name="zselic_almamelleki_erdei_vasut">A 600 mm gauge forest railway in the Zselic, between Almamellék and Sasrét. It has carried passengers through the wooded hills since 1901.</string>
-    <string name="somogyi_dombsag_balatonfenyvesi_kisvasut">A former farm railway from Balatonfenyves to Somogyszentpál and Csisztafürdő. The line crosses the meadows and pastures of the Nagyberek.</string>
-    <string name="borzsony_bezina_volgyi_erdei_vasut">A forest railway from Szob via Márianosztra to Nagyirtáspuszta. It climbs from the Danube into the Börzsöny with switchbacks and loops.</string>
-    <string name="zala_csomoderi_erdei_vasut">A Zala forest railway between Lenti and Kistolmács, with 33 km open to passengers. The Kistolmács terminus is beside the reservoir beach.</string>
-    <string name="bukk_felsotarkanyi_erdei_vasut">A forest railway in the Bükk north of Eger, starting from Felsőtárkány. A game park lies along the line and a nature trail at the terminus.</string>
-    <string name="somogyi_dombsag_kaszoi_erdei_vasut">A forest railway at Kaszó, in the largest continuous woodland of Inner Somogy. The line runs through forest near the protected Baláta-tó.</string>
-    <string name="somogyi_balatonboglari_kalandpark">An adventure park on Balatonboglár’s Vár-domb, next to the Gömbkilátó. It has an alpine coaster, rope course, free-fall tower and archery.</string>
-    <string name="borzsony_kiralyreti_erdei_vasut">A forest railway between Kismaros on the Danube and Királyrét, the busiest in the Börzsöny. Several hiking trails meet at Királyrét.</string>
-    <string name="bukk_lillafuredi_erdei_vasut">A forest railway from Miskolc up the Szinva valley to Lillafüred and Garadna. The line passes Lake Hámori and runs through the Bükk forests.</string>
-    <string name="matra_matravasut">A scenic railway from the edge of Gyöngyös’s Orczy park on two lines, to Mátrafüred and Szalajkaház. Both climb steeply out of town.</string>
-    <string name="matra_oxygen_adrenalin_park">An adventure park on the Mátra’s southern slope above Mátrafüred. A 930 m bobsled, a bridge over the Sástó quarry and a chairlift to Sástó.</string>
-    <string name="budapest_szechenyi_hegyi_gyermekvasut">A railway run by children in the Buda Hills, between Széchenyi-hegy and Hűvösvölgy. Lookouts and hiking trails lie close to its stops.</string>
-    <string name="mecsek_mecseki_kisvasut">Hungary’s shortest scenic railway, in the Mecsek forest park between the zoo and Dömörkapu. It runs where several hiking trails meet.</string>
-    <string name="mecsek_mecsextrem_park">A forest adventure park on Árpádtető above Pécs, by the road to Komló. It has treetop rope courses, a forest bobsled, climbing wall and archery.</string>
-    <string name="borzsony_nagyborzsonyi_erdei_vasut">A forest railway between Nagybörzsöny and Nagyirtáspuszta, on a former timber and stone line. At Nagyirtáspuszta it connects to the Szob train.</string>
-    <string name="ferto_nagycenki_muzeumvasut">A heritage railway at Nagycenk, between Kastély station and Fertőboz. Diesel and steam trains run, with an open-air museum at the station.</string>
-    <string name="zemplen_palhazi_erdei_vasut">A forest railway from Pálháza into the Zemplén woods, via Kishuta and Kőkapu to Rostalló. The 9 km line passes through a tunnel.</string>
-    <string name="zemplen_zemplen_kalandpark">An adventure park in Sátoraljaújhely with Hungary’s longest chairlift. A lookout tower stands at its top station; there is a bobsled track too.</string>
-    <string name="bukk_szilvasvaradi_erdei_vasut">A steep forest railway in the Szalajka valley, from the edge of Szilvásvárad to a clearing above the Fátyol waterfall, with a stop at the fish pond.</string>
-    <string name="bukk_szilvasvaradi_bobpalya">A single-tube bobsled track in the forest by the ski slope at the entrance to the Szalajka Valley. It was the first of its type in Hungary.</string>
-    <string name="vertes_val_volgyi_kisvasut">A scenic railway at Felcsút in the Váli-víz valley, running through open countryside. It operates at weekends from late spring to early autumn.</string>
 
     <string name="no_landscape_selyem_reti_tanosveny">A short nature trail among alder roots and wet woodland plants, with spring snowflakes and a meadow clearing with a picnic area.</string>
     <string name="no_landscape_zsuzsi_erdei_vasut">Hungary’s oldest operating scenic railway, from Debrecen to the Erdőspuszták woods. Hármashegyalja has a lookout, nature trail and lake.</string>
     <string name="no_landscape_jeli_arboretum">An arboretum with giant conifers and a canopy walkway. Rhododendrons flower in spring, with woodland paths through the plant collection.</string>
     <string name="no_landscape_pannonhalmi_lombkoronaosveny">A fish-shaped walkway above the trees near Pannonhalma Abbey, with views of the town and the Sokoró Hills from the elevated path.</string>
     <string name="no_landscape_annafurdoi_lombkoronaosveny">The Rétisasfészek lookout with an adjoining canopy walkway, providing views of the treetops and the wooded landscape of the Tolna Hills.</string>
+    <string name="no_landscape_sarvari_nadasdy_var">Pentagonal castle, former seat of the Nádasdy family. Its ceremonial hall has 17th-century frescoes, and it houses the Nádasdy Ferenc Museum.</string>
+    <string name="no_landscape_simontornyai_var">13th-century castle in the Sió valley, rebuilt in Renaissance style by László Móré. It houses a castle museum.</string>
+    <string name="no_landscape_ozorai_pipo_varkastely">Built in the early 15th century by Pipo of Ozora, King Sigismund\'s Florence-born general. Upper-floor rooms are open on guided tours only.</string>
+    <string name="no_landscape_godolloi_kiralyi_kastely">Baroque palace of Antal Grassalkovich, later a favourite residence of Franz Joseph and Queen Elisabeth. The royal apartments are open as a museum.</string>
+    <string name="no_landscape_degi_festetics_kastely">Classicist palace of the Festetics family in the Mezőföld, designed by Mihály Pollack. Its large English garden has ponds and islands.</string>
 </resources>

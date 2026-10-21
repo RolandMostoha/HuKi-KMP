@@ -69,7 +69,8 @@ struct LandscapeDestinationCardView: View {
         description: SharedRes.strings().destinations_type_peak,
         popularity: 10,
         challenges: [DestinationChallenge.highestPeaks],
-        routeGpxFile: nil
+        routeGpxFile: nil,
+        website: nil
     )
     HStack {
         LandscapeDestinationCardView(strings: Strings(), destination: destination, isSelected: true, onClick: {})

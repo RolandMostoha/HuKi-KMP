@@ -48,18 +48,16 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                    |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                          |
-| `[ ]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
 | `[ ]`  | App store preview video (optional)                                                                                                                 |
 | `[ ]`  | App store header picture/video (optional)                                                                                                          |
 | `[ ]`  | iPhone duo / proper iPad support                                                                                                                   |
 | `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
-| `[ ]`  | Shrink bundled OKT/AKT/RPDDK GPX files (8.4 MB total, ~116 B/trkpt). Round coords to 6 decimals (~0.1 m) + `ele` to 1 decimal, one line per `trkpt`; then measure Douglas-Peucker (~2–3 m) on top. Check section split/stats still match. |
+| `[R]`  | Shrink bundled OKT/AKT/RPDDK GPX files (8.4 MB total, ~116 B/trkpt).                                                                               |
 
 ### Bugs
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                                                     |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Analytics  | Bug: iOS. No screen VM is ever cleared: `@State var viewModel = KoinViewModelProvider...` re-runs on every view init (throwaway VMs run `init` work) and `viewModelScope` is never cancelled (e.g. Settings' DataStore collector leaks). Fix: `ViewModelHolder` (`@StateObject`, `deinit { clear() }`), migrate manual `clear()` calls. |
 | `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug).                         |
 | `[ ]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                                                   |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                              |
@@ -86,15 +84,15 @@ exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Landscape orientation
 
-| Status | Feature                                                                                                                       |
-|--------|-------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                              |
-| `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                        |
-| `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                          |
-| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                  |
-| `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space |
-| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                    |
-| `[ ]`  | Landscapes/Categories sheet: proper landscape support on both platforms (rotation while open, detents/heights, camera padding). iOS bug: `LandscapesSheetView` caches rows in `@State` on appear, so row taps keep the portrait `collapseLandscapesSheet` closure after rotating and select a detent landscape doesn't offer |
+| Status | Feature                                                                                                                        |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                               |
+| `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                         |
+| `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                           |
+| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                   |
+| `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space  |
+| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                     |
+| `[ ]`  | Landscapes/Categories sheet: proper landscape support on both platforms (rotation while open, detents/heights, camera padding) |
 
 ### FEATURE: My Location
 
@@ -140,28 +138,14 @@ exact location / zoom level with a CROSS marker.
 | `[x]`  | Destinations | Add more Kisvasutak                                                                                                                                                                                                                                                                                                                           |
 | `[x]`  | Destinations | Remove osmID from Destinations. Plan migration, because search / history relies on osmID                                                                                                                                                                                                                                                      |
 | `[x]`  | Destinations | Check the whole of Hungary for famous kisvasutak (e.g. Szilvásvárad, Lillafüred, Mátravasút, Gyermekvasút, Kaszó, Felsőtárkány, Kismaros–Királyrét, Pálháza, Nagybörzsöny, Zsuzsi). Add them as `SCENIC_RAILWAY` destinations at their main station.                                                                                          |
-| `[x]`  | Destinations | For educational trails show an "Open route" button. Decided: bundled GPX generated from OSM relations (`generate_educational_trails.py`). Done for 17 trails; Pele apó stays without a route (no OSM data). Removed Szalamandra (abandoned) and Sziki őszirózsa (closed since 2025).                                                                                                                                                                             |
-| `[?]`  | Destinations | Add website links where makes sense, like "Petesmalmi Vidrapark". Maybe Google Maps link is better, i usually check openings, pictures from there.                                                                                                                                                                                            |
-| `[ ]`  | Destinations | Kisvasutak: show the line + stops on the map from the destination info window ("Show waypoints" button, instead of "Open route"). Postponed. GPX generation is ready: `generate-scenic-railway-gpx` skill (`tools/python/generate_scenic_railways.py`), tried on Felsőtárkány (relation 2372022). Open: what the button does (map overlay vs GPX Details), duplicate START/END markers next to the end stops, generate the other lines. |
+| `[x]`  | Destinations | For educational trails show an "Open route" button. Decided: bundled GPX generated from OSM relations (`generate_educational_trails.py`). Done for 17 trails; Pele apó stays without a route (no OSM data). Removed Szalamandra (abandoned) and Sziki őszirózsa (closed since 2025).                                                          |
+| `[x]`  | Destinations | Add website links where makes sense, like "Petesmalmi Vidrapark". Kisvasutak → aktivkalandor.hu, others → official sites; "Website" button in the InfoWindow opens the external browser                                                                                                                                                       |
+| `[x]`  | Destinations | Enhance Castle list with new ones (if we know about other fames castles), add websites                                                                                                                                                                                                                                                        |
+| `[x]`  | Destinations | Enhance Palace list with new ones (if we know about other famous palaces), add websites                                                                                                                                                                                                                                                       |
 | `[ ]`  | Destinations | Add VIA FERRATA as challenge                                                                                                                                                                                                                                                                                                                  |
-
-Completed on `feature/landscapes_and_destinations`: 49 additional destinations, six additional landscape groups,
-multiple category memberships, and a plain-language rewrite of the HU/EN descriptions (editorial rules: the
-`destination-descriptions` skill, `.claude/skills/destination-descriptions/SKILL.md`). `PANORAMIC_VIEWPOINT` replaces
-`ROCK_WITH_LOOKOUT`; Szilvási-kő, Gömbölyű-kő, Teve-szikla, and Sas-szikla await viewpoint confirmation. Categories list
-main types only (castle ruins → castles, cave access groups → caves); challenges are `DestinationChallenge`s (highest
-peaks, panoramic views, birdwatching), mixed into the same Categories sheet. Category filtering in Discover and
-challenge progress/scoring remain future work. Run `python3 tools/destinations/validate_destinations.py` after data changes.
+| `[ ]`  | Destinations | Kisvasutak: Show waypoints. GPX generation is ready: `generate-scenic-railway-gpx` skill (`tools/python/generate_scenic_railways.py`)                                                                                                                                                                                                         |
 
 ### FEATURE: Discover
-
-Goal: have a feature for the users to discover new places, trails, landscapes, etc. Appearance: a bottom sheet, title
-"Discover", close with X button. Features (sections inside bottom sheet):
-
-- Hike recommendations - AKTIVKALANDOR, KIRANDULASTIPPEK, TERMESZETJARO
-- Destination categories (horizontally scrollable) - e.g. highest peaks, edu trails, rivers, caves etc.
-- OKT routes (OKT, RPDDK, AKT)
-- Landscapes - a button to show landscapes
 
 | Status | Scope    | Task |
 |--------|----------|------|
@@ -181,24 +165,16 @@ Goal: have a feature for the users to discover new places, trails, landscapes, e
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                         |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                      |
 
-### FEATURE: GPX Distance
-
-Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle waypoints.
-
-| Status | Scope       | Task                                                                                                                                                                             |
-|--------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPXDistance | When I intentionally go off the trail, it still snaps and show distance, its misleading. We can show a direct line to the route (with a label "+100m") or offer "Wandering mode" |
-
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                              |
-|--------|-------|-----------------------------------------------------------------------------------|
-| `[x]`  | GPX   | Use white stroked route line similarly to OKT ![img_10.png](img_10.png)           |
-| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
-| `[ ]`  | GPX   | Colored GPX                                                                       |
-| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                             |
-| `[ ]`  | GPX   | ? Display start and end location: "Around Bükk..." -> on import we can do geocode |
+| Status | Scope | Task                                                                                                                                        |
+|--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX   | Colored GPX                                                                                                                                 |
+| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu                                                                      |
+| `[ ]`  | GPX   | Display waypoint name in the info window (above distance and travel time)                                                                   |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
+| `[ ]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
+| `[ ]`  | GPX   | ? Display start and end location: "Around Bükk..." -> on import we can do geocode                                                           |
 
 ### FEATURE: GPX Collection
 
@@ -233,7 +209,6 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                                                                                            |
 | `[R]`  | RoutePlanner | Support placing multiple place details POI and wire them with Route Planner. Add a counter text e.g. "Route plan (3)" indicating how many POIs will be connected with route plan.                                                                                          |
-| `[?]`  | RoutePlanner | Use GH GZIP (poinstEncoded=true) for release builds. Client parser is needed, might be worth after self-hosted GH to reduce egress.                                                                                                                                        |
 | `[?]`  | RoutePlanner | Add support for removing stops from Map during RoutePlan phase. If users click on the wps, there should be a toolbar "Delete Stop" button, which removes the waypoint.                                                                                                     |
 | `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                  |
 

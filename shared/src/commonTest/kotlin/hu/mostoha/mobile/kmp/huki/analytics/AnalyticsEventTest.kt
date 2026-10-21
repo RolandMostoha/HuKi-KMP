@@ -60,14 +60,19 @@ class AnalyticsEventTest {
                 TestCase(AnalyticsEvent.HistoryPlaceSelected, "history_place_selected", emptyMap()),
                 TestCase(AnalyticsEvent.HistoryGpxSelected, "history_gpx_selected", emptyMap()),
                 TestCase(
-                    AnalyticsEvent.DestinationSelected("Dobogókő"),
+                    AnalyticsEvent.DestinationSelected("pilisszentkereszt_dobogoko"),
                     "destination_selected",
-                    mapOf("selected_destination" to "Dobogókő"),
+                    mapOf("selected_destination" to "pilisszentkereszt_dobogoko"),
                 ),
                 TestCase(
-                    AnalyticsEvent.SearchDestinationSelected("Dobogókő"),
+                    AnalyticsEvent.SearchDestinationSelected("pilisszentkereszt_dobogoko"),
                     "search_destination_selected",
-                    mapOf("selected_destination" to "Dobogókő"),
+                    mapOf("selected_destination" to "pilisszentkereszt_dobogoko"),
+                ),
+                TestCase(
+                    AnalyticsEvent.DestinationWebsiteOpened("zselic_csillagpark"),
+                    "destination_website_opened",
+                    mapOf("selected_destination" to "zselic_csillagpark"),
                 ),
                 TestCase(
                     AnalyticsEvent.ScreenView(Screen.MAP),

@@ -1851,7 +1851,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.DestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.DestinationSelected(TEST_DESTINATION.id),
                 AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
             )
         }
@@ -1881,7 +1881,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.SearchResultDestinationSelected(TEST_DESTINATION))
 
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.id),
                 AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
             )
         }

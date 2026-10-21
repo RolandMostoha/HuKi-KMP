@@ -86,21 +86,22 @@ class DefaultDestinationRepositoryTest {
     @Test
     fun `Given cave access groups - When filtering - Then distinguish guided tours and entrance visits`() {
         val guided = repository.getDestinationsByType(DestinationType.CAVE_GUIDE_REQUIRED)
-        val independent = repository.getDestinationsByType(DestinationType.CAVE_WITHOUT_GUIDE)
+        val independent = repository.getDestinationsByType(DestinationType.CAVE)
 
         guided.map { it.name } shouldContainAll listOf("Szent István-barlang", "Abaligeti Barlang")
         independent.map { it.name } shouldContainAll listOf("Leány-barlang", "Szelim-barlang")
         guided.filter { it in independent }.shouldBeEmpty()
-        repository.getDestinationsByType(DestinationType.CAVE) shouldContainAll guided + independent
         ALL_DESTINATIONS.any { it.name == "Róka-hegyi barlang" } shouldBe false
     }
 
     @Test
-    fun `Given castle ruins - When filtering castles - Then keep ruins and separate residential palaces`() {
+    fun `Given castle ruins - When filtering castles - Then ruins and residential palaces are separate`() {
         val castles = repository.getDestinationsByType(DestinationType.CASTLE)
+        val ruins = repository.getDestinationsByType(DestinationType.CASTLE_RUIN)
         val palaces = repository.getDestinationsByType(DestinationType.PALACE)
 
-        castles shouldContainAll repository.getDestinationsByType(DestinationType.CASTLE_RUIN)
+        ruins.shouldNotBeEmpty()
+        castles.filter { it in ruins }.shouldBeEmpty()
         palaces.map { it.name } shouldContain "Wenckheim-kastély"
         castles.map { it.name }.contains("Wenckheim-kastély") shouldBe false
     }
