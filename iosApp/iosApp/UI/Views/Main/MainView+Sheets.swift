@@ -163,17 +163,17 @@ extension MainView {
     }
 
     func whatsNewSheet(whatsNew: WhatsNew) -> some View {
-        let detentHeight = whatsNew.message != nil
-            ? Dimens.whatsNewDetentHeightWithMessage
-            : Dimens.whatsNewDetentHeight
-        return WhatsNewSheetView(
+        WhatsNewSheetView(
             strings: strings,
             whatsNew: whatsNew,
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            },
+            onHeightChange: { height in
+                whatsNewHeight = height
             }
         )
-        .presentationDetents([.height(detentHeight)])
+        .presentationDetents([.height(whatsNewHeight)])
         .presentationDragIndicator(.hidden)
     }
 

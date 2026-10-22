@@ -141,7 +141,7 @@ exact location / zoom level with a CROSS marker.
 
 | Status | Scope    | Task                                                                                                                                           |
 |--------|----------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | WhatsNew | Bug: When we have only a few 1-2 lines of whatsnew, the sheet feels too spacey ![img.png](img.png). It should be resized based on the content. |
+| `[x]`  | WhatsNew | Bug: When we have only a few 1-2 lines of whatsnew, the sheet feels too spacey ![img.png](img.png). It should be resized based on the content. |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                         |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                      |
 

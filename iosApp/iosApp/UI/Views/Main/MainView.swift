@@ -12,6 +12,7 @@ struct MainView: View {
     @State var screenHeight: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
+    @State var whatsNewHeight: CGFloat = Dimens.whatsNewDetentHeight
     @State var routePlannerHeights = RoutePlannerSheetHeights(
         expanded: Dimens.routePlannerDetentHeight,
         minimized: Dimens.routePlannerMinimizedDetentHeight

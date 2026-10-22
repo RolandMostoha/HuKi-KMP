@@ -5,31 +5,44 @@ struct WhatsNewSheetView: View {
     let strings: Strings
     let whatsNew: WhatsNew
     let onDismissRequest: () -> Void
+    var onHeightChange: (CGFloat) -> Void = { _ in }
 
     private let primary = Color(SharedRes.colors().primary.getUIColor())
     private let primaryContainer = Color(SharedRes.colors().primaryContainer.getUIColor())
     private let monthYearText: String
     private let noteLines: [String]
 
-    init(strings: Strings, whatsNew: WhatsNew, onDismissRequest: @escaping () -> Void) {
+    init(
+        strings: Strings,
+        whatsNew: WhatsNew,
+        onDismissRequest: @escaping () -> Void,
+        onHeightChange: @escaping (CGFloat) -> Void = { _ in }
+    ) {
         self.strings = strings
         self.whatsNew = whatsNew
         self.onDismissRequest = onDismissRequest
+        self.onHeightChange = onHeightChange
         self.monthYearText = LocalizedDateFormatter().formatMonthYear(date: whatsNew.releaseDate)
         self.noteLines = WhatsNewMapperKt.toReleaseNoteLines(strings.get(desc: whatsNew.releaseNotes))
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 13) {
-            header
-            notesCard
-            if let message = whatsNew.message {
-                messageCard(message)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 13) {
+                header
+                notesCard
+                if let message = whatsNew.message {
+                    messageCard(message)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 16)
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                onHeightChange(height)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .padding(.bottom, 16)
+        .scrollBounceBehavior(.basedOnSize)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.WHATS_NEW_SHEET)
     }

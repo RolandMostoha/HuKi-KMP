@@ -155,5 +155,4 @@ enum Dimens {
     static let routePlannerMinimizedDetentHeight: CGFloat = 190
 
     static let whatsNewDetentHeight: CGFloat = 350
-    static let whatsNewDetentHeightWithMessage: CGFloat = 400
 }
