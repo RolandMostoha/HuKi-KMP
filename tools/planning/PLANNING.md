@@ -61,7 +61,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | Search       | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
 | `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 | `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
-| `[R]`  | RoutePlanner | If I choose a far away destination, and click on route plan, it moves the camera to my location. The route planner correclty shows the destination and my location is correclty not present in the route plan, but my camera is moved to my location. ![img_5.png](img_5.png)                                   |
+| `[x]`  | RoutePlanner | If I choose a far away destination, and click on route plan, it moves the camera to my location. The route planner correclty shows the destination and my location is correclty not present in the route plan, but my camera is moved to my location. ![img_5.png](img_5.png)                                   |
 
 ### FEATURE: Map
 

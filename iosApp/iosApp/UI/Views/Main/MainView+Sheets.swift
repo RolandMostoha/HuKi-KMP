@@ -304,7 +304,6 @@ extension MainView {
     func routePlannerSheet(place: Place?) -> some View {
         RoutePlannerSheetView(
             strings: strings,
-            viewModel: routePlannerViewModel,
             place: place,
             pick: routePlannerPick,
             onRoutePlanUpdated: { routePlan, markers in

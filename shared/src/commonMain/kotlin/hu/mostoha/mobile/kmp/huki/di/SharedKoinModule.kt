@@ -98,7 +98,9 @@ val viewModelModule = module {
     viewModelOf(::TrailSymbolsGuideViewModel)
     viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
-    viewModelOf(::RoutePlannerViewModel)
+    viewModel { params ->
+        RoutePlannerViewModel(get(), get(), get(), get(), get(), get(), get(), initialPlace = params.getOrNull())
+    }
     viewModelOf(::SettingsViewModel)
     viewModel {
         DestinationsViewModel(get(), get(), get(named(Dispatcher.Default)), get(), get())

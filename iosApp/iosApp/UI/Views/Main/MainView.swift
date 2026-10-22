@@ -19,7 +19,6 @@ struct MainView: View {
     )
     @State var routePlannerDetent: RoutePlannerDetent = .expanded
     @State var routePlannerPick: RoutePlannerPick?
-    @State var routePlannerViewModel = KoinViewModelProvider.shared.getRoutePlannerViewModel()
     @State var gpxShareItem: ShareItem?
     @State private var presentedSheet: Sheet?
     @State private var isRoutePlannerPresented = false
@@ -364,13 +363,9 @@ private extension MainView {
         }
     }
 
-    // onCleared never runs on iOS, so a planner ViewModel leaks per open unless it is cleared here.
-    // clear() cancels the scope irreversibly, so the instance must be replaced, not reused.
     func handleSheetDismiss() {
         guard isRoutePlannerPresented else { return }
         isRoutePlannerPresented = false
-        routePlannerViewModel.clear()
-        routePlannerViewModel = KoinViewModelProvider.shared.getRoutePlannerViewModel()
         routePlannerPick = nil
     }
 

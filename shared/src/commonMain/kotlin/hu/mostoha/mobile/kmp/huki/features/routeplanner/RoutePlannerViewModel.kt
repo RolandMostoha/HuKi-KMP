@@ -30,7 +30,6 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -62,6 +60,7 @@ class RoutePlannerViewModel(
     private val gpxRepository: GpxRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
+    initialPlace: Place? = null,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoutePlannerUiState.Default)
@@ -76,6 +75,7 @@ class RoutePlannerViewModel(
     )
 
     init {
+        initialPlace?.let { addWaypoint(it.toRoutePlannerWaypoint(), guardRange = true) }
         initLogging()
         observeRoutePlanRequests()
         loadMyLocation()
@@ -100,10 +100,6 @@ class RoutePlannerViewModel(
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
         }
-    }
-
-    fun clear() {
-        viewModelScope.cancel()
     }
 
     private fun selectProfile(routeProfile: RoutePlannerProfile) {
@@ -341,15 +337,6 @@ class RoutePlannerViewModel(
         viewModelScope.launch {
             routePlanRequests.collectLatest { request -> loadRoutePlan(request) }
         }
-
-        uiState
-            .map { it.routePlan to it.routePlanMarkers }
-            .distinctUntilChanged()
-            .drop(1)
-            .onEach { (routePlan, markers) ->
-                sendEffect(RoutePlannerUiEffects.RoutePlanUpdated(routePlan, markers))
-            }
-            .launchIn(viewModelScope)
     }
 
     private suspend fun loadRoutePlan(request: RoutePlanRequest) {

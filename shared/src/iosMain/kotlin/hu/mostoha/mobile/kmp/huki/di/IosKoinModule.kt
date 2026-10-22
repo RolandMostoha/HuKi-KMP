@@ -26,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.IosBundledFileReader
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
@@ -40,6 +41,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val iosPlatformModule = module {
@@ -82,10 +85,15 @@ object KoinViewModelProvider : KoinComponent {
     fun getTrailSymbolsGuideViewModel(owner: IosViewModelStoreOwner): TrailSymbolsGuideViewModel = owner.resolve()
     fun getLocationIqViewModel(owner: IosViewModelStoreOwner): LocationIqViewModel = owner.resolve()
     fun getPlaceHistoryViewModel(owner: IosViewModelStoreOwner): PlaceHistoryViewModel = owner.resolve()
-    fun getRoutePlannerViewModel(): RoutePlannerViewModel = get()
+    fun getRoutePlannerViewModel(owner: IosViewModelStoreOwner, place: Place?): RoutePlannerViewModel =
+        owner.resolve { parametersOf(place) }
     fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
     fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
 
-    private inline fun <reified T : ViewModel> ViewModelStoreOwner.resolve(): T =
-        ViewModelProvider.create(this, viewModelFactory { initializer { get<T>() } })[T::class]
+    private inline fun <reified T : ViewModel> ViewModelStoreOwner.resolve(
+        noinline parameters: ParametersDefinition? = null,
+    ): T {
+        val factory = viewModelFactory { initializer { get<T>(parameters = parameters) } }
+        return ViewModelProvider.create(this, factory)[T::class]
+    }
 }

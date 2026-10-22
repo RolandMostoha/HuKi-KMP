@@ -467,11 +467,11 @@ private fun RoutePlannerSheetOverlay(
                 onMinimizedHeightMeasured = onMinimizedHeightMeasured,
                 onExpandedHeightMeasured = onExpandedHeightMeasured,
                 modifier = sheetModifier,
+                onRoutePlanUpdated = { routePlan, markers ->
+                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers))
+                },
                 onEffect = { effect ->
                     when (effect) {
-                        is RoutePlannerUiEffects.RoutePlanUpdated -> {
-                            onEvent(MainUiEvents.RoutePlanUpdated(effect.routePlan, effect.markers))
-                        }
                         is RoutePlannerUiEffects.RoutePlanSaved -> {
                             onEvent(MainUiEvents.RoutePlanGpxSaved(effect.fileUri))
                         }

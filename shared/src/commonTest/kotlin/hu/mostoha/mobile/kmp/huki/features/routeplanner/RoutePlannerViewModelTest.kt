@@ -88,8 +88,14 @@ class RoutePlannerViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(): RoutePlannerViewModel {
-        val viewModel = RoutePlannerViewModel(
+    private fun createViewModel(initialPlace: Place? = null): RoutePlannerViewModel {
+        val viewModel = createViewModelWithoutRunning(initialPlace)
+        testDispatcher.scheduler.runCurrent()
+        return viewModel
+    }
+
+    private fun createViewModelWithoutRunning(initialPlace: Place? = null): RoutePlannerViewModel =
+        RoutePlannerViewModel(
             locationMonitoringService,
             routePlannerRepository,
             geocodingRepository,
@@ -97,10 +103,8 @@ class RoutePlannerViewModelTest {
             gpxRepository,
             analyticsService,
             crashlyticsService,
+            initialPlace,
         )
-        testDispatcher.scheduler.runCurrent()
-        return viewModel
-    }
 
     private suspend fun ReceiveTurbine<RoutePlannerUiEffects>.emittedEffects(): List<RoutePlannerUiEffects> = cancelAndConsumeRemainingEvents().mapNotNull { (it as? Event.Item)?.value }
 
@@ -665,7 +669,6 @@ class RoutePlannerViewModelTest {
                 viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(Location(47.5, 18.5)))
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                // Adding a waypoint also emits RoutePlanUpdated, and the order between them is not fixed.
                 emittedEffects() shouldContain RoutePlannerUiEffects.ExpandSheet
                 viewModel.uiState.value.isPickingOnMap shouldBe false
             }
@@ -1079,51 +1082,36 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given two waypoints - When the route is planned - Then it is emitted for the map`() {
+    fun `Given a nearby place - When the planner is opened with it - Then my location starts the route to it`() {
         runTest {
-            val viewModel = createViewModel()
+            val viewModel = createViewModel(initialPlace = place("Dobogókő"))
+            testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.uiEffects.test {
-                viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                val effect = expectMostRecentItem() as RoutePlannerUiEffects.RoutePlanUpdated
-                effect.routePlan shouldBe viewModel.uiState.value.routePlan
-                effect.markers shouldBe viewModel.uiState.value.routePlanMarkers
-            }
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+            uiState.routePlanMarkers shouldBe listOf(
+                GpxWaypoint(MY_LOCATION, WaypointType.START),
+                GpxWaypoint(PLACE_LOCATION, WaypointType.END),
+            )
         }
     }
 
     @Test
-    fun `Given a single waypoint - When it is added - Then it is emitted for the map without a plan`() {
+    fun `Given my location is far away - When the planner is opened with a place - Then the place is the only marker`() {
         runTest {
-            everySuspend { locationMonitoringService.lastKnownLocation() } returns null
-            val viewModel = createViewModel()
+            val viewModel = createViewModel(initialPlace = place("Dobogókő", FAR_PLACE_LOCATION))
+            testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.uiEffects.test {
-                viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                val effect = expectMostRecentItem() as RoutePlannerUiEffects.RoutePlanUpdated
-                effect.routePlan.shouldBeNull()
-                effect.markers shouldBe listOf(GpxWaypoint(PLACE_LOCATION, WaypointType.END))
-            }
+            viewModel.uiState.value.routePlanMarkers shouldBe listOf(GpxWaypoint(FAR_PLACE_LOCATION, WaypointType.END))
         }
     }
 
     @Test
-    fun `Given my location is far away - When the planner is opened with a place - Then the end marker is emitted`() {
+    fun `Given the planner is opened with a place - When created - Then the place is a marker before my location loads`() {
         runTest {
-            val viewModel = createViewModel()
+            val viewModel = createViewModelWithoutRunning(initialPlace = place("Dobogókő", FAR_PLACE_LOCATION))
 
-            viewModel.uiEffects.test {
-                viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogoko", FAR_PLACE_LOCATION)))
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                val effect = expectMostRecentItem() as RoutePlannerUiEffects.RoutePlanUpdated
-                effect.routePlan.shouldBeNull()
-                effect.markers shouldBe listOf(GpxWaypoint(FAR_PLACE_LOCATION, WaypointType.END))
-            }
+            viewModel.uiState.value.routePlanMarkers shouldBe listOf(GpxWaypoint(FAR_PLACE_LOCATION, WaypointType.END))
         }
     }
 

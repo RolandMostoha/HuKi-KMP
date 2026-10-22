@@ -27,21 +27,52 @@ enum RoutePlannerDetent {
 
 struct RoutePlannerSheetView: View {
     let strings: Strings
-    let viewModel: RoutePlannerViewModel
-    let place: Place?
     let pick: RoutePlannerPick?
     let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint]) -> Void
     let onRoutePlanSaved: (String) -> Void
     let onDismissRequest: () -> Void
-    var detent: RoutePlannerDetent = .expanded
-    var onExpandRequest: () -> Void = {}
-    var onHeightsChange: (RoutePlannerSheetHeights) -> Void = { _ in }
-    var onMinimizeRequest: () -> Void = {}
-    var onExpandAfterPickRequest: () -> Void = {}
-    var onInitialAppear: () -> Void = {}
+    let detent: RoutePlannerDetent
+    let onExpandRequest: () -> Void
+    let onHeightsChange: (RoutePlannerSheetHeights) -> Void
+    let onMinimizeRequest: () -> Void
+    let onExpandAfterPickRequest: () -> Void
+    let onInitialAppear: () -> Void
 
+    @StateObject private var holder: ViewModelHolder<RoutePlannerViewModel>
     @State private var didAppear = false
     @State private var showsSaveError = false
+
+    private var viewModel: RoutePlannerViewModel { holder.viewModel }
+
+    init(
+        strings: Strings,
+        place: Place?,
+        pick: RoutePlannerPick?,
+        onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint]) -> Void,
+        onRoutePlanSaved: @escaping (String) -> Void,
+        onDismissRequest: @escaping () -> Void,
+        detent: RoutePlannerDetent = .expanded,
+        onExpandRequest: @escaping () -> Void = {},
+        onHeightsChange: @escaping (RoutePlannerSheetHeights) -> Void = { _ in },
+        onMinimizeRequest: @escaping () -> Void = {},
+        onExpandAfterPickRequest: @escaping () -> Void = {},
+        onInitialAppear: @escaping () -> Void = {}
+    ) {
+        self.strings = strings
+        self.pick = pick
+        self.onRoutePlanUpdated = onRoutePlanUpdated
+        self.onRoutePlanSaved = onRoutePlanSaved
+        self.onDismissRequest = onDismissRequest
+        self.detent = detent
+        self.onExpandRequest = onExpandRequest
+        self.onHeightsChange = onHeightsChange
+        self.onMinimizeRequest = onMinimizeRequest
+        self.onExpandAfterPickRequest = onExpandAfterPickRequest
+        self.onInitialAppear = onInitialAppear
+        _holder = StateObject(wrappedValue: ViewModelHolder { owner in
+            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, place: place)
+        })
+    }
 
     var body: some View {
         // The effect stream and the one-shot seeding must not restart on every uiState change,
@@ -51,9 +82,6 @@ struct RoutePlannerSheetView: View {
                 guard !didAppear else { return }
                 didAppear = true
                 onInitialAppear()
-                if let place {
-                    viewModel.onEvent(event: RoutePlannerUiEventsPlaceAdded(place: place))
-                }
             }
             .task {
                 for await effect in viewModel.uiEffects {
@@ -78,6 +106,12 @@ struct RoutePlannerSheetView: View {
                 onExpandRequest: onExpandRequest,
                 onHeightsChange: onHeightsChange
             )
+            .onChange(of: uiState.routePlanMarkers, initial: true) {
+                onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers)
+            }
+            .onChange(of: uiState.routePlan) {
+                onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers)
+            }
             .alert(
                 strings.get(id: SharedRes.strings().route_planner_save_error_title),
                 isPresented: $showsSaveError
@@ -114,8 +148,6 @@ struct RoutePlannerSheetView: View {
 
     private func handleEffect(_ effect: RoutePlannerUiEffects) {
         switch onEnum(of: effect) {
-        case .routePlanUpdated(let effect):
-            onRoutePlanUpdated(effect.routePlan, effect.markers)
         case .routePlanSaved(let effect):
             onRoutePlanSaved(effect.fileUri)
         case .routePlanSaveFailed:
