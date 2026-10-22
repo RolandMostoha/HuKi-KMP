@@ -152,7 +152,7 @@ struct MapView: View {
                 }
                 .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
                 .gestureOptions(GestureOptions(
-                    rotateEnabled: MapConstants.shared.MAP_ROTATION_ENABLED
+                    rotateEnabled: uiState.mapUiState.rotationEnabled
                 ))
                 .ornamentOptions(OrnamentOptions(
                     scaleBar: ScaleBarViewOptions(

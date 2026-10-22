@@ -31,6 +31,12 @@ class DefaultSettingsRepository(private val dataStore: DataStore<Preferences>) :
         }
     }
 
+    override suspend fun setMapRotationEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.MAP_ROTATION_ENABLED] = enabled
+        }
+    }
+
     override suspend fun setThemeMode(themeMode: ThemeMode) {
         dataStore.edit { preferences ->
             preferences[SettingsPreferenceKeys.THEME_MODE] = themeMode.name

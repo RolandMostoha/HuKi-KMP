@@ -267,7 +267,7 @@ huki fails (400 PointNotFound/PointOutOfBounds, network, 5xx) → limitReached()
 | Status | Scope    | Task                                                                    |
 |--------|----------|-------------------------------------------------------------------------|
 | `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
-| `[R]`  | Settings | Add Enable/Disable two finger rotation                                  |
+| `[x]`  | Settings | Add Enable/Disable two finger rotation                                  |
 
 ### FEATURE: Analytics
 

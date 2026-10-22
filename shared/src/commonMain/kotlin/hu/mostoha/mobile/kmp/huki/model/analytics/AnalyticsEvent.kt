@@ -311,6 +311,10 @@ sealed interface AnalyticsEvent {
         override val name = "settings_zoom_controls_toggled"
     }
 
+    data object SettingsMapRotationToggled : AnalyticsEvent {
+        override val name = "settings_map_rotation_toggled"
+    }
+
     data class SettingsThemeSelected(val theme: Theme) : AnalyticsEvent {
         override val name = "settings_theme_selected_${theme.value}"
     }

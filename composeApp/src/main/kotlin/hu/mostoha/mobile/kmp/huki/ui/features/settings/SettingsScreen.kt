@@ -128,6 +128,13 @@ private fun SettingsContent(
                     testTag = TestTags.SETTINGS_ZOOM_CONTROLS_TOGGLE,
                     onCheckedChange = { onEvent(SettingsUiEvents.MapZoomControlsToggled(it)) },
                 )
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_map_rotation_title),
+                    description = mokoString(SharedRes.strings.settings_map_rotation_description),
+                    checked = uiState.mapRotationEnabled,
+                    testTag = TestTags.SETTINGS_MAP_ROTATION_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.MapRotationToggled(it)) },
+                )
             }
         }
     }

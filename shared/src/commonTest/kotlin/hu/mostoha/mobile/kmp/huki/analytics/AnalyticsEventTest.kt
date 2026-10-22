@@ -204,6 +204,11 @@ class AnalyticsEventTest {
                     "settings_zoom_controls_toggled",
                     emptyMap(),
                 ),
+                TestCase(
+                    AnalyticsEvent.SettingsMapRotationToggled,
+                    "settings_map_rotation_toggled",
+                    emptyMap(),
+                ),
             )
     }
 

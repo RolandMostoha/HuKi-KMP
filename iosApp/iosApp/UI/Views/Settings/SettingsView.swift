@@ -50,6 +50,27 @@ struct SettingsView: View {
                         .labelsHidden()
                         .accessibilityIdentifier(TestTags.shared.SETTINGS_ZOOM_CONTROLS_TOGGLE)
                     }
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(strings.get(id: SharedRes.strings().settings_map_rotation_title))
+                            Text(strings.get(id: SharedRes.strings().settings_map_rotation_description))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Toggle(
+                            "",
+                            isOn: Binding(
+                                get: { uiState.mapRotationEnabled },
+                                set: { newValue in
+                                    let event = SettingsUiEventsMapRotationToggled(enabled: newValue)
+                                    viewModel.onEvent(event: event)
+                                }
+                            )
+                        )
+                        .labelsHidden()
+                        .accessibilityIdentifier(TestTags.shared.SETTINGS_MAP_ROTATION_TOGGLE)
+                    }
                 }
             }
             .accessibilityIdentifier(TestTags.shared.SETTINGS_SCREEN_ROOT)

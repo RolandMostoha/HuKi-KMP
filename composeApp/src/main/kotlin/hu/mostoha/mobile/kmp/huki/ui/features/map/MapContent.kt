@@ -128,14 +128,16 @@ fun MapContent(
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
-    val mapState = rememberMapState {
-        gesturesSettings = GesturesSettings { rotateEnabled = MapConstants.MAP_ROTATION_ENABLED }
-    }
+    val mapState = rememberMapState()
     val mapLoaded = remember { CompletableDeferred<Unit>() }
     var isCameraPanelVisible by remember { mutableStateOf(true) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
     val currentListSheetHeight by rememberUpdatedState(listSheetHeight)
+
+    LaunchedEffect(mapUiState.rotationEnabled) {
+        mapState.gesturesSettings = GesturesSettings { rotateEnabled = mapUiState.rotationEnabled }
+    }
 
     LaunchedEffect(mapViewportState) {
         snapshotFlow { mapViewportState.cameraState }

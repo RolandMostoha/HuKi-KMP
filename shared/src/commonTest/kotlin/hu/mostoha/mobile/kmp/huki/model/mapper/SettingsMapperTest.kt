@@ -30,6 +30,15 @@ class SettingsMapperTest {
     }
 
     @Test
+    fun `Given stored map rotation flag - When toUserPreferences - Then the flag is returned`() {
+        val preferences = preferencesOf(SettingsPreferenceKeys.MAP_ROTATION_ENABLED to false)
+
+        val actual = preferences.toUserPreferences()
+
+        actual.mapRotationEnabled shouldBe false
+    }
+
+    @Test
     fun `Given stored theme mode - When toUserPreferences - Then the theme mode is returned`() {
         testCases().forEach { testCase ->
             val preferences = if (testCase.input != null) {

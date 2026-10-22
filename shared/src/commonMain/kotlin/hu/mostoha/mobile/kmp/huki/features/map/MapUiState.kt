@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxWaypoints
 
 data class MapUiState(
     val baseLayer: BaseLayer = UserPreferences.DEFAULTS.baseLayer,
+    val rotationEnabled: Boolean = UserPreferences.DEFAULTS.mapRotationEnabled,
     val hikingLayerVisible: Boolean = true,
     val gpxLayerVisible: Boolean = false,
     val gpxRouteVisible: Boolean = true,

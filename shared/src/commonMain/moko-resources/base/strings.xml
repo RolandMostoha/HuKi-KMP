@@ -180,6 +180,8 @@
     <string name="settings_section_map">Map</string>
     <string name="settings_zoom_controls_title">Zoom controls</string>
     <string name="settings_zoom_controls_description">Always Show + / − buttons on the map</string>
+    <string name="settings_map_rotation_title">Map rotation</string>
+    <string name="settings_map_rotation_description">Rotate the map with two fingers</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>

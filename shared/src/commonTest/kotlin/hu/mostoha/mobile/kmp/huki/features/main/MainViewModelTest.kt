@@ -837,6 +837,18 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given stored map rotation flag - When view model created - Then uiState has rotation disabled`() {
+        runTest {
+            every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(mapRotationEnabled = false))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.rotationEnabled shouldBe false
+        }
+    }
+
+    @Test
     fun `When BaseLayerSelected - Then base layer is saved`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

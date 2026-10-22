@@ -34,6 +34,7 @@ appId: ${APP_ID}
     id: SETTINGS_THEME_PICKER
 - assertVisible: "Map"
 - assertVisible: "Zoom controls"
+- assertVisible: "Map rotation"
 
 # Switch the app to the Dark theme
 - tapOn: "Dark"
@@ -41,6 +42,10 @@ appId: ${APP_ID}
 # Enable "always show zoom controls"
 - tapOn:
     id: SETTINGS_ZOOM_CONTROLS_TOGGLE
+
+# Disable two-finger map rotation
+- tapOn:
+    id: SETTINGS_MAP_ROTATION_TOGGLE
 
 # Back navigation returns to the menu, then to the map
 - tapOn:

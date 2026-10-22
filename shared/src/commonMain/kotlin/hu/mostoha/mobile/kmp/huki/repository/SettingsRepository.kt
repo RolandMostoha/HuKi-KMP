@@ -10,6 +10,8 @@ interface SettingsRepository {
 
     suspend fun setMapZoomControlsVisible(visible: Boolean)
 
+    suspend fun setMapRotationEnabled(enabled: Boolean)
+
     suspend fun setThemeMode(themeMode: ThemeMode)
 
     suspend fun setBaseLayer(baseLayer: BaseLayer)

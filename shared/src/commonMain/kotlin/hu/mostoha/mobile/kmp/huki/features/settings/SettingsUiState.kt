@@ -5,6 +5,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 
 data class SettingsUiState(
     val mapZoomControlsVisible: Boolean = UserPreferences.DEFAULTS.mapZoomControlsVisible,
+    val mapRotationEnabled: Boolean = UserPreferences.DEFAULTS.mapRotationEnabled,
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
 ) {
     companion object {

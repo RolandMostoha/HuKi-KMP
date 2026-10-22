@@ -27,7 +27,6 @@ object MapConstants {
     const val PLACE_DEFAULT_CAMERA_ZOOM = 16.0
     const val FOLLOW_LOCATION_ZOOM_LEVEL = 16.0
     const val FOLLOW_LOCATION_LIVE_COMPASS_PITCH = 45.0
-    const val MAP_ROTATION_ENABLED = true
 
     /**
      * Smallest bearing change worth reacting to, matching Mapbox's own compass throttling.

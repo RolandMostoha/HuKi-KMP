@@ -656,7 +656,10 @@ class MainViewModel(
                     it.copy(
                         mapZoomControlsAlwaysVisible = settings.mapZoomControlsVisible,
                         themeMode = settings.themeMode,
-                        mapUiState = it.mapUiState.copy(baseLayer = settings.baseLayer),
+                        mapUiState = it.mapUiState.copy(
+                            baseLayer = settings.baseLayer,
+                            rotationEnabled = settings.mapRotationEnabled,
+                        ),
                     )
                 }
             }

@@ -44,6 +44,7 @@ class SettingsViewModel(
             SettingsUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.SETTINGS)
             SettingsUiEvents.BackClicked -> sendEffect(SettingsUiEffects.NavigateBack)
             is SettingsUiEvents.MapZoomControlsToggled -> toggleMapZoomControls(event.visible)
+            is SettingsUiEvents.MapRotationToggled -> toggleMapRotation(event.enabled)
             is SettingsUiEvents.ThemeModeSelected -> selectThemeMode(event.themeMode)
         }
     }
@@ -52,6 +53,13 @@ class SettingsViewModel(
         analyticsService.logEvent(AnalyticsEvent.SettingsZoomControlsToggled)
         viewModelScope.launch {
             settingsRepository.setMapZoomControlsVisible(visible)
+        }
+    }
+
+    private fun toggleMapRotation(enabled: Boolean) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsMapRotationToggled)
+        viewModelScope.launch {
+            settingsRepository.setMapRotationEnabled(enabled)
         }
     }
 
@@ -68,6 +76,7 @@ class SettingsViewModel(
                 _uiState.update {
                     it.copy(
                         mapZoomControlsVisible = settings.mapZoomControlsVisible,
+                        mapRotationEnabled = settings.mapRotationEnabled,
                         themeMode = settings.themeMode,
                     )
                 }

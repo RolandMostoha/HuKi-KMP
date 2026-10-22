@@ -85,6 +85,32 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `Given stored map rotation flag - When observed - Then uiState reflects the flag`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(mapRotationEnabled = false))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapRotationEnabled shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given default state - When MapRotationToggled event - Then repository stores the flag`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.MapRotationToggled(enabled = false))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setMapRotationEnabled(false) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsMapRotationToggled)
+        }
+    }
+
+    @Test
     fun `Given stored theme mode - When observed - Then uiState reflects the theme mode`() {
         runTest {
             every { settingsRepository.settings } returns

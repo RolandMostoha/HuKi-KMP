@@ -10,6 +10,8 @@ fun Preferences.toUserPreferences(): UserPreferences =
     UserPreferences(
         mapZoomControlsVisible = this[SettingsPreferenceKeys.MAP_ZOOM_CONTROLS_VISIBLE]
             ?: UserPreferences.DEFAULTS.mapZoomControlsVisible,
+        mapRotationEnabled = this[SettingsPreferenceKeys.MAP_ROTATION_ENABLED]
+            ?: UserPreferences.DEFAULTS.mapRotationEnabled,
         themeMode = this[SettingsPreferenceKeys.THEME_MODE].toThemeMode(),
         baseLayer = this[SettingsPreferenceKeys.BASE_LAYER].toBaseLayer(),
     )
