@@ -5,20 +5,19 @@ import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.TermeszetjaroTag
 
 /**
  * Main landscapes of Hungary, focusing on the hiking related areas.
  *
- * It is a hardcoded data, coming from the Overpass query:
- * tools/osm/landscapes_overpass_query.txt
+ * Outlines are generated from OpenStreetMap, keyed by [Landscape.id]; the OSM source of each landscape is
+ * listed in tools/python/generate_landscape_outlines.py.
  */
 val Landscapes = listOf(
     Landscape(
-        osmId = "279573777",
-        osmType = OsmType.WAY,
+        id = "bukk",
         nameRes = SharedRes.strings.landscape_bukk,
+        colorRes = SharedRes.colors.landscapeBukk,
         landscapeType = LandscapeType.MOUNTAIN_HIGH,
         center = Location(48.0356833, 20.5239573),
         areaTags = mapOf(
@@ -32,9 +31,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_BUKK,
     ),
     Landscape(
-        osmId = "279665387",
-        osmType = OsmType.WAY,
+        id = "balaton_felvidek",
         nameRes = SharedRes.strings.landscape_balaton_felvidek,
+        colorRes = SharedRes.colors.landscapeBalatonFelvidek,
         landscapeType = LandscapeType.MOUNTAIN_WITH_LAKE,
         center = Location(46.9174441, 17.7261084),
         areaTags = mapOf(
@@ -48,9 +47,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_BALATON,
     ),
     Landscape(
-        osmId = "279660398",
-        osmType = OsmType.WAY,
+        id = "aggteleki_karszt",
         nameRes = SharedRes.strings.landscape_aggteleki_karszt,
+        colorRes = SharedRes.colors.landscapeAggtelekiKarszt,
         landscapeType = LandscapeType.CAVE_SYSTEM,
         center = Location(48.4542508, 20.6350029),
         areaTags = mapOf(
@@ -64,9 +63,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_AGGTELEK,
     ),
     Landscape(
-        osmId = "279665961",
-        osmType = OsmType.WAY,
+        id = "mecsek",
         nameRes = SharedRes.strings.landscape_mecsek,
+        colorRes = SharedRes.colors.landscapeMecsek,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(46.1375511, 18.2469531),
         areaTags = mapOf(
@@ -80,9 +79,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_MECSEK,
     ),
     Landscape(
-        osmId = "279583932",
-        osmType = OsmType.WAY,
+        id = "matra",
         nameRes = SharedRes.strings.landscape_matra,
+        colorRes = SharedRes.colors.landscapeMatra,
         landscapeType = LandscapeType.MOUNTAIN_HIGH,
         center = Location(47.8702858, 19.9453253),
         areaTags = mapOf(
@@ -96,9 +95,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_MATRA,
     ),
     Landscape(
-        osmId = "279564162",
-        osmType = OsmType.WAY,
+        id = "borzsony",
         nameRes = SharedRes.strings.landscape_borzsony,
+        colorRes = SharedRes.colors.landscapeBorzsony,
         landscapeType = LandscapeType.MOUNTAIN_HIGH,
         center = Location(47.9128315, 18.9494417),
         areaTags = mapOf(
@@ -112,9 +111,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_BORZSONY,
     ),
     Landscape(
-        osmId = "279561562",
-        osmType = OsmType.WAY,
+        id = "pilis_hegyseg",
         nameRes = SharedRes.strings.landscape_pilis_hegyseg,
+        colorRes = SharedRes.colors.landscapePilisHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.6427423, 18.8986191),
         areaTags = mapOf(
@@ -128,9 +127,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_PILIS,
     ),
     Landscape(
-        osmId = "279561563",
-        osmType = OsmType.WAY,
+        id = "visegradi_hegyseg",
         nameRes = SharedRes.strings.landscape_visegradi_hegyseg,
+        colorRes = SharedRes.colors.landscapeVisegradiHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_WITH_CASTLE,
         center = Location(47.7210692, 18.9181598),
         areaTags = mapOf(
@@ -144,9 +143,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_VISGERAD,
     ),
     Landscape(
-        osmId = "279665156",
-        osmType = OsmType.WAY,
+        id = "bakony",
         nameRes = SharedRes.strings.landscape_bakony,
+        colorRes = SharedRes.colors.landscapeBakony,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.1624906, 17.7835194),
         areaTags = mapOf(
@@ -160,9 +159,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_BAKONY,
     ),
     Landscape(
-        osmId = "279663379",
-        osmType = OsmType.WAY,
+        id = "gerecse_hegyseg",
         nameRes = SharedRes.strings.landscape_gerecse_hegyseg,
+        colorRes = SharedRes.colors.landscapeGerecseHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.6177834, 18.5489089),
         areaTags = mapOf(
@@ -176,9 +175,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_GERECSE,
     ),
     Landscape(
-        osmId = "279665573",
-        osmType = OsmType.WAY,
+        id = "keszthelyi_hegyseg",
         nameRes = SharedRes.strings.landscape_keszthelyi_hegyseg,
+        colorRes = SharedRes.colors.landscapeKeszthelyiHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_WITH_LAKE,
         center = Location(46.8503130, 17.2709995),
         areaTags = mapOf(
@@ -192,9 +191,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_KESZTHELY,
     ),
     Landscape(
-        osmId = "279590728",
-        osmType = OsmType.WAY,
+        id = "cserhat",
         nameRes = SharedRes.strings.landscape_cserhat,
+        colorRes = SharedRes.colors.landscapeCserhat,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.8688179, 19.4148133),
         areaTags = mapOf(
@@ -208,9 +207,19 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_CSERHAT,
     ),
     Landscape(
-        osmId = "279656184",
-        osmType = OsmType.WAY,
+        id = "karancs_medves",
+        nameRes = SharedRes.strings.landscape_karancs_medves,
+        colorRes = SharedRes.colors.landscapeKarancsMedves,
+        landscapeType = LandscapeType.MOUNTAIN_WITH_CASTLE,
+        center = Location(48.1336, 19.7356),
+        areaTags = emptyMap(),
+        termeszetjaroTag = null,
+        destinations = DESTINATIONS_KARANCS_MEDVES,
+    ),
+    Landscape(
+        id = "zempleni_hegyseg",
         nameRes = SharedRes.strings.landscape_zempleni_hegyseg,
+        colorRes = SharedRes.colors.landscapeZempleniHegyseg,
         landscapeType = LandscapeType.WINE_AREA,
         center = Location(48.3440651, 21.4169262),
         areaTags = mapOf(
@@ -224,9 +233,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_ZEMPLEN,
     ),
     Landscape(
-        osmId = "279663918",
-        osmType = OsmType.WAY,
+        id = "vertes",
         nameRes = SharedRes.strings.landscape_vertes,
+        colorRes = SharedRes.colors.landscapeVertes,
         landscapeType = LandscapeType.MOUNTAIN_LOW,
         center = Location(47.4175701, 18.3625658),
         areaTags = mapOf(
@@ -240,9 +249,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_VERTES,
     ),
     Landscape(
-        osmId = "279664160",
-        osmType = OsmType.WAY,
+        id = "velencei_hegyseg",
         nameRes = SharedRes.strings.landscape_velencei_hegyseg,
+        colorRes = SharedRes.colors.landscapeVelenceiHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_WITH_LAKE,
         center = Location(47.2654220, 18.5854126),
         areaTags = mapOf(
@@ -256,11 +265,11 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_VELENCE,
     ),
     Landscape(
-        osmId = "279666014",
-        osmType = OsmType.WAY,
-        nameRes = SharedRes.strings.landscape_zselic,
+        id = "somogyi_dombsag",
+        nameRes = SharedRes.strings.landscape_somogyi_dombsag,
+        colorRes = SharedRes.colors.landscapeSomogyiDombsag,
         landscapeType = LandscapeType.STAR_GAZING_AREA,
-        center = Location(46.2185793, 17.8800546),
+        center = Location(46.5277, 17.8860),
         areaTags = mapOf(
             HikeRecommendation.KIRANDULASTIPPEK to "tolna",
             HikeRecommendation.AKTIVKALANDOR to "zselic",
@@ -269,12 +278,12 @@ val Landscapes = listOf(
             areaId = "25014012",
             areaName = "Zselici Tájvédelmi Körzet (Tájvédelmi körzet)",
         ),
-        destinations = DESTINATIONS_ZSELIC,
+        destinations = DESTINATIONS_SOMOGYI_DOMBSAG,
     ),
     Landscape(
-        osmId = "279667079",
-        osmType = OsmType.WAY,
+        id = "villanyi_hegyseg",
         nameRes = SharedRes.strings.landscape_villanyi_hegyseg,
+        colorRes = SharedRes.colors.landscapeVillanyiHegyseg,
         landscapeType = LandscapeType.WINE_AREA,
         center = Location(45.8747512, 18.2730710),
         areaTags = mapOf(
@@ -288,9 +297,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_VILLANY,
     ),
     Landscape(
-        osmId = "300323308",
-        osmType = OsmType.WAY,
+        id = "koszegi_hegyseg",
         nameRes = SharedRes.strings.landscape_koszegi_hegyseg,
+        colorRes = SharedRes.colors.landscapeKoszegiHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.3307697, 16.4054968),
         areaTags = mapOf(
@@ -304,9 +313,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_KOSZEG,
     ),
     Landscape(
-        osmId = "279593581",
-        osmType = OsmType.WAY,
+        id = "heves_borsodi_dombsag",
         nameRes = SharedRes.strings.landscape_heves_borsodi_dombsag,
+        colorRes = SharedRes.colors.landscapeHevesBorsodiDombsag,
         landscapeType = LandscapeType.MOUNTAIN_LOW,
         center = Location(48.1120709, 20.1976971),
         areaTags = emptyMap(),
@@ -314,9 +323,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_HEVES,
     ),
     Landscape(
-        osmId = "3716160",
-        osmType = OsmType.RELATION,
+        id = "budai_hegyseg",
         nameRes = SharedRes.strings.landscape_budai_hegyseg,
+        colorRes = SharedRes.colors.landscapeBudaiHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.5428510, 18.9236294),
         areaTags = mapOf(
@@ -330,9 +339,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_BUDAPEST,
     ),
     Landscape(
-        osmId = "11073175",
-        osmType = OsmType.RELATION,
+        id = "soproni_hegyseg",
         nameRes = SharedRes.strings.landscape_soproni_hegyseg,
+        colorRes = SharedRes.colors.landscapeSoproniHegyseg,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(47.6438256, 16.4890472),
         areaTags = mapOf(
@@ -346,9 +355,25 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_SOPRON,
     ),
     Landscape(
-        osmId = "6503266",
-        osmType = OsmType.RELATION,
+        id = "ferto_to_videke",
+        nameRes = SharedRes.strings.landscape_ferto_to_videke,
+        colorRes = SharedRes.colors.landscapeFertoToVideke,
+        landscapeType = LandscapeType.PLAIN_LAND,
+        center = Location(47.6765, 16.7420),
+        areaTags = mapOf(
+            HikeRecommendation.KIRANDULASTIPPEK to "sopron-es-kornyeke",
+            HikeRecommendation.AKTIVKALANDOR to "soproni-hegyseg-es-ferto-to",
+        ),
+        termeszetjaroTag = TermeszetjaroTag(
+            areaId = "32258163",
+            areaName = "Fertő–Hanság Nemzeti Park (Nemzeti Park)",
+        ),
+        destinations = DESTINATIONS_FERTO,
+    ),
+    Landscape(
+        id = "hortobagy",
         nameRes = SharedRes.strings.landscape_hortobagy,
+        colorRes = SharedRes.colors.landscapeHortobagy,
         landscapeType = LandscapeType.PLAIN_LAND,
         center = Location(47.49350, 21.05344),
         areaTags = mapOf(
@@ -362,9 +387,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_HORTOBAGY,
     ),
     Landscape(
-        osmId = "8545511",
-        osmType = OsmType.RELATION,
+        id = "orseg",
         nameRes = SharedRes.strings.landscape_orseg,
+        colorRes = SharedRes.colors.landscapeOrseg,
         landscapeType = LandscapeType.PLAIN_LAND,
         center = Location(46.83921, 16.40093),
         areaTags = mapOf(
@@ -378,9 +403,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_ORSEG,
     ),
     Landscape(
-        osmId = "22719",
-        osmType = OsmType.RELATION,
+        id = "alfold",
         nameRes = SharedRes.strings.landscape_alfold,
+        colorRes = SharedRes.colors.landscapeAlfold,
         landscapeType = LandscapeType.PLAIN_LAND,
         center = Location(latitude = 46.55921, longitude = 20.19168),
         areaTags = mapOf(
@@ -394,9 +419,9 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_ALFOLD,
     ),
     Landscape(
-        osmId = "380535667",
-        osmType = OsmType.WAY,
+        id = "zalai_dombsag",
         nameRes = SharedRes.strings.landscape_zalai_dombsag,
+        colorRes = SharedRes.colors.landscapeZalaiDombsag,
         landscapeType = LandscapeType.MOUNTAIN_MEDIUM,
         center = Location(latitude = 46.7060, longitude = 16.7191),
         areaTags = mapOf(
@@ -410,9 +435,20 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_ZALA,
     ),
     Landscape(
-        osmId = "380535854",
-        osmType = OsmType.WAY,
+        id = "kis_balaton",
+        nameRes = SharedRes.strings.landscape_kis_balaton,
+        colorRes = SharedRes.colors.landscapeKisBalaton,
+        landscapeType = LandscapeType.LAKE,
+        center = Location(latitude = 46.6400, longitude = 17.2000),
+        areaTags = mapOf(
+            HikeRecommendation.AKTIVKALANDOR to "kis-balaton",
+        ),
+        destinations = DESTINATIONS_KIS_BALATON,
+    ),
+    Landscape(
+        id = "szigetkoz",
         nameRes = SharedRes.strings.landscape_szigetkoz,
+        colorRes = SharedRes.colors.landscapeSzigetkoz,
         landscapeType = LandscapeType.LAKE,
         center = Location(latitude = 47.8615, longitude = 17.4010),
         areaTags = mapOf(
@@ -424,7 +460,16 @@ val Landscapes = listOf(
         ),
         destinations = DESTINATIONS_SZIGETKOZ,
     ),
+    Landscape(
+        id = "gemenc",
+        nameRes = SharedRes.strings.landscape_gemenc,
+        colorRes = SharedRes.colors.landscapeGemenc,
+        landscapeType = LandscapeType.FOREST_AREA,
+        center = Location(46.2, 18.84),
+        areaTags = emptyMap(),
+        destinations = DESTINATIONS_GEMENC,
+    ),
 )
 
 val LandscapeByDestinationId: Map<String, Landscape> =
-    Landscapes.flatMap { landscape -> landscape.destinations.map { it.osmId to landscape } }.toMap()
+    Landscapes.flatMap { landscape -> landscape.destinations.map { it.id to landscape } }.toMap()

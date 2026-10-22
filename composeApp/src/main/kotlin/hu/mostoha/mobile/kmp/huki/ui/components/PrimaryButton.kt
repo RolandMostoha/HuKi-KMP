@@ -17,6 +17,7 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     enabled: Boolean = true,
+    size: ButtonSize = ButtonSize.REGULAR,
 ) {
     BaseButton(
         iconResId = iconResId,
@@ -29,6 +30,7 @@ fun PrimaryButton(
         modifier = modifier,
         contentDescription = contentDescription,
         enabled = enabled,
+        size = size,
     )
 }
 
@@ -40,6 +42,19 @@ private fun PrimaryButtonPreview() {
             iconResId = R.drawable.ic_fab_my_location_live_compass,
             text = "Show on map",
             onClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryButtonSmallPreview() {
+    HuKiTheme {
+        PrimaryButton(
+            iconResId = R.drawable.ic_fab_my_location_live_compass,
+            text = "Show on map",
+            onClick = {},
+            size = ButtonSize.SMALL,
         )
     }
 }

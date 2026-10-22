@@ -21,6 +21,66 @@ extension MainView {
             discoverSheet()
         case .okt:
             oktSheet(uiState: uiState)
+        case .landscapes:
+            landscapesSheet(uiState: uiState)
+        }
+    }
+
+    @ViewBuilder
+    func landscapesSheet(uiState: MainUiState) -> some View {
+        if let landscapes = uiState.mapUiState.landscapes {
+            LandscapesSheetView(
+                strings: strings,
+                landscapes: landscapes,
+                onLandscapeClicked: { landscapeId in
+                    collapseLandscapesSheet()
+                    viewModel.onEvent(event: LandscapesUiEventsLandscapeClicked(landscapeId: landscapeId))
+                },
+                onCategoryClicked: { categoryId in
+                    collapseLandscapesSheet()
+                    viewModel.onEvent(event: LandscapesUiEventsCategoryClicked(categoryId: categoryId))
+                },
+                onShowAllClicked: {
+                    viewModel.onEvent(event: LandscapesUiEventsLandscapesShowAllClicked.shared)
+                },
+                onExpandToggleClicked: isLandscape ? nil : toggleLandscapesSheet,
+                isExpanded: landscapesDetent == .large,
+                onDestinationClicked: { destination in
+                    collapseLandscapesSheet()
+                    viewModel.onEvent(event: LandscapesUiEventsLandscapesDestinationClicked(destination: destination))
+                },
+                onDismissRequest: {
+                    viewModel.onEvent(event: LandscapesUiEventsLandscapesCloseClicked.shared)
+                }
+            )
+            .presentationDetents(
+                isLandscape ? [.large] : [.height(landscapesDetentHeight), .large],
+                selection: $landscapesDetent
+            )
+            .presentationDragIndicator(.visible)
+            .presentationBackgroundInteraction(.enabled(upThrough: .height(landscapesDetentHeight)))
+            .presentationContentInteraction(.resizes)
+            .onAppear {
+                // Without a selected category the map has nothing to show yet
+                let isCategoryUnselected = landscapes.grouping == .category && landscapes.selectedCategoryId == nil
+                landscapesDetent = isLandscape || isCategoryUnselected ? .large : .height(landscapesDetentHeight)
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
+    private func toggleLandscapesSheet() {
+        withAnimation(.snappy) {
+            landscapesDetent = landscapesDetent == .large ? .height(landscapesDetentHeight) : .large
+        }
+    }
+
+    // The selection is shown on the map, which the expanded sheet would cover
+    private func collapseLandscapesSheet() {
+        guard !isLandscape else { return }
+        withAnimation(.snappy) {
+            landscapesDetent = .height(landscapesDetentHeight)
         }
     }
 
@@ -84,6 +144,12 @@ extension MainView {
             },
             onOktInfoClicked: {
                 viewModel.onEvent(event: OktUiEventsOktInfoClicked.shared)
+            },
+            onShowLandscapesClicked: {
+                viewModel.onEvent(event: LandscapesUiEventsLandscapesShowClicked.shared)
+            },
+            onShowCategoriesClicked: {
+                viewModel.onEvent(event: LandscapesUiEventsCategoriesShowClicked.shared)
             },
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
@@ -184,9 +250,9 @@ extension MainView {
 
     private var layersDetent: PresentationDetent {
         if isPad {
-            return .height(400)
+            return .height(Dimens.layersPadDetentHeight)
         }
-        return isLandscape ? .large : .height(360)
+        return isLandscape ? .large : .height(Dimens.layersDetentHeight)
     }
 
     private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {

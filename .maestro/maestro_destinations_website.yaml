@@ -1,0 +1,77 @@
+appId: ${APP_ID}
+---
+# Destinations website: select a destination with a website in the Landscapes,
+# then open its website from the InfoWindow in the external browser.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open the Landscapes from Discover.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_SHEET
+    timeout: 5000
+
+# Expand the Budai-hegység.
+- swipe:
+    start: 50%, 75%
+    end: 50%, 35%
+    duration: 1000
+- repeat:
+    while:
+      notVisible:
+        text: "(Budai-hegység|Buda Hills).*"
+    times: 20
+    commands:
+      - swipe:
+          start: 50%, 88%
+          end: 50%, 78%
+          duration: 800
+- tapOn:
+    text: "(Budai-hegység|Buda Hills).*"
+
+# A destination without a website has no website button.
+- tapOn:
+    id: LANDSCAPES_DESTINATION_CARD_budaors_farkas_hegy
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW
+    timeout: 5000
+- assertNotVisible:
+    id: LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON
+
+# A destination with a website shows the button, which leaves the app for the browser.
+- runFlow:
+    file: subflows/maestro_flow_select_landscape_destination.yaml
+    env:
+      DESTINATION_ID: budapest_pal_volgyi_barlang
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON
+    timeout: 5000
+- assertNotVisible:
+    id: LANDSCAPES_INFO_WINDOW_ROUTE_BUTTON
+- tapOn:
+    id: LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON
+- extendedWaitUntil:
+    notVisible:
+      id: MAP_MAPBOX
+    timeout: 10000

@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,7 +39,6 @@ import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
 @Composable
 fun OktInfoWindow(info: OktInfoWindowData, onPlaceDetailsClick: () -> Unit, modifier: Modifier = Modifier) {
-    val primary = mokoColor(SharedRes.colors.primary)
     Surface(
         modifier = modifier
             .width(Dimens.OktInfoWindowWidth)
@@ -92,21 +89,10 @@ fun OktInfoWindow(info: OktInfoWindowData, onPlaceDetailsClick: () -> Unit, modi
                     }
                 }
             }
-            FilledIconButton(
+            InfoWindowPlaceDetailsButton(
                 onClick = onPlaceDetailsClick,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = primary.copy(alpha = 0.15f),
-                    contentColor = primary,
-                ),
-                modifier = Modifier
-                    .size(44.dp)
-                    .testTag(TestTags.OKT_INFO_WINDOW_PLACE_DETAILS_BUTTON),
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_directions),
-                    contentDescription = mokoString(SharedRes.strings.okt_info_window_navigate),
-                )
-            }
+                modifier = Modifier.testTag(TestTags.OKT_INFO_WINDOW_PLACE_DETAILS_BUTTON),
+            )
         }
     }
 }

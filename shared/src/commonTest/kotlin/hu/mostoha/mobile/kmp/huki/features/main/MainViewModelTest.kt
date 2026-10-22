@@ -59,6 +59,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -99,10 +100,10 @@ class MainViewModelTest {
 
     private companion object {
         private val TEST_DESTINATION = Destination(
-            osmId = "1",
+            id = "1",
             name = "Kékestető",
             town = "Mátraszentimre",
-            type = DestinationType.HIGHEST_PEAK,
+            type = DestinationType.PEAK,
             location = Location(47.8721, 20.0102),
             description = SharedRes.strings.destinations_type_peak,
             popularity = 10,
@@ -197,6 +198,7 @@ class MainViewModelTest {
             mapCameraStore = mapCameraStore,
             whatsNewRepository = whatsNewRepository,
             oktRepository = FakeOktRepository(),
+            landscapeRepository = FakeLandscapeRepository(),
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
@@ -1515,16 +1517,16 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given known osmId - When DestinationSelected - Then UpdateCamera to destination location and visit recorded`() {
+    fun `Given known id - When DestinationSelected - Then UpdateCamera to destination location and visit recorded`() {
         runTest {
-            every { destinationRepository.requireDestination(TEST_DESTINATION.osmId) } returns TEST_DESTINATION
+            every { destinationRepository.requireDestination(TEST_DESTINATION.id) } returns TEST_DESTINATION
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
 
-                viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.osmId))
+                viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.id))
 
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
                     target = CameraTarget.Center(TEST_DESTINATION.location, zoom = 16.0),
@@ -1849,7 +1851,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.DestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.DestinationSelected(TEST_DESTINATION.id),
                 AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
             )
         }
@@ -1879,7 +1881,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.SearchResultDestinationSelected(TEST_DESTINATION))
 
             analyticsService.loggedEvents shouldBe listOf(
-                AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.name),
+                AnalyticsEvent.SearchDestinationSelected(TEST_DESTINATION.id),
                 AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.DESTINATION),
             )
         }

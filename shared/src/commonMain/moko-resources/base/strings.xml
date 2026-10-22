@@ -198,6 +198,7 @@
     <string name="gpx_collection_a11y_options">More options</string>
     <string name="gpx_collection_origin_external">Imported</string>
     <string name="gpx_collection_origin_route_planner">Route planner</string>
+    <string name="gpx_collection_origin_bundled">HuKi route</string>
     <string name="gpx_collection_action_rename">Rename</string>
     <string name="gpx_collection_action_share">Share</string>
     <string name="gpx_collection_action_delete">Delete</string>
@@ -304,6 +305,7 @@
     <string name="place_category_wildlife_park">Wildlife Park</string>
     <string name="place_category_observatory">Observatory</string>
     <string name="place_category_farm">Farm</string>
+    <string name="place_category_scenic_railway">Scenic railway</string>
 
     <string name="destinations_section_title">Destinations</string>
     <string name="destinations_section_nearby_title">Nearby destinations</string>
@@ -321,19 +323,22 @@
     <string name="destinations_nearby_error_message">We couldn\'t determine your location. Make sure location services are on and try again.</string>
     <string name="destinations_nearby_error_action">Try again</string>
     <string name="destinations_a11y_back">Back</string>
+    <string name="destinations_action_open_route">Open route</string>
+    <string name="destinations_action_open_website">Website</string>
     <string name="destinations_action_show_on_map">Show on map</string>
     <string name="destinations_a11y_preview_dismiss">Close preview</string>
-    <string name="destinations_type_highest_peak">Area Peak</string>
     <string name="destinations_type_peak">Peak</string>
     <string name="destinations_type_national_park">National Park</string>
     <string name="destinations_type_castle">Castle</string>
     <string name="destinations_type_town">Town</string>
     <string name="destinations_type_river">River</string>
     <string name="destinations_type_lookout">Lookout</string>
-    <string name="destinations_type_rock_with_lookout">Rock Lookout</string>
+    <string name="destinations_type_panoramic_viewpoint">Panoramic viewpoints</string>
     <string name="destinations_type_statue">Statue</string>
     <string name="destinations_type_memorial_park">Memorial Park</string>
-    <string name="destinations_type_arboretum">Arboretum</string>
+    <string name="destinations_type_arboretum">Arboretums and gardens</string>
+    <string name="destinations_type_forest">Special forests</string>
+    <string name="destinations_type_scenic_railway">Scenic railways</string>
     <string name="destinations_type_gorge">Gorge</string>
     <string name="destinations_type_camp">Camp</string>
 
@@ -348,6 +353,22 @@
     <string name="discover_hike_recommendations_info">The hike collections below are my personal favourites, and GPX routes downloaded from them can be opened in the app.\n\nHuKi does not use the content of these websites, it only provides a navigation link that opens in an external browser.\n\nThe terms of each website apply to the use of its content.</string>
     <string name="discover_hike_recommendations_gpx_guide">Open GPX Guide</string>
     <string name="discover_browse_destinations">Browse destinations</string>
+    <string name="discover_landscapes_title">Landscapes</string>
+    <string name="discover_show_landscapes">Show Landscapes</string>
+    <string name="discover_show_landscapes_description">All destinations on the map</string>
+    <string name="landscapes_a11y_close">Close landscapes</string>
+    <string name="discover_destinations_by_landscape">Landscapes</string>
+    <string name="discover_destinations_by_category">Categories</string>
+    <string name="discover_destinations_in_list">List</string>
+    <string name="landscapes_title">Landscapes</string>
+    <string name="landscapes_a11y_show_all">Show all landscapes</string>
+    <string name="landscapes_a11y_resume">Show landscapes</string>
+    <string name="categories_title">Categories</string>
+    <string name="categories_a11y_show_all">Show the whole country</string>
+    <string name="categories_a11y_close">Close categories</string>
+    <string name="categories_a11y_resume">Show categories</string>
+    <string name="a11y_expand_sheet">Expand</string>
+    <string name="a11y_collapse_sheet">Collapse</string>
 
     <string name="location_iq_a11y_back">Back</string>
     <string name="location_iq_a11y_logo">LocationIQ logo</string>
@@ -368,4 +389,25 @@
     <string name="whats_new_a11y_app_icon">HuKi app icon</string>
     <string name="whats_new_message_signature">— The developer of HuKi</string>
 
+    <string name="destinations_type_highest_peak_per_landscape">Highest peak in landscape</string>
+    <string name="destinations_type_educational_trail">Educational trail</string>
+    <string name="destinations_type_canopy_walk">Canopy walk</string>
+    <string name="destinations_type_geological_site">Geological site</string>
+    <string name="destinations_type_wetland">Wetland</string>
+    <string name="destinations_type_birdwatching">Birdwatching</string>
+    <string name="destinations_type_notable_tree">Notable tree</string>
+    <string name="destinations_type_watermill">Watermill</string>
+    <string name="destinations_type_visitor_centre">Visitor centre</string>
+    <string name="destinations_type_historic_site">Historic site</string>
+    <string name="landscape_gemenc">Gemenc</string>
+    <string name="destinations_type_palace">Palaces and manor houses</string>
+    <string name="destinations_type_castle_ruin">Castle ruins</string>
+    <string name="destinations_type_adventure_park">Adventure parks</string>
+    <string name="destinations_type_religious_site">Religious sites</string>
+    <string name="destinations_type_water_tour">Water tours</string>
+    <string name="destinations_type_cave_guide_required">Cave (guided)</string>
+    <string name="destinations_challenge_highest_peaks">Highest peaks of the landscapes</string>
+    <string name="destinations_challenge_panoramic_views">Panoramic viewpoints</string>
+    <string name="destinations_challenge_birdwatching">Birdwatching spots</string>
+    <string name="destinations_type_stargazing">Stargazing</string>
 </resources>

@@ -296,7 +296,7 @@ private fun SearchBottomSheetContentPreview() {
                 ),
                 searchDestinations = listOf(
                     Destination(
-                        osmId = "d1",
+                        id = "d1",
                         name = "Dobogókő",
                         town = "Pilisszentkereszt",
                         type = DestinationType.PEAK,
@@ -378,7 +378,7 @@ private fun SearchBottomSheetDestinationsStatePreview() {
             uiState = PlaceFinderUiState(
                 destinations = listOf(
                     Destination(
-                        osmId = "1",
+                        id = "1",
                         name = "Dobogókő",
                         town = "Pilisszentkereszt",
                         type = DestinationType.PEAK,
@@ -387,7 +387,7 @@ private fun SearchBottomSheetDestinationsStatePreview() {
                         popularity = 10,
                     ),
                     Destination(
-                        osmId = "2",
+                        id = "2",
                         name = "Balaton",
                         town = "Siófok",
                         type = DestinationType.LAKE,

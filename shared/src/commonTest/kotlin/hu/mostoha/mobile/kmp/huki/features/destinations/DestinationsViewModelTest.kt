@@ -20,7 +20,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
@@ -232,6 +231,44 @@ class DestinationsViewModelTest {
     }
 
     @Test
+    fun `Given destination with website - When website clicked - Then OpenUrl effect is emitted and logged`() {
+        stubPermissionState(PermissionState.NotDetermined)
+        val destination = POPULAR.first().copy(website = "https://www.kekesteto.hu")
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(DestinationsUiEvents.WebsiteClicked(destination))
+
+                awaitItem() shouldBe DestinationsUiEffects.OpenUrl("https://www.kekesteto.hu")
+            }
+
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.DestinationWebsiteOpened(destination.id),
+            )
+        }
+    }
+
+    @Test
+    fun `Given destination without website - When website clicked - Then nothing happens`() {
+        stubPermissionState(PermissionState.NotDetermined)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(DestinationsUiEvents.WebsiteClicked(POPULAR.first()))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                expectNoEvents()
+            }
+
+            analyticsService.loggedEvents shouldBe emptyList()
+        }
+    }
+
+    @Test
     fun `Given permission denied always - When permission requested - Then NavigateToAppSettings effect is emitted`() {
         stubPermissionState(PermissionState.NotDetermined)
         val deniedAlways = DeniedAlwaysException(Permission.LOCATION)
@@ -277,24 +314,24 @@ class DestinationsViewModelTest {
             destination("2", "Dobogókő", popularity = 8),
         )
 
-        fun landscape(osmId: String, destinations: List<Destination>): Landscape =
+        fun landscape(id: String, destinations: List<Destination>): Landscape =
             Landscape(
-                osmId = osmId,
-                osmType = OsmType.WAY,
+                id = id,
                 nameRes = SharedRes.strings.landscape_bukk,
+                colorRes = SharedRes.colors.landscapeBukk,
                 landscapeType = LandscapeType.MOUNTAIN_HIGH,
                 center = Location(47.0, 19.0),
                 destinations = destinations,
                 areaTags = emptyMap(),
             )
 
-        fun destination(osmId: String, name: String, popularity: Int): Destination =
+        fun destination(id: String, name: String, popularity: Int): Destination =
             Destination(
-                osmId = osmId,
+                id = id,
                 name = name,
-                town = "Town $osmId",
+                town = "Town $id",
                 type = DestinationType.PEAK,
-                location = Location(47.0 + osmId.toInt() / 100.0, 19.0),
+                location = Location(47.0 + id.toInt() / 100.0, 19.0),
                 description = SharedRes.strings.bukk_fatyol_vizeses,
                 popularity = popularity,
             )

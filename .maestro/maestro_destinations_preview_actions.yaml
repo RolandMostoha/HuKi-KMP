@@ -1,0 +1,88 @@
+appId: ${APP_ID}
+---
+# Destinations preview actions: a nearby educational trail offers "Open route", which opens
+# its bundled GPX on the map; a nearby destination with a website offers "Website", which
+# leaves the app for the browser.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.6120670
+    longitude: 18.8845000
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Destinations → Nearby; the trail at the current location is listed.
+- tapOn: "Search..."
+- tapOn:
+    id: DESTINATIONS_SEE_ALL_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+- tapOn: "(Közeli|Nearby)"
+- extendedWaitUntil:
+    visible:
+      text: "Jági tanösvény.*"
+    timeout: 10000
+
+# A trail without a website shows only the route action next to "Show on map".
+- tapOn:
+    text: "Jági tanösvény.*"
+- extendedWaitUntil:
+    visible:
+      id: DESTINATION_PREVIEW_ROUTE_BUTTON
+    timeout: 5000
+- assertVisible:
+    id: DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON
+- assertNotVisible:
+    id: DESTINATION_PREVIEW_WEBSITE_BUTTON
+
+# "Open route" returns to the map with the trail GPX opened.
+- tapOn:
+    id: DESTINATION_PREVIEW_ROUTE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_TITLE
+    timeout: 10000
+- assertVisible:
+    id: MAP_MAPBOX
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+
+# Move next to a cave with a website and re-open Destinations → Nearby.
+- setLocation:
+    latitude: 47.53289
+    longitude: 19.01628
+- tapOn: "Search..."
+- tapOn:
+    id: DESTINATIONS_SEE_ALL_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DESTINATIONS_SCREEN_ROOT
+    timeout: 5000
+- tapOn: "(Közeli|Nearby)"
+- extendedWaitUntil:
+    visible:
+      text: "Pál-völgyi-barlang.*"
+    timeout: 10000
+- tapOn:
+    text: "Pál-völgyi-barlang.*"
+- extendedWaitUntil:
+    visible:
+      id: DESTINATION_PREVIEW_WEBSITE_BUTTON
+    timeout: 5000
+- assertNotVisible:
+    id: DESTINATION_PREVIEW_ROUTE_BUTTON
+
+# "Website" leaves the app for the browser.
+- tapOn:
+    id: DESTINATION_PREVIEW_WEBSITE_BUTTON
+- extendedWaitUntil:
+    notVisible:
+      id: DESTINATION_PREVIEW
+    timeout: 10000

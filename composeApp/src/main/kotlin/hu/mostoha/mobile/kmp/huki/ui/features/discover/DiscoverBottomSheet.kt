@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +52,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.HikeRecommendationCard
-import hu.mostoha.mobile.kmp.huki.ui.components.NavigationRowCard
+import hu.mostoha.mobile.kmp.huki.ui.components.IconTitleCard
 import hu.mostoha.mobile.kmp.huki.ui.components.SectionHeader
 import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktTypeCard
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -72,6 +73,8 @@ fun DiscoverBottomSheet(
     onGpxGuideClicked: () -> Unit,
     onOktTypeClicked: (OktType) -> Unit,
     onOktInfoClicked: () -> Unit,
+    onShowLandscapesClicked: () -> Unit,
+    onShowCategoriesClicked: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -87,6 +90,8 @@ fun DiscoverBottomSheet(
             onGpxGuideClicked = onGpxGuideClicked,
             onOktTypeClicked = onOktTypeClicked,
             onOktInfoClicked = onOktInfoClicked,
+            onShowLandscapesClicked = onShowLandscapesClicked,
+            onShowCategoriesClicked = onShowCategoriesClicked,
             onCloseClicked = onDismissRequest,
         )
     }
@@ -100,6 +105,8 @@ fun DiscoverContent(
     onGpxGuideClicked: () -> Unit,
     onOktTypeClicked: (OktType) -> Unit,
     onOktInfoClicked: () -> Unit,
+    onShowLandscapesClicked: () -> Unit,
+    onShowCategoriesClicked: () -> Unit,
     onCloseClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -177,13 +184,35 @@ fun DiscoverContent(
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {
             SectionHeader(title = mokoString(SharedRes.strings.destinations_section_title))
-            NavigationRowCard(
-                iconResId = R.drawable.ic_place_circle,
-                title = mokoString(SharedRes.strings.discover_browse_destinations),
-                subtitle = mokoString(SharedRes.strings.destinations_description),
-                onClick = onBrowseDestinationsClicked,
-                modifier = Modifier.testTag(TestTags.DISCOVER_BROWSE_DESTINATIONS_BUTTON),
-            )
+            Row(
+                modifier = Modifier.padding(horizontal = Dimens.Large),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+            ) {
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_hungary_colored.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_by_landscape),
+                    onClick = onShowLandscapesClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_SHOW_LANDSCAPES_BUTTON),
+                )
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_destinations_by_category.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_by_category),
+                    onClick = onShowCategoriesClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_DESTINATIONS_BY_CATEGORY_BUTTON),
+                )
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_destinations_in_list.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_in_list),
+                    onClick = onBrowseDestinationsClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_BROWSE_DESTINATIONS_BUTTON),
+                )
+            }
         }
     }
 }
@@ -340,6 +369,8 @@ private fun DiscoverContentPreview() {
             onGpxGuideClicked = {},
             onOktTypeClicked = {},
             onOktInfoClicked = {},
+            onShowLandscapesClicked = {},
+            onShowCategoriesClicked = {},
             onCloseClicked = {},
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
         )

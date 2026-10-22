@@ -7,6 +7,7 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 enum class GpxOrigin(val dirName: String) {
     EXTERNAL("external"),
     ROUTE_PLANNER("routeplanner"),
+    BUNDLED("bundled"),
     ;
 
     companion object {

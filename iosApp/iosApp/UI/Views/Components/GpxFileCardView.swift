@@ -65,6 +65,7 @@ struct GpxFileCardView: View {
     private var originSystemImage: String {
         switch file.origin {
         case .routePlanner: return "hand.tap.fill"
+        case .bundled: return "point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"
         default: return "square.and.arrow.down.fill"
         }
     }
@@ -72,6 +73,7 @@ struct GpxFileCardView: View {
     private var originLabel: StringResource {
         switch file.origin {
         case .routePlanner: return SharedRes.strings().gpx_collection_origin_route_planner
+        case .bundled: return SharedRes.strings().gpx_collection_origin_bundled
         default: return SharedRes.strings().gpx_collection_origin_external
         }
     }

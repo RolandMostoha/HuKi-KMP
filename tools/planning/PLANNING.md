@@ -32,7 +32,13 @@
 
 ### Android Go-live
 
-Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered.
+Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly covered in HuKi-KMP:
+
+- Extra GPX features (e.g. altitude coloring)
+- Support / Billing
+- Font/map sizing → this is one of the most used features in legacy
+- Full-offline mode - to have an incentive to switch
+- Place Category → LIQ? Might be dropped entirely, OSM-Overpass data is not too useful because of duplications and outdated data
 
 ## Backlog
 
@@ -41,23 +47,22 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 | Status | Feature                                                                                                                                            |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                    |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init blocks                                                                             |
-| `[ ]`  | SwiftUi Sheets -> auto-measure height to avoid defining expanded state for every sheet, it kills 6 of the 8 constants including both iPad branches |
-| `[ ]`  | Android 17 / targetSdk 37 behaviour changes — bumped targetSdk with the Gradle 9 upgrade without adapting to them                                  |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                          |
 | `[ ]`  | App store preview video (optional)                                                                                                                 |
 | `[ ]`  | App store header picture/video (optional)                                                                                                          |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                                                   |
 | `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
-| `[?]`  | Sonar? free for open source projects. In agentic ERA i don't see too much value, it just slows down the process.                                   |
+| `[R]`  | Shrink bundled OKT/AKT/RPDDK GPX files (8.4 MB total, ~116 B/trkpt).                                                                               |
 
 ### Bugs
 
-| Status | Scope      | Bug                                                                                                                                                                                                                                                                                                                                     |
-|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Analytics  | Bug: iOS. No screen VM is ever cleared: `@State var viewModel = KoinViewModelProvider...` re-runs on every view init (throwaway VMs run `init` work) and `viewModelScope` is never cancelled (e.g. Settings' DataStore collector leaks). Fix: `ViewModelHolder` (`@StateObject`, `deinit { clear() }`), migrate manual `clear()` calls. |
-| `[ ]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug).                         |
-| `[ ]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                                                   |
-| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                              |
-| `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                      |
+| Status | Scope        | Bug                                                                                                                                                                                                                                                                                                             |
+|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Search       | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
+| `[ ]`  | Search       | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
+| `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
+| `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
+| `[R]`  | RoutePlanner | If I choose a far away destination, and click on route plan, it moves the camera to my location. The route planner correclty shows the destination and my location is correclty not present in the route plan, but my camera is moved to my location. ![img_5.png](img_5.png)                                                          |
 
 ### FEATURE: Map
 
@@ -69,8 +74,8 @@ Android Go-Live: will only happen if legacy HuKi's feature set is mostly covered
 
 ### FEATURE: Camera panel
 
-Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful,
-they can record their exact location / zoom level with a CROSS marker.
+Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful, they can record their
+exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Dark Mode
 
@@ -78,16 +83,17 @@ they can record their exact location / zoom level with a CROSS marker.
 |--------|-------|-----|
 | `[ ]`  |       |     |
 
-### FEATURE: Landscape
+### FEATURE: Landscape orientation
 
-| Status | Feature                                                                                                                       |
-|--------|-------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                              |
-| `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                        |
-| `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                          |
-| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                  |
-| `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space |
-| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                    |
+| Status | Feature                                                                                                                        |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                               |
+| `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                         |
+| `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                           |
+| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                   |
+| `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space  |
+| `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                     |
+| `[ ]`  | Landscapes/Categories sheet: proper landscape support on both platforms (rotation while open, detents/heights, camera padding) |
 
 ### FEATURE: My Location
 
@@ -98,9 +104,9 @@ they can record their exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Layers
 
-| Status | Scope  | Task |
-|--------|--------|------|
-| `[ ]`  | Layers |      |
+| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                             |
+|--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[?]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Szilvási-kő") stay readable. Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Search
 
@@ -108,24 +114,43 @@ they can record their exact location / zoom level with a CROSS marker.
 |--------|--------|----------------------------------------------------------------------------------------|
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
 | `[ ]`  | Search | In-memory LRU cache keyed by Request                                                   |
+| `[R]`  | Search | Reduce Recent GPX section from 3 to 2 items, so Nearby destinations moves up toward the fold. Keep Recent places at 3 (most-used sheet shortcut). |
+| `[R]`  | Search | Analytics: log "Show all" taps as separate events: `search_see_all_places`, `search_see_all_gpx`, `search_see_all_destinations`. |
 
 ### FEATURE: Destinations
 
-| Status | Scope        | Task                                       |
-|--------|--------------|--------------------------------------------|
-| `[ ]`  | Destinations | Add Map based destinations with Landscapes |
-| `[ ]`  | Destinations | Improve destinations descriptions          |
+| Status | Scope        | Task                                                                                                                                                                                                                                                                                                                                          |
+|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Destinations | Define recommended text size for description. 80-150                                                                                                                                                                                                                                                                                          |
+| `[x]`  | Destinations | Rework descriptions based on the new rules                                                                                                                                                                                                                                                                                                    |
+| `[x]`  | Destinations | Improve destinations descriptions                                                                                                                                                                                                                                                                                                             |
+| `[x]`  | Destinations | Remove "Landscapes" section from Discover                                                                                                                                                                                                                                                                                                     |
+| `[x]`  | Destinations | Add 3 buttons to Destinations section ("Tájegységenként", "Kategóriánként", "Listában")                                                                                                                                                                                                                                                       |
+| `[x]`  | Destinations | Implement Per Landscape. Similar Sheet/Map setup like OKT. Sheet: lists all landscapes with name. If a landscape is selected, it expands and shows the destinations in cards (similarly to OKT). Map: show all landscapes with filled contours. If a landscape is selected, show only the landscape stroke and reveal its desinations on map. |
+| `[x]`  | Destinations | When landscapes are open, hide the hiking layer. When it's closed, show it. (still user should be able to switch this from layers menu)                                                                                                                                                                                                       |
+| `[x]`  | Destinations | Add titles to landsacpes in map like "Bükk".                                                                                                                                                                                                                                                                                                  |
+| `[x]`  | Destinations | Highlight HU only in landscapes mode, "fade" away the rest of the world                                                                                                                                                                                                                                                                       |
+| `[x]`  | Destinations | Implement In List. Simply navigate to Destinations screens.                                                                                                                                                                                                                                                                                   |
+| `[x]`  | Destinations | Make the landsacpe titles more centered.                                                                                                                                                                                                                                                                                                      |
+| `[x]`  | Destinations | Zselic -> convert to Somogyi dombság, adjust ladnscape geojson to cover the bigger area. Now we have the whole Somogyi dombság, look for destinations in south Balaton, like Balatonboglár -> Vár domb.                                                                                                                                       |
+| `[x]`  | Destinations | Cserhát contains outside POIs in north (near Salgótarján) ![img_2.png](img_2.png). Heves Borsod also contains outside POIs in the same area. ![img_3.png](img_3.png) Let's create a third landscape and move the outside dests there. Karancs-Medves                                                                                          |
+| `[x]`  | Destinations | Gemenc + alföld ave overlapping. lets modify alföld contour to exclude the area from gemenc. ![img_1.png](img_1.png)                                                                                                                                                                                                                          |
+| `[x]`  | Destinations | Missing landscape: Fertő tó és vidéke, search for nice destinations. Add Sziki tanösvény in destinations to the new landscape.                                                                                                                                                                                                                |
+| `[x]`  | Destinations | Implement Per Category. Similar Sheet/Map setup like Per Landscape. Sheet: lists all destination types. On click it reveals the destinations in that category.                                                                                                                                                                                |
+| `[x]`  | Destinations | Add an icon to Destinations screen header. Map icon which shows "Per Landscape" on map.                                                                                                                                                                                                                                                       |
+| `[x]`  | Destinations | Add more Kisvasutak                                                                                                                                                                                                                                                                                                                           |
+| `[x]`  | Destinations | Remove osmID from Destinations. Plan migration, because search / history relies on osmID                                                                                                                                                                                                                                                      |
+| `[x]`  | Destinations | Check the whole of Hungary for famous kisvasutak (e.g. Szilvásvárad, Lillafüred, Mátravasút, Gyermekvasút, Kaszó, Felsőtárkány, Kismaros–Királyrét, Pálháza, Nagybörzsöny, Zsuzsi). Add them as `SCENIC_RAILWAY` destinations at their main station.                                                                                          |
+| `[x]`  | Destinations | For educational trails show an "Open route" button. Decided: bundled GPX generated from OSM relations (`generate_educational_trails.py`). Done for 17 trails; Pele apó stays without a route (no OSM data). Removed Szalamandra (abandoned) and Sziki őszirózsa (closed since 2025).                                                          |
+| `[x]`  | Destinations | Add website links where makes sense, like "Petesmalmi Vidrapark". Kisvasutak → aktivkalandor.hu, others → official sites; "Website" button in the InfoWindow opens the external browser                                                                                                                                                       |
+| `[x]`  | Destinations | Enhance Castle list with new ones (if we know about other fames castles), add websites                                                                                                                                                                                                                                                        |
+| `[x]`  | Destinations | Enhance Palace list with new ones (if we know about other famous palaces), add websites                                                                                                                                                                                                                                                       |
+| `[x]`  | Destinations | Add website and show route buttons to DestinatonPreviewCards as well if applicable                                                                                                                                                                                                                                                            |
+| `[R]`  | Destinations | Remove "Destinations" from Menu, because they are already available through "Discover". Remove "Kozel 400 kezzel valogatott hely" string from the app. Modify subtitle "Túraötletek és kirándulóhelyek" - "Kirándulóhelyek és túraötletek". Also adjust Maestro and unit tests                                                                |
+| `[ ]`  | Destinations | Add VIA FERRATA as challenge                                                                                                                                                                                                                                                                                                                  |
+| `[ ]`  | Destinations | Kisvasutak: Show waypoints. GPX generation is ready: `generate-scenic-railway-gpx` skill (`tools/python/generate_scenic_railways.py`)                                                                                                                                                                                                         |
 
 ### FEATURE: Discover
-
-Goal: have a feature for the users to discover new places, trails, landscapes, etc.
-Appearance: a bottom sheet, title "Discover", close with X button.
-Features (sections inside bottom sheet):
-
-- Hike recommendations - AKTIVKALANDOR, KIRANDULASTIPPEK, TERMESZETJARO
-- Destination categories (horizontally scrollable) - e.g. highest peaks, edu trails, rivers, caves etc.
-- OKT routes (OKT, RPDDK, AKT)
-- Landscapes - a button to show landscapes
 
 | Status | Scope    | Task |
 |--------|----------|------|
@@ -139,38 +164,31 @@ Features (sections inside bottom sheet):
 
 ### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                                                                      |
-|--------|----------|-----------------------------------------------------------------------------------------------------------|
-| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                    |
-| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list). |
-
-### FEATURE: GPX Distance
-
-Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle waypoints.
-
-| Status | Scope       | Task                                                                                                                                                                             |
-|--------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPXDistance | When I intentionally go off the trail, it still snaps and show distance, its misleading. We can show a direct line to the route (with a label "+100m") or offer "Wandering mode" |
+| Status | Scope    | Task                                                                                                                                           |
+|--------|----------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | WhatsNew | Bug: When we have only a few 1-2 lines of whatsnew, the sheet feels too spacey ![img.png](img.png). It should be resized based on the content. |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                         |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                      |
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                              |
-|--------|-------|-----------------------------------------------------------------------------------|
-| `[x]`  | GPX   | Use white stroked route line similarly to OKT ![img_10.png](img_10.png)           |
-| `[ ]`  | GPX   | Wire iOS file picker error branch to ViewModel                                    |
-| `[ ]`  | GPX   | Colored GPX                                                                       |
-| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu            |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                             |
-| `[ ]`  | GPX   | ? Display start and end location: "Around Bükk..." -> on import we can do geocode |
+| Status | Scope | Task                                                                                                                                        |
+|--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX   | Colored GPX                                                                                                                                 |
+| `[ ]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu                                                                      |
+| `[ ]`  | GPX   | Display waypoint name in the info window (above distance and travel time)                                                                   |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
+| `[ ]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
+| `[ ]`  | GPX   | ? Display start and end location: "Around Bükk..." -> on import we can do geocode                                                           |
 
 ### FEATURE: GPX Collection
 
-| Status | Scope         | Task                                    |
-|--------|---------------|-----------------------------------------|
-| `[ ]`  | GPXCollection | Implement rename                        |
-| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name |
-| `[ ]`  | GPXCollection | Filter by distance, open date           |
-| `[ ]`  | GPXCollection | "Mark Completed" GPX files              |
+| Status | Scope         | Task                                         |
+|--------|---------------|----------------------------------------------|
+| `[ ]`  | GPXCollection | Implement rename                             |
+| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name      |
+| `[ ]`  | GPXCollection | Filter by distance, open date, per landscape |
+| `[ ]`  | GPXCollection | "Mark Completed" GPX files                   |
 
 ### FEATURE: Place Details
 
@@ -195,17 +213,86 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 | `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                                                                                                       |
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                                                                                            |
-| `[ ]`  | RoutePlanner | Deploy Graphhopper RoutePlanner (HuKi-Routing) to AWS Lightsail.                                                                                                                                                                                                           |
-| `[?]`  | RoutePlanner | Use GH GZIP (poinstEncoded=true) for release builds. Client parser is needed, might be worth after self-hosted GH to reduce egress.                                                                                                                                        |
+| `[R]`  | RoutePlanner | Support placing multiple place details POI and wire them with Route Planner. Add a counter text e.g. "Route plan (3)" indicating how many POIs will be connected with route plan.                                                                                          |
 | `[?]`  | RoutePlanner | Add support for removing stops from Map during RoutePlan phase. If users click on the wps, there should be a toolbar "Delete Stop" button, which removes the waypoint.                                                                                                     |
 | `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                  |
+
+### FEATURE: RoutePlanner: HuKi-Routing overflow fallback
+
+Goal: when the hosted GraphHopper API hits its daily limit (2500 credits, HTTP 429), retry the route on our self-hosted
+**HuKi-Routing** (Cloud Run, scale-to-zero) instead of showing the limit-reached error. GraphHopper stays the primary
+backend because it is global; HuKi-Routing only covers Hungary. Sep 2026: ~800 of 41.5k monthly requests overflowed, all
+on weekends, and the weekend peaks are growing.
+
+- URL: `https://huki-routing-550684341915.europe-west1.run.app` (`/route`, same API as GraphHopper)
+- Auth: `X-HuKi-Key` header. Key:
+  `gcloud secrets versions access latest --secret huki-routing-api-key --project huki-c8bc7`. **Never** as a `?key=`
+  query param, because the server logs request URLs.
+- Request shape differs from the hosted API: `profile=hike_huki` for Hike/RoundTrip, `hike` for Foot, **no
+  `custom_model`** (the trail bias is baked in). Round trip still needs `ch.disable=true`.
+- Cold start ~6 s when idle (then ~0.3 s per route). Any request wakes it, `/health` included (no key needed).
+- Outside Hungary it fails fast with **HTTP 400** and never returns a wrong route. Tested live:
+
+  | Waypoints                                                     | Response                                                     |
+  |---------------------------------------------------------------|--------------------------------------------------------------|
+  | Inside HU, or just across the border (Štúrovo)                | 200                                                          |
+  | Inside the bbox, no data (Vienna, Bratislava, Subotica, Rust) | 400 `PointNotFoundException` — `Cannot find point 1`         |
+  | Outside the bbox (Graz)                                       | 400 `PointOutOfBoundsException` — `Point 1 is out of bounds` |
+
+  Both are in `hints[].details`, with `point_index` = the failing waypoint. Graph bbox: lon 16.09–22.94, lat
+  45.71–48.60.
+
+**Design: client-side circuit breaker** (decided 2026-10-06). Not a plain retry-on-429: that would send every request to
+GraphHopper first after the limit, ~500 wasted 429s on a day like Oct 3. Not Remote Config as the main switch either:
+someone would have to flip it, reading GraphHopper's remaining credits from a server costs a credit per check, config
+fetches are slow, and one global switch would also cut off routes abroad.
+
+GraphHopper returns the limit on every response (verified):
+`x-ratelimit-limit: 2500`, `x-ratelimit-remaining`, `x-ratelimit-reset` (seconds until reset at 00:00 UTC),
+`x-ratelimit-credits` (cost of the request, 1 per route).
+
+```
+route(request):
+  inHungary = all waypoints inside the bbox above
+
+  if now < ghBlockedUntil:                         // already got a 429 today
+      return inHungary ? huki(request) : limitReached()
+  if inHungary && freshRemaining < GH_CREDIT_RESERVE:   // keep the last credits for routes abroad
+      return huki(request)
+
+  response = graphhopper(request)                  // store remaining + reset + timestamp
+  if response is 429:
+      ghBlockedUntil = now + x-ratelimit-reset     // persisted, survives app restarts
+      return inHungary ? huki(request) : limitReached()
+  return response
+
+huki fails (400 PointNotFound/PointOutOfBounds, network, 5xx) → limitReached()
+```
+
+- At most **one wasted GraphHopper call per device per day**. No server, no manual switch.
+- `freshRemaining` = the last `x-ratelimit-remaining`, used only if it is < 30 min old and from the same UTC day;
+  otherwise ask GraphHopper. `GH_CREDIT_RESERVE` default 300.
+- If a 429 has no `x-ratelimit-reset` header, block until the next 00:00 UTC.
+- Remote Config later, optional, defaults in code: `routing_mode` = `gh_first` (default) /
+  `huki_first` (big hiking events) / `gh_only` (kill switch), and `gh_credit_reserve`.
+
+| Status | Scope        | Task                                                                                                                                                                                  |
+|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | RoutePlanner | Key in `secrets.properties`, new `HuKiRoutingRoutePlannerRepository` next to `GraphhopperRoutePlannerRepository` (request mapping: `hike_huki` / `hike`, no `GraphhopperCustomModel`) |
+| `[ ]`  | RoutePlanner | `GraphhopperRoutePlannerRepository`: read the `X-RateLimit-*` response headers (Ktor) into a `RoutingQuotaStore` (DataStore): remaining, reset, timestamp, `ghBlockedUntil`           |
+| `[ ]`  | RoutePlanner | Circuit-breaker `RoutePlannerRepository` wrapping both, wired in `SharedKoinModule`; HuKi-Routing failures → `NetworkError.RATE_LIMITED` as today                                     |
+| `[ ]`  | RoutePlanner | Hungary bbox check (`all waypoints inside`) in `commonMain` + unit tests                                                                                                              |
+| `[ ]`  | RoutePlanner | Unit tests (`commonTest`): 429 → blocked until reset; blocked + HU → HuKi only; blocked + abroad → `RATE_LIMITED`; reserve → HuKi early; stale remaining ignored                      |
+| `[ ]`  | Analytics    | Next to `RoutePlanDailyLimitReached`: GraphHopper limit hit (with time of day), route served by HuKi-Routing, HuKi-Routing failed                                                     |
+| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                          |
+| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                    |
 
 ### FEATURE: Settings
 
 | Status | Scope    | Task                                                                    |
 |--------|----------|-------------------------------------------------------------------------|
 | `[ ]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
-| `[ ]`  | Settings | Add Enable/Disable two finger rotation                                  |
+| `[R]`  | Settings | Add Enable/Disable two finger rotation                                  |
 
 ### FEATURE: Analytics
 
@@ -219,11 +306,11 @@ Goal: Display (distance + time) in an InfoWindow on top Start / End / Middle way
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
-Goal: let users increase map **label/icon size** without enlarging the map graphics (roads, fills,
-casings) — a text-visibility + accessibility win for the #1 feature "Map, text visibility".
+Goal: let users increase map **label/icon size** without enlarging the map graphics (roads, fills, casings) — a
+text-visibility + accessibility win for the #1 feature "Map, text visibility".
 
-Only affects icons + text labels; map geometry stays the same and zoom interpolation is preserved
-by the renderer (no per-layer `text-size` expression juggling).
+Only affects icons + text labels; map geometry stays the same and zoom interpolation is preserved by the renderer (no
+per-layer `text-size` expression juggling).
 
 Approach: Mapbox's **global scale factor**, exposed on Android Compose as
 `mapboxMap.symbolScaleBehavior` (set via `MapEffect`), with three modes:
@@ -232,8 +319,8 @@ Blockers:
 
 - **Version gap**: requires Mapbox **11.26.0** (Android + iOS). We are pinned to **11.20.1** in
   `libs.versions.toml` / the iOS pod, so this needs an SDK bump + map re-verify on both platforms.
-- **Experimental**: `symbolScaleBehavior` is flagged experimental/`@MapboxExperimental` and the
-  signature may change in a later 11.x.
+- **Experimental**: `symbolScaleBehavior` is flagged experimental/`@MapboxExperimental` and the signature may change in
+  a later 11.x.
 
 Refs:
 [Mapbox blog — new scaling/styling](https://www.mapbox.com/blog/new-scaling-and-styling-capabilities-support-clear-responsive-and-expressive-map-design)
@@ -250,19 +337,16 @@ Refs:
 
 ### FEATURE: Support + Billing
 
-- Support + Billing is necessary to help me keep the app free for everyone and support the
-  development.
+- Support + Billing is necessary to help me keep the app free for everyone and support the development.
 - Google: Google Play Billing API
 - Apple: Apple App Store Connect, Apple Pay
-- Base concept: subscriptions and one time payments. Categorized by wild animals (e.g.
-  Board=1EUR/month, Owl=1EUR).
-- The benefit of supporting is just visual: showing the supporter animal in various places (e.g.
-  WhatsNew)
+- Base concept: subscriptions and one time payments. Categorized by wild animals (e.g. Board=1EUR/month, Owl=1EUR).
+- The benefit of supporting is just visual: showing the supporter animal in various places (e.g. WhatsNew)
 
 #### FEATURE: Route Planner: Wandering mode
 
-Goal: Set a single starting point (e.g. parking), and show the straight line distance from the point.
-Works like a GPX with waypoints only, set a few points and leave the user to decide which route to follow.
+Goal: Set a single starting point (e.g. parking), and show the straight line distance from the point. Works like a GPX
+with waypoints only, set a few points and leave the user to decide which route to follow.
 
 ### FEATURE: GPX Info Panel (remaining time, distance, elevation gain/loss)
 
@@ -277,10 +361,9 @@ Works like a GPX with waypoints only, set a few points and leave the user to dec
 
 ### FEATURE: GPX Collection Import/Export (device-to-device, no cloud)
 
-Goal: share/back up the whole GPX collection between devices without cloud or auth.
-Principle: separate **format** (a portable collection file) from **transport** — let the OS own
-transport (AirDrop, Quick Share, Bluetooth, Files/USB, email, chat). A zipped bundle is plain data,
-so an Android export imports on iOS and vice-versa.
+Goal: share/back up the whole GPX collection between devices without cloud or auth. Principle: separate **format** (a
+portable collection file) from **transport** — let the OS own transport (AirDrop, Quick Share, Bluetooth, Files/USB,
+email, chat). A zipped bundle is plain data, so an Android export imports on iOS and vice-versa.
 
 | Status | Scope      | Task                                                                                               |
 |--------|------------|----------------------------------------------------------------------------------------------------|
@@ -316,21 +399,20 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 `onAppear`/`onDisappear`, plus the whole `UI/Mapbox/ViewportObserver.swift` class.
 
 - **Not deprecated (keep as-is):** `MapReader { proxy in }` → `proxy.map` (cameraState reads)
-  and `proxy.location` (GPS-fix observation). `MapReader`/`MapProxy` is the sanctioned, current,
-  and only way to reach these in SwiftUI — nothing better exists.
-- **Only deprecated bit:** `proxy.viewport` + `ViewportStatusObserver`. The intended replacement
-  is observing the two-way `$viewport` binding we already pass to `Map(viewport:)`.
-  `Map.transitionsToIdleUponUserInteraction` (default `true`) writes `.idle` back into the binding
-  on user pan — exactly what `ViewportObserver` detects (follow → idle/overview →
-  `onFollowingDisabled`).
-  Migration collapses to one `.onChange(of: viewport)` and deletes `ViewportObserver` (~50 lines +
-  class).
-- **Caveat / why deferred:** `Viewport` only reflects values *we* set + the idle write-back, not a
-  live camera mirror (`Viewport.swift:53`). The old observer also saw `.transition` intermediate
-  states; `.onChange` sees only committed values. Edge cases — pan *during* a follow animation,
-  programmatic follow→overview vs. user-driven — need a real simulator pan-test (follow, then drag)
-  to confirm `onFollowingDisabled` fires identically before deleting the observer. Deprecation is a
-  warning, not a removal, so no urgency.
+  and `proxy.location` (GPS-fix observation). `MapReader`/`MapProxy` is the sanctioned, current, and only way to reach
+  these in SwiftUI — nothing better exists.
+- **Only deprecated bit:** `proxy.viewport` + `ViewportStatusObserver`. The intended replacement is observing the
+  two-way `$viewport` binding we already pass to `Map(viewport:)`.
+  `Map.transitionsToIdleUponUserInteraction` (default `true`) writes `.idle` back into the binding on user pan — exactly
+  what `ViewportObserver` detects (follow → idle/overview →
+  `onFollowingDisabled`). Migration collapses to one `.onChange(of: viewport)` and deletes `ViewportObserver` (~50
+  lines + class).
+- **Caveat / why deferred:** `Viewport` only reflects values *we* set + the idle write-back, not a live camera mirror
+  (`Viewport.swift:53`). The old observer also saw `.transition` intermediate states; `.onChange` sees only committed
+  values. Edge cases — pan *during* a follow animation, programmatic follow→overview vs. user-driven — need a real
+  simulator pan-test (follow, then drag)
+  to confirm `onFollowingDisabled` fires identically before deleting the observer. Deprecation is a warning, not a
+  removal, so no urgency.
 
 | Status | Scope | Task                                                                                                                           |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
@@ -338,8 +420,8 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 ### FEATURE: Hike Finder
 
-Goal: Create a search engine for hiking routes which have downloadable GPX files.
-The crawler parses the most important HU hiking sites:
+Goal: Create a search engine for hiking routes which have downloadable GPX files. The crawler parses the most important
+HU hiking sites:
 
 - aktivkalandor
 - kirandulastippek
@@ -350,12 +432,10 @@ Input: the user can search a route by
 
 - location / area
 - distance (e.g. routes around 10km)
-- difficulty
-  Output: a list with links pointing to the route article inside the website.
+- difficulty Output: a list with links pointing to the route article inside the website.
 
 Example:
-Input: Dobogókő area, 10km, medium difficulty
-Output:
+Input: Dobogókő area, 10km, medium difficulty Output:
 
 - https://kirandulastippek.hu/budapest-kornyeke/dobogoko
 - https://www.mozgasvilag.hu/turazas/turautak/szep-kilatasos-pilisi-cukitura-dobogokore-es-vissza
@@ -372,6 +452,11 @@ Keep in mind:
 - Create a crawler for hiking collection websites (Term, AktivM etc.).
 - Create a DB based on the crawled info.
 - Build a search engine on top of it.
+
+
+### FEATURE: HuKi Guesser
+
+GeoGusesser game for HuKi.
 
 ---
 

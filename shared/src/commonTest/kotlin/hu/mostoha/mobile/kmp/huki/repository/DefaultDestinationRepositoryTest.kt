@@ -1,6 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.data.ALL_DESTINATIONS
+import hu.mostoha.mobile.kmp.huki.model.domain.DestinationChallenge
+import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.util.NameNormalizer
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
@@ -26,11 +28,98 @@ class DefaultDestinationRepositoryTest {
     private val repository = DefaultDestinationRepository(random = Random(SEED))
 
     @Test
+    fun `Given a feature of another type - When filtering by type - Then only main types are listed`() {
+        val lookouts = repository.getDestinationsByType(DestinationType.LOOKOUT)
+        val arboretums = repository.getDestinationsByType(DestinationType.ARBORETUM).map { it.name }
+
+        lookouts.map { it.id } shouldContain "balatonboglar_gombkilato"
+        lookouts.map { it.id }.contains("doba_somlo_kilato") shouldBe false
+        lookouts.all { it.type == DestinationType.LOOKOUT } shouldBe true
+        arboretums.contains("Deseda-tó és parkerdő") shouldBe false
+    }
+
+    @Test
+    fun `When getDestinationCategories - Then every challenge and type with members is listed with its destinations`() {
+        val actual = repository.getDestinationCategories()
+
+        actual.forEach { it.destinations.shouldNotBeEmpty() }
+        actual.first { it.id == "highest_peaks" }.destinations shouldBe
+            repository.getDestinationsByChallenge(DestinationChallenge.HIGHEST_PEAKS)
+        actual.first { it.id == "scenic_railway" }.destinations shouldBe
+            repository.getDestinationsByType(DestinationType.SCENIC_RAILWAY)
+        actual.map { it.id }.toSet().size shouldBe actual.size
+    }
+
+    @Test
+    fun `Given panoramic views - When filtering - Then include physical types and exclude unconfirmed views`() {
+        val actual = repository.getDestinationsByChallenge(DestinationChallenge.PANORAMIC_VIEWS)
+
+        actual.map { it.name } shouldContainAll listOf("Kékestető", "Nagy-Szénás", "Apáthy-szikla", "Kisoroszi szigetcsúcs")
+        actual.filter { it.name in setOf("Szilvási-kő", "Gömbölyű-kő", "Teve-szikla", "Sas-szikla") }.shouldBeEmpty()
+        actual.first { it.name == "Kékestető" }.type shouldBe DestinationType.PEAK
+        actual.first { it.name == "Apáthy-szikla" }.type shouldBe DestinationType.ROCK
+        actual.first { it.name == "Kisoroszi szigetcsúcs" }.type shouldBe DestinationType.ISLAND
+        actual.map { it.popularity } shouldBe actual.map { it.popularity }.sortedDescending()
+    }
+
+    @Test
+    fun `Given corrected attractions - When filtering - Then exclude misleading types`() {
+        categoryTestCases().forEach { (name, type, excludedType) ->
+            val actual = repository.getDestinationsByType(type).map { it.name }
+            val excluded = repository.getDestinationsByType(excludedType).map { it.name }
+
+            actual shouldContain name
+            excluded.contains(name) shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given landscape summits - When filtering - Then include scoped maxima and exclude Tubes`() {
+        val actual = repository.getDestinationsByChallenge(DestinationChallenge.HIGHEST_PEAKS)
+
+        actual.size shouldBe 17
+        actual.map { it.name } shouldContainAll listOf("Kékestető", "Szilvási-kő", "Csóványos", "Pilis-tető", "Nagy-Gerecse")
+        actual.map { it.name }.contains("Tubes") shouldBe false
+        actual.all { it.type == DestinationType.PEAK } shouldBe true
+    }
+
+    @Test
+    fun `Given cave access groups - When filtering - Then distinguish guided tours and entrance visits`() {
+        val guided = repository.getDestinationsByType(DestinationType.CAVE_GUIDE_REQUIRED)
+        val independent = repository.getDestinationsByType(DestinationType.CAVE)
+
+        guided.map { it.name } shouldContainAll listOf("Szent István-barlang", "Abaligeti Barlang")
+        independent.map { it.name } shouldContainAll listOf("Leány-barlang", "Szelim-barlang")
+        guided.filter { it in independent }.shouldBeEmpty()
+        ALL_DESTINATIONS.any { it.name == "Róka-hegyi barlang" } shouldBe false
+    }
+
+    @Test
+    fun `Given castle ruins - When filtering castles - Then ruins and residential palaces are separate`() {
+        val castles = repository.getDestinationsByType(DestinationType.CASTLE)
+        val ruins = repository.getDestinationsByType(DestinationType.CASTLE_RUIN)
+        val palaces = repository.getDestinationsByType(DestinationType.PALACE)
+
+        ruins.shouldNotBeEmpty()
+        castles.filter { it in ruins }.shouldBeEmpty()
+        palaces.map { it.name } shouldContain "Wenckheim-kastély"
+        castles.map { it.name }.contains("Wenckheim-kastély") shouldBe false
+    }
+
+    @Test
+    fun `Given a tagged destination - When resolving it - Then the verified location reaches the map`() {
+        val actual = repository.requireDestination("tapolca_tavasbarlang")
+
+        actual.location shouldBe Location(46.883241, 17.443424)
+        actual.town shouldBe "Tapolca"
+    }
+
+    @Test
     fun `Given default limit - When getTopDestinations - Then returns 20 distinct known destinations`() {
         val actual = repository.getTopDestinations()
 
         actual.size shouldBe 20
-        actual.map { it.osmId }.toSet().size shouldBe 20
+        actual.map { it.id }.toSet().size shouldBe 20
         ALL_DESTINATIONS shouldContainAll actual
     }
 
@@ -123,18 +212,18 @@ class DefaultDestinationRepositoryTest {
     }
 
     @Test
-    fun `Given an existing osmId - When requireDestination - Then the matching destination is returned`() {
+    fun `Given an existing id - When requireDestination - Then the matching destination is returned`() {
         val expected = ALL_DESTINATIONS.first()
 
-        val actual = repository.requireDestination(expected.osmId)
+        val actual = repository.requireDestination(expected.id)
 
         actual shouldBe expected
     }
 
     @Test
-    fun `Given an unknown osmId - When requireDestination - Then NoSuchElementException is thrown`() {
+    fun `Given an unknown id - When requireDestination - Then NoSuchElementException is thrown`() {
         shouldThrow<NoSuchElementException> {
-            repository.requireDestination("unknown_osm_id")
+            repository.requireDestination("unknown_id")
         }
     }
 
@@ -203,6 +292,20 @@ class DefaultDestinationRepositoryTest {
     }
 
     private companion object {
+        data class CategoryTestCase(
+            val name: String,
+            val type: DestinationType,
+            val excludedType: DestinationType,
+        )
+
+        fun categoryTestCases() =
+            listOf(
+                CategoryTestCase("Úrkúti Őskarszt", DestinationType.GEOLOGICAL_SITE, DestinationType.CAVE),
+                CategoryTestCase("Körös-torok", DestinationType.RIVER, DestinationType.LAKE),
+                CategoryTestCase("Vaskapu", DestinationType.ROCK, DestinationType.VALLEY),
+                CategoryTestCase("Kőmorzsoló óriás", DestinationType.STATUE, DestinationType.ROCK),
+            )
+
         const val SEED = 42L
         const val MIN_DISTINCT_TYPES = 6
         const val BUDAPEST_LATITUDE = 47.4979

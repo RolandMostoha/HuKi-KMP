@@ -7,7 +7,6 @@ struct OktInfoWindowView: View {
     let onPlaceDetailsClick: () -> Void
 
     private let oktBlue = Color(SharedRes.colors().oktBlue.getUIColor())
-    private let primary = Color(SharedRes.colors().primary.getUIColor())
 
     var body: some View {
         let shape = InfoWindowShape(
@@ -35,17 +34,8 @@ struct OktInfoWindowView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: onPlaceDetailsClick) {
-                Image(systemName: "arrow.triangle.turn.up.right.diamond.fill")
-                    .font(.title3)
-                    .foregroundStyle(primary)
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(primary.opacity(0.15)))
-                    .contentShape(Circle())
-            }
-            .buttonStyle(PressFeedbackButtonStyle())
-            .accessibilityLabel(strings.get(id: SharedRes.strings().okt_info_window_navigate))
-            .accessibilityIdentifier(TestTags.shared.OKT_INFO_WINDOW_PLACE_DETAILS_BUTTON)
+            InfoWindowPlaceDetailsButton(strings: strings, onClick: onPlaceDetailsClick)
+                .accessibilityIdentifier(TestTags.shared.OKT_INFO_WINDOW_PLACE_DETAILS_BUTTON)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)

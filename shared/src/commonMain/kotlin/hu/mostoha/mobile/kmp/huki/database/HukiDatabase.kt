@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import hu.mostoha.mobile.kmp.huki.model.db.PlaceHistoryEntity
 
-@Database(entities = [PlaceHistoryEntity::class], version = 1)
+@Database(entities = [PlaceHistoryEntity::class], version = 2)
 @ConstructedBy(HukiDatabaseConstructor::class)
 abstract class HukiDatabase : RoomDatabase() {
     companion object {

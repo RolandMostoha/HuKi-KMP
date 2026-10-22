@@ -76,6 +76,7 @@ import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
+import hu.mostoha.mobile.kmp.huki.util.openUrl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
@@ -84,6 +85,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DestinationsScreen(
     onBack: () -> Unit,
     onShowOnMap: (Destination) -> Unit,
+    onOpenRoute: (Destination) -> Unit,
     viewModel: DestinationsViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -95,6 +97,7 @@ fun DestinationsScreen(
         onEvent = viewModel::onEvent,
         onBack = onBack,
         onShowOnMap = onShowOnMap,
+        onOpenRoute = onOpenRoute,
         distanceText = viewModel::distanceText,
     )
 }
@@ -107,6 +110,7 @@ private fun DestinationsContent(
     onEvent: (DestinationsUiEvents) -> Unit,
     onBack: () -> Unit,
     onShowOnMap: (Destination) -> Unit = {},
+    onOpenRoute: (Destination) -> Unit = {},
     distanceText: (Destination) -> String? = { null },
 ) {
     val context = LocalContext.current
@@ -117,6 +121,7 @@ private fun DestinationsContent(
             when (effect) {
                 DestinationsUiEffects.NavigateBack -> onBack()
                 DestinationsUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
+                is DestinationsUiEffects.OpenUrl -> context.openUrl(effect.url)
             }
         }
     }
@@ -208,6 +213,11 @@ private fun DestinationsContent(
                 onShowOnMap(current.destination)
                 preview = null
             },
+            onRouteClick = {
+                onOpenRoute(current.destination)
+                preview = null
+            },
+            onWebsiteClick = { onEvent(DestinationsUiEvents.WebsiteClicked(current.destination)) },
             onDismissRequest = { preview = null },
         )
     }
@@ -298,13 +308,13 @@ private fun LazyListScope.landscapesContent(
 ) {
     val strings = Strings(context)
     landscapes.forEach { landscape ->
-        item(key = "landscape_header_${landscape.osmId}") {
+        item(key = "landscape_header_${landscape.id}") {
             DestinationsSectionHeader(text = strings.get(landscape.nameRes))
         }
         val landscapeText = strings.get(landscape.nameRes)
         destinationCardItems(
             count = landscape.destinations.size,
-            key = { "${landscape.osmId}_$it" },
+            key = { "${landscape.id}_$it" },
         ) { index ->
             val destination = landscape.destinations[index]
             DestinationRow(
@@ -451,7 +461,7 @@ private fun DestinationsContentPreview() {
                 destinationCount = 2,
                 popularItems = listOf(
                     DestinationListItem(previewDestination),
-                    DestinationListItem(previewDestination.copy(osmId = "2", name = "Pilis-tető")),
+                    DestinationListItem(previewDestination.copy(id = "2", name = "Pilis-tető")),
                 ),
             ),
             uiEffects = emptyFlow(),
@@ -462,7 +472,7 @@ private fun DestinationsContentPreview() {
 }
 
 private val previewDestination = Destination(
-    osmId = "1",
+    id = "1",
     name = "Dobogókő",
     town = "Pilisszentkereszt",
     type = DestinationType.PEAK,

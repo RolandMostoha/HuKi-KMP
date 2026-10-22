@@ -15,10 +15,11 @@ struct MapView: View {
     var onOktMarkerClicked: (OktMarker) -> Void = { _ in }
     var onOktInfoWindowPlaceDetailsClicked: () -> Void = {}
     var onOktInfoWindowDismissed: () -> Void = {}
+    var onLandscapesEvent: (LandscapesUiEvents) -> Void = { _ in }
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
-    var oktSheetHeight: CGFloat = Dimens.oktDetentMinHeight
+    var listSheetHeight: CGFloat = Dimens.oktDetentMinHeight
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -36,25 +37,16 @@ struct MapView: View {
         return !isFacingNorth(cameraBearing)
     }
 
-    private var isRoutePlanVisible: Bool {
-        uiState.mapUiState.routePlan != nil || !uiState.mapUiState.routePlanMarkers.isEmpty
-    }
-
-    private func isFacingNorth(_ bearing: Double) -> Bool {
-        let tolerance = MapConstants.shared.MAP_FACING_NORTH_TOLERANCE
-        let rotation = abs(bearing)
-        return rotation >= 360.0 - tolerance || rotation <= tolerance
-    }
-
     @State private var cameraBearing: Double = 0
     @State private var cameraZoom: Double = 0
     @State private var cameraCenter = CLLocationCoordinate2D()
     @State private var isMapLandscape = false
     @State private var isDebugCameraPanelVisible = true
     @State private var lastRoutePlannerCamera: MapUiEffectsUpdateCamera?
+    @State var hiddenBaseLabelLayerIds: [String]?
 
     @State private var routePlannerMapInset = Dimens.routePlannerDetentHeight
-    @State private var oktMapInset = Dimens.oktDetentMinHeight
+    @State private var listSheetMapInset = Dimens.oktDetentMinHeight
 
     // Panning turns the viewport idle and drops its padding while the camera keeps it, so it is tracked here
     @State private var appliedCameraPadding = SwiftUI.EdgeInsets()
@@ -72,12 +64,7 @@ struct MapView: View {
                 Map(viewport: $viewport) {
                     OutdoorsColorThemeContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode)
                     TapInteraction { _ in
-                        if !uiState.mapUiState.distanceInfoWindows.isEmpty {
-                            onDistanceInfoWindowDismissed()
-                        }
-                        if uiState.mapUiState.okt?.infoWindow != nil {
-                            onOktInfoWindowDismissed()
-                        }
+                        dismissInfoWindows()
                         return false
                     }
                     LongPressInteraction { context in
@@ -86,6 +73,9 @@ struct MapView: View {
                         }
                         onMapLongClicked(context.coordinate.location)
                         return true
+                    }
+                    if let landscapes = uiState.mapUiState.landscapes {
+                        LandscapesMapContent(strings: strings, landscapes: landscapes, onEvent: onLandscapesEvent)
                     }
                     if uiState.mapUiState.hikingLayerVisible {
                         HikingTrailsMapContent()
@@ -124,6 +114,7 @@ struct MapView: View {
 
                             GpxWaypointsMapContent(
                                 waypoints: gpxDetails.waypoints,
+                                jelSymbol: gpxDetails.jelSymbol,
                                 baseLayer: uiState.mapUiState.baseLayer,
                                 colorScheme: colorScheme,
                                 onWaypointClicked: onWaypointClicked
@@ -148,6 +139,7 @@ struct MapView: View {
                                     ViewAnnotationAnchorConfig(anchor: .bottom, offsetY: offsetY)
                                 ])
                                 .allowOverlap(true)
+                                .ignoreCameraPadding(true)
                             }
                         }
                     }
@@ -229,6 +221,9 @@ struct MapView: View {
                         cameraCenter = state.center
                     }
                 }
+                .task(id: [isBaseLabelsHidden, proxy.map != nil]) {
+                    await syncBaseLabelsVisibility(proxy: proxy)
+                }
                 .task(id: uiState.myLocationState.permissionState == PermissionState.granted) {
                     // Waits for the first GPS fix, then stops. Auto-cancelled on disappear.
                     guard uiState.myLocationState.permissionState == PermissionState.granted,
@@ -253,7 +248,7 @@ struct MapView: View {
                 .onChange(of: routePlannerSheetHeight, initial: true) { _, newHeight in
                     routePlannerMapInset = newHeight
                 }
-                .onChange(of: oktSheetHeight, initial: true) { oktMapInset = $1 }
+                .onChange(of: listSheetHeight, initial: true) { listSheetMapInset = $1 }
                 .onChange(of: routePlannerDetent) {
                     refitRoutePlannerCamera()
                 }
@@ -276,6 +271,16 @@ struct MapView: View {
 }
 
 private extension MapView {
+    var isRoutePlanVisible: Bool {
+        uiState.mapUiState.routePlan != nil || !uiState.mapUiState.routePlanMarkers.isEmpty
+    }
+
+    func isFacingNorth(_ bearing: Double) -> Bool {
+        let tolerance = MapConstants.shared.MAP_FACING_NORTH_TOLERANCE
+        let rotation = abs(bearing)
+        return rotation >= 360.0 - tolerance || rotation <= tolerance
+    }
+
     @ViewBuilder
     var debugCameraPanel: some View {
         if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && !isDebugCameraPanelVisible {
@@ -347,7 +352,7 @@ private extension MapView {
                 for: effect,
                 isLandscape: isMapLandscape,
                 routePlannerSheetHeight: routePlannerMapInset,
-                oktSheetHeight: oktMapInset
+                listSheetHeight: listSheetMapInset
             )
         }
     }
@@ -356,7 +361,7 @@ private extension MapView {
         effect.contentPadding?.edgeInsets(
             isLandscape: isMapLandscape,
             routePlannerSheetHeight: routePlannerMapInset,
-            oktSheetHeight: oktMapInset
+            listSheetHeight: listSheetMapInset
         ) ?? SwiftUI.EdgeInsets()
     }
 

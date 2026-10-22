@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import dev.icerock.moko.permissions.compose.BindEffect
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.main.LandscapesUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
@@ -58,6 +59,9 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.discover.DiscoverBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesBottomSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesSheetHeights
+import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.rememberLandscapesSheetHeights
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
 import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktBottomSheet
@@ -93,8 +97,10 @@ fun MainScreen(
     onOpenGpxConsumed: () -> Unit = {},
     openPlace: Pair<OsmType, String>? = null,
     onOpenPlaceConsumed: () -> Unit = {},
-    openDestinationOsmId: String? = null,
+    openDestinationId: String? = null,
     onOpenDestinationConsumed: () -> Unit = {},
+    openDestinationRouteId: String? = null,
+    onOpenDestinationRouteConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
     openDiscover: Boolean = false,
@@ -119,10 +125,17 @@ fun MainScreen(
         }
     }
 
-    LaunchedEffect(openDestinationOsmId) {
-        openDestinationOsmId?.let { osmId ->
-            viewModel.onEvent(MainUiEvents.DestinationSelected(osmId))
+    LaunchedEffect(openDestinationId) {
+        openDestinationId?.let { id ->
+            viewModel.onEvent(MainUiEvents.DestinationSelected(id))
             onOpenDestinationConsumed()
+        }
+    }
+
+    LaunchedEffect(openDestinationRouteId) {
+        openDestinationRouteId?.let { id ->
+            viewModel.onEvent(MainUiEvents.DestinationRouteSelected(id))
+            onOpenDestinationRouteConsumed()
         }
     }
 
@@ -182,6 +195,7 @@ private fun MainContent(
     var routePlannerExpandedHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
     var routePlannerPick by remember { mutableStateOf<RoutePlannerPick?>(null) }
     val oktSheetHeight = rememberOktSheetHeight()
+    val landscapesSheetHeights = rememberLandscapesSheetHeights()
 
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -248,6 +262,7 @@ private fun MainContent(
                 onLocationIqClicked = onLocationIqClicked,
                 onGpxPeekHeightMeasured = { gpxSheetPeekHeight = it },
                 oktSheetHeight = oktSheetHeight,
+                landscapesSheetHeights = landscapesSheetHeights,
             )
         },
         containerColor = Color.Transparent,
@@ -265,7 +280,11 @@ private fun MainContent(
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
                 ),
-                oktSheetHeight = oktSheetHeight,
+                listSheetHeight = if (uiState.mapUiState.landscapes != null) {
+                    landscapesSheetHeights.collapsed
+                } else {
+                    oktSheetHeight
+                },
             )
             FloatingActionContainer(
                 mainUiState = uiState,
@@ -304,6 +323,9 @@ private fun MainContent(
                 },
                 onOktResumeClicked = {
                     onEvent(OktUiEvents.OktResumeClicked)
+                },
+                onLandscapesResumeClicked = {
+                    onEvent(LandscapesUiEvents.LandscapesResumeClicked)
                 },
                 onMenuClicked = onMenuClicked,
             )
@@ -474,6 +496,7 @@ private fun MainStandardBottomSheet(
     onLocationIqClicked: () -> Unit,
     onGpxPeekHeightMeasured: (Dp) -> Unit,
     oktSheetHeight: Dp,
+    landscapesSheetHeights: LandscapesSheetHeights,
 ) {
     val coroutineScope = rememberCoroutineScope()
     when (val sheet = uiState.sheet) {
@@ -512,6 +535,20 @@ private fun MainStandardBottomSheet(
                     onSectionReverseClick = { onEvent(OktUiEvents.OktSectionReverseClicked(it)) },
                     onStampClick = { onEvent(OktUiEvents.OktMarkerClicked(it)) },
                     onCloseClick = { onEvent(OktUiEvents.OktCloseClicked) },
+                )
+            }
+        }
+        is Sheet.Landscapes -> {
+            uiState.mapUiState.landscapes?.let { landscapes ->
+                LandscapesBottomSheet(
+                    landscapes = landscapes,
+                    sheetHeights = landscapesSheetHeights,
+                    onLandscapeClick = { onEvent(LandscapesUiEvents.LandscapeClicked(it)) },
+                    onCategoryClick = { onEvent(LandscapesUiEvents.CategoryClicked(it)) },
+                    onShowAllClick = { onEvent(LandscapesUiEvents.LandscapesShowAllClicked) },
+                    onDestinationClick = { onEvent(LandscapesUiEvents.LandscapesDestinationClicked(it)) },
+                    onCloseClick = { onEvent(LandscapesUiEvents.LandscapesCloseClicked) },
+                    onSwipeDown = { coroutineScope.launch { sheetState.hide() } },
                 )
             }
         }
@@ -646,6 +683,8 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onGpxGuideClicked = { onEvent(MainUiEvents.HikeRecommendationsGpxGuideClicked) },
                 onOktTypeClicked = { onEvent(OktUiEvents.OktTypeClicked(it)) },
                 onOktInfoClicked = { onEvent(OktUiEvents.OktInfoClicked) },
+                onShowLandscapesClicked = { onEvent(LandscapesUiEvents.LandscapesShowClicked) },
+                onShowCategoriesClicked = { onEvent(LandscapesUiEvents.CategoriesShowClicked) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
             )
         }

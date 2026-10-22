@@ -6,4 +6,6 @@ enum class ContentPadding {
     MAP_ROUTE_PLANNER,
     MAP_OKT,
     MAP_OKT_STARTED,
+    MAP_LANDSCAPES,
+    MAP_LANDSCAPES_DESTINATION,
 }

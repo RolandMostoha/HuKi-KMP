@@ -34,6 +34,7 @@ struct RoutePlanMapContent: MapContent {
             }
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
         }
     }
 }

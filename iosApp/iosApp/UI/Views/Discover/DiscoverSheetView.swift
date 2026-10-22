@@ -9,6 +9,8 @@ struct DiscoverSheetView: View {
     let onGpxGuideClicked: () -> Void
     let onOktTypeClicked: (OktType) -> Void
     let onOktInfoClicked: () -> Void
+    let onShowLandscapesClicked: () -> Void
+    let onShowCategoriesClicked: () -> Void
     let onDismissRequest: () -> Void
     let onHeightChange: (CGFloat) -> Void
 
@@ -210,16 +212,30 @@ struct DiscoverSheetView: View {
     private var destinationsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeaderView(title: strings.get(id: SharedRes.strings().destinations_section_title))
-            NavigationRowCardView(
-                systemImage: "mappin.and.ellipse",
-                title: strings.get(id: SharedRes.strings().discover_browse_destinations),
-                subtitle: strings.get(id: SharedRes.strings().destinations_description),
-                onClick: onBrowseDestinationsClicked
-            )
+            HStack(spacing: Self.cardSpacing) {
+                IconTitleCardView(
+                    image: SharedRes.images().ic_hungary_colored.swiftUIImage,
+                    title: strings.get(id: SharedRes.strings().discover_destinations_by_landscape),
+                    onClick: onShowLandscapesClicked
+                )
+                .accessibilityIdentifier(TestTags.shared.DISCOVER_SHOW_LANDSCAPES_BUTTON)
+                IconTitleCardView(
+                    image: SharedRes.images().ic_destinations_by_category.swiftUIImage,
+                    title: strings.get(id: SharedRes.strings().discover_destinations_by_category),
+                    onClick: onShowCategoriesClicked
+                )
+                .accessibilityIdentifier(TestTags.shared.DISCOVER_DESTINATIONS_BY_CATEGORY_BUTTON)
+                IconTitleCardView(
+                    image: SharedRes.images().ic_destinations_in_list.swiftUIImage,
+                    title: strings.get(id: SharedRes.strings().discover_destinations_in_list),
+                    onClick: onBrowseDestinationsClicked
+                )
+                .accessibilityIdentifier(TestTags.shared.DISCOVER_BROWSE_DESTINATIONS_BUTTON)
+            }
             .padding(.horizontal, 16)
-            .accessibilityIdentifier(TestTags.shared.DISCOVER_BROWSE_DESTINATIONS_BUTTON)
         }
         .padding(.top, Dimens.sectionSpacing)
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -232,6 +248,8 @@ struct DiscoverSheetView: View {
         onGpxGuideClicked: {},
         onOktTypeClicked: { _ in },
         onOktInfoClicked: {},
+        onShowLandscapesClicked: {},
+        onShowCategoriesClicked: {},
         onDismissRequest: {},
         onHeightChange: { _ in }
     )

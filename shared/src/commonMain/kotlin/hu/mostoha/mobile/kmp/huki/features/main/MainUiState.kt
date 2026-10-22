@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
@@ -25,6 +26,7 @@ data class MainUiState(
     val isSearchBarVisible: Boolean
         get() = !mapUiState.gpxLayerVisible &&
             mapUiState.okt == null &&
+            mapUiState.landscapes == null &&
             myLocationState.myLocationStatus != MyLocationStatus.FollowingLiveCompass
 
     companion object {
@@ -49,6 +51,15 @@ fun MutableStateFlow<MainUiState>.updateMapUiState(reducer: (MapUiState) -> MapU
 fun MutableStateFlow<MainUiState>.updateOktUiState(reducer: (OktUiState) -> OktUiState) {
     updateMapUiState { mapUiState ->
         mapUiState.copy(okt = mapUiState.okt?.let(reducer))
+    }
+}
+
+/**
+ * Convenience function for updating nested UI states, a no-op while Landscapes are not shown.
+ */
+fun MutableStateFlow<MainUiState>.updateLandscapesUiState(reducer: (LandscapesUiState) -> LandscapesUiState) {
+    updateMapUiState { mapUiState ->
+        mapUiState.copy(landscapes = mapUiState.landscapes?.let(reducer))
     }
 }
 

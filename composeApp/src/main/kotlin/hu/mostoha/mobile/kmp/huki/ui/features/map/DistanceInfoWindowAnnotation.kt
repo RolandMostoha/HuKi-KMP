@@ -56,6 +56,7 @@ fun DistanceInfoWindowAnnotation(
                 ),
             )
             .allowOverlap(true)
+            .ignoreCameraPadding(true)
             .build(),
     ) {
         DistanceInfoWindow(

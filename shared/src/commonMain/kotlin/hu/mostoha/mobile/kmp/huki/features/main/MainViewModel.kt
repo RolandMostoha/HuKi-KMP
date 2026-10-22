@@ -10,8 +10,11 @@ import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.location.LOCATION
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesGrouping
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
+import hu.mostoha.mobile.kmp.huki.logger.toLogString
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
@@ -26,9 +29,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeOutlines
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
@@ -58,10 +63,12 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.model.mapper.toUrl
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
+import hu.mostoha.mobile.kmp.huki.model.mapper.withoutLandscapes
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
@@ -72,6 +79,7 @@ import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
+import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
@@ -117,6 +125,7 @@ class MainViewModel(
     private val mapCameraStore: MapCameraStore,
     private val whatsNewRepository: WhatsNewRepository,
     private val oktRepository: OktRepository,
+    private val landscapeRepository: LandscapeRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
@@ -136,6 +145,8 @@ class MainViewModel(
 
     private var oktTrail: OktTrail? = null
     private var oktJob: Job? = null
+    private var landscapeOutlines: LandscapeOutlines? = null
+    private var landscapesJob: Job? = null
     private var oktLocationJob: Job? = null
     private var oktUserPosition: TrackPosition? = null
 
@@ -163,7 +174,8 @@ class MainViewModel(
             is MainUiEvents.SearchDestinationSelected -> showSearchDestination(event.destination)
             is MainUiEvents.SearchResultPlaceHistorySelected -> showSearchResultPlaceHistory(event.place)
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
-            is MainUiEvents.DestinationSelected -> showDestinationById(event.osmId)
+            is MainUiEvents.DestinationSelected -> showDestinationById(event.id)
+            is MainUiEvents.DestinationRouteSelected -> openDestinationRouteById(event.id)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
             // Discover events
             MainUiEvents.DiscoverClicked -> showSheet(Sheet.Discover)
@@ -172,6 +184,7 @@ class MainViewModel(
             MainUiEvents.HikeRecommendationsInfoClicked -> logHikeRecommendationsInfoOpened()
             MainUiEvents.HikeRecommendationsGpxGuideClicked -> openGpxGuide()
             is OktUiEvents -> onOktEvent(event)
+            is LandscapesUiEvents -> onLandscapesEvent(event)
             // Map events
             is MainUiEvents.MapCameraChanged -> mapCameraStore.update(event.cameraPosition)
             // Place Details events
@@ -225,6 +238,23 @@ class MainViewModel(
             OktUiEvents.OktInfoWindowDismissed -> dismissOktInfoWindow()
             OktUiEvents.OktInfoWindowPlaceDetailsClicked -> showOktMarkerPlaceDetails()
             OktUiEvents.OktCloseClicked -> closeOkt()
+        }
+    }
+
+    private fun onLandscapesEvent(event: LandscapesUiEvents) {
+        when (event) {
+            LandscapesUiEvents.LandscapesShowClicked -> showLandscapes(LandscapesGrouping.LANDSCAPE)
+            LandscapesUiEvents.CategoriesShowClicked -> showLandscapes(LandscapesGrouping.CATEGORY)
+            is LandscapesUiEvents.LandscapeClicked -> toggleLandscape(event.landscapeId)
+            is LandscapesUiEvents.CategoryClicked -> toggleCategory(event.categoryId)
+            LandscapesUiEvents.LandscapesShowAllClicked -> showAllLandscapes()
+            is LandscapesUiEvents.LandscapesDestinationClicked -> selectLandscapesDestination(event.destination)
+            LandscapesUiEvents.LandscapesInfoWindowDismissed -> dismissLandscapesInfoWindow()
+            LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked -> showLandscapesDestinationPlaceDetails()
+            LandscapesUiEvents.LandscapesInfoWindowRouteClicked -> openLandscapesDestinationRoute()
+            LandscapesUiEvents.LandscapesInfoWindowWebsiteClicked -> openLandscapesDestinationWebsite()
+            LandscapesUiEvents.LandscapesResumeClicked -> resumeLandscapes()
+            LandscapesUiEvents.LandscapesCloseClicked -> closeLandscapes()
         }
     }
 
@@ -351,12 +381,12 @@ class MainViewModel(
     }
 
     private fun showSearchDestination(destination: Destination) {
-        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.id))
         showDestination(destination)
     }
 
     private fun showSearchResultDestination(destination: Destination) {
-        analyticsService.logEvent(AnalyticsEvent.SearchDestinationSelected(destination.name))
+        analyticsService.logEvent(AnalyticsEvent.SearchDestinationSelected(destination.id))
         showDestination(destination)
     }
 
@@ -364,10 +394,14 @@ class MainViewModel(
         showPlace(destination.toPlace(), PlaceDetailsSource.DESTINATION)
     }
 
-    private fun showDestinationById(osmId: String) {
-        val destination = destinationRepository.requireDestination(osmId)
-        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.name))
+    private fun showDestinationById(id: String) {
+        val destination = destinationRepository.requireDestination(id)
+        analyticsService.logEvent(AnalyticsEvent.DestinationSelected(destination.id))
         showDestination(destination)
+    }
+
+    private fun openDestinationRouteById(id: String) {
+        openDestinationRoute(destinationRepository.requireDestination(id))
     }
 
     private fun handleMapLongClick(location: Location) {
@@ -787,6 +821,10 @@ class MainViewModel(
     }
 
     private fun importGpx(uri: String, analyticsEvent: AnalyticsEvent?) {
+        loadGpx(analyticsEvent) { gpxRepository.readGpxFile(uri) }
+    }
+
+    private fun loadGpx(analyticsEvent: AnalyticsEvent?, readGpx: suspend () -> GpxDetails) {
         cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update {
@@ -795,15 +833,16 @@ class MainViewModel(
                     alert = null,
                 )
             }
-            runCatching { gpxRepository.readGpxFile(uri) }
+            runCatching { readGpx() }
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
                     selectedWaypoint.value = null
                     cancelOktJobs()
+                    cancelLandscapesJob()
                     oktTrail = null
                     _uiState.update { uiState ->
                         uiState.copy(
-                            mapUiState = uiState.mapUiState.copy(
+                            mapUiState = uiState.mapUiState.withoutLandscapes().copy(
                                 gpxDetails = gpxDetails,
                                 placeDetails = null,
                                 routePlan = null,
@@ -883,6 +922,7 @@ class MainViewModel(
         selectedWaypoint.value = null
         cancelPlaceDetailsLoad()
         cancelOktJobs()
+        cancelLandscapesJob()
         oktJob = viewModelScope.launch {
             _uiState.update { it.copy(sheet = null, isOktLoading = true, alert = null) }
             try {
@@ -907,6 +947,7 @@ class MainViewModel(
             uiState.copy(
                 mapUiState = uiState.mapUiState
                     .withoutGpx()
+                    .withoutLandscapes()
                     .copy(
                         placeDetails = null,
                         routePlan = null,
@@ -1129,6 +1170,198 @@ class MainViewModel(
         oktUserPosition = null
     }
 
+    private fun cancelLandscapesJob() {
+        landscapesJob?.cancel()
+        landscapesJob = null
+    }
+
+    private fun showLandscapes(grouping: LandscapesGrouping) {
+        val openedEvent = when (grouping) {
+            LandscapesGrouping.LANDSCAPE -> AnalyticsEvent.LandscapesOpened
+            LandscapesGrouping.CATEGORY -> AnalyticsEvent.CategoriesOpened
+        }
+        analyticsService.logEvent(openedEvent)
+        selectedWaypoint.value = null
+        cancelPlaceDetailsLoad()
+        cancelOktJobs()
+        cancelLandscapesJob()
+        oktTrail = null
+        landscapesJob = viewModelScope.launch {
+            val outlines = try {
+                landscapeRepository.getLandscapeOutlines()
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
+                Logger.e(exception) { "Landscapes: failed to load the outlines." }
+                crashlyticsService.recordException(exception)
+                return@launch
+            }
+            landscapeOutlines = outlines
+            val landscapes = destinationRepository.getLandscapes()
+            val categories = if (grouping == LandscapesGrouping.CATEGORY) {
+                withContext(defaultDispatcher) { destinationRepository.getDestinationCategories() }
+            } else {
+                emptyList()
+            }
+            _uiState.update { uiState ->
+                uiState.copy(
+                    mapUiState = uiState.mapUiState
+                        .withoutGpx()
+                        .copy(
+                            placeDetails = null,
+                            routePlan = null,
+                            routePlanWaypoints = emptyList(),
+                            okt = null,
+                            hikingLayerVisible = false,
+                            landscapes = LandscapesUiState(
+                                landscapes = landscapes,
+                                outlinesGeoJson = outlines.geoJson,
+                                labelsGeoJson = outlines.labelsGeoJson,
+                                hungaryMaskGeoJson = outlines.hungaryMaskGeoJson,
+                                grouping = grouping,
+                                categories = categories,
+                            ),
+                        ),
+                    sheet = Sheet.Landscapes,
+                    isOktLoading = false,
+                )
+            }
+            fitCameraToLandscapes()
+        }
+    }
+
+    private fun toggleLandscape(landscapeId: String) {
+        val landscapes = _uiState.value.mapUiState.landscapes ?: return
+        val selectedLandscapeId = landscapeId.takeUnless { it == landscapes.selectedLandscapeId }
+        selectedLandscapeId?.let { analyticsService.logEvent(AnalyticsEvent.LandscapeSelected(it)) }
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.copy(
+                    landscapes = landscapes.copy(
+                        selectedLandscapeId = selectedLandscapeId,
+                        selectedDestinationId = null,
+                    ),
+                ),
+                sheet = Sheet.Landscapes,
+            )
+        }
+        viewModelScope.launch {
+            fitCameraToLandscapes()
+        }
+    }
+
+    private fun toggleCategory(categoryId: String) {
+        val landscapes = _uiState.value.mapUiState.landscapes ?: return
+        val selectedId = categoryId.takeUnless { it == landscapes.selectedCategoryId }
+        selectedId?.let { analyticsService.logEvent(AnalyticsEvent.CategorySelected(it)) }
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.copy(
+                    landscapes = landscapes.copy(
+                        selectedCategoryId = selectedId,
+                        selectedDestinationId = null,
+                    ),
+                ),
+                sheet = Sheet.Landscapes,
+            )
+        }
+        viewModelScope.launch {
+            fitCameraToLandscapes()
+        }
+    }
+
+    private fun showAllLandscapes() {
+        _uiState.updateLandscapesUiState {
+            it.copy(selectedLandscapeId = null, selectedCategoryId = null, selectedDestinationId = null)
+        }
+        viewModelScope.launch {
+            fitCameraToLandscapes()
+        }
+    }
+
+    private suspend fun fitCameraToLandscapes() {
+        val bounds = landscapeOutlines?.bounds ?: return
+        val landscapes = _uiState.value.mapUiState.landscapes ?: return
+        val destinationLocations = landscapes.destinations.map { it.location }
+        val locations = when {
+            landscapes.selectedLandscapeId != null ->
+                bounds[landscapes.selectedLandscapeId]?.toLocations().orEmpty() + destinationLocations
+            landscapes.selectedCategoryId != null -> destinationLocations
+            else -> HUNGARY_BOUNDING_BOX.toLocations()
+        }
+        val target = locations.singleOrNull()
+            ?.let { CameraTarget.Center(it, zoom = LANDSCAPES_SINGLE_DESTINATION_ZOOM) }
+            ?: CameraTarget.Bounds(locations)
+        sendEffect(MapUiEffects.UpdateCamera(target, contentPadding = ContentPadding.MAP_LANDSCAPES))
+    }
+
+    private fun selectLandscapesDestination(destination: Destination) {
+        analyticsService.logEvent(AnalyticsEvent.LandscapesDestinationClicked(destination.id))
+        _uiState.updateLandscapesUiState { it.copy(selectedDestinationId = destination.id) }
+        viewModelScope.launch {
+            centerCameraOn(destination)
+        }
+    }
+
+    private suspend fun centerCameraOn(destination: Destination) {
+        sendEffect(
+            MapUiEffects.UpdateCamera(
+                target = CameraTarget.Center(destination.location),
+                contentPadding = ContentPadding.MAP_LANDSCAPES_DESTINATION,
+            ),
+        )
+    }
+
+    private fun dismissLandscapesInfoWindow() {
+        _uiState.updateLandscapesUiState { it.copy(selectedDestinationId = null) }
+    }
+
+    private fun showLandscapesDestinationPlaceDetails() {
+        val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        dismissLandscapesInfoWindow()
+        showPlace(destination.toPlace(), PlaceDetailsSource.LANDSCAPES)
+    }
+
+    private fun openLandscapesDestinationRoute() {
+        val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        openDestinationRoute(destination)
+    }
+
+    private fun openDestinationRoute(destination: Destination) {
+        val routeGpxFile = destination.routeGpxFile ?: return
+        loadGpx(AnalyticsEvent.DestinationEduTrailOpened(destination.id)) {
+            gpxRepository.readBundledGpxFile(routeGpxFile)
+        }
+    }
+
+    private fun openLandscapesDestinationWebsite() {
+        val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
+        val website = destination.website ?: return
+        analyticsService.logEvent(AnalyticsEvent.DestinationWebsiteOpened(destination.id))
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.OpenUrl(website))
+        }
+    }
+
+    private fun resumeLandscapes() {
+        val landscapes = _uiState.value.mapUiState.landscapes ?: return
+        showSheet(Sheet.Landscapes)
+        viewModelScope.launch {
+            landscapes.selectedDestination?.let { centerCameraOn(it) }
+                ?: fitCameraToLandscapes()
+        }
+    }
+
+    private fun closeLandscapes() {
+        cancelLandscapesJob()
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.withoutLandscapes(),
+                sheet = uiState.sheet.takeUnless { it == Sheet.Landscapes },
+            )
+        }
+    }
+
     private fun showGpxFilePicker() {
         viewModelScope.launch {
             hideSheet()
@@ -1146,7 +1379,7 @@ class MainViewModel(
 
     private fun initLogging() {
         uiState
-            .onEach { Logger.d { "MainState: ${it.toString().trimLongLists()}" } }
+            .onEach { Logger.d { "MainState: ${it.toLogString()}" } }
             .launchIn(viewModelScope)
     }
 
@@ -1161,5 +1394,6 @@ class MainViewModel(
         val PLACE_DETAILS_LOCATION_TIMEOUT = 2.seconds
         val OKT_ON_TRAIL_THRESHOLD = 500.meters
         val OKT_USER_POSITION_MIN_MOVE = 50.meters
+        const val LANDSCAPES_SINGLE_DESTINATION_ZOOM = 11.0
     }
 }

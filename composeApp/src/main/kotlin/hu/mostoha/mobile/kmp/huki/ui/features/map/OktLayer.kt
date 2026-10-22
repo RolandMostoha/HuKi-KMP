@@ -131,6 +131,7 @@ fun OktLayer(okt: OktUiState, onEvent: (OktUiEvents) -> Unit) {
                     )
                     .allowOverlap(true)
                     .allowOverlapWithPuck(true)
+                    .ignoreCameraPadding(true)
                     .priority(INFO_WINDOW_PRIORITY)
                     .build(),
             ) {
@@ -187,6 +188,7 @@ private fun OktMarkerAnnotation(
             .annotatedFeature(AnnotatedFeature(marker.location.toPoint()))
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
             .priority(priority)
             .build(),
     ) {

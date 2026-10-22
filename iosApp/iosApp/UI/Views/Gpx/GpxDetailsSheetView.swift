@@ -53,12 +53,20 @@ struct GpxDetailsSheetView: View {
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                Text(gpxDetails.title ?? gpxDetails.fileName)
-                    .font(.system(size: 16, weight: .bold))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_TITLE)
+                HStack(spacing: 8) {
+                    if let jelSymbol = gpxDetails.jelSymbol {
+                        Image(uiImage: jelSymbol.icon.toUIImage()!)
+                            .resizable()
+                            .frame(width: Dimens.gpxDetailsJelSymbolSize, height: Dimens.gpxDetailsJelSymbolSize)
+                            .accessibilityHidden(true)
+                    }
+                    Text(gpxDetails.title ?? gpxDetails.fileName)
+                        .font(.system(size: 16, weight: .bold))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_TITLE)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: .infinity)
             .padding(.trailing, 56)

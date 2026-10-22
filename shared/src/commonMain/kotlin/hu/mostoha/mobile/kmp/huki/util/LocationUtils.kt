@@ -125,3 +125,21 @@ fun List<Location>.calculateDecline(): Int {
 
     return totalDecline
 }
+
+/**
+ * Greedy nearest-neighbour walk from the south-west corner, so list neighbours are map neighbours.
+ */
+fun <T> List<T>.sortedAlongPath(location: (T) -> Location): List<T> {
+    if (size < 2) return this
+    val southWest = Location(minOf { location(it).latitude }, minOf { location(it).longitude })
+    val remaining = toMutableList()
+    var current = remaining.minBy { location(it).distanceBetween(southWest).inMeters }
+    val path = mutableListOf<T>()
+    while (true) {
+        remaining.remove(current)
+        path.add(current)
+        if (remaining.isEmpty()) return path
+        val from = location(current)
+        current = remaining.minBy { location(it).distanceBetween(from).inMeters }
+    }
+}

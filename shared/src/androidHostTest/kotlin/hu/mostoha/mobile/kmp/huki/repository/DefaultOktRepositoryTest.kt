@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import dev.icerock.moko.resources.FileResource
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.ints.shouldBeGreaterThan
@@ -19,9 +20,12 @@ class DefaultOktRepositoryTest {
         OktType.AKT to "ak_teljes_bh_20260924.gpx",
     )
     private val repository = DefaultOktRepository(
-        bundledFileReader = { file ->
-            val type = OktType.entries.first { it.gpxFile == file }
-            File("src/commonMain/moko-resources/files/${gpxFiles.getValue(type)}").readText()
+        bundledFileReader = object : BundledFileReader {
+            override fun readText(file: FileResource): String =
+                File("src/commonMain/moko-resources/files/${gpxFiles.getValue(file.toOktType())}").readText()
+
+            override fun baseName(file: FileResource): String =
+                gpxFiles.getValue(file.toOktType()).substringBeforeLast('.')
         },
         dispatcher = Dispatchers.Default,
     )
@@ -62,3 +66,5 @@ class DefaultOktRepositoryTest {
         }
     }
 }
+
+private fun FileResource.toOktType(): OktType = OktType.entries.first { it.gpxFile == this }

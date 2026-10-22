@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import co.touchlab.kermit.Logger
+import dev.icerock.moko.resources.FileResource
 import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
@@ -18,6 +19,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.randomFileNameToken
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxDocument
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.mapper.toJelSymbol
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanFileName
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanTitle
@@ -44,29 +46,29 @@ import org.maplibre.spatialk.gpx.Waypoint
 import org.maplibre.spatialk.units.extensions.meters
 import kotlin.time.Clock
 
+private const val GPX_EXTENSION = "gpx"
+
 open class DefaultGpxRepository(
     private val gpxStorage: GpxStorage,
     private val metadataStore: GpxMetadataStore,
     private val crashlyticsService: CrashlyticsService,
+    private val bundledFileReader: BundledFileReader,
 ) : GpxRepository {
 
     override suspend fun readGpxFile(uri: String): GpxDetails =
         withContext(Dispatchers.IO) {
             val source = runCatching { gpxStorage.readGpx(uri) }.getOrElse { throw UnreadableGpxFileException(it) }
-            val gpx = validateGpx(source.content.decodeToString())
-            val file = gpxStorage.resolveSandboxFile(uri)
-                ?: gpxStorage.saveToSandbox(source, GpxOrigin.EXTERNAL)
-            val details = mapGpxDetails(file.name, file.path, gpx)
+            val sandboxFile = gpxStorage.resolveSandboxFile(uri)
+            openGpx(source) { sandboxFile ?: gpxStorage.saveToSandbox(source, GpxOrigin.EXTERNAL) }
+        }
 
-            metadataStore.recordOpened(
-                details.toMetadataEntry(
-                    trackId = source.content.toGpxTrackId(),
-                    lastModified = file.lastModified(),
-                    openedAt = Clock.System.now(),
-                ),
+    override suspend fun readBundledGpxFile(file: FileResource): GpxDetails =
+        withContext(Dispatchers.IO) {
+            val source = GpxFileSource(
+                fileName = "${bundledFileReader.baseName(file)}.$GPX_EXTENSION",
+                content = bundledFileReader.readText(file).encodeToByteArray(),
             )
-
-            details
+            openGpx(source) { replaceBundledGpx(source) }
         }
 
     override suspend fun getGpxFiles(): List<GpxFileItem> =
@@ -118,6 +120,33 @@ open class DefaultGpxRepository(
     override suspend fun deleteGpxFile(fileUri: String, trackId: String) {
         gpxStorage.delete(fileUri)
         metadataStore.removeByTrackId(trackId)
+    }
+
+    private suspend fun openGpx(source: GpxFileSource, saveToSandbox: suspend () -> PlatformFile): GpxDetails {
+        val gpx = validateGpx(source.content.decodeToString())
+        val file = saveToSandbox()
+        val details = mapGpxDetails(file.name, file.path, gpx)
+
+        metadataStore.recordOpened(
+            details.toMetadataEntry(
+                trackId = source.content.toGpxTrackId(),
+                lastModified = file.lastModified(),
+                openedAt = Clock.System.now(),
+            ),
+        )
+
+        return details
+    }
+
+    /**
+     * Keeps a single, up-to-date copy of a bundled GPX: an app update that ships a changed file replaces the
+     * previous copy and its metadata, keyed on the old content.
+     */
+    private suspend fun replaceBundledGpx(source: GpxFileSource): PlatformFile {
+        val replacement = gpxStorage.replaceInSandbox(source, GpxOrigin.BUNDLED)
+        replacement.replacedContent?.let { metadataStore.removeByTrackId(it.toGpxTrackId()) }
+
+        return replacement.file
     }
 
     /**
@@ -192,6 +221,7 @@ open class DefaultGpxRepository(
             altitudeRange = minAltitude.toInt() to maxAltitude.toInt(),
             incline = locations.calculateIncline(),
             decline = locations.calculateDecline(),
+            jelSymbol = gpx.toJelSymbol(),
         )
     }
 

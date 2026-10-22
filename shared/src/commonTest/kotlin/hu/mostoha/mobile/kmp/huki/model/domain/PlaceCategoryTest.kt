@@ -37,6 +37,7 @@ class PlaceCategoryTest {
                 TestCase(input = "dam", result = PlaceCategory.LAKE),
                 TestCase(input = "farm", result = PlaceCategory.FARM),
                 TestCase(input = "farmyard", result = PlaceCategory.FARM),
+                TestCase(input = "narrow_gauge", result = PlaceCategory.SCENIC_RAILWAY),
                 TestCase(input = null, result = null),
                 TestCase(input = "unmapped_tag", result = null),
                 TestCase(input = "fishing", classInput = "shop", result = PlaceCategory.SHOP),

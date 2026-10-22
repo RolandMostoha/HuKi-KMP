@@ -103,4 +103,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.bundles.ktor)
     androidTestImplementation(libs.ktor.client.okhttp)
+    androidTestImplementation(libs.androidx.room.runtime)
+    androidTestImplementation(libs.androidx.sqlite.bundled)
 }

@@ -132,7 +132,7 @@ internal fun MapViewportState.moveCamera(
     effect: MapUiEffects.UpdateCamera,
     isLandscape: Boolean,
     routePlannerBottomInset: Dp? = null,
-    oktSheetHeight: Dp? = null,
+    listSheetHeight: Dp? = null,
 ) {
     when (val target = effect.target) {
         is CameraTarget.Center -> this.flyTo(
@@ -143,7 +143,7 @@ internal fun MapViewportState.moveCamera(
                     effect.bearing?.let { bearing(it) }
                     effect.pitch?.let { pitch(it) }
                     effect.contentPadding?.let {
-                        padding(it.toEdgeInset(density, isLandscape, routePlannerBottomInset, oktSheetHeight))
+                        padding(it.toEdgeInset(density, isLandscape, routePlannerBottomInset, listSheetHeight))
                     }
                 }
                 .build(),
@@ -162,7 +162,7 @@ internal fun MapViewportState.moveCamera(
                         effect.bearing?.let { bearing(it) }
                         effect.pitch?.let { pitch(it) }
                         effect.contentPadding?.let {
-                            padding(it.toEdgeInset(density, isLandscape, routePlannerBottomInset, oktSheetHeight))
+                            padding(it.toEdgeInset(density, isLandscape, routePlannerBottomInset, listSheetHeight))
                         }
                         target.maxZoom?.let { maxZoom(it) }
                     }

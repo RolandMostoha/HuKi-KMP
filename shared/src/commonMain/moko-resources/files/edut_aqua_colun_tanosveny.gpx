@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Aqua Colun tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Aqua Colun tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/21405137"/>
+    <trkseg>
+      <trkpt lat="46.787486" lon="19.330206"><ele>97.7</ele></trkpt>
+      <trkpt lat="46.787769" lon="19.329967"><ele>98.5</ele></trkpt>
+      <trkpt lat="46.788039" lon="19.329892"><ele>99.2</ele></trkpt>
+      <trkpt lat="46.789071" lon="19.329337"><ele>99.1</ele></trkpt>
+      <trkpt lat="46.790865" lon="19.328543"><ele>98.9</ele></trkpt>
+      <trkpt lat="46.791436" lon="19.328041"><ele>99.3</ele></trkpt>
+      <trkpt lat="46.791671" lon="19.327931"><ele>99.4</ele></trkpt>
+      <trkpt lat="46.792470" lon="19.327075"><ele>100.3</ele></trkpt>
+      <trkpt lat="46.792981" lon="19.326802"><ele>99.7</ele></trkpt>
+      <trkpt lat="46.793820" lon="19.326179"><ele>100.3</ele></trkpt>
+      <trkpt lat="46.794055" lon="19.326115"><ele>100.4</ele></trkpt>
+      <trkpt lat="46.801935" lon="19.327757"><ele>99.4</ele></trkpt>
+      <trkpt lat="46.802563" lon="19.327946"><ele>100.4</ele></trkpt>
+      <trkpt lat="46.803980" lon="19.328595"><ele>100.1</ele></trkpt>
+      <trkpt lat="46.804733" lon="19.328612"><ele>99.5</ele></trkpt>
+      <trkpt lat="46.805544" lon="19.329264"><ele>100.0</ele></trkpt>
+      <trkpt lat="46.805859" lon="19.329825"><ele>100.7</ele></trkpt>
+      <trkpt lat="46.806097" lon="19.330115"><ele>100.7</ele></trkpt>
+      <trkpt lat="46.806503" lon="19.330461"><ele>100.5</ele></trkpt>
+      <trkpt lat="46.807205" lon="19.330872"><ele>101.2</ele></trkpt>
+      <trkpt lat="46.808684" lon="19.332196"><ele>103.4</ele></trkpt>
+      <trkpt lat="46.808730" lon="19.332575"><ele>102.7</ele></trkpt>
+      <trkpt lat="46.808569" lon="19.333558"><ele>101.5</ele></trkpt>
+      <trkpt lat="46.808411" lon="19.334163"><ele>100.0</ele></trkpt>
+      <trkpt lat="46.808175" lon="19.334695"><ele>99.2</ele></trkpt>
+      <trkpt lat="46.808018" lon="19.335332"><ele>99.2</ele></trkpt>
+      <trkpt lat="46.808021" lon="19.335635"><ele>99.5</ele></trkpt>
+      <trkpt lat="46.808401" lon="19.336362"><ele>100.3</ele></trkpt>
+      <trkpt lat="46.809744" lon="19.338339"><ele>101.3</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

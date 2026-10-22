@@ -50,7 +50,7 @@ extension Shared.ContentPadding {
     func edgeInsets(
         isLandscape: Bool,
         routePlannerSheetHeight: CGFloat,
-        oktSheetHeight: CGFloat
+        listSheetHeight: CGFloat
     ) -> SwiftUI.EdgeInsets {
         switch self {
         case .mapGpx:
@@ -66,9 +66,17 @@ extension Shared.ContentPadding {
         case .mapOkt:
             return isLandscape
                 ? Dimens.oktContentPaddingLandscape
-                : Dimens.oktContentPaddingPortrait(sheetHeight: oktSheetHeight)
+                : Dimens.oktContentPaddingPortrait(sheetHeight: listSheetHeight)
         case .mapOktStarted:
             return isLandscape ? Dimens.oktContentPaddingLandscape : Dimens.oktStartedContentPaddingPortrait
+        case .mapLandscapes:
+            return isLandscape
+                ? Dimens.landscapesContentPaddingLandscape
+                : Dimens.landscapesContentPaddingPortrait(sheetHeight: listSheetHeight)
+        case .mapLandscapesDestination:
+            return isLandscape
+                ? Dimens.landscapesContentPaddingLandscape
+                : Dimens.landscapesDestinationContentPaddingPortrait(sheetHeight: listSheetHeight)
         }
     }
 }
@@ -103,5 +111,38 @@ extension Shared.ImageResource {
             image: self.appearanceImage(for: colorScheme),
             name: "\(self.assetImageName)-\(isDark ? "dark" : "light")"
         )
+    }
+}
+
+// Drawing the composite marker is costly and map content re-evaluates on every state change.
+private let jelMarkerImageCache = NSCache<NSString, UIImage>()
+
+extension JelSymbol {
+
+    func markerImage(background: Shared.ImageResource, for colorScheme: ColorScheme) -> PointAnnotation.Image {
+        let appearance = colorScheme == .dark ? "dark" : "light"
+        let name = "\(background.assetImageName)-\(icon.assetImageName)-\(appearance)"
+        if let cached = jelMarkerImageCache.object(forKey: name as NSString) {
+            return PointAnnotation.Image(image: cached, name: name)
+        }
+        let backgroundImage = background.appearanceImage(for: colorScheme)
+        let symbolImage = icon.toUIImage()!
+        let size = backgroundImage.size
+        let symbolSide = min(size.width, size.height) * SharedDimens.shared.GPX_JEL_SYMBOL_MARKER_RATIO
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = backgroundImage.scale
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            backgroundImage.draw(in: CGRect(origin: .zero, size: size))
+            symbolImage.draw(
+                in: CGRect(
+                    x: (size.width - symbolSide) / 2,
+                    y: (size.height - symbolSide) / 2,
+                    width: symbolSide,
+                    height: symbolSide
+                )
+            )
+        }
+        jelMarkerImageCache.setObject(image, forKey: name as NSString)
+        return PointAnnotation.Image(image: image, name: name)
     }
 }

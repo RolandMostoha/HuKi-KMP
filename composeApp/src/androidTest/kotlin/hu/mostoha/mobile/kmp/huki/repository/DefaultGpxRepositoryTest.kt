@@ -3,9 +3,11 @@ package hu.mostoha.mobile.kmp.huki.repository
 import android.net.Uri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
 import hu.mostoha.mobile.kmp.huki.TestContext.instrumentationContext
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MalformedGpxException
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
@@ -17,6 +19,7 @@ import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
@@ -46,6 +49,7 @@ class DefaultGpxRepositoryTest {
         DefaultGpxStorage(),
         DefaultGpxMetadataStore(FakeCrashlyticsService),
         FakeCrashlyticsService,
+        bundledFileReader = AndroidBundledFileReader(appContext),
     )
 
     @Test
@@ -65,6 +69,39 @@ class DefaultGpxRepositoryTest {
             gpx.waypoints.count { it.type == WaypointType.START } shouldBe 1
             gpx.waypoints.count { it.type == WaypointType.END } shouldBe 1
             gpx.waypoints.count { it.type == WaypointType.INTERMEDIATE } shouldBe 1
+        }
+    }
+
+    @Test
+    fun givenBundledTrailGpx_whenReadBundledGpxFile_thenSavedUnderItsBundledNameWithElevation() {
+        runTest {
+            val file = SharedRes.files.edut_jagi_tanosveny_gpx
+
+            val gpxDetails = repository.readBundledGpxFile(file)
+
+            gpxDetails.fileName shouldBe "edut_jagi_tanosveny.gpx"
+            gpxDetails.fileUri shouldContain "gpx/bundled/"
+            gpxDetails.title shouldBe "Jági tanösvény"
+            gpxDetails.locations.all { it.altitude != null } shouldBe true
+            gpxDetails.incline shouldBeGreaterThan 0
+        }
+    }
+
+    @Test
+    fun givenOutdatedBundledTrailGpx_whenReadBundledGpxFile_thenReplacedWithoutDuplicates() {
+        runTest {
+            val file = SharedRes.files.edut_jagi_tanosveny_gpx
+            val outdatedFile = File(appContext.filesDir, "gpx/bundled/edut_jagi_tanosveny.gpx").apply {
+                parentFile?.mkdirs()
+                writeText(file.readText(appContext) + "<!-- outdated -->")
+            }
+            repository.readGpxFile(outdatedFile.path)
+
+            val gpxDetails = repository.readBundledGpxFile(file)
+
+            repository.getRecentGpxFiles(limit = 10).count { it.fileName == gpxDetails.fileName } shouldBe 1
+            repository.getGpxFiles().count { it.origin == GpxOrigin.BUNDLED && it.fileName == gpxDetails.fileName } shouldBe 1
+            File(gpxDetails.fileUri).readText() shouldBe file.readText(appContext)
         }
     }
 

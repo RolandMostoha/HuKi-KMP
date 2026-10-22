@@ -30,7 +30,8 @@ sealed interface MainUiEvents {
     data class SearchDestinationSelected(val destination: Destination) : MainUiEvents
     data class SearchResultPlaceHistorySelected(val place: Place) : MainUiEvents
     data class SearchResultDestinationSelected(val destination: Destination) : MainUiEvents
-    data class DestinationSelected(val osmId: String) : MainUiEvents
+    data class DestinationSelected(val id: String) : MainUiEvents
+    data class DestinationRouteSelected(val id: String) : MainUiEvents
     data class HistoryPlaceSelected(
         val osmType: OsmType,
         val osmId: String,

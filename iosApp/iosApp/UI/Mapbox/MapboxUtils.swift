@@ -31,12 +31,12 @@ extension Viewport {
         for effect: MapUiEffectsUpdateCamera,
         isLandscape: Bool = false,
         routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight,
-        oktSheetHeight: CGFloat = Dimens.oktDetentMinHeight
+        listSheetHeight: CGFloat = Dimens.oktDetentMinHeight
     ) -> Viewport {
         let padding = effect.contentPadding?.edgeInsets(
             isLandscape: isLandscape,
             routePlannerSheetHeight: routePlannerSheetHeight,
-            oktSheetHeight: oktSheetHeight
+            listSheetHeight: listSheetHeight
         ) ?? .init()
         switch onEnum(of: effect.target) {
         case .center(let target):

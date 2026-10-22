@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.util
 
+import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 
@@ -13,6 +14,12 @@ object MapConstants {
         location = HUNGARY_LOCATION,
         bearing = 0.0,
         pitch = 0.0,
+    )
+    val HUNGARY_BOUNDING_BOX = BoundingBox(
+        north = 48.585,
+        east = 22.897,
+        south = 45.737,
+        west = 16.114,
     )
 
     const val NEARBY_DESTINATIONS_MIN_ZOOM = 6.0

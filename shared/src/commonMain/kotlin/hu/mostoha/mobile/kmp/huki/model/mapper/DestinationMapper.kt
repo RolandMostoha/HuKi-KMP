@@ -10,13 +10,13 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 fun Destination.toDestinationListItem(distance: String? = null): DestinationListItem =
     DestinationListItem(
         destination = this,
-        landscape = LandscapeByDestinationId[osmId],
+        landscape = LandscapeByDestinationId[id],
         distance = distance,
     )
 
 fun Destination.toPlace(): Place =
     Place(
-        osmId = osmId,
+        osmId = id,
         location = location,
         name = name,
         placeSource = PlaceSource.DESTINATIONS,

@@ -21,6 +21,11 @@ interface GpxStorage {
      */
     suspend fun saveToSandbox(source: GpxFileSource, origin: GpxOrigin): PlatformFile
 
+    /**
+     * Writes [source] under its exact name, overwriting a previous version instead of keeping both.
+     */
+    suspend fun replaceInSandbox(source: GpxFileSource, origin: GpxOrigin): GpxReplacement
+
     suspend fun listGpxFiles(): List<PlatformFile>
 
     /**
@@ -40,3 +45,13 @@ interface GpxStorage {
      */
     suspend fun delete(uri: String)
 }
+
+/**
+ * A sandbox GPX overwritten in place. Its metadata is keyed on the content, so the old content is kept to clean it up.
+ *
+ * @property replacedContent the overwritten content, or `null` when the file was new or already up to date.
+ */
+class GpxReplacement(
+    val file: PlatformFile,
+    val replacedContent: ByteArray?,
+)

@@ -7,6 +7,8 @@ struct DestinationPreviewOverlay: View {
     var landscapeText: String?
     var distanceText: String?
     let onShowOnMap: () -> Void
+    let onOpenRoute: () -> Void
+    let onOpenWebsite: () -> Void
     let onDismiss: () -> Void
 
     @State private var appeared = false
@@ -48,7 +50,9 @@ struct DestinationPreviewOverlay: View {
             .shadow(color: .black.opacity(0.35), radius: 28, y: 14)
             DestinationPreviewContextMenu(
                 strings: strings,
-                onShowOnMap: { dismiss(then: onShowOnMap) }
+                onShowOnMap: { dismiss(then: onShowOnMap) },
+                onOpenRoute: destination.routeGpxFile != nil ? { dismiss(then: onOpenRoute) } : nil,
+                onOpenWebsite: destination.website != nil ? onOpenWebsite : nil
             )
             .padding(.horizontal, 32)
             .shadow(color: .black.opacity(0.25), radius: 20, y: 10)

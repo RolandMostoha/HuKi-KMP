@@ -6,15 +6,13 @@ struct BaseButton: View {
     let title: String
     let foregroundColor: SwiftUI.Color
     let backgroundColor: SwiftUI.Color
-    var verticalPadding: CGFloat = 14
+    var size: ButtonSize = .regular
     let action: () -> Void
-
-    private let iconSize: CGFloat = 20
 
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
+                .font(size.font)
                 .fontWeight(.semibold)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
@@ -23,13 +21,39 @@ struct BaseButton: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: iconSize, height: iconSize)
+                        .frame(width: size.iconSize, height: size.iconSize)
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, verticalPadding)
+                .padding(.vertical, size.verticalPadding)
                 .foregroundStyle(foregroundColor)
                 .background(backgroundColor, in: .capsule)
         }
         .buttonStyle(PressFeedbackButtonStyle())
+    }
+}
+
+enum ButtonSize {
+    case regular
+    case small
+
+    var font: Font {
+        switch self {
+        case .regular: .headline
+        case .small: .subheadline
+        }
+    }
+
+    var iconSize: CGFloat {
+        switch self {
+        case .regular: 20
+        case .small: 16
+        }
+    }
+
+    var verticalPadding: CGFloat {
+        switch self {
+        case .regular: 14
+        case .small: 8
+        }
     }
 }

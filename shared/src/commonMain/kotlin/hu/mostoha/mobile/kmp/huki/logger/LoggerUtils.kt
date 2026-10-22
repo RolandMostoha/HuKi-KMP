@@ -1,6 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.logger
 
 import co.touchlab.kermit.Logger
+import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsUiState
+import hu.mostoha.mobile.kmp.huki.features.destinations.NearbyState
+import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
+import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 
 /**
  * Swift-friendly error logging that routes through Kermit. Use from iOS instead of `print`,
@@ -26,4 +30,29 @@ fun String.trimLongLists(limit: Int = 10): String {
             matchResult.value
         }
     }
+}
+
+/**
+ * Landscapes are summarised, as their GeoJSON and destination lists make the full string slow to build on every change.
+ */
+fun MainUiState.toLogString(): String {
+    val landscapes = mapUiState.landscapes ?: return toString().trimLongLists()
+    val withoutLandscapes = copy(mapUiState = mapUiState.copy(landscapes = null))
+    return "${withoutLandscapes.toString().trimLongLists()}, landscapes=${landscapes.toLogString()}"
+}
+
+fun LandscapesUiState.toLogString(): String =
+    "LandscapesUiState(grouping=$grouping, landscapes=${landscapes.size}, categories=${categories.size}, " +
+        "selectedLandscapeId=$selectedLandscapeId, selectedCategoryId=$selectedCategoryId, " +
+        "selectedDestinationId=$selectedDestinationId, destinations=${destinations.size}, " +
+        "outlinesGeoJson=${outlinesGeoJson.length} chars)"
+
+/**
+ * List items carry their landscape with all of its destinations, so only the counts are logged.
+ */
+fun DestinationsUiState.toLogString(): String {
+    val nearby = (nearbyState as? NearbyState.Loaded)?.let { "Loaded(items=${it.items.size})" } ?: nearbyState
+    return "DestinationsUiState(isLoading=$isLoading, selectedTab=$selectedTab, destinationCount=$destinationCount, " +
+        "popularItems=${popularItems.size}, landscapes=${landscapes.size}, nearbyState=$nearby, " +
+        "userLocation=$userLocation)"
 }

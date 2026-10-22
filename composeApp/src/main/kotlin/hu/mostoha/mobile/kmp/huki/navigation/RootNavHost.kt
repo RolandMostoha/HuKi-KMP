@@ -39,7 +39,8 @@ private object Routes {
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
     const val EXTRA_PLACE_OSM_TYPE_KEY = "extra_place_osm_type"
     const val EXTRA_PLACE_OSM_ID_KEY = "extra_place_osm_id"
-    const val EXTRA_DESTINATION_OSM_ID_KEY = "extra_destination_osm_id"
+    const val EXTRA_DESTINATION_ID_KEY = "extra_destination_id"
+    const val EXTRA_DESTINATION_ROUTE_ID_KEY = "extra_destination_route_id"
 }
 
 @Composable
@@ -86,8 +87,11 @@ fun RootNavHost() {
             val openPlace = openPlaceOsmType?.let { type ->
                 openPlaceOsmId?.let { id -> OsmType.valueOf(type) to id }
             }
-            val openDestinationOsmId by entry.savedStateHandle
-                .getStateFlow<String?>(Routes.EXTRA_DESTINATION_OSM_ID_KEY, null)
+            val openDestinationId by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.EXTRA_DESTINATION_ID_KEY, null)
+                .collectAsStateWithLifecycle()
+            val openDestinationRouteId by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.EXTRA_DESTINATION_ROUTE_ID_KEY, null)
                 .collectAsStateWithLifecycle()
             val openRoutePlanner by entry.savedStateHandle
                 .getStateFlow(Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY, false)
@@ -109,8 +113,12 @@ fun RootNavHost() {
                     entry.savedStateHandle[Routes.EXTRA_PLACE_OSM_TYPE_KEY] = null
                     entry.savedStateHandle[Routes.EXTRA_PLACE_OSM_ID_KEY] = null
                 },
-                openDestinationOsmId = openDestinationOsmId,
-                onOpenDestinationConsumed = { entry.savedStateHandle[Routes.EXTRA_DESTINATION_OSM_ID_KEY] = null },
+                openDestinationId = openDestinationId,
+                onOpenDestinationConsumed = { entry.savedStateHandle[Routes.EXTRA_DESTINATION_ID_KEY] = null },
+                openDestinationRouteId = openDestinationRouteId,
+                onOpenDestinationRouteConsumed = {
+                    entry.savedStateHandle[Routes.EXTRA_DESTINATION_ROUTE_ID_KEY] = null
+                },
                 openRoutePlanner = openRoutePlanner,
                 onOpenRoutePlannerConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = false },
                 openDiscover = openDiscover,
@@ -146,8 +154,13 @@ fun RootNavHost() {
             DestinationsScreen(
                 onBack = { navController.popBackStack() },
                 onShowOnMap = { destination ->
-                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_DESTINATION_OSM_ID_KEY] =
-                        destination.osmId
+                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_DESTINATION_ID_KEY] =
+                        destination.id
+                    navController.popBackStack<Main>(inclusive = false)
+                },
+                onOpenRoute = { destination ->
+                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_DESTINATION_ROUTE_ID_KEY] =
+                        destination.id
                     navController.popBackStack<Main>(inclusive = false)
                 },
             )

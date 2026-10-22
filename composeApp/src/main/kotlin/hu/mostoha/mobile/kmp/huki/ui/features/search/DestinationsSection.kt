@@ -49,7 +49,7 @@ fun DestinationsSection(
         ) {
             items(
                 items = destinations,
-                key = { it.osmId },
+                key = { it.id },
             ) { destination ->
                 DestinationCard(
                     destination = destination,
@@ -74,7 +74,7 @@ private fun DestinationsSectionPreview() {
 
 private val previewDestinations = listOf(
     Destination(
-        osmId = "1",
+        id = "1",
         name = "Dobogókő",
         town = "Pilisszentkereszt",
         type = DestinationType.PEAK,
@@ -83,7 +83,7 @@ private val previewDestinations = listOf(
         popularity = 10,
     ),
     Destination(
-        osmId = "2",
+        id = "2",
         name = "Balaton",
         town = "Siófok",
         type = DestinationType.LAKE,

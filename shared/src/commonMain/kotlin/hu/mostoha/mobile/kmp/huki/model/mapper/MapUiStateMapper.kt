@@ -10,3 +10,9 @@ fun MapUiState.withoutGpx(): MapUiState =
         allDistancesVisible = false,
         distanceInfoWindows = emptyList(),
     )
+
+/**
+ * The hiking layer is hidden while Landscapes are open, so closing them brings it back.
+ */
+fun MapUiState.withoutLandscapes(): MapUiState =
+    if (landscapes == null) this else copy(landscapes = null, hikingLayerVisible = true)

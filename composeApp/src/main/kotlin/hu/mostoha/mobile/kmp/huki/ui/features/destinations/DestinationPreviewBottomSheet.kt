@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.destinations
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -30,6 +31,8 @@ fun DestinationPreviewBottomSheet(
     destination: Destination,
     sheetState: SheetState,
     onShowOnMapClick: () -> Unit,
+    onRouteClick: () -> Unit,
+    onWebsiteClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     landscapeText: String? = null,
@@ -53,14 +56,55 @@ fun DestinationPreviewBottomSheet(
                 landscapeText = landscapeText,
                 distanceText = distanceText,
             )
+            DestinationPreviewActions(
+                destination = destination,
+                onShowOnMapClick = onShowOnMapClick,
+                onRouteClick = onRouteClick,
+                onWebsiteClick = onWebsiteClick,
+                modifier = Modifier.padding(top = Dimens.Large),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DestinationPreviewActions(
+    destination: Destination,
+    onShowOnMapClick: () -> Unit,
+    onRouteClick: () -> Unit,
+    onWebsiteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+    ) {
+        SecondaryButton(
+            iconResId = R.drawable.ic_maps,
+            text = mokoString(SharedRes.strings.destinations_action_show_on_map),
+            onClick = onShowOnMapClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTagAsResourceId(TestTags.DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON),
+        )
+        if (destination.routeGpxFile != null) {
             SecondaryButton(
-                iconResId = R.drawable.ic_maps,
-                text = mokoString(SharedRes.strings.destinations_action_show_on_map),
-                onClick = onShowOnMapClick,
+                iconResId = R.drawable.ic_route,
+                text = mokoString(SharedRes.strings.destinations_action_open_route),
+                onClick = onRouteClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimens.Large)
-                    .testTagAsResourceId(TestTags.DESTINATION_PREVIEW_SHOW_ON_MAP_BUTTON),
+                    .testTagAsResourceId(TestTags.DESTINATION_PREVIEW_ROUTE_BUTTON),
+            )
+        }
+        if (destination.website != null) {
+            SecondaryButton(
+                iconResId = R.drawable.ic_language,
+                text = mokoString(SharedRes.strings.destinations_action_open_website),
+                onClick = onWebsiteClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTagAsResourceId(TestTags.DESTINATION_PREVIEW_WEBSITE_BUTTON),
             )
         }
     }
@@ -76,24 +120,55 @@ private fun DestinationPreviewBottomSheetPreview() {
                 landscapeText = "Mátra",
                 distanceText = "89 km",
             )
-            SecondaryButton(
-                iconResId = R.drawable.ic_maps,
-                text = mokoString(SharedRes.strings.destinations_action_show_on_map),
-                onClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Dimens.Large),
+            DestinationPreviewActions(
+                destination = previewDestination,
+                onShowOnMapClick = {},
+                onRouteClick = {},
+                onWebsiteClick = {},
+                modifier = Modifier.padding(top = Dimens.Large),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun DestinationPreviewBottomSheetAllActionsPreview() {
+    HuKiTheme {
+        Column(modifier = Modifier.padding(Dimens.Large)) {
+            DestinationPreviewCard(
+                destination = previewTrailDestination,
+                landscapeText = "Budai-hegység",
+            )
+            DestinationPreviewActions(
+                destination = previewTrailDestination,
+                onShowOnMapClick = {},
+                onRouteClick = {},
+                onWebsiteClick = {},
+                modifier = Modifier.padding(top = Dimens.Large),
             )
         }
     }
 }
 
 private val previewDestination = Destination(
-    osmId = "1",
+    id = "1",
     name = "Kékestető",
     town = "Mátraszentimre",
     type = DestinationType.PEAK,
     location = Location(47.8709, 20.0106),
     description = SharedRes.strings.destinations_section_title,
     popularity = 10,
+)
+
+private val previewTrailDestination = Destination(
+    id = "2",
+    name = "Jági tanösvény",
+    town = "Pilisszentiván",
+    type = DestinationType.EDUCATIONAL_TRAIL,
+    location = Location(47.6120670, 18.8845000),
+    description = SharedRes.strings.destinations_section_title,
+    popularity = 4,
+    routeGpxFile = SharedRes.files.edut_jagi_tanosveny_gpx,
+    website = "https://pilisiparkerdo.hu",
 )

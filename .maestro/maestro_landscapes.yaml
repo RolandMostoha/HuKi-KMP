@@ -1,0 +1,96 @@
+appId: ${APP_ID}
+---
+# Landscapes: open the Landscapes sheet from Discover, expand a landscape, select one of its destinations,
+# open its Place Details, resume the sheet, collapse the landscape, then close the Landscapes.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open the Landscapes from Discover.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_SHEET
+    timeout: 5000
+- assertNotVisible:
+    id: MAIN_SEARCH_BAR
+- assertNotVisible:
+    id: LANDSCAPES_DESTINATION_MARKER
+
+# Expanding a landscape reveals its destinations in the sheet and on the map.
+- tapOn:
+    id: LANDSCAPES_ROW
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
+    timeout: 5000
+- assertVisible:
+    id: LANDSCAPES_DESTINATION_MARKER
+
+# A destination card opens its InfoWindow, which leads to Place Details.
+- tapOn:
+    id: "LANDSCAPES_DESTINATION_CARD_.*"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW
+    timeout: 5000
+- tapOn:
+    id: LANDSCAPES_INFO_WINDOW_PLACE_DETAILS_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_SHEET
+    timeout: 5000
+- tapOn:
+    id: PLACE_DETAILS_CLOSE_BUTTON
+
+# Resume brings the Landscapes sheet back with the landscape still expanded.
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_RESUME_FAB
+    timeout: 5000
+- tapOn:
+    id: LANDSCAPES_RESUME_FAB
+- extendedWaitUntil:
+    visible:
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
+    timeout: 5000
+
+# Collapsing the landscape hides its destinations.
+- tapOn:
+    id: LANDSCAPES_ROW
+    index: 0
+- extendedWaitUntil:
+    notVisible:
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
+    timeout: 5000
+- assertNotVisible:
+    id: LANDSCAPES_DESTINATION_MARKER
+
+# Close removes the Landscapes.
+- tapOn:
+    id: LANDSCAPES_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- assertNotVisible:
+    id: LANDSCAPES_RESUME_FAB

@@ -64,6 +64,7 @@ struct OktMapContent: MapContent {
             }
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
             .priority(markerPriority(marker))
         }
         if let info = okt.infoWindow {
@@ -83,6 +84,7 @@ struct OktMapContent: MapContent {
             ])
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
             .priority(Self.infoWindowPriority)
         }
     }

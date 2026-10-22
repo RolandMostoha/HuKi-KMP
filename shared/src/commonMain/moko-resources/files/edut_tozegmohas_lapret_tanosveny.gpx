@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="HuKi generate_educational_trails.py">
+  <metadata>
+    <name>Szőcei láprét tanösvény</name>
+    <copyright author="OpenStreetMap contributors"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+  </metadata>
+  <trk>
+    <name>Szőcei láprét tanösvény</name>
+    <src>OpenStreetMap, elevation: EU-DEM v1.1</src>
+    <link href="https://www.openstreetmap.org/relation/6446525"/>
+    <type>pt</type>
+    <trkseg>
+      <trkpt lat="46.899755" lon="16.573107"><ele>226.0</ele></trkpt>
+      <trkpt lat="46.899719" lon="16.572893"><ele>226.6</ele></trkpt>
+      <trkpt lat="46.899653" lon="16.572753"><ele>227.7</ele></trkpt>
+      <trkpt lat="46.899579" lon="16.572732"><ele>228.1</ele></trkpt>
+      <trkpt lat="46.899194" lon="16.572993"><ele>226.9</ele></trkpt>
+      <trkpt lat="46.898480" lon="16.573031"><ele>224.6</ele></trkpt>
+      <trkpt lat="46.898023" lon="16.572686"><ele>225.0</ele></trkpt>
+      <trkpt lat="46.897879" lon="16.572331"><ele>226.4</ele></trkpt>
+      <trkpt lat="46.897638" lon="16.571973"><ele>228.6</ele></trkpt>
+      <trkpt lat="46.897456" lon="16.571940"><ele>228.2</ele></trkpt>
+      <trkpt lat="46.897283" lon="16.571994"><ele>227.3</ele></trkpt>
+      <trkpt lat="46.897019" lon="16.572752"><ele>225.3</ele></trkpt>
+      <trkpt lat="46.897054" lon="16.572810"><ele>225.6</ele></trkpt>
+      <trkpt lat="46.897104" lon="16.573381"><ele>230.0</ele></trkpt>
+      <trkpt lat="46.897081" lon="16.573643"><ele>232.7</ele></trkpt>
+      <trkpt lat="46.897020" lon="16.573750"><ele>234.0</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

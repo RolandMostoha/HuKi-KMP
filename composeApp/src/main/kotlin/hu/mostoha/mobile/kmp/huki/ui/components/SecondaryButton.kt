@@ -17,6 +17,7 @@ fun SecondaryButton(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     enabled: Boolean = true,
+    size: ButtonSize = ButtonSize.REGULAR,
 ) {
     BaseButton(
         iconResId = iconResId,
@@ -29,6 +30,7 @@ fun SecondaryButton(
         modifier = modifier,
         contentDescription = contentDescription,
         enabled = enabled,
+        size = size,
     )
 }
 
@@ -40,6 +42,19 @@ private fun SecondaryButtonPreview() {
             iconResId = R.drawable.ic_maps,
             text = "Show on map",
             onClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SecondaryButtonSmallPreview() {
+    HuKiTheme {
+        SecondaryButton(
+            iconResId = R.drawable.ic_maps,
+            text = "Show on map",
+            onClick = {},
+            size = ButtonSize.SMALL,
         )
     }
 }

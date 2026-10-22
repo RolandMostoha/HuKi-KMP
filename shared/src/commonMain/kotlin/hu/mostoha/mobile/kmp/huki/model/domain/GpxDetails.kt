@@ -19,4 +19,5 @@ data class GpxDetails(
     val altitudeRange: Pair<Int, Int>,
     val incline: Int,
     val decline: Int,
+    val jelSymbol: JelSymbol? = null,
 )

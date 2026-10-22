@@ -33,12 +33,14 @@ class DefaultGpxStorageTest {
     private val gpxDir = File(appContext.filesDir, "gpx")
     private val sandboxDir = File(gpxDir, GpxOrigin.EXTERNAL.dirName)
     private val routePlannerDir = File(gpxDir, GpxOrigin.ROUTE_PLANNER.dirName)
+    private val bundledDir = File(gpxDir, GpxOrigin.BUNDLED.dirName)
 
     @Before
     @After
     fun cleanSandbox() {
         sandboxDir.deleteRecursively()
         routePlannerDir.deleteRecursively()
+        bundledDir.deleteRecursively()
     }
 
     @Test
@@ -76,6 +78,32 @@ class DefaultGpxStorageTest {
             first.name shouldBe "track.gpx"
             second.name shouldBe "track (2).gpx"
             File(sandboxDir, "track (2).gpx").readText() shouldBe "content-b"
+        }
+    }
+
+    @Test
+    fun givenSameContent_whenReplaceInSandbox_thenNothingReplaced() {
+        runTest {
+            replaceFile(writeSourceFile("trail.gpx", "content-a"))
+
+            val replaced = replaceFile(writeSourceFile("trail.gpx", "content-a"))
+
+            replaced.replacedContent.shouldBeNull()
+            File(bundledDir, "trail.gpx").readText() shouldBe "content-a"
+        }
+    }
+
+    @Test
+    fun givenSameNameDifferentContent_whenReplaceInSandbox_thenFileOverwritten() {
+        runTest {
+            replaceFile(writeSourceFile("trail.gpx", "content-a"))
+
+            val replaced = replaceFile(writeSourceFile("trail.gpx", "content-b"))
+
+            replaced.file.name shouldBe "trail.gpx"
+            replaced.replacedContent?.decodeToString() shouldBe "content-a"
+            bundledDir.listFiles().orEmpty() shouldHaveSize 1
+            File(bundledDir, "trail.gpx").readText() shouldBe "content-b"
         }
     }
 
@@ -184,6 +212,8 @@ class DefaultGpxStorageTest {
     }
 
     private suspend fun importFile(uri: Uri, origin: GpxOrigin = GpxOrigin.EXTERNAL): PlatformFile = storage.saveToSandbox(storage.readGpx(uri.toString()), origin)
+
+    private suspend fun replaceFile(uri: Uri): GpxReplacement = storage.replaceInSandbox(storage.readGpx(uri.toString()), GpxOrigin.BUNDLED)
 
     private fun writeSourceFile(fileName: String, content: String): Uri {
         val file = File(appContext.cacheDir, fileName).apply { writeText(content) }

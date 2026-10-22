@@ -57,14 +57,12 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OktMarker
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
-
-private const val OKT_SHEET_PORTRAIT_FRACTION = 0.45f
-private const val OKT_SHEET_LANDSCAPE_FRACTION = 0.6f
 
 @Composable
 fun OktBottomSheet(
@@ -142,9 +140,9 @@ fun rememberOktSheetHeight(): Dp {
     val windowHeight = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     return if (isLandscape) {
-        windowHeight * OKT_SHEET_LANDSCAPE_FRACTION
+        windowHeight * SharedDimens.OKT_SHEET_LANDSCAPE_FRACTION.toFloat()
     } else {
-        maxOf(windowHeight * OKT_SHEET_PORTRAIT_FRACTION, Dimens.OktSheetMinHeight)
+        maxOf(windowHeight * SharedDimens.OKT_SHEET_FRACTION.toFloat(), SharedDimens.OKT_SHEET_MIN_HEIGHT.dp)
     }
 }
 
