@@ -38,13 +38,13 @@ extension MenuView {
             )
             divider
             MenuItemView(
-                icon: tintedSymbol("mappin.and.ellipse", color: onPrimary),
-                title: strings.get(id: SharedRes.strings().menu_item_destinations),
-                description: strings.get(id: SharedRes.strings().destinations_description),
+                icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onPrimary),
+                title: strings.get(id: SharedRes.strings().menu_item_gpx_collection),
+                description: strings.get(id: SharedRes.strings().menu_item_gpx_collection_description),
                 iconBackgroundColor: primary,
-                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_destinations),
-                testTag: TestTags.shared.MENU_ROW_DESTINATIONS,
-                action: { viewModel.onEvent(event: MenuUiEventsDestinationsClicked.shared) }
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_collection),
+                testTag: TestTags.shared.MENU_ROW_GPX_COLLECTION,
+                action: { viewModel.onEvent(event: MenuUiEventsGpxCollectionClicked.shared) }
             )
             divider
             MenuItemView(
@@ -55,16 +55,6 @@ extension MenuView {
                 accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_place_history),
                 testTag: TestTags.shared.MENU_ROW_PLACE_HISTORY,
                 action: { viewModel.onEvent(event: MenuUiEventsPlaceHistoryClicked.shared) }
-            )
-            divider
-            MenuItemView(
-                icon: tintedIcon(SharedRes.images().ic_gpx.toUIImage()!, color: onPrimary),
-                title: strings.get(id: SharedRes.strings().menu_item_gpx_collection),
-                description: strings.get(id: SharedRes.strings().menu_item_gpx_collection_description),
-                iconBackgroundColor: primary,
-                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_gpx_collection),
-                testTag: TestTags.shared.MENU_ROW_GPX_COLLECTION,
-                action: { viewModel.onEvent(event: MenuUiEventsGpxCollectionClicked.shared) }
             )
         }
         .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))

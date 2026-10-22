@@ -9,7 +9,6 @@ struct MenuView: View {
     let onSettingsClicked: () -> Void
     let onRoutePlannerClicked: () -> Void
     let onDiscoverClicked: () -> Void
-    let onDestinationsClicked: () -> Void
     let onGpxCollectionClicked: () -> Void
     let onGpxGuideClicked: () -> Void
     let onTrailSymbolsGuideClicked: () -> Void
@@ -145,7 +144,6 @@ private extension MenuView {
         switch onEnum(of: effect) {
         case .navigateToRoutePlanner: return onRoutePlannerClicked
         case .navigateToDiscover: return onDiscoverClicked
-        case .navigateToDestinations: return onDestinationsClicked
         case .navigateToPlaceHistory: return onPlaceHistoryClicked
         case .navigateToGpxCollection: return onGpxCollectionClicked
         default: return nil

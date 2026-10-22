@@ -137,7 +137,6 @@ fun RootNavHost() {
                     navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_OPEN_DISCOVER_KEY] = true
                     navController.popBackStack<Main>(inclusive = false)
                 },
-                onDestinationsClicked = { navController.navigate(Routes.DESTINATIONS) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
                 onTrailSymbolsGuideClicked = { navController.navigate(Routes.TRAIL_SYMBOLS_GUIDE) },

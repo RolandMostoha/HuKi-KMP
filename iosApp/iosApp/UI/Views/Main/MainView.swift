@@ -271,7 +271,6 @@ private extension MainView {
                 viewModel.onEvent(event: MainUiEventsDiscoverClicked.shared)
                 navigationPath = NavigationPath()
             },
-            onDestinationsClicked: { navigationPath.append(DestinationsRoute.destinations) },
             onGpxCollectionClicked: { navigationPath.append(GpxCollectionRoute.gpxCollection) },
             onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) },
             onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },

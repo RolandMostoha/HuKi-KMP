@@ -129,24 +129,21 @@
     <string name="menu_item_route_planner_description">Plan on hiking trails or off them</string>
     <string name="menu_a11y_open_route_planner">Open Route planner</string>
     <string name="menu_item_discover">Discover</string>
-    <string name="menu_item_discover_description">Hike ideas and destinations</string>
-    <string name="menu_item_destinations">Destinations</string>
-    <string name="destinations_description">Nearly 400 hand-picked places</string>
+    <string name="menu_item_discover_description">Destinations and hike ideas</string>
     <string name="menu_a11y_open_discover">Open Discover</string>
-    <string name="menu_a11y_open_destinations">Open Destinations</string>
     <string name="menu_item_place_history">Place History</string>
     <string name="menu_item_place_history_description">Places you have recently opened</string>
     <string name="menu_a11y_open_place_history">Open Place History</string>
     <string name="menu_item_gpx_collection">GPX Collection</string>
-    <string name="menu_item_gpx_collection_description">Your imported routes in one place</string>
+    <string name="menu_item_gpx_collection_description">Your route plans and imported routes</string>
     <string name="menu_a11y_open_gpx_collection">Open GPX Collection</string>
     <string name="menu_section_guides">Guides</string>
     <string name="menu_item_gpx_guide">GPX Guide</string>
     <string name="menu_item_gpx_guide_description">How to import and use GPX tracks</string>
     <string name="menu_a11y_open_gpx_guide">Open GPX Guide</string>
-    <string name="menu_item_trail_symbols_guide">Trail Symbols Guide</string>
+    <string name="menu_item_trail_symbols_guide">Trail Symbols</string>
     <string name="menu_item_trail_symbols_guide_description">Understand Hungarian trail markings</string>
-    <string name="menu_a11y_open_trail_symbols_guide">Open Trail Symbols Guide</string>
+    <string name="menu_a11y_open_trail_symbols_guide">Open Trail Symbols</string>
     <string name="menu_section_contact">Contact</string>
     <string name="menu_section_legal">Legal</string>
     <string name="menu_section_supporters">Supporters</string>
@@ -231,7 +228,7 @@
     <string name="gpx_guide_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.</string>
     <string name="gpx_guide_a11y_open_collection">Open %s</string>
 
-    <string name="trail_symbols_guide_title">Trail Symbols Guide</string>
+    <string name="trail_symbols_guide_title">Trail Symbols</string>
     <string name="trail_symbols_guide_a11y_back">Back</string>
     <string name="trail_symbols_main_section_title">Route trail markings</string>
     <string name="trail_symbols_branch_section_title">Destination trail markings</string>

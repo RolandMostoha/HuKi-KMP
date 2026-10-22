@@ -288,10 +288,22 @@ appId: ${APP_ID}
 - assertVisible: "HuKi"
 - assertVisible:
     id: MENU_VERSION
+- tapOn:
+    id: MENU_BACK_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
 
 # Destinations screen
 - tapOn:
-    id: MENU_ROW_DESTINATIONS
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 15000
+- tapOn:
+    id: DISCOVER_BROWSE_DESTINATIONS_BUTTON
 - extendedWaitUntil:
     visible:
       id: DESTINATIONS_SCREEN_ROOT

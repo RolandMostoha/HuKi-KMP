@@ -94,7 +94,7 @@ private fun NavigationRowCardPreview() {
         NavigationRowCard(
             iconResId = R.drawable.ic_place_circle,
             title = mokoString(SharedRes.strings.discover_browse_destinations),
-            subtitle = mokoString(SharedRes.strings.destinations_description),
+            subtitle = mokoString(SharedRes.strings.menu_item_discover_description),
             onClick = {},
         )
     }

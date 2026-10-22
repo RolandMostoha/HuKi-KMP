@@ -129,24 +129,21 @@
     <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
     <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
     <string name="menu_item_discover">Felfedező</string>
-    <string name="menu_item_discover_description">Túraötletek és kirándulóhelyek</string>
-    <string name="menu_item_destinations">Kirándulóhelyek</string>
-    <string name="destinations_description">Közel 400 kézzel válogatott hely</string>
+    <string name="menu_item_discover_description">Kirándulóhelyek és túraötletek</string>
     <string name="menu_a11y_open_discover">Felfedező megnyitása</string>
-    <string name="menu_a11y_open_destinations">Kirándulóhelyek megnyitása</string>
     <string name="menu_item_place_history">Helyelőzmények</string>
     <string name="menu_item_place_history_description">A nemrég megnyitott helyeid</string>
     <string name="menu_a11y_open_place_history">Helyelőzmények megnyitása</string>
     <string name="menu_item_gpx_collection">GPX gyűjtemény</string>
-    <string name="menu_item_gpx_collection_description">Importált útvonalaid egy helyen</string>
+    <string name="menu_item_gpx_collection_description">Útvonalterveid és importált útvonalaid</string>
     <string name="menu_a11y_open_gpx_collection">GPX gyűjtemény megnyitása</string>
     <string name="menu_section_guides">Útmutatók</string>
     <string name="menu_item_gpx_guide">GPX útmutató</string>
     <string name="menu_item_gpx_guide_description">GPX útvonalak importálása és használata</string>
     <string name="menu_a11y_open_gpx_guide">GPX útmutató megnyitása</string>
-    <string name="menu_item_trail_symbols_guide">Turistajelzések útmutató</string>
+    <string name="menu_item_trail_symbols_guide">Turistajelzések</string>
     <string name="menu_item_trail_symbols_guide_description">Ismerd meg a turistajelzéseket</string>
-    <string name="menu_a11y_open_trail_symbols_guide">Jelzések útmutató megnyitása</string>
+    <string name="menu_a11y_open_trail_symbols_guide">Turistajelzések megnyitása</string>
     <string name="menu_section_contact">Kapcsolat</string>
     <string name="menu_section_legal">Jogi információk</string>
     <string name="menu_section_supporters">Támogatók</string>
@@ -231,7 +228,7 @@
     <string name="gpx_guide_step_4_message">Koppints a GPX fájlra, válaszd a Megosztást, majd a HuKi-t. Az útvonal ezután megjelenik a GPX gyűjteményedben.</string>
     <string name="gpx_guide_a11y_open_collection">%s megnyitása</string>
 
-    <string name="trail_symbols_guide_title">Turistajelzések útmutató</string>
+    <string name="trail_symbols_guide_title">Turistajelzések</string>
     <string name="trail_symbols_guide_a11y_back">Vissza</string>
     <string name="trail_symbols_main_section_title">Útvonal turistajelzések</string>
     <string name="trail_symbols_branch_section_title">Célpont turistajelzések</string>

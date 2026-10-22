@@ -1,6 +1,6 @@
 appId: ${APP_ID}
 ---
-# Destinations: open from the Menu, switch between the Popular, Landscapes and Nearby
+# Destinations: open from the Discover sheet, switch between the Popular, Landscapes and Nearby
 # tabs (connected button group / segmented control) and verify each tab renders its
 # content, then return to the map. Works on both Android and iOS via shared test tags.
 - launchApp:
@@ -16,12 +16,15 @@ appId: ${APP_ID}
       id: MAP_MAPBOX
     timeout: 10000
 
-# Open Destinations from the Menu.
-- tapOn: "Menu"
-- assertVisible:
-    id: MENU_ROW_DESTINATIONS
+# Open Destinations from the Discover sheet.
 - tapOn:
-    id: MENU_ROW_DESTINATIONS
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_BROWSE_DESTINATIONS_BUTTON
 - extendedWaitUntil:
     visible:
       id: DESTINATIONS_SCREEN_ROOT
@@ -72,16 +75,21 @@ appId: ${APP_ID}
       id: PLACE_DETAILS_TITLE
     timeout: 15000
 
-# Closing the Place Details sheet reveals the Menu entry again.
+# Closing the Place Details sheet reveals the Discover button again.
 - tapOn:
     id: PLACE_DETAILS_CLOSE_BUTTON
 - assertNotVisible:
     id: PLACE_DETAILS_SHEET
 
-# Re-open Destinations from the Menu to continue verifying the remaining tabs.
-- tapOn: "Menu"
+# Re-open Destinations from the Discover sheet to continue verifying the remaining tabs.
 - tapOn:
-    id: MENU_ROW_DESTINATIONS
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_BROWSE_DESTINATIONS_BUTTON
 - extendedWaitUntil:
     visible:
       id: DESTINATIONS_SCREEN_ROOT
@@ -101,15 +109,15 @@ appId: ${APP_ID}
       id: DESTINATIONS_ITEM
     timeout: 5000
 
-# Back to the map via the screen back button and the menu back button.
+# Back to the map via the screen back button; the Discover sheet stays closed.
 - tapOn:
     id: DESTINATIONS_BACK_BUTTON
-- assertVisible:
-    id: MENU_SCREEN_ROOT
-- tapOn:
-    id: MENU_BACK_BUTTON
-- assertVisible:
-    id: MAP_MAPBOX
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- assertNotVisible:
+    id: DISCOVER_SHEET
 
 # The Search sheet "See all" also opens the Destinations screen.
 - tapOn: "Search..."

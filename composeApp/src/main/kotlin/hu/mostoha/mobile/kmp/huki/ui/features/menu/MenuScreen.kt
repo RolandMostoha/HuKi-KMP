@@ -69,7 +69,6 @@ fun MenuScreen(
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
     onDiscoverClicked: () -> Unit,
-    onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
     onTrailSymbolsGuideClicked: () -> Unit,
@@ -87,7 +86,6 @@ fun MenuScreen(
         onSettingsClicked = onSettingsClicked,
         onRoutePlannerClicked = onRoutePlannerClicked,
         onDiscoverClicked = onDiscoverClicked,
-        onDestinationsClicked = onDestinationsClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onGpxGuideClicked = onGpxGuideClicked,
         onTrailSymbolsGuideClicked = onTrailSymbolsGuideClicked,
@@ -105,7 +103,6 @@ private fun MenuContent(
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
     onDiscoverClicked: () -> Unit,
-    onDestinationsClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
     onTrailSymbolsGuideClicked: () -> Unit,
@@ -130,7 +127,6 @@ private fun MenuContent(
                     email = context.resolveMoko(effect.emailRes),
                     subject = context.resolveMoko(SharedRes.strings.menu_email_subject_android),
                 )
-                MenuUiEffects.NavigateToDestinations -> onDestinationsClicked()
             }
         }
     }
@@ -210,16 +206,16 @@ private fun MenuContent(
                 }
                 MenuRowDivider()
                 MenuRow(
-                    title = mokoString(SharedRes.strings.menu_item_destinations),
+                    title = mokoString(SharedRes.strings.menu_item_gpx_collection),
                     valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_destinations),
-                    testTag = TestTags.MENU_ROW_DESTINATIONS,
-                    onClick = { onEvent(MenuUiEvents.DestinationsClicked) },
-                    description = mokoString(SharedRes.strings.destinations_description),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_collection),
+                    testTag = TestTags.MENU_ROW_GPX_COLLECTION,
+                    onClick = { onEvent(MenuUiEvents.GpxCollectionClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_gpx_collection_description),
                     iconBackgroundColor = mokoColor(SharedRes.colors.primary),
                 ) {
                     TintedRowIcon(
-                        drawableResId = R.drawable.ic_place_circle,
+                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -235,21 +231,6 @@ private fun MenuContent(
                 ) {
                     TintedRowIcon(
                         drawableResId = R.drawable.ic_history,
-                        tint = mokoColor(SharedRes.colors.onPrimary),
-                    )
-                }
-                MenuRowDivider()
-                MenuRow(
-                    title = mokoString(SharedRes.strings.menu_item_gpx_collection),
-                    valueText = null,
-                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_gpx_collection),
-                    testTag = TestTags.MENU_ROW_GPX_COLLECTION,
-                    onClick = { onEvent(MenuUiEvents.GpxCollectionClicked) },
-                    description = mokoString(SharedRes.strings.menu_item_gpx_collection_description),
-                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
-                ) {
-                    TintedRowIcon(
-                        drawableResId = SharedRes.images.ic_gpx.drawableResId,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -531,7 +512,6 @@ private fun MenuContentPreview() {
             onSettingsClicked = {},
             onRoutePlannerClicked = {},
             onDiscoverClicked = {},
-            onDestinationsClicked = {},
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},
             onTrailSymbolsGuideClicked = {},
