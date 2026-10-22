@@ -66,7 +66,7 @@ fun LandscapeDestinationCard(
             .background(containerColor)
             .clickable(onClick = onClick)
             .semantics(mergeDescendants = true) { selected = isSelected }
-            .testTagAsResourceId(TestTags.LANDSCAPES_DESTINATION_CARD)
+            .testTagAsResourceId(TestTags.landscapesDestinationCard(destination.id))
             .padding(Dimens.Medium),
         verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
     ) {

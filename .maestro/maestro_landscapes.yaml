@@ -40,14 +40,14 @@ appId: ${APP_ID}
     index: 0
 - extendedWaitUntil:
     visible:
-      id: LANDSCAPES_DESTINATION_CARD
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
     timeout: 5000
 - assertVisible:
     id: LANDSCAPES_DESTINATION_MARKER
 
 # A destination card opens its InfoWindow, which leads to Place Details.
 - tapOn:
-    id: LANDSCAPES_DESTINATION_CARD
+    id: "LANDSCAPES_DESTINATION_CARD_.*"
     index: 0
 - extendedWaitUntil:
     visible:
@@ -71,7 +71,7 @@ appId: ${APP_ID}
     id: LANDSCAPES_RESUME_FAB
 - extendedWaitUntil:
     visible:
-      id: LANDSCAPES_DESTINATION_CARD
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
     timeout: 5000
 
 # Collapsing the landscape hides its destinations.
@@ -80,7 +80,7 @@ appId: ${APP_ID}
     index: 0
 - extendedWaitUntil:
     notVisible:
-      id: LANDSCAPES_DESTINATION_CARD
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
     timeout: 5000
 - assertNotVisible:
     id: LANDSCAPES_DESTINATION_MARKER

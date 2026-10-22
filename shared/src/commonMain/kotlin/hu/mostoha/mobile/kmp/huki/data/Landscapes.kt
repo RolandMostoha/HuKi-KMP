@@ -435,6 +435,17 @@ val Landscapes = listOf(
         destinations = DESTINATIONS_ZALA,
     ),
     Landscape(
+        id = "kis_balaton",
+        nameRes = SharedRes.strings.landscape_kis_balaton,
+        colorRes = SharedRes.colors.landscapeKisBalaton,
+        landscapeType = LandscapeType.LAKE,
+        center = Location(latitude = 46.6400, longitude = 17.2000),
+        areaTags = mapOf(
+            HikeRecommendation.AKTIVKALANDOR to "kis-balaton",
+        ),
+        destinations = DESTINATIONS_KIS_BALATON,
+    ),
+    Landscape(
         id = "szigetkoz",
         nameRes = SharedRes.strings.landscape_szigetkoz,
         colorRes = SharedRes.colors.landscapeSzigetkoz,

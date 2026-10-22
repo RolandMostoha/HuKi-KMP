@@ -269,7 +269,7 @@ appId: ${APP_ID}
     index: 0
 - extendedWaitUntil:
     visible:
-      id: LANDSCAPES_DESTINATION_CARD
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
       index: 0
     timeout: 15000
 - tapOn:

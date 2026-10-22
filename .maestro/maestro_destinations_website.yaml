@@ -49,18 +49,8 @@ appId: ${APP_ID}
     text: "(Budai-hegység|Buda Hills).*"
 
 # A destination without a website has no website button.
-- repeat:
-    while:
-      notVisible:
-        text: "Jági tanösvény.*"
-    times: 15
-    commands:
-      - swipe:
-          from:
-            id: LANDSCAPES_DESTINATION_CARD
-          direction: LEFT
 - tapOn:
-    text: "Jági tanösvény.*"
+    id: LANDSCAPES_DESTINATION_CARD_budaors_farkas_hegy
 - extendedWaitUntil:
     visible:
       id: LANDSCAPES_INFO_WINDOW
@@ -69,18 +59,10 @@ appId: ${APP_ID}
     id: LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON
 
 # A destination with a website shows the button, which leaves the app for the browser.
-- repeat:
-    while:
-      notVisible:
-        text: "Pál-völgyi-barlang.*"
-    times: 15
-    commands:
-      - swipe:
-          from:
-            id: LANDSCAPES_DESTINATION_CARD
-          direction: RIGHT
-- tapOn:
-    text: "Pál-völgyi-barlang.*"
+- runFlow:
+    file: subflows/maestro_flow_select_landscape_destination.yaml
+    env:
+      DESTINATION_ID: budapest_pal_volgyi_barlang
 - extendedWaitUntil:
     visible:
       id: LANDSCAPES_INFO_WINDOW_WEBSITE_BUTTON

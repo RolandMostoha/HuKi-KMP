@@ -55,7 +55,7 @@ struct LandscapeDestinationCardView: View {
         .buttonStyle(PressFeedbackButtonStyle())
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityIdentifier(TestTags.shared.LANDSCAPES_DESTINATION_CARD)
+        .accessibilityIdentifier(TestTags.shared.landscapesDestinationCard(destinationId: destination.id))
     }
 }
 

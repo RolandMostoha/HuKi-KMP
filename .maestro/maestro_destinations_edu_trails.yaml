@@ -47,18 +47,10 @@ appId: ${APP_ID}
           duration: 800
 - tapOn:
     text: "(Budai-hegység|Buda Hills).*"
-- repeat:
-    while:
-      notVisible:
-        text: "Jági tanösvény.*"
-    times: 15
-    commands:
-      - swipe:
-          from:
-            id: LANDSCAPES_DESTINATION_CARD
-          direction: LEFT
-- tapOn:
-    text: "Jági tanösvény.*"
+- runFlow:
+    file: subflows/maestro_flow_select_landscape_destination.yaml
+    env:
+      DESTINATION_ID: pilisszentivan_jagi_tanosveny
 - extendedWaitUntil:
     visible:
       id: LANDSCAPES_INFO_WINDOW

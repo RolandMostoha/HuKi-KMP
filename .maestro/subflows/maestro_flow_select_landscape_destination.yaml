@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+---
+# Reusable subflow (NOT an e2e test): selects the destination card DESTINATION_ID in the
+# expanded landscape's carousel by stepping to the next card until it is selected, so the target
+# must come after the currently selected card (or anywhere, when nothing is selected).
+# Compose exposes the selected card as checked, SwiftUI as selected.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - runFlow:
+          when:
+            notVisible:
+              id: "LANDSCAPES_DESTINATION_CARD_.*"
+              checked: true
+          commands:
+            - tapOn:
+                id: "LANDSCAPES_DESTINATION_CARD_.*"
+                index: 0
+      - repeat:
+          while:
+            notVisible:
+              id: "LANDSCAPES_DESTINATION_CARD_${DESTINATION_ID}"
+              checked: true
+          times: 30
+          commands:
+            - tapOn:
+                id: "LANDSCAPES_DESTINATION_CARD_.*"
+                rightOf:
+                  id: "LANDSCAPES_DESTINATION_CARD_.*"
+                  checked: true
+            - waitForAnimationToEnd
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          when:
+            notVisible:
+              id: "LANDSCAPES_DESTINATION_CARD_.*"
+              selected: true
+          commands:
+            - tapOn:
+                id: "LANDSCAPES_DESTINATION_CARD_.*"
+                index: 0
+      - repeat:
+          while:
+            notVisible:
+              id: "LANDSCAPES_DESTINATION_CARD_${DESTINATION_ID}"
+              selected: true
+          times: 30
+          commands:
+            - tapOn:
+                id: "LANDSCAPES_DESTINATION_CARD_.*"
+                rightOf:
+                  id: "LANDSCAPES_DESTINATION_CARD_.*"
+                  selected: true
+            - waitForAnimationToEnd

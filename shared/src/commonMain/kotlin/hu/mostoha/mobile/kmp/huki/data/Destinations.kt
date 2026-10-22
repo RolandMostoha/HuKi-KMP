@@ -931,6 +931,16 @@ val DESTINATIONS_HORTOBAGY = listOf(
         description = SharedRes.strings.hortobagy_tisza_tavi_vizi_setany,
         routeGpxFile = SharedRes.files.edut_tisza_tavi_vizi_setany_gpx,
     ),
+    Destination(
+        id = "karcag_lombkorona_setany",
+        location = Location(47.317493, 20.901667),
+        description = SharedRes.strings.hortobagy_karcagi_lombkorona_setany,
+        name = "Karcagi lombkorona sétány",
+        town = "Karcag",
+        type = DestinationType.CANOPY_WALK,
+        popularity = 5,
+        website = "https://www.nefag.hu/okoturisztika/karcagi-parkerdo-es-lombkorona-setany/",
+    ),
 )
 
 @Suppress("MagicNumber")
@@ -1044,16 +1054,6 @@ val DESTINATIONS_ALFOLD = listOf(
         website = "https://gyomaimuvhaz.hu/telephelyek/erzsebet-ligeti-lombkorona-setany-es-kilato",
     ),
     Destination(
-        id = "karcag_lombkorona_setany",
-        location = Location(47.317493, 20.901667),
-        description = SharedRes.strings.alfold_karcagi_lombkorona_setany,
-        name = "Karcagi lombkorona sétány",
-        town = "Karcag",
-        type = DestinationType.CANOPY_WALK,
-        popularity = 5,
-        website = "https://www.nefag.hu/okoturisztika/karcagi-parkerdo-es-lombkorona-setany/",
-    ),
-    Destination(
         id = "morahalom_ezer_ev_parkja",
         location = Location(46.2218796, 19.9030468),
         description = SharedRes.strings.alfold_ezer_ev_parkja,
@@ -1100,16 +1100,6 @@ val DESTINATIONS_ALFOLD = listOf(
         popularity = 8,
         location = Location(46.887397, 20.117544),
         description = SharedRes.strings.alfold_tiszakurti_arboretum,
-    ),
-    Destination(
-        id = "tiszadob_andrassy_kastely",
-        location = Location(48.0171265, 21.1742646),
-        description = SharedRes.strings.alfold_tiszadobi_andrassy_kastely,
-        name = "Andrássy-kastély",
-        town = "Tiszadob",
-        type = DestinationType.PALACE,
-        popularity = 7,
-        website = "https://nof.hu/hu/tiszadob/",
     ),
 )
 
@@ -2704,16 +2694,6 @@ val DESTINATIONS_BAKONY = listOf(
         website = "https://www.bfnp.hu/hu/latogatohelyek-3/szentgali-kolik-szentgal",
     ),
     Destination(
-        id = "celldomolk_sag_hegy",
-        name = "Ság-hegy és geológiai tanösvény",
-        town = "Celldömölk",
-        type = DestinationType.EDUCATIONAL_TRAIL,
-        popularity = 7,
-        location = Location(47.23028, 17.11583),
-        description = SharedRes.strings.bakony_sag_hegy,
-        routeGpxFile = SharedRes.files.edut_sag_hegy_tanosveny_gpx,
-    ),
-    Destination(
         id = "doba_somlo_var",
         name = "Somló vára",
         town = "Doba",
@@ -3758,16 +3738,6 @@ val DESTINATIONS_ORSEG = listOf(
 @Suppress("MagicNumber")
 val DESTINATIONS_ZALA = listOf(
     Destination(
-        id = "zalakaros_csiga_tura_tanosveny",
-        name = "Csiga-túra tanösvény",
-        town = "Zalakaros",
-        type = DestinationType.EDUCATIONAL_TRAIL,
-        popularity = 4,
-        location = Location(46.5584093, 17.1092024),
-        description = SharedRes.strings.zala_csiga_tura_tanosveny,
-        routeGpxFile = SharedRes.files.edut_csiga_tura_tanosveny_gpx,
-    ),
-    Destination(
         id = "iklodbordoce_lovegbunker",
         name = "Lövegbunker",
         town = "Iklódbördőce",
@@ -3877,26 +3847,6 @@ val DESTINATIONS_ZALA = listOf(
         description = SharedRes.strings.zala_var_hegy,
     ),
     Destination(
-        id = "balatonmagyarod_kanyavari_sziget",
-        name = "Kányavári-sziget – Búbos vöcsök tanösvény",
-        town = "Balatonmagyaród",
-        type = DestinationType.ISLAND,
-        challenges = setOf(DestinationChallenge.BIRDWATCHING),
-        popularity = 7,
-        location = Location(46.615578, 17.167849),
-        description = SharedRes.strings.zala_kanyavari_sziget,
-    ),
-    Destination(
-        id = "zalakomar_bivalyrezervatum",
-        name = "Kápolnapusztai Bivalyrezervátum",
-        town = "Zalakomár–Kápolnapuszta",
-        type = DestinationType.WILDLIFE_PARK,
-        popularity = 7,
-        location = Location(46.581816, 17.203140),
-        description = SharedRes.strings.zala_kapolnapusztai_bivalyrezervatum,
-        website = "https://www.bfnp.hu/hu/latogatohelyek-3/kapolnapuszta-bivalyrezervatum-kis-balaton",
-    ),
-    Destination(
         id = "csomoder_erdei_vasut",
         name = "Csömödéri Állami Erdei Vasút",
         town = "Csömödér",
@@ -3905,6 +3855,40 @@ val DESTINATIONS_ZALA = listOf(
         location = Location(46.606744, 16.641526),
         description = SharedRes.strings.zala_csomoderi_erdei_vasut,
         website = "https://aktivkalandor.hu/kisvasut/csomoderi-allami-erdei-vasut/",
+    ),
+)
+
+@Suppress("MagicNumber")
+val DESTINATIONS_KIS_BALATON = listOf(
+    Destination(
+        id = "zalakaros_csiga_tura_tanosveny",
+        name = "Csiga-túra tanösvény",
+        town = "Zalakaros",
+        type = DestinationType.EDUCATIONAL_TRAIL,
+        popularity = 4,
+        location = Location(46.5584093, 17.1092024),
+        description = SharedRes.strings.kis_balaton_csiga_tura_tanosveny,
+        routeGpxFile = SharedRes.files.edut_csiga_tura_tanosveny_gpx,
+    ),
+    Destination(
+        id = "balatonmagyarod_kanyavari_sziget",
+        name = "Kányavári-sziget – Búbos vöcsök tanösvény",
+        town = "Balatonmagyaród",
+        type = DestinationType.ISLAND,
+        challenges = setOf(DestinationChallenge.BIRDWATCHING),
+        popularity = 7,
+        location = Location(46.615578, 17.167849),
+        description = SharedRes.strings.kis_balaton_kanyavari_sziget,
+    ),
+    Destination(
+        id = "zalakomar_bivalyrezervatum",
+        name = "Kápolnapusztai Bivalyrezervátum",
+        town = "Zalakomár–Kápolnapuszta",
+        type = DestinationType.WILDLIFE_PARK,
+        popularity = 7,
+        location = Location(46.581816, 17.203140),
+        description = SharedRes.strings.kis_balaton_kapolnapusztai_bivalyrezervatum,
+        website = "https://www.bfnp.hu/hu/latogatohelyek-3/kapolnapuszta-bivalyrezervatum-kis-balaton",
     ),
 )
 
@@ -4576,6 +4560,26 @@ val DESTINATIONS_WITHOUT_LANDSCAPE = listOf(
         popularity = 6,
         website = "https://degikastely.hu",
     ),
+    Destination(
+        id = "tiszadob_andrassy_kastely",
+        location = Location(48.0171265, 21.1742646),
+        description = SharedRes.strings.no_landscape_tiszadobi_andrassy_kastely,
+        name = "Andrássy-kastély",
+        town = "Tiszadob",
+        type = DestinationType.PALACE,
+        popularity = 7,
+        website = "https://nof.hu/hu/tiszadob/",
+    ),
+    Destination(
+        id = "celldomolk_sag_hegy",
+        name = "Ság-hegy és geológiai tanösvény",
+        town = "Celldömölk",
+        type = DestinationType.EDUCATIONAL_TRAIL,
+        popularity = 7,
+        location = Location(47.23028, 17.11583),
+        description = SharedRes.strings.no_landscape_sag_hegy,
+        routeGpxFile = SharedRes.files.edut_sag_hegy_tanosveny_gpx,
+    ),
 )
 
 val ALL_DESTINATIONS = listOf(
@@ -4604,6 +4608,7 @@ val ALL_DESTINATIONS = listOf(
     DESTINATIONS_KOSZEG,
     DESTINATIONS_ORSEG,
     DESTINATIONS_ZALA,
+    DESTINATIONS_KIS_BALATON,
     DESTINATIONS_SOMOGYI_DOMBSAG,
     DESTINATIONS_MECSEK,
     DESTINATIONS_VILLANY,

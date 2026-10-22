@@ -177,4 +177,6 @@ object TestTags {
     const val PLACE_HISTORY_ITEM = "PLACE_HISTORY_ITEM"
 
     fun routePlannerEmptyStopRow(index: Int) = "${ROUTE_PLANNER_EMPTY_STOP_ROW}_$index"
+
+    fun landscapesDestinationCard(destinationId: String) = "${LANDSCAPES_DESTINATION_CARD}_$destinationId"
 }

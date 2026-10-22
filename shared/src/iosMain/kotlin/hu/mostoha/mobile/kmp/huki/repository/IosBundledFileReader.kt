@@ -9,6 +9,5 @@ class IosBundledFileReader : BundledFileReader {
     /**
      * Normalized the way moko names Android raw resources, so both platforms save the same file name.
      */
-    override fun baseName(file: FileResource): String =
-        file.fileName.replace('-', '_').replace('.', '_').lowercase()
+    override fun baseName(file: FileResource): String = file.fileName.replace('-', '_').replace('.', '_').lowercase()
 }

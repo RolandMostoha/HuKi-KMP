@@ -106,6 +106,7 @@
     <string name="hortobagy_tiszavalki_madarrezervatum">Madárélőhely a Tisza-tó északi részén, nádasokkal és nyílt vízfelületekkel. A madarak és a part menti növényzet vízről figyelhetők meg.</string>
     <string name="hortobagy_csillagosegbolt_park">Csillagoségbolt-park a Hortobágyon, alacsony fényszennyezéssel. Derült éjszakákon a Tejút és a csillagok figyelhetők meg.</string>
     <string name="hortobagy_tisza_tavi_vizi_setany">Hajóval elérhető pallóút a Tisza-tónál, nádasokkal és madárlesekkel. 2026 augusztusától alacsony vízállás miatt zárva.</string>
+    <string name="hortobagy_karcagi_lombkorona_setany">314 m hosszú lombkoronasétány a Karcagi Parkerdőben, a Liget út végén. A tölgyek között 6 m magasan halad, szabadon látogatható.</string>
 
     <string name="alfold_csillagosveny_elmenypark">Tematikus élménypark, amely labirintusaival és interaktív játékaival családok kedvelt kirándulóhelye.</string>
     <string name="alfold_wenckheim_kastely_szabadkigyos">Neoreneszánsz kastély Szabadkígyóson, díszes termekkel és toronnyal. A kastély körüli parkban sétautak és idős fák találhatók.</string>
@@ -117,14 +118,12 @@
     <string name="alfold_koros_torok">A Körös és a Tisza találkozása homokos folyóparttal. A partról mindkét folyóra látni; a homokos terület mérete a vízállástól függ.</string>
     <string name="alfold_makoi_lombkorona_setany">Lombkoronaszintű sétány kilátóval, ahonnan a Maros árterének világát fedezhetjük fel.</string>
     <string name="alfold_gyomaendrodi_lombkorona_setany">Lombkoronasétány és 15 m magas kilátó Gyomaendrőd Erzsébet-ligetében, 1 km-es tanösvénnyel. Belépőjegyes, esőben zárva tart.</string>
-    <string name="alfold_karcagi_lombkorona_setany">314 m hosszú lombkoronasétány a Karcagi Parkerdőben, a Liget út végén. A tölgyek között 6 m magasan halad, szabadon látogatható.</string>
     <string name="alfold_ezer_ev_parkja">Szabadtéri makettpark magyarországi várak, templomok és kastélyok másolataival. A kiállítás ezer év építészeti emlékeit mutatja be.</string>
     <string name="alfold_siraly_tanosveny">A szegedi Fehér-tó madárvilágát bemutató tanösvény. Nádasok és halastavak mellett halad, ősszel daruvonulás figyelhető meg.</string>
     <string name="alfold_baranypirosito_tanosveny">Tanösvény a Kiskunság szél formálta homokbuckái között. Táblái az árvalányhajas gyepeket és a szárazságtűrő növényeket mutatják be.</string>
     <string name="alfold_szelidi_to">Tó a Duna egykori medrében, strandokkal és a Kékmoszat tanösvénnyel. Nádasok és vízi élőhelyek találhatók a part mentén.</string>
     <string name="alfold_aqua_colun_tanosveny">Tanösvény a Kolon-tó nádasai és láprétjei mellett. Madárlesei és táblái a gémek, nádi énekesek és ritka növények élőhelyeit mutatják be.</string>
     <string name="alfold_tiszakurti_arboretum">Angolpark jellegű kert a Tisza mellett, idős tölgyekkel és díszfákkal. Sétaútjai évszakonként változó virágok között vezetnek.</string>
-    <string name="alfold_tiszadobi_andrassy_kastely">Az Andrássy család francia kastélyokat idéző, romantikus kastélya a Tisza mellett. 2023-ban megújult, termeiben kiállítások láthatók.</string>
 
     <string name="paloc_holloko_kezkilato">Kéz alakú kilátó Hollókő közelében, a Cserhát dombjai között. A kézfejet formázó teraszról a környező vidékre látni.</string>
     <string name="paloc_hollokoi_var">Világörökségi helyszín része, középkori vár, mely Hollókő egyik legfőbb látványossága.</string>
@@ -319,7 +318,6 @@
     <string name="bakony_hegyesdi_var">Vármaradványok Hegyesd meredek bazaltkúpján. Erdei ösvény vezet a csúcsra, ahonnan a Tapolcai-medence tanúhegyeire látni.</string>
     <string name="bakony_pannon_csillagda">Csillagászati központ Bakonybélben, planetáriummal és űrkutatási kiállítással. Távcsöves bemutatók is szerepelnek a programok között.</string>
     <string name="bakony_szentgali_kolik_bazis">Overallos, vezetett túra dolomitbarlangban, szűk átjárókkal és aknákkal. A program találkozóhelye a szentgáli túrabázis.</string>
-    <string name="bakony_sag_hegy">A bazaltbányászat által feltárt vulkáni hegy. Tanösvénye a kőzetfalak kialakulását mutatja be, a magaslaton emlékkereszt áll.</string>
     <string name="bakony_somlo_var">Várrom a Somló bazalthegyének északi oldalán, erdei ösvénnyel. A falmaradványok mellől a környező síkságra és szőlőkre látni.</string>
     <string name="bakony_somlo_szent_istvan_kilato">Bazaltból épült kilátó a Somlón, szőlőskertekre és távoli hegyekre nyíló kilátással. A felvezető úton vulkáni kőzetek láthatók.</string>
     <string name="bakony_sumegi_var">Vár a Sümeg fölötti hegyen, falakkal, tornyokkal és történelmi kiállításokkal. A várból a városra és a környező tájra látni.</string>
@@ -447,10 +445,10 @@
     <string name="zala_bivalyrezervatum">Bivalyokat bemutató terület Szécsisziget mellett. A legelő állatok megfigyelhetők, a hely a Kerkamente hagyományos állattartásához kapcsolódik.</string>
     <string name="zala_budafai_arboretum">Domboldali arborétum fenyőkkel, lombos fákkal és tavasszal virágzó rododendronokkal. Sétaútjai a növénygyűjteményen át vezetnek.</string>
     <string name="zala_var_hegy">A Zalai-dombság legmagasabb pontja, 338 méteres magasságával. A változatos zalai erdőkön keresztül vezető, lankás túraútvonalak kedvelt célpontja.</string>
-    <string name="zala_csiga_tura_tanosveny">Erdei tanösvény Zalakaroson, gombákat, állatokat és madárhangokat bemutató táblákkal. A séta mentén hullámos padok is találhatók.</string>
-    <string name="zala_kanyavari_sziget">Sziget a Kis-Balatonban, íves fahíddal megközelíthető. Madárlesei és a Búbos vöcsök tanösvény a nádasok madárvilágát mutatják be.</string>
-    <string name="zala_kapolnapusztai_bivalyrezervatum">Bivalyokat bemutató terület a Kis-Balatonnál, legelő és dagonyázó állatokkal. A sétaút és kiállítás a helyi állattartást is bemutatja.</string>
     <string name="zala_csomoderi_erdei_vasut">Zalai erdei vasút Lenti és Kistolmács között, 33 km-es személyforgalmi vonallal. A kistolmácsi végállomás a víztározó strandja mellett van.</string>
+    <string name="kis_balaton_csiga_tura_tanosveny">Erdei tanösvény Zalakaroson, gombákat, állatokat és madárhangokat bemutató táblákkal. A séta mentén hullámos padok is találhatók.</string>
+    <string name="kis_balaton_kanyavari_sziget">Sziget a Kis-Balatonban, íves fahíddal megközelíthető. Madárlesei és a Búbos vöcsök tanösvény a nádasok madárvilágát mutatják be.</string>
+    <string name="kis_balaton_kapolnapusztai_bivalyrezervatum">Bivalyokat bemutató terület a Kis-Balatonnál, legelő és dagonyázó állatokkal. A sétaút és kiállítás a helyi állattartást is bemutatja.</string>
 
     <string name="zselic_csillagpark">Csillagászati központ a Zselicben, planetáriummal és távcsöves bemutatókkal. Programjai a csillagokat és az éjszakai ég jelenségeit mutatják be.</string>
     <string name="zselic_ropolyi_to">Erdei tó a Zselicben, part menti pihenőhellyel. A vízfelületet környező fák és erdei utak a környéken tett gyalogtúra során láthatók.</string>
@@ -510,4 +508,6 @@
     <string name="no_landscape_ozorai_pipo_varkastely">Ozorai Pipó, Zsigmond király firenzei születésű hadvezére építtette a 15. század elején. Az emeleti termek csak vezetéssel látogathatók.</string>
     <string name="no_landscape_godolloi_kiralyi_kastely">Grassalkovich Antal barokk kastélya, később Ferenc József és Erzsébet királyné kedvelt rezidenciája. A királyi lakosztályok múzeumként látogathatók.</string>
     <string name="no_landscape_degi_festetics_kastely">A Festetics család klasszicista kastélya a Mezőföldön, Pollack Mihály tervei alapján. Kiterjedt angolkertjében tavak és szigetek vannak.</string>
+    <string name="no_landscape_tiszadobi_andrassy_kastely">Az Andrássy család francia kastélyokat idéző, romantikus kastélya a Tisza mellett. 2023-ban megújult, termeiben kiállítások láthatók.</string>
+    <string name="no_landscape_sag_hegy">A bazaltbányászat által feltárt vulkáni hegy. Tanösvénye a kőzetfalak kialakulását mutatja be, a magaslaton emlékkereszt áll.</string>
 </resources>

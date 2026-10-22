@@ -106,6 +106,7 @@
     <string name="hortobagy_tiszavalki_madarrezervatum">A bird habitat in the northern part of Lake Tisza, with reed beds and open water. Birds and shoreline vegetation can be observed from the water.</string>
     <string name="hortobagy_csillagosegbolt_park">A dark sky park in the Hortobágy with low light pollution, where the Milky Way and stars can be observed on clear nights.</string>
     <string name="hortobagy_tisza_tavi_vizi_setany">A boat-accessed boardwalk at Lake Tisza with reed beds and bird hides. Closed since August 2026 due to low water levels.</string>
+    <string name="hortobagy_karcagi_lombkorona_setany">A 314 m canopy walkway in the Karcag forest park, at the end of Liget út. It runs 6 m up among the oaks and is free to visit.</string>
 
     <string name="alfold_csillagosveny_elmenypark">A thematic adventure park with labyrinths and interactive games, popular with families.</string>
     <string name="alfold_wenckheim_kastely_szabadkigyos">A Neo-Renaissance castle in Szabadkígyós with ornate rooms and a tower, surrounded by a park with walking paths and old trees.</string>
@@ -117,14 +118,12 @@
     <string name="alfold_koros_torok">The meeting point of the Körös and Tisza rivers, with a sandy shore. Both rivers are visible, and the size of the beach varies with water level.</string>
     <string name="alfold_makoi_lombkorona_setany">A canopy walkway with a lookout tower, exploring the floodplain forests of the Maros River.</string>
     <string name="alfold_gyomaendrodi_lombkorona_setany">A canopy walkway and 15 m lookout tower in Erzsébet Park, Gyomaendrőd, on a 1 km nature trail. Paid entry; closed in rain.</string>
-    <string name="alfold_karcagi_lombkorona_setany">A 314 m canopy walkway in the Karcag forest park, at the end of Liget út. It runs 6 m up among the oaks and is free to visit.</string>
     <string name="alfold_ezer_ev_parkja">An outdoor model park with replicas of Hungarian castles, churches and palaces, displaying architectural landmarks from a thousand years.</string>
     <string name="alfold_siraly_tanosveny">A nature trail about the birdlife of Fehér-tó near Szeged, passing reed beds and fishponds where migrating cranes can be seen in autumn.</string>
     <string name="alfold_baranypirosito_tanosveny">A nature trail among wind-shaped sand dunes in the Kiskunság, with boards describing feather-grass meadows and drought-tolerant plants.</string>
     <string name="alfold_szelidi_to">A lake formed in an old Danube channel, with beaches and the Kékmoszat nature trail beside reed beds and aquatic habitats.</string>
     <string name="alfold_aqua_colun_tanosveny">A nature trail beside the reed beds and marsh meadows of Lake Kolon, with bird hides and boards about herons, reed warblers and rare plants.</string>
     <string name="alfold_tiszakurti_arboretum">An English-style landscape garden beside the River Tisza, with mature oaks, ornamental trees and paths among seasonal flowers.</string>
-    <string name="alfold_tiszadobi_andrassy_kastely">Romantic palace of the Andrássy family near the Tisza, modelled on French châteaux. Restored in 2023, its halls house exhibitions.</string>
 
     <string name="paloc_holloko_kezkilato">A hand-shaped lookout near Hollókő in the Cserhát hills, with a terrace shaped like a palm overlooking the surrounding countryside.</string>
     <string name="paloc_hollokoi_var">Part of a UNESCO World Heritage Site, this medieval castle is Hollókő’s main attraction.</string>
@@ -319,7 +318,6 @@
     <string name="bakony_hegyesdi_var">Castle remains on the steep basalt cone above Hegyesd, reached by a woodland path, with views of the volcanic hills in the Tapolca Basin.</string>
     <string name="bakony_pannon_csillagda">An astronomy centre in Bakonybél with a planetarium, space-exploration exhibits and telescope demonstrations among its programmes.</string>
     <string name="bakony_szentgali_kolik_bazis">A guided trip in caving overalls through a dolomite cave with narrow passages and shafts, meeting at the tour base in Szentgál.</string>
-    <string name="bakony_sag_hegy">A volcanic hill exposed by basalt quarrying, with a geological trail explaining the rock walls and a memorial cross on the hilltop.</string>
     <string name="bakony_somlo_var">Castle ruins on the northern slope of the basalt hill of Somló, reached by a forest path, with views of the surrounding plain and vineyards.</string>
     <string name="bakony_somlo_szent_istvan_kilato">A basalt-built lookout on Somló with views over vineyards and distant hills. Volcanic rock formations are visible on the approach.</string>
     <string name="bakony_sumegi_var">A castle on the hill above Sümeg with ramparts, towers and historical exhibitions, overlooking the town and the surrounding landscape.</string>
@@ -447,10 +445,10 @@
     <string name="zala_bivalyrezervatum">A buffalo enclosure near Szécsisziget, where grazing animals can be observed as part of the traditional livestock keeping of the Kerka area.</string>
     <string name="zala_budafai_arboretum">A hillside arboretum with conifers, broadleaf trees and rhododendrons flowering in spring, with paths through the plant collection.</string>
     <string name="zala_var_hegy">The highest point of the Zala Hills, peaking at 338 meters. It is a popular destination for gentle hiking trails winding through the diverse Zala forests.</string>
-    <string name="zala_csiga_tura_tanosveny">A woodland nature trail in Zalakaros with boards about fungi, animals and birdsong, and wave-shaped benches along the walking route.</string>
-    <string name="zala_kanyavari_sziget">An island in Kis-Balaton reached by a curved wooden bridge, with birdwatching towers and a nature trail about the birds of the reed beds.</string>
-    <string name="zala_kapolnapusztai_bivalyrezervatum">A buffalo reserve at Kis-Balaton with grazing and wallowing animals, and a walking trail and displays about traditional livestock keeping.</string>
     <string name="zala_csomoderi_erdei_vasut">A Zala forest railway between Lenti and Kistolmács, with 33 km open to passengers. The Kistolmács terminus is beside the reservoir beach.</string>
+    <string name="kis_balaton_csiga_tura_tanosveny">A woodland nature trail in Zalakaros with boards about fungi, animals and birdsong, and wave-shaped benches along the walking route.</string>
+    <string name="kis_balaton_kanyavari_sziget">An island in Kis-Balaton reached by a curved wooden bridge, with birdwatching towers and a nature trail about the birds of the reed beds.</string>
+    <string name="kis_balaton_kapolnapusztai_bivalyrezervatum">A buffalo reserve at Kis-Balaton with grazing and wallowing animals, and a walking trail and displays about traditional livestock keeping.</string>
 
     <string name="zselic_csillagpark">An astronomy centre in the Zselic with a planetarium and telescope sessions, with programmes about stars and other night-sky phenomena.</string>
     <string name="zselic_ropolyi_to">A woodland lake in the Zselic with a shoreline rest area, surrounded by trees and forest routes that can be included in a hike.</string>
@@ -510,4 +508,6 @@
     <string name="no_landscape_ozorai_pipo_varkastely">Built in the early 15th century by Pipo of Ozora, King Sigismund\'s Florence-born general. Upper-floor rooms are open on guided tours only.</string>
     <string name="no_landscape_godolloi_kiralyi_kastely">Baroque palace of Antal Grassalkovich, later a favourite residence of Franz Joseph and Queen Elisabeth. The royal apartments are open as a museum.</string>
     <string name="no_landscape_degi_festetics_kastely">Classicist palace of the Festetics family in the Mezőföld, designed by Mihály Pollack. Its large English garden has ponds and islands.</string>
+    <string name="no_landscape_tiszadobi_andrassy_kastely">Romantic palace of the Andrássy family near the Tisza, modelled on French châteaux. Restored in 2023, its halls house exhibitions.</string>
+    <string name="no_landscape_sag_hegy">A volcanic hill exposed by basalt quarrying, with a geological trail explaining the rock walls and a memorial cross on the hilltop.</string>
 </resources>
