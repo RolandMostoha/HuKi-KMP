@@ -203,18 +203,9 @@ extension MainView {
             onGpxFileSelected: { uri in
                 viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
             },
-            onSeeAllGpxClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(GpxCollectionRoute.gpxCollection)
-            },
-            onSeeAllPlacesClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(PlaceHistoryRoute.placeHistory)
-            },
-            onSeeAllDestinationsClicked: {
-                viewModel.onEvent(event: MainUiEventsSheetDismissed())
-                navigationPath.append(DestinationsRoute.destinations)
-            },
+            onSeeAllGpxClicked: { openSearchSeeAll(.gpx, route: GpxCollectionRoute.gpxCollection) },
+            onSeeAllPlacesClicked: { openSearchSeeAll(.places, route: PlaceHistoryRoute.placeHistory) },
+            onSeeAllDestinationsClicked: { openSearchSeeAll(.destinations, route: DestinationsRoute.destinations) },
             onLocationIqClicked: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
                 navigationPath.append(LocationIqRoute.locationIq)
@@ -223,6 +214,12 @@ extension MainView {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationCompactAdaptation(.sheet)
+    }
+
+    private func openSearchSeeAll(_ section: SearchSection, route: some Hashable) {
+        viewModel.onEvent(event: MainUiEventsSearchSeeAllClicked(section: section))
+        viewModel.onEvent(event: MainUiEventsSheetDismissed())
+        navigationPath.append(route)
     }
 
     func layersSheet(uiState: MainUiState) -> some View {

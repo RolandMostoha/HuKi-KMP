@@ -7,6 +7,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
@@ -55,6 +56,13 @@ class AnalyticsEventTest {
                 TestCase(
                     AnalyticsEvent.SearchPlaceHistorySelected,
                     "search_place_history_selected",
+                    emptyMap(),
+                ),
+                TestCase(AnalyticsEvent.SearchSeeAllClicked(SearchSection.PLACES), "search_see_all_places", emptyMap()),
+                TestCase(AnalyticsEvent.SearchSeeAllClicked(SearchSection.GPX), "search_see_all_gpx", emptyMap()),
+                TestCase(
+                    AnalyticsEvent.SearchSeeAllClicked(SearchSection.DESTINATIONS),
+                    "search_see_all_destinations",
                     emptyMap(),
                 ),
                 TestCase(AnalyticsEvent.HistoryPlaceSelected, "history_place_selected", emptyMap()),

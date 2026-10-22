@@ -114,7 +114,7 @@ exact location / zoom level with a CROSS marker.
 | `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                            |
 | `[ ]`  | Search | In-memory LRU cache keyed by Request                                                                                                              |
 | `[x]`  | Search | Reduce Recent GPX section from 3 to 2 items, so Nearby destinations moves up toward the fold. Keep Recent places at 3 (most-used sheet shortcut). |
-| `[R]`  | Search | Analytics: log "Show all" taps as separate events: `search_see_all_places`, `search_see_all_gpx`, `search_see_all_destinations`.                  |
+| `[x]`  | Search | Analytics: log "Show all" taps as separate events: `search_see_all_places`, `search_see_all_gpx`, `search_see_all_destinations`.                  |
 
 ### FEATURE: Destinations
 

@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
@@ -30,6 +31,7 @@ sealed interface MainUiEvents {
     data class SearchDestinationSelected(val destination: Destination) : MainUiEvents
     data class SearchResultPlaceHistorySelected(val place: Place) : MainUiEvents
     data class SearchResultDestinationSelected(val destination: Destination) : MainUiEvents
+    data class SearchSeeAllClicked(val section: SearchSection) : MainUiEvents
     data class DestinationSelected(val id: String) : MainUiEvents
     data class DestinationRouteSelected(val id: String) : MainUiEvents
     data class HistoryPlaceSelected(

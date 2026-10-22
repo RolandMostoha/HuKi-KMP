@@ -55,6 +55,10 @@ sealed interface AnalyticsEvent {
         override val name = "search_place_history_selected"
     }
 
+    data class SearchSeeAllClicked(val section: SearchSection) : AnalyticsEvent {
+        override val name = "search_see_all_${section.value}"
+    }
+
     data object HistoryPlaceSelected : AnalyticsEvent {
         override val name = "history_place_selected"
     }

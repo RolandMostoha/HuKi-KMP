@@ -48,6 +48,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
@@ -615,9 +616,18 @@ private fun MainStandardBottomSheet(
                             onEvent(MainUiEvents.GpxFileReopened(fileUri))
                         }
                     },
-                    onSeeAllGpxClicked = onGpxCollectionClicked,
-                    onSeeAllPlacesClicked = onPlaceHistoryClicked,
-                    onSeeAllDestinationsClicked = onDestinationsClicked,
+                    onSeeAllGpxClicked = {
+                        onEvent(MainUiEvents.SearchSeeAllClicked(SearchSection.GPX))
+                        onGpxCollectionClicked()
+                    },
+                    onSeeAllPlacesClicked = {
+                        onEvent(MainUiEvents.SearchSeeAllClicked(SearchSection.PLACES))
+                        onPlaceHistoryClicked()
+                    },
+                    onSeeAllDestinationsClicked = {
+                        onEvent(MainUiEvents.SearchSeeAllClicked(SearchSection.DESTINATIONS))
+                        onDestinationsClicked()
+                    },
                     onLocationIqClicked = onLocationIqClicked,
                 )
             }

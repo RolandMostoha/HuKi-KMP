@@ -21,6 +21,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
@@ -174,6 +175,7 @@ class MainViewModel(
             is MainUiEvents.SearchDestinationSelected -> showSearchDestination(event.destination)
             is MainUiEvents.SearchResultPlaceHistorySelected -> showSearchResultPlaceHistory(event.place)
             is MainUiEvents.SearchResultDestinationSelected -> showSearchResultDestination(event.destination)
+            is MainUiEvents.SearchSeeAllClicked -> logSearchSeeAll(event.section)
             is MainUiEvents.DestinationSelected -> showDestinationById(event.id)
             is MainUiEvents.DestinationRouteSelected -> openDestinationRouteById(event.id)
             is MainUiEvents.HistoryPlaceSelected -> showHistoryPlace(event.osmType, event.osmId)
@@ -280,6 +282,10 @@ class MainViewModel(
         viewModelScope.launch {
             sendEffect(MainUiEffects.NavigateToGpxGuide)
         }
+    }
+
+    private fun logSearchSeeAll(section: SearchSection) {
+        analyticsService.logEvent(AnalyticsEvent.SearchSeeAllClicked(section))
     }
 
     private fun browseDestinations() {

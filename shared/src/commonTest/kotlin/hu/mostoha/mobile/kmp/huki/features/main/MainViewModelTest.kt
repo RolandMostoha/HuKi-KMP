@@ -27,6 +27,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
@@ -753,6 +754,19 @@ class MainViewModelTest {
             }
             viewModel.uiState.value.sheet shouldBe null
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.DiscoverBrowseDestinationsClicked)
+        }
+    }
+
+    @Test
+    fun `Given Search sheet - When SearchSeeAllClicked - Then see all event is logged per section`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            SearchSection.entries.forEach { viewModel.onEvent(MainUiEvents.SearchSeeAllClicked(it)) }
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents shouldBe SearchSection.entries.map { AnalyticsEvent.SearchSeeAllClicked(it) }
         }
     }
 
