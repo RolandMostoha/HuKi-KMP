@@ -51,7 +51,7 @@ class PlaceFinderViewModel(
         private val AUTOCOMPLETE_DEBOUNCE = 1100.milliseconds
         private val AUTOCOMPLETE_LOCATION_TIMEOUT = 2.seconds
         private const val AUTOCOMPLETE_MIN_CHARACTERS = 3
-        private const val RECENT_GPX_LIMIT = 3
+        private const val RECENT_GPX_LIMIT = 2
         private const val RECENT_PLACES_LIMIT = 3
         private const val SEARCH_RECENT_PLACES_LIMIT = 5
         private const val SEARCH_DESTINATIONS_LIMIT = 20
