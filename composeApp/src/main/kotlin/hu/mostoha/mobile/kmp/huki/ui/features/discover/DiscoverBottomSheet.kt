@@ -120,6 +120,41 @@ fun DiscoverContent(
     ) {
         DiscoverHeader(onCloseClick = onCloseClicked)
         Column(
+            modifier = Modifier.padding(top = Dimens.SectionSpacing),
+            verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
+        ) {
+            SectionHeader(title = mokoString(SharedRes.strings.destinations_section_title))
+            Row(
+                modifier = Modifier.padding(horizontal = Dimens.Large),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+            ) {
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_hungary_colored.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_by_landscape),
+                    onClick = onShowLandscapesClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_SHOW_LANDSCAPES_BUTTON),
+                )
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_destinations_by_category.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_by_category),
+                    onClick = onShowCategoriesClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_DESTINATIONS_BY_CATEGORY_BUTTON),
+                )
+                IconTitleCard(
+                    painter = painterResource(SharedRes.images.ic_destinations_in_list.drawableResId),
+                    title = mokoString(SharedRes.strings.discover_destinations_in_list),
+                    onClick = onBrowseDestinationsClicked,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag(TestTags.DISCOVER_BROWSE_DESTINATIONS_BUTTON),
+                )
+            }
+        }
+        Column(
             modifier = Modifier
                 .padding(top = Dimens.SectionSpacing)
                 .testTag(TestTags.DISCOVER_HIKE_RECOMMENDATIONS_SECTION),
@@ -177,41 +212,6 @@ fun DiscoverContent(
                             .testTag(TestTags.DISCOVER_OKT_CARD),
                     )
                 }
-            }
-        }
-        Column(
-            modifier = Modifier.padding(top = Dimens.SectionSpacing),
-            verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
-        ) {
-            SectionHeader(title = mokoString(SharedRes.strings.destinations_section_title))
-            Row(
-                modifier = Modifier.padding(horizontal = Dimens.Large),
-                horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
-            ) {
-                IconTitleCard(
-                    painter = painterResource(SharedRes.images.ic_hungary_colored.drawableResId),
-                    title = mokoString(SharedRes.strings.discover_destinations_by_landscape),
-                    onClick = onShowLandscapesClicked,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag(TestTags.DISCOVER_SHOW_LANDSCAPES_BUTTON),
-                )
-                IconTitleCard(
-                    painter = painterResource(SharedRes.images.ic_destinations_by_category.drawableResId),
-                    title = mokoString(SharedRes.strings.discover_destinations_by_category),
-                    onClick = onShowCategoriesClicked,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag(TestTags.DISCOVER_DESTINATIONS_BY_CATEGORY_BUTTON),
-                )
-                IconTitleCard(
-                    painter = painterResource(SharedRes.images.ic_destinations_in_list.drawableResId),
-                    title = mokoString(SharedRes.strings.discover_destinations_in_list),
-                    onClick = onBrowseDestinationsClicked,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag(TestTags.DISCOVER_BROWSE_DESTINATIONS_BUTTON),
-                )
             }
         }
     }

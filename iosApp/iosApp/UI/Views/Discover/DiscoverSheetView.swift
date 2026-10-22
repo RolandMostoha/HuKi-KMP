@@ -28,9 +28,9 @@ struct DiscoverSheetView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    destinationsSection
                     hikeRecommendationsSection
                     oktSection
-                    destinationsSection
                 }
                 .padding(.bottom, 24)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
@@ -93,7 +93,7 @@ struct DiscoverSheetView: View {
             }
             .padding(.horizontal, 16)
         }
-        .padding(.top, 8)
+        .padding(.top, Dimens.sectionSpacing)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.DISCOVER_HIKE_RECOMMENDATIONS_SECTION)
     }
@@ -234,7 +234,7 @@ struct DiscoverSheetView: View {
             }
             .padding(.horizontal, 16)
         }
-        .padding(.top, Dimens.sectionSpacing)
+        .padding(.top, 8)
         .accessibilityElement(children: .contain)
     }
 }
