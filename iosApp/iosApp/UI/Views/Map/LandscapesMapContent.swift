@@ -5,12 +5,14 @@ import SwiftUI
 struct LandscapesMapContent: MapContent {
     let strings: Strings
     let landscapes: LandscapesUiState
+    let isDarkMode: Bool
     let onEvent: (LandscapesUiEvents) -> Void
 
     private static let sourceId = "landscapes_source"
     private static let maskSourceId = "landscapes_hungary_mask_source"
     private static let maskFillLayerId = "landscapes_hungary_mask_fill_layer"
     private static let maskOpacity = 0.55
+    private static let maskDarkOpacity = 0.5
     private static let fillLayerId = "landscapes_fill_layer"
     private static let outlineLayerId = "landscapes_outline_layer"
     private static let outlineHaloLayerId = "landscapes_outline_halo_layer"
@@ -40,8 +42,8 @@ struct LandscapesMapContent: MapContent {
         GeoJSONSource(id: Self.maskSourceId)
             .data(.string(landscapes.hungaryMaskGeoJson))
         FillLayer(id: Self.maskFillLayerId, source: Self.maskSourceId)
-            .fillColor(.white)
-            .fillOpacity(Self.maskOpacity)
+            .fillColor(isDarkMode ? .black : .white)
+            .fillOpacity(isDarkMode ? Self.maskDarkOpacity : Self.maskOpacity)
             .fillColorUseTheme(.none)
             .fillEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
         if landscapes.grouping == .landscape {

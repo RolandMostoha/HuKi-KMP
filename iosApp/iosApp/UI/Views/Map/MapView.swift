@@ -75,7 +75,8 @@ struct MapView: View {
                         return true
                     }
                     if let landscapes = uiState.mapUiState.landscapes {
-                        LandscapesMapContent(strings: strings, landscapes: landscapes, onEvent: onLandscapesEvent)
+                        LandscapesMapContent(strings: strings, landscapes: landscapes, isDarkMode: isDarkMode,
+                                             onEvent: onLandscapesEvent)
                     }
                     if uiState.mapUiState.hikingLayerVisible {
                         HikingTrailsMapContent()

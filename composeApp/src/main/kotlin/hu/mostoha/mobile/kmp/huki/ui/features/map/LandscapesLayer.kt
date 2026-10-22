@@ -66,6 +66,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Landscape
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -85,6 +86,7 @@ private const val SELECTED_HALO_LAYER_ID = "landscapes_selected_halo_layer"
 private const val SELECTED_OUTLINE_LAYER_ID = "landscapes_selected_outline_layer"
 private const val PROPERTY_ID = "id"
 private const val MASK_OPACITY = 0.55
+private const val MASK_DARK_OPACITY = 0.5
 private const val FILL_OPACITY = 0.6
 private const val OUTLINE_WIDTH = 1.5
 private const val OUTLINE_HALO_WIDTH = 4.0
@@ -158,10 +160,11 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
 @Composable
 @MapboxMapComposable
 private fun HungaryMaskLayer(geoJson: String) {
+    val isDarkMode = LocalIsDarkTheme.current
     val source = rememberLandscapesSource(key = "landscapes_hungary_mask_source", geoJson = geoJson)
     FillLayer(sourceState = source, layerId = MASK_LAYER_ID) {
-        fillColor = ColorValue(Color.White)
-        fillOpacity = DoubleValue(MASK_OPACITY)
+        fillColor = ColorValue(if (isDarkMode) Color.Black else Color.White)
+        fillOpacity = DoubleValue(if (isDarkMode) MASK_DARK_OPACITY else MASK_OPACITY)
         fillColorUseTheme = StringValue(OutdoorsColorTheme.COLOR_USE_THEME_NONE)
         fillEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
     }

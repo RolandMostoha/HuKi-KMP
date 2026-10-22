@@ -11,6 +11,7 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.StringDesc
 import hu.mostoha.mobile.kmp.huki.Strings
+import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 
 @Composable
 fun mokoString(id: StringResource, vararg args: Any): String = Strings(LocalContext.current).get(id, args.toList())
@@ -19,7 +20,7 @@ fun mokoString(id: StringResource, vararg args: Any): String = Strings(LocalCont
 fun mokoString(desc: StringDesc): String = Strings(LocalContext.current).get(desc)
 
 @Composable
-fun mokoColor(id: ColorResource): Color = id.toComposeColor(LocalContext.current)
+fun mokoColor(id: ColorResource): Color = id.toComposeColor(LocalThemedContext.current ?: LocalContext.current)
 
 @Composable
 fun mokoImage(id: ImageResource): ImageVector = ImageVector.vectorResource(id.drawableResId)
