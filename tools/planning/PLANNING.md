@@ -52,7 +52,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | App store header picture/video (optional)                                                                                                          |
 | `[ ]`  | iPhone duo / proper iPad support                                                                                                                   |
 | `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                     |
-| `[R]`  | Shrink bundled OKT/AKT/RPDDK GPX files (8.4 MB total, ~116 B/trkpt).                                                                               |
 
 ### Bugs
 
@@ -62,7 +61,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | Search       | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
 | `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 | `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
-| `[R]`  | RoutePlanner | If I choose a far away destination, and click on route plan, it moves the camera to my location. The route planner correclty shows the destination and my location is correclty not present in the route plan, but my camera is moved to my location. ![img_5.png](img_5.png)                                                          |
+| `[R]`  | RoutePlanner | If I choose a far away destination, and click on route plan, it moves the camera to my location. The route planner correclty shows the destination and my location is correclty not present in the route plan, but my camera is moved to my location. ![img_5.png](img_5.png)                                   |
 
 ### FEATURE: Map
 
@@ -110,42 +109,17 @@ exact location / zoom level with a CROSS marker.
 
 ### FEATURE: Search
 
-| Status | Scope  | Task                                                                                   |
-|--------|--------|----------------------------------------------------------------------------------------|
-| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger. |
-| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                   |
+| Status | Scope  | Task                                                                                                                                              |
+|--------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Search | No mic/voice icon. Search by voice Consider adding one between the text and hamburger.                                                            |
+| `[ ]`  | Search | In-memory LRU cache keyed by Request                                                                                                              |
 | `[R]`  | Search | Reduce Recent GPX section from 3 to 2 items, so Nearby destinations moves up toward the fold. Keep Recent places at 3 (most-used sheet shortcut). |
-| `[R]`  | Search | Analytics: log "Show all" taps as separate events: `search_see_all_places`, `search_see_all_gpx`, `search_see_all_destinations`. |
+| `[R]`  | Search | Analytics: log "Show all" taps as separate events: `search_see_all_places`, `search_see_all_gpx`, `search_see_all_destinations`.                  |
 
 ### FEATURE: Destinations
 
 | Status | Scope        | Task                                                                                                                                                                                                                                                                                                                                          |
 |--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Destinations | Define recommended text size for description. 80-150                                                                                                                                                                                                                                                                                          |
-| `[x]`  | Destinations | Rework descriptions based on the new rules                                                                                                                                                                                                                                                                                                    |
-| `[x]`  | Destinations | Improve destinations descriptions                                                                                                                                                                                                                                                                                                             |
-| `[x]`  | Destinations | Remove "Landscapes" section from Discover                                                                                                                                                                                                                                                                                                     |
-| `[x]`  | Destinations | Add 3 buttons to Destinations section ("Tájegységenként", "Kategóriánként", "Listában")                                                                                                                                                                                                                                                       |
-| `[x]`  | Destinations | Implement Per Landscape. Similar Sheet/Map setup like OKT. Sheet: lists all landscapes with name. If a landscape is selected, it expands and shows the destinations in cards (similarly to OKT). Map: show all landscapes with filled contours. If a landscape is selected, show only the landscape stroke and reveal its desinations on map. |
-| `[x]`  | Destinations | When landscapes are open, hide the hiking layer. When it's closed, show it. (still user should be able to switch this from layers menu)                                                                                                                                                                                                       |
-| `[x]`  | Destinations | Add titles to landsacpes in map like "Bükk".                                                                                                                                                                                                                                                                                                  |
-| `[x]`  | Destinations | Highlight HU only in landscapes mode, "fade" away the rest of the world                                                                                                                                                                                                                                                                       |
-| `[x]`  | Destinations | Implement In List. Simply navigate to Destinations screens.                                                                                                                                                                                                                                                                                   |
-| `[x]`  | Destinations | Make the landsacpe titles more centered.                                                                                                                                                                                                                                                                                                      |
-| `[x]`  | Destinations | Zselic -> convert to Somogyi dombság, adjust ladnscape geojson to cover the bigger area. Now we have the whole Somogyi dombság, look for destinations in south Balaton, like Balatonboglár -> Vár domb.                                                                                                                                       |
-| `[x]`  | Destinations | Cserhát contains outside POIs in north (near Salgótarján) ![img_2.png](img_2.png). Heves Borsod also contains outside POIs in the same area. ![img_3.png](img_3.png) Let's create a third landscape and move the outside dests there. Karancs-Medves                                                                                          |
-| `[x]`  | Destinations | Gemenc + alföld ave overlapping. lets modify alföld contour to exclude the area from gemenc. ![img_1.png](img_1.png)                                                                                                                                                                                                                          |
-| `[x]`  | Destinations | Missing landscape: Fertő tó és vidéke, search for nice destinations. Add Sziki tanösvény in destinations to the new landscape.                                                                                                                                                                                                                |
-| `[x]`  | Destinations | Implement Per Category. Similar Sheet/Map setup like Per Landscape. Sheet: lists all destination types. On click it reveals the destinations in that category.                                                                                                                                                                                |
-| `[x]`  | Destinations | Add an icon to Destinations screen header. Map icon which shows "Per Landscape" on map.                                                                                                                                                                                                                                                       |
-| `[x]`  | Destinations | Add more Kisvasutak                                                                                                                                                                                                                                                                                                                           |
-| `[x]`  | Destinations | Remove osmID from Destinations. Plan migration, because search / history relies on osmID                                                                                                                                                                                                                                                      |
-| `[x]`  | Destinations | Check the whole of Hungary for famous kisvasutak (e.g. Szilvásvárad, Lillafüred, Mátravasút, Gyermekvasút, Kaszó, Felsőtárkány, Kismaros–Királyrét, Pálháza, Nagybörzsöny, Zsuzsi). Add them as `SCENIC_RAILWAY` destinations at their main station.                                                                                          |
-| `[x]`  | Destinations | For educational trails show an "Open route" button. Decided: bundled GPX generated from OSM relations (`generate_educational_trails.py`). Done for 17 trails; Pele apó stays without a route (no OSM data). Removed Szalamandra (abandoned) and Sziki őszirózsa (closed since 2025).                                                          |
-| `[x]`  | Destinations | Add website links where makes sense, like "Petesmalmi Vidrapark". Kisvasutak → aktivkalandor.hu, others → official sites; "Website" button in the InfoWindow opens the external browser                                                                                                                                                       |
-| `[x]`  | Destinations | Enhance Castle list with new ones (if we know about other fames castles), add websites                                                                                                                                                                                                                                                        |
-| `[x]`  | Destinations | Enhance Palace list with new ones (if we know about other famous palaces), add websites                                                                                                                                                                                                                                                       |
-| `[x]`  | Destinations | Add website and show route buttons to DestinatonPreviewCards as well if applicable                                                                                                                                                                                                                                                            |
 | `[R]`  | Destinations | Remove "Destinations" from Menu, because they are already available through "Discover". Remove "Kozel 400 kezzel valogatott hely" string from the app. Modify subtitle "Túraötletek és kirándulóhelyek" - "Kirándulóhelyek és túraötletek". Also adjust Maestro and unit tests                                                                |
 | `[ ]`  | Destinations | Add VIA FERRATA as challenge                                                                                                                                                                                                                                                                                                                  |
 | `[ ]`  | Destinations | Kisvasutak: Show waypoints. GPX generation is ready: `generate-scenic-railway-gpx` skill (`tools/python/generate_scenic_railways.py`)                                                                                                                                                                                                         |
@@ -393,26 +367,7 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 ### TECH: iOS Mapbox viewport deprecation (ViewportObserver → `$viewport` binding)
 
-`MapProxy.viewport` (the imperative `ViewportManager`) is deprecated in Mapbox 11.20 →
-`'viewport' is deprecated: Use Map(viewport:) initializer instead.` This is what
-`MapView.swift` uses via `proxy.viewport?.addStatusObserver(viewportObserver)` in
-`onAppear`/`onDisappear`, plus the whole `UI/Mapbox/ViewportObserver.swift` class.
-
-- **Not deprecated (keep as-is):** `MapReader { proxy in }` → `proxy.map` (cameraState reads)
-  and `proxy.location` (GPS-fix observation). `MapReader`/`MapProxy` is the sanctioned, current, and only way to reach
-  these in SwiftUI — nothing better exists.
-- **Only deprecated bit:** `proxy.viewport` + `ViewportStatusObserver`. The intended replacement is observing the
-  two-way `$viewport` binding we already pass to `Map(viewport:)`.
-  `Map.transitionsToIdleUponUserInteraction` (default `true`) writes `.idle` back into the binding on user pan — exactly
-  what `ViewportObserver` detects (follow → idle/overview →
-  `onFollowingDisabled`). Migration collapses to one `.onChange(of: viewport)` and deletes `ViewportObserver` (~50
-  lines + class).
-- **Caveat / why deferred:** `Viewport` only reflects values *we* set + the idle write-back, not a live camera mirror
-  (`Viewport.swift:53`). The old observer also saw `.transition` intermediate states; `.onChange` sees only committed
-  values. Edge cases — pan *during* a follow animation, programmatic follow→overview vs. user-driven — need a real
-  simulator pan-test (follow, then drag)
-  to confirm `onFollowingDisabled` fires identically before deleting the observer. Deprecation is a warning, not a
-  removal, so no urgency.
+`MapProxy.viewport` (the imperative `ViewportManager`) is deprecated in Mapbox 11.20 → `'viewport' is deprecated: Use Map(viewport:) initializer instead.` 
 
 | Status | Scope | Task                                                                                                                           |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
