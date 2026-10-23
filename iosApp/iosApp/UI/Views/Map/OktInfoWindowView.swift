@@ -17,11 +17,11 @@ struct OktInfoWindowView: View {
         HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(strings.get(desc: info.title))
-                    .font(.subheadline.weight(.bold))
+                    .font(.headline.weight(.bold))
                     .foregroundStyle(.primary)
                 if let description = info.marker.description_ {
                     Text(description)
-                        .font(.footnote)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }

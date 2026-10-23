@@ -38,7 +38,7 @@ struct DestinationInfoWindowView: View {
                         .foregroundStyle(.primary)
                         .lineLimit(2)
                     Label(destination.town, systemImage: "mappin.and.ellipse")
-                        .font(.caption.weight(.medium))
+                        .font(.footnote.weight(.medium))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
@@ -47,7 +47,7 @@ struct DestinationInfoWindowView: View {
                     .accessibilityIdentifier(TestTags.shared.LANDSCAPES_INFO_WINDOW_PLACE_DETAILS_BUTTON)
             }
             Text(strings.get(id: destination.description_))
-                .font(.footnote)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .lineLimit(Self.descriptionLineLimit)
                 .fixedSize(horizontal: false, vertical: true)
