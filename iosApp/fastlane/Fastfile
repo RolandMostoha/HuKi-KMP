@@ -29,9 +29,9 @@ platform :ios do
     preflight_version(api_key)
     install_distribution_certificate
     archive_release
+    # No `groups:`: the internal group gets every build by automatic distribution, and Apple rejects a manual assignment.
     upload_to_testflight(
       api_key: api_key,
-      groups: ["Friends and Family"],
       distribute_external: false,
       submit_beta_review: false
     )
