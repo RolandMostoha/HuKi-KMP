@@ -4,7 +4,8 @@ Features:
 • Map layers: Nature, Urban and Satellite
 • Search for Places and Destinations
 • GPX import, storage and loading
-• Curated list of destinations across Hungary
+• Hungary's landscapes on the map, with 400+ destinations
+• Destination categories, e.g. scenic railways and educational trails with built-in GPX routes
 • National Blue Trails: OKT, RPDDK and AKT on the map, divided into sections
 • Blue Trail stamping points with distances and estimated travel time
 • Route Planner

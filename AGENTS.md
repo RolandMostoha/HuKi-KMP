@@ -342,6 +342,7 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
     - `tools/release/whatsnew/v<X>/` — EN + HU notes and `metadata.json
     - `iosApp/fastlane/metadata/` — (if changed) description, promo text, keywords
     - `iosApp/fastlane/screenshots/` — (if changed)
+    - `tools/screenshots/` — (if changed) raw captures, `SCREENSHOTS.md` and the AppMockUp `.mockup` design sources, so the store assets and their sources stay in one commit
 2. `bundle exec fastlane verify` — read-only; checks App Store Connect agrees with `version.properties`.
 3. Tag that commit: `git tag ios/v<X> && git push origin ios/v<X>`.
 4. The tag runs `.github/workflows/github-workflow-ios-release.yml`: uploads to TestFlight and stages

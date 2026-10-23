@@ -4,7 +4,8 @@ Funkciók:
 • Térképrétegek: Természet, Városi és Műhold
 • Helység és kirándulóhely kereső
 • GPX importálás, tárolás és betöltés
-• Válogatott kirándulóhelyek szerte Magyarországon
+• Magyarország tájai a térképen, több mint 400 kirándulóhellyel
+• Kirándulóhely kategóriák, pl. kisvasutak és tanösvények beépített GPX útvonallal
 • Kéktúra útvonalak: OKT, RPDDK és AKT a térképen, szakaszokra bontva
 • Kéktúra bélyegzőhelyek távolsággal és becsült menetidővel
 • Útvonaltervező

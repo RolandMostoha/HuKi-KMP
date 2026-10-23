@@ -1,0 +1,4 @@
+- Tájak és kirándulóhelyek a térképen
+- Új kirándulóhelyek és kategóriák
+- Sok kirándulóhely kapott weboldal linket
+- Tanösvények beépített GPX útvonallal

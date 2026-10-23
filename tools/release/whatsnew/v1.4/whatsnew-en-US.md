@@ -1,0 +1,4 @@
+- Landscapes and destinations on the map
+- New destinations and categories
+- Many destinations now have a website link
+- Educational trails with a built-in GPX route
