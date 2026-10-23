@@ -500,6 +500,57 @@ class MainViewModelLandscapesTest {
     }
 
     @Test
+    fun `Given selected destination - When place details clicked - Then the camera keeps its zoom`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_PEAK))
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked)
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given destination place details - When PlaceDetailsRoutePlanClicked - Then Landscapes are closed`() {
+        runTest {
+            val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_MATRA.id)
+            viewModel.onEvent(LandscapesUiEvents.LandscapesDestinationClicked(TEST_DESTINATION_PEAK))
+            advanceUntilIdle()
+            viewModel.onEvent(LandscapesUiEvents.LandscapesInfoWindowPlaceDetailsClicked)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                mapUiState.landscapes.shouldBeNull()
+                mapUiState.hikingLayerVisible shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given a route stop - When Landscapes are shown - Then the route stops are cleared`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_DESTINATION_PEAK.toPlace()))
+            advanceUntilIdle()
+
+            viewModel.onEvent(LandscapesUiEvents.LandscapesShowClicked)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
+        }
+    }
+
+    @Test
     fun `Given selected trail destination - When route clicked - Then its bundled GPX opens and Landscapes closes`() {
         runTest {
             val viewModel = createOpenedViewModel(selectedLandscapeId = TEST_LANDSCAPE_BUKK.id)

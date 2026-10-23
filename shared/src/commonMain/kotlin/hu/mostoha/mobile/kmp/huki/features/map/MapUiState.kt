@@ -23,7 +23,9 @@ data class MapUiState(
     val distanceInfoWindows: List<DistanceInfoWindowData> = emptyList(),
     val okt: OktUiState? = null,
     val landscapes: LandscapesUiState? = null,
+    val routeStops: List<PlaceDetails> = emptyList(),
 ) {
+
     val routePlanMarkers: List<GpxWaypoint>
         get() = routePlan?.toGpxWaypoints() ?: routePlanWaypoints
 

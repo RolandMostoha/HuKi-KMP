@@ -12,6 +12,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import org.maplibre.spatialk.units.Length
 import org.maplibre.spatialk.units.extensions.kilometers
@@ -34,7 +35,7 @@ data class RoutePlannerUiState(
         get() = routePlan?.routeStats
 
     val isRoundTrip: Boolean
-        get() = stops.size >= MIN_WAYPOINT_COUNT &&
+        get() = stops.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT &&
             stops.first().location != null &&
             stops.first().location == stops.last().location
 
@@ -42,13 +43,19 @@ data class RoutePlannerUiState(
         get() = !isRoundTrip && !isMaxStopsReached && stops.firstOrNull()?.location != null
 
     val isMaxStopsReached: Boolean
-        get() = stops.size >= MAX_WAYPOINT_COUNT
+        get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT
 
     val isSaveEnabled: Boolean
         get() = routePlan != null && !isRoutePlanLoading
 
     val isRoutePlanExpected: Boolean
-        get() = routePlanRequest.waypoints.size >= MIN_WAYPOINT_COUNT
+        get() = routePlanRequest.waypoints.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT
+
+    /**
+     * The stops can be routed and the plan is on its way, so the map waits for it before moving the camera.
+     */
+    val isAwaitingRoutePlan: Boolean
+        get() = routePlan == null && routePlanError == null && isRoutePlanExpected
 
     val isStopListVisible: Boolean
         get() = routePlanError == null
@@ -83,12 +90,15 @@ data class RoutePlannerUiState(
             ?.takeIf { it.id == MY_LOCATION_WAYPOINT_ID }
             ?.location
             ?: return this
-        val target = stops.drop(1).singleOrNull { !it.isEmpty }?.location
+        val target = stops.drop(1).firstOrNull { !it.isEmpty }?.location
 
-        return if (target != null && startLocation.distanceBetween(target) > MY_LOCATION_MAX_RANGE) {
-            withStops(listOf(RoutePlannerWaypoint()) + stops.drop(1))
+        if (target == null || startLocation.distanceBetween(target) <= MY_LOCATION_MAX_RANGE) return this
+        val rest = stops.drop(1)
+        // Enough stops left to form a route on their own, so no empty start is reserved
+        return if (rest.count { !it.isEmpty } >= RoutePlanConstants.MIN_WAYPOINT_COUNT) {
+            withStops(rest)
         } else {
-            this
+            withStops(listOf(RoutePlannerWaypoint()) + rest)
         }
     }
 
@@ -96,9 +106,6 @@ data class RoutePlannerUiState(
         copy(waypoints = stops + (waypoints.lastOrNull() ?: RoutePlannerWaypoint()))
 
     companion object {
-        const val MIN_WAYPOINT_COUNT = 2
-        const val MAX_WAYPOINT_COUNT = 10
-
         private val MY_LOCATION_MAX_RANGE: Length = 25.kilometers
 
         private val DEFAULT_WAYPOINTS = listOf(

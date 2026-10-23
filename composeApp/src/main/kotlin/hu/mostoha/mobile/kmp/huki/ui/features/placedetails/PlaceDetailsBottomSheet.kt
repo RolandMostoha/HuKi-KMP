@@ -62,6 +62,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 @Composable
 fun PlaceDetailsBottomSheet(
     placeDetails: PlaceDetails,
+    routePlanStopCount: Int,
     onRoutePlanClick: () -> Unit,
     onMapsNavigationClick: () -> Unit,
     onCloseClick: () -> Unit,
@@ -108,7 +109,11 @@ fun PlaceDetailsBottomSheet(
             ) {
                 PrimaryButton(
                     iconResId = R.drawable.ic_route,
-                    text = mokoString(SharedRes.strings.place_details_route_plan),
+                    text = if (routePlanStopCount > 1) {
+                        mokoString(SharedRes.strings.place_details_route_plan_count, routePlanStopCount)
+                    } else {
+                        mokoString(SharedRes.strings.place_details_route_plan)
+                    },
                     onClick = onRoutePlanClick,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -296,6 +301,7 @@ private fun PlaceDetailsBottomSheetLoadingPreview() {
     HuKiTheme {
         PlaceDetailsBottomSheet(
             placeDetails = PlaceDetails.Loading(Location(47.7181, 18.8948)),
+            routePlanStopCount = 1,
             onRoutePlanClick = {},
             onMapsNavigationClick = {},
             onCloseClick = {},
@@ -312,6 +318,7 @@ private fun PlaceDetailsBottomSheetUnresolvedPreview() {
                 location = Location(47.7181, 18.8948),
                 distance = "12.4 km",
             ),
+            routePlanStopCount = 1,
             onRoutePlanClick = {},
             onMapsNavigationClick = {},
             onCloseClick = {},
@@ -336,6 +343,7 @@ private fun PlaceDetailsBottomSheetLoadedPreview() {
                     distance = "12.4 km",
                 ),
             ),
+            routePlanStopCount = 1,
             onRoutePlanClick = {},
             onMapsNavigationClick = {},
             onCloseClick = {},

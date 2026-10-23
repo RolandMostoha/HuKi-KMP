@@ -107,6 +107,9 @@ struct MainView: View {
                     onLandscapesEvent: { event in
                         viewModel.onEvent(event: event)
                     },
+                    onRouteStopClicked: { stop in
+                        viewModel.onEvent(event: MainUiEventsRouteStopClicked(stop: stop))
+                    },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
                     routePlannerSheetHeight: routePlannerSheetHeight,

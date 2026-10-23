@@ -95,6 +95,8 @@
 
     <string name="place_details_loading">Looking up this place…</string>
     <string name="place_details_route_plan">Route plan</string>
+    <string name="place_details_route_plan_count">Route plan (%d)</string>
+    <string name="map_a11y_route_stop">Route stop: %s</string>
     <string name="place_details_maps_navigation">Maps navigation</string>
 
     <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>

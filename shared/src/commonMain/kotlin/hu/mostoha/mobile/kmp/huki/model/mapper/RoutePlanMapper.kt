@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -71,6 +72,12 @@ fun RoutePlannerProfile.toRouteRequest(waypoints: List<Location>): GraphhopperRo
 
 fun Place.toRoutePlannerWaypoint(): RoutePlannerWaypoint =
     RoutePlannerWaypoint(name = StringDesc.Raw(name), placeName = name, location = location)
+
+fun PlaceDetails.toRoutePlannerWaypoint(): RoutePlannerWaypoint =
+    when (this) {
+        is PlaceDetails.PlaceLoaded -> place.toRoutePlannerWaypoint()
+        is PlaceDetails.Unresolved, is PlaceDetails.Loading -> location.toRoutePlannerWaypoint()
+    }
 
 fun Location.toRoutePlannerWaypoint(): RoutePlannerWaypoint =
     RoutePlannerWaypoint(name = StringDesc.Raw(CoordinateFormatter.formatCoordinates(this)), location = this)

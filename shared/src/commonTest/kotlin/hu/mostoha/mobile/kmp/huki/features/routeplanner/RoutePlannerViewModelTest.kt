@@ -28,6 +28,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanInfoViewData
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPath
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPoints
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
@@ -41,6 +42,7 @@ import hu.mostoha.mobile.kmp.huki.repository.RoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldBeNull
@@ -103,7 +105,7 @@ class RoutePlannerViewModelTest {
             gpxRepository,
             analyticsService,
             crashlyticsService,
-            initialPlace,
+            listOfNotNull(initialPlace?.toRoutePlannerWaypoint()),
         )
 
     private suspend fun ReceiveTurbine<RoutePlannerUiEffects>.emittedEffects(): List<RoutePlannerUiEffects> = cancelAndConsumeRemainingEvents().mapNotNull { (it as? Event.Item)?.value }
@@ -119,7 +121,7 @@ class RoutePlannerViewModelTest {
 
     private fun createViewModelWithMaxStops(): RoutePlannerViewModel {
         val viewModel = createViewModel()
-        repeat(RoutePlannerUiState.MAX_WAYPOINT_COUNT - 1) { index ->
+        repeat(RoutePlanConstants.MAX_WAYPOINT_COUNT - 1) { index ->
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Stop $index")))
         }
         return viewModel
@@ -367,7 +369,7 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("One too many")))
 
             val uiState = viewModel.uiState.value
-            uiState.stops.size shouldBe RoutePlannerUiState.MAX_WAYPOINT_COUNT
+            uiState.stops.size shouldBe RoutePlanConstants.MAX_WAYPOINT_COUNT
             uiState.stops.names() shouldNotContain "One too many"
         }
     }
@@ -379,7 +381,7 @@ class RoutePlannerViewModelTest {
 
             viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(Location(47.12345, 18.98765)))
 
-            viewModel.uiState.value.stops.size shouldBe RoutePlannerUiState.MAX_WAYPOINT_COUNT
+            viewModel.uiState.value.stops.size shouldBe RoutePlanConstants.MAX_WAYPOINT_COUNT
             analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanWaypointLongTapped
         }
     }
@@ -1103,6 +1105,88 @@ class RoutePlannerViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.uiState.value.routePlanMarkers shouldBe listOf(GpxWaypoint(FAR_PLACE_LOCATION, WaypointType.END))
+        }
+    }
+
+    @Test
+    fun `Given several collected stops - When the planner is opened with them - Then they follow my location in order`() {
+        runTest {
+            val stops = listOf(place("Dobogókő"), place("Ram-hegy", Location(47.7, 18.8)))
+                .map { it.toRoutePlannerWaypoint() }
+            val viewModel = RoutePlannerViewModel(
+                locationMonitoringService,
+                routePlannerRepository,
+                geocodingRepository,
+                placeHistoryRepository,
+                gpxRepository,
+                analyticsService,
+                crashlyticsService,
+                stops,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", "Ram-hegy")
+        }
+    }
+
+    @Test
+    fun `Given my location is far from the first collected stop - When the planner is opened - Then the stops form the route alone`() {
+        runTest {
+            val stops = listOf(place("Dobogókő", FAR_PLACE_LOCATION), place("Ram-hegy"))
+                .map { it.toRoutePlannerWaypoint() }
+            val viewModel = RoutePlannerViewModel(
+                locationMonitoringService,
+                routePlannerRepository,
+                geocodingRepository,
+                placeHistoryRepository,
+                gpxRepository,
+                analyticsService,
+                crashlyticsService,
+                stops,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            with(viewModel.uiState.value) {
+                stops.names() shouldBe listOf("Dobogókő", "Ram-hegy")
+                routePlanMarkers.map { it.type } shouldBe listOf(WaypointType.START, WaypointType.END)
+            }
+        }
+    }
+
+    @Test
+    fun `Given two collected stops far from my location - When the planner is opened - Then the route is planned`() {
+        runTest {
+            val stops = listOf(place("Dobogókő", FAR_PLACE_LOCATION), place("Ram-hegy", FAR_PLACE_LOCATION.copy(latitude = 46.9)))
+                .map { it.toRoutePlannerWaypoint() }
+            val viewModel = RoutePlannerViewModel(
+                locationMonitoringService,
+                routePlannerRepository,
+                geocodingRepository,
+                placeHistoryRepository,
+                gpxRepository,
+                analyticsService,
+                crashlyticsService,
+                stops,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.uiState.value.routePlan shouldNotBe null
+        }
+    }
+
+    @Test
+    fun `Given two routable stops - When the plan is loading and then lands - Then it is awaited only until it lands`() {
+        runTest {
+            val viewModel = createViewModel(initialPlace = place("Dobogókő"))
+
+            viewModel.uiState.value.isAwaitingRoutePlan shouldBe true
+
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            with(viewModel.uiState.value) {
+                routePlan shouldNotBe null
+                isAwaitingRoutePlan shouldBe false
+            }
         }
     }
 

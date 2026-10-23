@@ -36,6 +36,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiState
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlin.math.roundToInt
@@ -79,7 +80,7 @@ fun RoutePlannerWaypointList(
         }
         if (uiState.isMaxStopsReached) {
             RoutePlannerMaxStopsRow(
-                maxStopCount = RoutePlannerUiState.MAX_WAYPOINT_COUNT,
+                maxStopCount = RoutePlanConstants.MAX_WAYPOINT_COUNT,
                 rowHeight = rowHeight,
             )
         } else {

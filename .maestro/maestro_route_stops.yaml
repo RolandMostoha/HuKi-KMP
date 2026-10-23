@@ -1,0 +1,77 @@
+appId: ${APP_ID}
+---
+# Route stops: every Place Details opened from a destination InfoWindow stays as a POI, so a second
+# one does not overwrite the first and the route plan connects both.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open the first landscape's destinations
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_SHOW_LANDSCAPES_BUTTON
+- tapOn:
+    id: LANDSCAPES_ROW
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "LANDSCAPES_DESTINATION_CARD_.*"
+    timeout: 5000
+
+# First POI from a destination InfoWindow
+- scrollUntilVisible:
+    element:
+      id: LANDSCAPES_DESTINATION_CARD_aggtelek_to
+    timeout: 5000
+- tapOn:
+    id: LANDSCAPES_DESTINATION_CARD_aggtelek_to
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW
+    timeout: 5000
+# The camera centers the destination, so its InfoWindow moves until the animation ends
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: LANDSCAPES_INFO_WINDOW_PLACE_DETAILS_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+    timeout: 5000
+- assertVisible: "Route plan"
+
+# Second POI from another destination's InfoWindow keeps the first one
+- tapOn:
+    id: LANDSCAPES_DESTINATION_MARKER
+    text: "Esztramos-hegy"
+- extendedWaitUntil:
+    visible:
+      id: LANDSCAPES_INFO_WINDOW
+    timeout: 5000
+# The camera centers the destination, so its InfoWindow moves until the animation ends
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: LANDSCAPES_INFO_WINDOW_PLACE_DETAILS_BUTTON
+- extendedWaitUntil:
+    visible: "Route plan \\(2\\)"
+    timeout: 5000
+
+# The planner opens with both POIs
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- assertVisible:
+    id: ROUTE_PLANNER_SHEET
+- assertVisible: "Aggteleki-tó"
+- assertVisible: "Esztramos-hegy"

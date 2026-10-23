@@ -4,6 +4,7 @@ import SwiftUI
 struct PlaceDetailsSheetView: View {
     let strings: Strings
     let placeDetails: PlaceDetails
+    var routePlanStopCount: Int = 1
     let onRoutePlanClick: () -> Void
     let onMapsNavigationClick: () -> Void
     let onDismissRequest: () -> Void
@@ -15,7 +16,7 @@ struct PlaceDetailsSheetView: View {
             VStack(spacing: 12) {
                 PrimaryButton(
                     icon: .system("point.topright.arrow.triangle.backward.to.point.bottomleft.scurvepath.fill"),
-                    title: strings.get(id: SharedRes.strings().place_details_route_plan),
+                    title: routePlanTitle,
                     action: onRoutePlanClick
                 )
                 .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_ROUTE_PLAN_BUTTON)
@@ -37,6 +38,12 @@ struct PlaceDetailsSheetView: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_SHEET)
+    }
+
+    private var routePlanTitle: String {
+        routePlanStopCount > 1
+            ? strings.get(id: SharedRes.strings().place_details_route_plan_count, args: [routePlanStopCount])
+            : strings.get(id: SharedRes.strings().place_details_route_plan)
     }
 
     private var header: some View {

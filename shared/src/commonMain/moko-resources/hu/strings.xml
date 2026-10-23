@@ -95,6 +95,8 @@
 
     <string name="place_details_loading">Hely keresése…</string>
     <string name="place_details_route_plan">Útvonaltervezés</string>
+    <string name="place_details_route_plan_count">Útvonaltervezés (%d)</string>
+    <string name="map_a11y_route_stop">Útvonal megálló: %s</string>
     <string name="place_details_maps_navigation">Maps navigáció</string>
 
     <string name="gpx_distance_info_window_a11y">Táv és idő a helyzetedtől eddig a pontig az útvonal mentén</string>

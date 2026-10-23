@@ -26,7 +26,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
-import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.IosBundledFileReader
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
@@ -85,8 +85,10 @@ object KoinViewModelProvider : KoinComponent {
     fun getTrailSymbolsGuideViewModel(owner: IosViewModelStoreOwner): TrailSymbolsGuideViewModel = owner.resolve()
     fun getLocationIqViewModel(owner: IosViewModelStoreOwner): LocationIqViewModel = owner.resolve()
     fun getPlaceHistoryViewModel(owner: IosViewModelStoreOwner): PlaceHistoryViewModel = owner.resolve()
-    fun getRoutePlannerViewModel(owner: IosViewModelStoreOwner, place: Place?): RoutePlannerViewModel =
-        owner.resolve { parametersOf(place) }
+    fun getRoutePlannerViewModel(
+        owner: IosViewModelStoreOwner,
+        stops: List<RoutePlannerWaypoint>,
+    ): RoutePlannerViewModel = owner.resolve { parametersOf(stops) }
     fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
     fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
 

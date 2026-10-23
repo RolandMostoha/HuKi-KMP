@@ -30,6 +30,7 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -60,7 +61,7 @@ class RoutePlannerViewModel(
     private val gpxRepository: GpxRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
-    initialPlace: Place? = null,
+    initialStops: List<RoutePlannerWaypoint> = emptyList(),
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoutePlannerUiState.Default)
@@ -69,13 +70,17 @@ class RoutePlannerViewModel(
     private val _uiEffects = Channel<RoutePlannerUiEffects>(Channel.BUFFERED)
     val uiEffects: Flow<RoutePlannerUiEffects> = _uiEffects.receiveAsFlow()
 
+    /**
+     * Replays the latest request, since seeded stops can form one before the collector subscribes.
+     */
     private val routePlanRequests = MutableSharedFlow<RoutePlanRequest>(
-        extraBufferCapacity = 1,
+        replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
     init {
-        initialPlace?.let { addWaypoint(it.toRoutePlannerWaypoint(), guardRange = true) }
+        // Seeded before my location loads, so no state ever has my location as the only stop
+        initialStops.forEach { addWaypoint(it, guardRange = true) }
         initLogging()
         observeRoutePlanRequests()
         loadMyLocation()
@@ -268,7 +273,7 @@ class RoutePlannerViewModel(
             }
 
             // Below the minimum the row itself has to stay, so it falls back to the empty "pick a place" state.
-            val updated = if (stops.size > RoutePlannerUiState.MIN_WAYPOINT_COUNT) {
+            val updated = if (stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT) {
                 stops.filterNot { it.id == id }
             } else {
                 stops.toMutableList().apply { set(index, RoutePlannerWaypoint()) }
@@ -340,7 +345,7 @@ class RoutePlannerViewModel(
     }
 
     private suspend fun loadRoutePlan(request: RoutePlanRequest) {
-        if (request.waypoints.size < RoutePlannerUiState.MIN_WAYPOINT_COUNT) {
+        if (request.waypoints.size < RoutePlanConstants.MIN_WAYPOINT_COUNT) {
             _uiState.update { it.copy(routePlan = null, isRoutePlanLoading = false, routePlanError = null) }
             return
         }

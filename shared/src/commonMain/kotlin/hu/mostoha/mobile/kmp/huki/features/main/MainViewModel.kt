@@ -13,6 +13,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.map.LandscapesGrouping
 import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
+import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.logger.toLogString
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
@@ -60,6 +61,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toOktMarkers
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktSectionItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.model.mapper.toUrl
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
@@ -82,6 +84,7 @@ import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -143,6 +146,7 @@ class MainViewModel(
     private val selectedWaypoint = MutableStateFlow<GpxWaypoint?>(null)
 
     private var placeDetailsJob: Job? = null
+    private var framedRouteStopLocations: List<Location> = emptyList()
 
     private var oktTrail: OktTrail? = null
     private var oktJob: Job? = null
@@ -193,10 +197,11 @@ class MainViewModel(
             is MainUiEvents.MapLongClicked -> handleMapLongClick(event.location)
             MainUiEvents.PlaceDetailsCloseClicked -> closePlaceDetails()
             MainUiEvents.PlaceDetailsRoutePlanClicked -> planRoute()
+            is MainUiEvents.RouteStopClicked -> showRouteStop(event.stop)
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // Route Planner events
-            MainUiEvents.RoutePlannerClicked -> showRoutePlanner(place = null)
-            is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers)
+            MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
+            is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers, event.isAwaitingRoutePlan)
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -312,6 +317,7 @@ class MainViewModel(
 
     private fun hideSheet(swipedSheet: Sheet? = null) {
         if (swipedSheet != null && _uiState.value.sheet != swipedSheet) return
+        if (swipedSheet == Sheet.PlaceDetails) removeCurrentRouteStop()
         cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
@@ -351,10 +357,17 @@ class MainViewModel(
         showPlace(place, PlaceDetailsSource.HISTORY)
     }
 
-    private fun showPlace(place: Place, source: PlaceDetailsSource) {
+    private fun showPlace(place: Place, source: PlaceDetailsSource, moveCamera: Boolean = true) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
         showPlaceDetailsSheet(PlaceDetails.PlaceLoaded(place))
         fillPlaceDistance(place)
+        if (moveCamera) moveCameraToPlace(place)
+        viewModelScope.launch {
+            placeHistoryRepository.recordVisit(place)
+        }
+    }
+
+    private fun moveCameraToPlace(place: Place) {
         viewModelScope.launch {
             val boundingBox = place.boundingBox
             sendEffect(
@@ -372,9 +385,6 @@ class MainViewModel(
                     )
                 },
             )
-        }
-        viewModelScope.launch {
-            placeHistoryRepository.recordVisit(place)
         }
     }
 
@@ -439,21 +449,21 @@ class MainViewModel(
                         DistanceFormatter.formatDistance(it.distanceBetween(location))
                     },
                 )
-            _uiState.updateMapUiState { it.copy(placeDetails = placeDetails) }
+            _uiState.updateMapUiState { it.withShownPlace(placeDetails) }
             place?.let { placeHistoryRepository.recordVisit(it) }
         }
     }
 
-    private fun fillPlaceDistance(place: Place) {
-        if (place.distance != null) return
+    private fun fillPlaceDistance(place: Place, refresh: Boolean = false) {
+        if (place.distance != null && !refresh) return
 
         launchPlaceDetailsLoad {
             val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
                 locationMonitoringService.lastKnownLocation()
             } ?: return@launchPlaceDetailsLoad
-            _uiState.updateMapUiState {
-                it.copy(placeDetails = PlaceDetails.PlaceLoaded(place.withDistanceFrom(userLocation)))
-            }
+            val basePlace = if (refresh) place.copy(distance = null) else place
+            val placeDetails = PlaceDetails.PlaceLoaded(basePlace.withDistanceFrom(userLocation))
+            _uiState.updateMapUiState { it.withShownPlace(placeDetails) }
         }
     }
 
@@ -461,7 +471,7 @@ class MainViewModel(
         cancelPlaceDetailsLoad()
         _uiState.update { uiState ->
             uiState.copy(
-                mapUiState = uiState.mapUiState.copy(placeDetails = placeDetails),
+                mapUiState = uiState.mapUiState.withShownPlace(placeDetails),
                 sheet = Sheet.PlaceDetails,
             )
         }
@@ -479,6 +489,7 @@ class MainViewModel(
 
     private fun closePlaceDetails() {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsClosed)
+        removeCurrentRouteStop()
         hideSheet()
     }
 
@@ -491,44 +502,71 @@ class MainViewModel(
     }
 
     private fun planRoute() {
-        val placeDetails = _uiState.value.mapUiState.placeDetails ?: return
+        val mapUiState = _uiState.value.mapUiState
+        val placeDetails = mapUiState.placeDetails ?: return
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsRoutePlanClicked)
-        showRoutePlanner((placeDetails as? PlaceDetails.PlaceLoaded)?.place)
+        showRoutePlanner(mapUiState.routeStopsWith(placeDetails))
     }
 
-    private fun showRoutePlanner(place: Place?) {
+    private fun removeCurrentRouteStop() {
+        val placeDetails = _uiState.value.mapUiState.placeDetails ?: return
+        _uiState.updateMapUiState { state ->
+            state.copy(routeStops = state.routeStops.filterNot { it.location == placeDetails.location })
+        }
+    }
+
+    private fun showRouteStop(stop: PlaceDetails) {
+        analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.ROUTE_STOP))
+        showPlaceDetailsSheet(stop)
+        if (stop is PlaceDetails.PlaceLoaded) fillPlaceDistance(stop.place, refresh = true)
+    }
+
+    private fun showRoutePlanner(stops: List<PlaceDetails>) {
         selectedWaypoint.value = null
+        framedRouteStopLocations = emptyList()
         cancelPlaceDetailsLoad()
+        cancelOktJobs()
+        oktTrail = null
+        cancelLandscapesJob()
         _uiState.update { uiState ->
             uiState.copy(
-                sheet = Sheet.RoutePlanner(place),
+                sheet = Sheet.RoutePlanner(stops.map { it.toRoutePlannerWaypoint() }),
+                isOktLoading = false,
                 mapUiState = uiState.mapUiState
                     .withoutGpx()
+                    .withoutLandscapes()
                     .copy(
+                        okt = null,
                         placeDetails = null,
                         routePlan = null,
                         routePlanWaypoints = emptyList(),
+                        routeStops = emptyList(),
                     ),
             )
         }
     }
 
-    private fun showRoutePlan(routePlan: RoutePlan?, markers: List<GpxWaypoint>) {
-        val mapUiState = _uiState.value.mapUiState
-        val isNewPlan = mapUiState.routePlan != routePlan
-        val hasNewStops = mapUiState.routePlanWaypoints != markers
+    private fun showRoutePlan(routePlan: RoutePlan?, markers: List<GpxWaypoint>, isAwaitingRoutePlan: Boolean) {
+        val isNewPlan = _uiState.value.mapUiState.routePlan != routePlan
         _uiState.updateMapUiState { it.copy(routePlan = routePlan, routePlanWaypoints = markers) }
-
-        if (routePlan != null) {
-            if (!isNewPlan) return
-            viewModelScope.launch {
-                fitCameraTo(routePlan.locations + routePlan.waypoints, ContentPadding.MAP_ROUTE_PLANNER)
-            }
-            return
+        when {
+            routePlan != null -> if (isNewPlan) frameRoutePlan(routePlan)
+            // Each intermediate stop set (e.g. my location joining) would pull the camera before the plan lands
+            isAwaitingRoutePlan -> Unit
+            else -> frameRouteStops(markers.map { it.location })
         }
+    }
 
-        if (!hasNewStops) return
-        val stopLocations = markers.map { it.location }.ifEmpty { return }
+    private fun frameRoutePlan(routePlan: RoutePlan) {
+        viewModelScope.launch {
+            fitCameraTo(routePlan.locations + routePlan.waypoints, ContentPadding.MAP_ROUTE_PLANNER)
+        }
+    }
+
+    private fun frameRouteStops(stopLocations: List<Location>) {
+        // A role change alone (e.g. becoming the start) must not restart the camera in place
+        if (stopLocations.isEmpty() || stopLocations == framedRouteStopLocations) return
+        framedRouteStopLocations = stopLocations
         viewModelScope.launch {
             sendEffect(
                 MapUiEffects.UpdateCamera(
@@ -856,6 +894,7 @@ class MainViewModel(
                                 placeDetails = null,
                                 routePlan = null,
                                 routePlanWaypoints = emptyList(),
+                                routeStops = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
                                 allDistancesVisible = false,
@@ -961,6 +1000,7 @@ class MainViewModel(
                         placeDetails = null,
                         routePlan = null,
                         routePlanWaypoints = emptyList(),
+                        routeStops = emptyList(),
                         okt = OktUiState(
                             type = trail.type,
                             sections = sections,
@@ -1220,6 +1260,7 @@ class MainViewModel(
                             placeDetails = null,
                             routePlan = null,
                             routePlanWaypoints = emptyList(),
+                            routeStops = emptyList(),
                             okt = null,
                             hikingLayerVisible = false,
                             landscapes = LandscapesUiState(
@@ -1328,7 +1369,8 @@ class MainViewModel(
     private fun showLandscapesDestinationPlaceDetails() {
         val destination = _uiState.value.mapUiState.landscapes?.selectedDestination ?: return
         dismissLandscapesInfoWindow()
-        showPlace(destination.toPlace(), PlaceDetailsSource.LANDSCAPES)
+        // The info window already framed the destination at the user's zoom
+        showPlace(destination.toPlace(), PlaceDetailsSource.LANDSCAPES, moveCamera = false)
     }
 
     private fun openLandscapesDestinationRoute() {
@@ -1404,5 +1446,27 @@ class MainViewModel(
         val OKT_ON_TRAIL_THRESHOLD = 500.meters
         val OKT_USER_POSITION_MIN_MOVE = 50.meters
         const val LANDSCAPES_SINGLE_DESTINATION_ZOOM = 11.0
+    }
+}
+
+/**
+ * Every shown place stays as a route stop, refreshed in place when its details change.
+ */
+private fun MapUiState.withShownPlace(placeDetails: PlaceDetails): MapUiState =
+    if (placeDetails is PlaceDetails.Loading) {
+        copy(placeDetails = placeDetails)
+    } else {
+        copy(placeDetails = placeDetails, routeStops = routeStopsWith(placeDetails))
+    }
+
+/**
+ * The shown place always joins the stops, dropping the oldest one when the plan is full.
+ */
+private fun MapUiState.routeStopsWith(placeDetails: PlaceDetails): List<PlaceDetails> {
+    val index = routeStops.indexOfFirst { it.location == placeDetails.location }
+    return when {
+        index != -1 -> routeStops.toMutableList().apply { set(index, placeDetails) }
+        routeStops.size < RoutePlanConstants.MAX_ROUTE_STOPS -> routeStops + placeDetails
+        else -> routeStops.drop(1) + placeDetails
     }
 }

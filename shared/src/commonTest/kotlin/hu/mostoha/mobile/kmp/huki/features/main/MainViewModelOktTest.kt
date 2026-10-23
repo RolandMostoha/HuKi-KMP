@@ -26,7 +26,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OktMarkerType
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
+import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktMarker
@@ -189,6 +191,36 @@ class MainViewModelOktTest {
                 AnalyticsEvent.OktLoadFailed,
             )
             crashlyticsService.recordedExceptions shouldBe listOf(exception)
+        }
+    }
+
+    @Test
+    fun `Given a route stop - When Okt is opened - Then the route stops are cleared`() {
+        runTest {
+            val viewModel = createViewModel()
+            val place = Place(osmId = "1", location = Location(47.5, 19.0), name = "Budapest", placeSource = PlaceSource.SEARCH_AUTOCOMPLETE)
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(place))
+            advanceUntilIdle()
+
+            viewModel.onEvent(OktUiEvents.OktTypeClicked(OktType.OKT))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given Okt - When RoutePlannerClicked - Then Okt is closed`() {
+        runTest {
+            val viewModel = createOpenedViewModel()
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                mapUiState.okt.shouldBeNull()
+                isOktLoading shouldBe false
+            }
         }
     }
 

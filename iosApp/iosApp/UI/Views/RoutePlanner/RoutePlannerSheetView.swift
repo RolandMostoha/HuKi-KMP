@@ -28,7 +28,7 @@ enum RoutePlannerDetent {
 struct RoutePlannerSheetView: View {
     let strings: Strings
     let pick: RoutePlannerPick?
-    let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint]) -> Void
+    let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint], Bool) -> Void
     let onRoutePlanSaved: (String) -> Void
     let onDismissRequest: () -> Void
     let detent: RoutePlannerDetent
@@ -46,9 +46,9 @@ struct RoutePlannerSheetView: View {
 
     init(
         strings: Strings,
-        place: Place?,
+        stops: [RoutePlannerWaypoint],
         pick: RoutePlannerPick?,
-        onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint]) -> Void,
+        onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint], Bool) -> Void,
         onRoutePlanSaved: @escaping (String) -> Void,
         onDismissRequest: @escaping () -> Void,
         detent: RoutePlannerDetent = .expanded,
@@ -70,7 +70,7 @@ struct RoutePlannerSheetView: View {
         self.onExpandAfterPickRequest = onExpandAfterPickRequest
         self.onInitialAppear = onInitialAppear
         _holder = StateObject(wrappedValue: ViewModelHolder { owner in
-            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, place: place)
+            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops)
         })
     }
 
@@ -106,12 +106,9 @@ struct RoutePlannerSheetView: View {
                 onExpandRequest: onExpandRequest,
                 onHeightsChange: onHeightsChange
             )
-            .onChange(of: uiState.routePlanMarkers, initial: true) {
-                onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers)
-            }
-            .onChange(of: uiState.routePlan) {
-                onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers)
-            }
+            .onChange(of: uiState.routePlanMarkers, initial: true) { notifyRoutePlanUpdated(uiState) }
+            .onChange(of: uiState.routePlan) { notifyRoutePlanUpdated(uiState) }
+            .onChange(of: uiState.isAwaitingRoutePlan) { notifyRoutePlanUpdated(uiState) }
             .alert(
                 strings.get(id: SharedRes.strings().route_planner_save_error_title),
                 isPresented: $showsSaveError
@@ -134,6 +131,10 @@ struct RoutePlannerSheetView: View {
                 .presentationDragIndicator(.visible)
             }
         }
+    }
+
+    private func notifyRoutePlanUpdated(_ uiState: RoutePlannerUiState) {
+        onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan)
     }
 
     private func searchBinding(uiState: RoutePlannerUiState) -> Binding<Bool> {

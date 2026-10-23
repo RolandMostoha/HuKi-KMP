@@ -19,7 +19,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1E6F4213A82157FC388EF595 /* Exceptions for "iosApp" folder in "iosApp" target */ = {
+		1E6F4213A82157FC388EF595 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -31,24 +31,40 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		305BDE9F2F11585000A60BF0 /* Scripts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = Scripts;
 			sourceTree = "<group>";
 		};
 		30FA57E12F4A100000A60BF0 /* fastlane */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = fastlane;
 			sourceTree = "<group>";
 		};
 		4E05C4AB383E64F4131B52E6 /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1E6F4213A82157FC388EF595 /* Exceptions for "iosApp" folder in "iosApp" target */,
+				1E6F4213A82157FC388EF595 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = iosApp;
 			sourceTree = "<group>";
 		};
 		A8795A49EAC062F4C5704EFF /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -270,7 +286,7 @@
 /* Begin PBXTargetDependency section */
 		30BD1E9B2EFBCF6C00CD3768 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 30BD1E9A2EFBCF6C00CD3768 /* SwiftLintBuildToolPlugin */;
+			productRef = 30BD1E9A2EFBCF6C00CD3768 /* plugin:SwiftLintBuildToolPlugin */;
 		};
 /* End PBXTargetDependency section */
 
@@ -521,7 +537,7 @@
 			package = 30BD1E812EFAE3AD00CD3768 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
 			productName = MapboxMaps;
 		};
-		30BD1E9A2EFBCF6C00CD3768 /* SwiftLintBuildToolPlugin */ = {
+		30BD1E9A2EFBCF6C00CD3768 /* plugin:SwiftLintBuildToolPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 30BD1E992EFBCF5F00CD3768 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";

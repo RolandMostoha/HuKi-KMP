@@ -21,31 +21,31 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
-import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun RoutePlannerBottomSheet(
-    place: Place?,
+    stops: List<RoutePlannerWaypoint>,
     pick: RoutePlannerPick?,
     detent: RoutePlannerDetent,
     onMoreStopsClick: () -> Unit,
-    onRoutePlanUpdated: (RoutePlan?, List<GpxWaypoint>) -> Unit,
+    onRoutePlanUpdated: (RoutePlan?, List<GpxWaypoint>, Boolean) -> Unit,
     onEffect: (RoutePlannerUiEffects) -> Unit,
     onLocationIqClick: () -> Unit,
     modifier: Modifier = Modifier,
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
     onExpandedHeightMeasured: (Dp) -> Unit = {},
-    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(place) },
+    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(stops) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showSaveError by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.routePlan, uiState.routePlanMarkers) {
-        onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers)
+    LaunchedEffect(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan) {
+        onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan)
     }
     LaunchedEffect(pick) {
         pick?.let { viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(it.location)) }

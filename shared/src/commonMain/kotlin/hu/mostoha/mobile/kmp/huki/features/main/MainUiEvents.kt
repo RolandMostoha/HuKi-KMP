@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 
@@ -59,6 +60,7 @@ sealed interface MainUiEvents {
     data class MapLongClicked(val location: Location) : MainUiEvents
     data object PlaceDetailsCloseClicked : MainUiEvents
     data object PlaceDetailsRoutePlanClicked : MainUiEvents
+    data class RouteStopClicked(val stop: PlaceDetails) : MainUiEvents
     data object PlaceDetailsMapsNavigationClicked : MainUiEvents
 
     /**
@@ -68,6 +70,7 @@ sealed interface MainUiEvents {
     data class RoutePlanUpdated(
         val routePlan: RoutePlan?,
         val markers: List<GpxWaypoint>,
+        val isAwaitingRoutePlan: Boolean = false,
     ) : MainUiEvents
 
     /**

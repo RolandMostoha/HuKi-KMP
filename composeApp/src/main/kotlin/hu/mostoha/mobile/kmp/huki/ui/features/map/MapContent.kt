@@ -56,7 +56,6 @@ import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
-import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
@@ -71,9 +70,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
-import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
@@ -92,7 +89,6 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
-import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
@@ -314,13 +310,7 @@ fun MapContent(
                     routeStrokeColor = mapStrokeColor,
                 )
             }
-            mapUiState.placeDetails?.let { placeDetails ->
-                PlaceMarker(
-                    location = placeDetails.location,
-                    isDarkMode = isDarkMode,
-                    baseLayer = mapUiState.baseLayer,
-                )
-            }
+            PlaceMarkersLayer(mapUiState = mapUiState, isDarkMode = isDarkMode, onEvent = onEvent)
         }
         MapCameraDebugPanel(
             enabled = FeatureFlags.DEBUG_SHOW_CAMERA_PANEL,
@@ -368,20 +358,6 @@ private fun MapViewportState.handleMapEffect(
         is MapUiEffects.ShowMyLocation -> followLocation(effect.myLocationStatus, effect.animated)
         is MapUiEffects.Zoom -> zoom(effect.zoomIn)
         is MapUiEffects.ResetBearing -> resetBearing()
-    }
-}
-
-@OptIn(MapboxDelicateApi::class)
-@Composable
-@MapboxMapComposable
-private fun PlaceMarker(location: Location, isDarkMode: Boolean, baseLayer: BaseLayer) {
-    val markerIcon = MarkerIcons.placeSymbol(isDarkMode, baseLayer)
-    val markerImage = rememberIconImage(markerIcon.drawableResId)
-    PointAnnotation(location.toPoint()) {
-        iconImage = markerImage
-        iconAnchor = IconAnchor.BOTTOM
-        iconSize = SharedDimens.PLACE_MARKER_SCALE
-        iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
     }
 }
 

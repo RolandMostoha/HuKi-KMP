@@ -55,6 +55,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCurrentWhatsNew
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxWaypoints
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
+import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -71,6 +72,8 @@ import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
+import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
@@ -1231,6 +1234,86 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given a route plan is on its way - When stops change - Then the camera waits and frames only the plan`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val (first, second) = TEST_ROUTE_PLAN.waypoints
+            val stops = listOf(GpxWaypoint(first, WaypointType.START), GpxWaypoint(second, WaypointType.END))
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, stops.take(1), isAwaitingRoutePlan = false))
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, stops, isAwaitingRoutePlan = true))
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, stops, isAwaitingRoutePlan = false))
+                advanceUntilIdle()
+
+                awaitItem().shouldBeInstanceOf<MapUiEffects.UpdateCamera>()
+                    .target shouldBe CameraTarget.Bounds(listOf(first), maxZoom = PLACE_DEFAULT_CAMERA_ZOOM)
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    CameraTarget.Bounds(TEST_ROUTE_PLAN.locations + TEST_ROUTE_PLAN.waypoints),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a route plan that could not be planned - When it stops waiting - Then the camera frames the stops`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val (first, second) = TEST_ROUTE_PLAN.waypoints
+            val stops = listOf(GpxWaypoint(first, WaypointType.START), GpxWaypoint(second, WaypointType.END))
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, stops, isAwaitingRoutePlan = true))
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, stops, isAwaitingRoutePlan = false))
+                advanceUntilIdle()
+
+                awaitItem().shouldBeInstanceOf<MapUiEffects.UpdateCamera>()
+                    .target shouldBe CameraTarget.Bounds(listOf(first, second), maxZoom = PLACE_DEFAULT_CAMERA_ZOOM)
+            }
+        }
+    }
+
+    @Test
+    fun `Given drawn stops - When only their roles change - Then the camera is not moved again`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val (first, second) = TEST_ROUTE_PLAN.waypoints
+            viewModel.onEvent(
+                MainUiEvents.RoutePlanUpdated(
+                    routePlan = null,
+                    markers = listOf(GpxWaypoint(first, WaypointType.INTERMEDIATE), GpxWaypoint(second, WaypointType.END)),
+                ),
+            )
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(
+                    MainUiEvents.RoutePlanUpdated(
+                        routePlan = null,
+                        markers = listOf(GpxWaypoint(first, WaypointType.START), GpxWaypoint(second, WaypointType.END)),
+                    ),
+                )
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+            viewModel.uiState.value.mapUiState.routePlanMarkers.first().type shouldBe WaypointType.START
+        }
+    }
+
+    @Test
     fun `Given no route can be planned - When a single waypoint is drawn - Then the camera frames it`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -2366,6 +2449,235 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given shown place - When another place is shown - Then both are kept as route stops in order`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                placeDetails?.location shouldBe TEST_DESTINATION.location
+                routeStops.map { it.location } shouldBe listOf(TEST_PLACE.location, TEST_DESTINATION.location)
+            }
+        }
+    }
+
+    @Test
+    fun `Given a route stop - When the same place is shown again - Then it is not duplicated`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.routeStops.map { it.location } shouldBe listOf(TEST_PLACE.location)
+        }
+    }
+
+    @Test
+    fun `Given two route stops - When PlaceDetailsCloseClicked - Then only the shown one is removed`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsCloseClicked)
+
+            with(viewModel.uiState.value) {
+                sheet shouldBe null
+                mapUiState.routeStops.map { it.location } shouldBe listOf(TEST_PLACE.location)
+            }
+        }
+    }
+
+    @Test
+    fun `Given two route stops - When Place Details is swipe dismissed - Then only the shown one is removed`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SheetSwipeDismissed(Sheet.PlaceDetails))
+
+            viewModel.uiState.value.mapUiState.routeStops.map { it.location } shouldBe listOf(TEST_PLACE.location)
+        }
+    }
+
+    @Test
+    fun `Given two route stops - When PlaceDetailsRoutePlanClicked - Then the planner gets both in order`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            with(viewModel.uiState.value) {
+                sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                    .stops.map { it.location } shouldBe listOf(TEST_PLACE.location, TEST_DESTINATION.location)
+                mapUiState.routeStops shouldBe emptyList()
+            }
+        }
+    }
+
+    @Test
+    fun `Given unresolved long tap - When planned - Then it becomes a coordinate stop`() {
+        runTest {
+            reverseGeocodeResult = NetworkResult.Error(NetworkError.NO_INTERNET)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            viewModel.uiState.value.sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                .stops.map { it.location } shouldBe listOf(TEST_LONG_TAP_LOCATION)
+        }
+    }
+
+    @Test
+    fun `Given loading place details - When shown - Then it is not a route stop yet`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+
+            viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given full route stops - When another place is shown - Then the oldest is dropped and it joins`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            val places = List(RoutePlanConstants.MAX_ROUTE_STOPS) { index ->
+                TEST_PLACE.copy(osmId = "$index", location = Location(47.0 + index * 0.01, 19.0))
+            }
+            places.forEach { place ->
+                viewModel.onEvent(MainUiEvents.SearchPlaceSelected(place))
+                advanceUntilIdle()
+            }
+
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.routeStops.map { it.location } shouldBe
+                places.drop(1).map { it.location } + TEST_DESTINATION.location
+        }
+    }
+
+    @Test
+    fun `Given loading long tap - When PlaceDetailsRoutePlanClicked - Then the pressed location joins the plan`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+
+            viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+
+            viewModel.uiState.value.sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                .stops.map { it.location } shouldBe listOf(TEST_PLACE.location, TEST_LONG_TAP_LOCATION)
+        }
+    }
+
+    @Test
+    fun `Given a route stop - When a GPX is opened - Then the route stops are cleared`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given a route stop with an old distance - When RouteStopClicked - Then the distance is refreshed`() {
+        runTest {
+            val service = locationMonitoringService(lastKnownLocation = TEST_LONG_TAP_LOCATION)
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+            val stop = PlaceDetails.PlaceLoaded(TEST_PLACE.copy(distance = "99 km"))
+
+            viewModel.onEvent(MainUiEvents.RouteStopClicked(stop))
+            advanceUntilIdle()
+
+            val expected = TEST_PLACE.withDistanceFrom(TEST_LONG_TAP_LOCATION).distance
+            viewModel.uiState.value.mapUiState.placeDetails
+                .shouldBeInstanceOf<PlaceDetails.PlaceLoaded>()
+                .place.distance shouldBe expected
+        }
+    }
+
+    @Test
+    fun `Given two route stops - When RouteStopClicked - Then its place details are shown without moving the camera`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
+            advanceUntilIdle()
+            val firstStop = viewModel.uiState.value.mapUiState.routeStops.first()
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(MainUiEvents.RouteStopClicked(firstStop))
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+            with(viewModel.uiState.value.mapUiState) {
+                placeDetails shouldBe firstStop
+                routeStops.size shouldBe 2
+            }
+        }
+    }
+
+    @Test
+    fun `Given a route stop - When RoutePlannerClicked - Then the planner gets the route stops`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.SearchClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.uiState.value.sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
+                .stops.map { it.location } shouldBe listOf(TEST_PLACE.location)
+        }
+    }
+
+    @Test
     fun `Given loaded GPX - When RoutePlannerClicked - Then GPX is closed and Route Planner is shown`() {
         runTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
@@ -2377,7 +2689,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
 
             with(viewModel.uiState.value) {
-                sheet shouldBe Sheet.RoutePlanner(place = null)
+                sheet shouldBe Sheet.RoutePlanner()
                 mapUiState.gpxDetails shouldBe null
                 mapUiState.gpxLayerVisible shouldBe false
             }

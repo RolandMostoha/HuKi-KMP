@@ -34,6 +34,12 @@ object MapConstants {
     const val MAP_BEARING_EPSILON = 0.1
 
     /**
+     * View annotation priorities shared across map features: place pins above every marker, info windows above all.
+     */
+    const val PLACE_MARKER_PRIORITY = 12
+    const val INFO_WINDOW_PRIORITY = 13
+
+    /**
      * Bearing tolerance in degrees within which the camera counts as facing north, for compass uses to fade out.
      */
     const val MAP_FACING_NORTH_TOLERANCE = 1.0

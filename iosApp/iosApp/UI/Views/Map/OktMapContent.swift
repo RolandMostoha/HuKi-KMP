@@ -17,7 +17,6 @@ struct OktMapContent: MapContent {
     private static let lineHitWidth = 24.0
     private static let raisedMarkerPriority = 1
     private static let selectedMarkerPriority = 2
-    private static let infoWindowPriority = 3
 
     var body: some MapContent {
         GeoJSONSource(id: Self.baseSourceId)
@@ -85,7 +84,7 @@ struct OktMapContent: MapContent {
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
             .ignoreCameraPadding(true)
-            .priority(Self.infoWindowPriority)
+            .priority(Int(MapConstants.shared.INFO_WINDOW_PRIORITY))
         }
     }
 

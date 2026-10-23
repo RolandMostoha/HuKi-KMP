@@ -26,7 +26,7 @@ sealed class Sheet {
     /**
      * Route Planner Standard Sheet is shown.
      */
-    data class RoutePlanner(val place: Place?) : Sheet()
+    data class RoutePlanner(val stops: List<RoutePlannerWaypoint> = emptyList()) : Sheet()
 
     /**
      * WhatsNew Modal Sheet is shown after the app is updated.

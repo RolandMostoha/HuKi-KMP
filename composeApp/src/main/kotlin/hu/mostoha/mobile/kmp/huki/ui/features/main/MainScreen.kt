@@ -52,7 +52,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
-import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.isModal
 import hu.mostoha.mobile.kmp.huki.model.domain.isStandard
@@ -332,7 +332,7 @@ private fun MainContent(
             )
             (uiState.sheet as? Sheet.RoutePlanner)?.let { sheet ->
                 RoutePlannerSheetOverlay(
-                    place = sheet.place,
+                    stops = sheet.stops,
                     pick = routePlannerPick,
                     detent = routePlannerDetent,
                     onDetentChange = { routePlannerDetent = it },
@@ -438,7 +438,7 @@ private fun routePlannerMapInset(
 
 @Composable
 private fun RoutePlannerSheetOverlay(
-    place: Place?,
+    stops: List<RoutePlannerWaypoint>,
     pick: RoutePlannerPick?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
@@ -459,7 +459,7 @@ private fun RoutePlannerSheetOverlay(
             expandedHeight = expandedHeight,
         ) { sheetModifier ->
             RoutePlannerBottomSheet(
-                place = place,
+                stops = stops,
                 pick = pick,
                 detent = detent,
                 onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
@@ -467,8 +467,8 @@ private fun RoutePlannerSheetOverlay(
                 onMinimizedHeightMeasured = onMinimizedHeightMeasured,
                 onExpandedHeightMeasured = onExpandedHeightMeasured,
                 modifier = sheetModifier,
-                onRoutePlanUpdated = { routePlan, markers ->
-                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers))
+                onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan ->
+                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan))
                 },
                 onEffect = { effect ->
                     when (effect) {
@@ -557,6 +557,7 @@ private fun MainStandardBottomSheet(
             uiState.mapUiState.placeDetails?.let { placeDetails ->
                 PlaceDetailsBottomSheet(
                     placeDetails = placeDetails,
+                    routePlanStopCount = uiState.mapUiState.routeStops.size,
                     onRoutePlanClick = {
                         onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
                     },

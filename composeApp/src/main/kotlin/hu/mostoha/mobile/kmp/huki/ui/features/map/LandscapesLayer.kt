@@ -69,6 +69,7 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
+import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
@@ -104,7 +105,6 @@ private const val SELECTED_GLOW_WIDTH = 10.0
 private const val SELECTED_GLOW_BLUR = 7.0
 private const val SELECTED_GLOW_OPACITY = 0.45
 private const val SELECTED_MARKER_PRIORITY = 11L
-private const val INFO_WINDOW_PRIORITY = 12L
 private val LabelFonts = listOf("DIN Pro Bold", "Arial Unicode MS Bold")
 
 @Composable
@@ -142,7 +142,7 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
                     .allowOverlap(true)
                     .allowOverlapWithPuck(true)
                     .ignoreCameraPadding(true)
-                    .priority(INFO_WINDOW_PRIORITY)
+                    .priority(MapConstants.INFO_WINDOW_PRIORITY.toLong())
                     .build(),
             ) {
                 DestinationInfoWindow(

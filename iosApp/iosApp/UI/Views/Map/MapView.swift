@@ -16,6 +16,7 @@ struct MapView: View {
     var onOktInfoWindowPlaceDetailsClicked: () -> Void = {}
     var onOktInfoWindowDismissed: () -> Void = {}
     var onLandscapesEvent: (LandscapesUiEvents) -> Void = { _ in }
+    var onRouteStopClicked: (PlaceDetails) -> Void = { _ in }
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
@@ -90,13 +91,8 @@ struct MapView: View {
                             onInfoWindowPlaceDetailsClicked: onOktInfoWindowPlaceDetailsClicked
                         )
                     }
-                    if let placeDetails = uiState.mapUiState.placeDetails {
-                        PlaceMarkerMapContent(
-                            location: placeDetails.location,
-                            baseLayer: uiState.mapUiState.baseLayer,
-                            colorScheme: colorScheme
-                        )
-                    }
+                    PlaceMarkersMapContent(mapUiState: uiState.mapUiState, colorScheme: colorScheme,
+                                           onRouteStopClicked: onRouteStopClicked)
                     if uiState.myLocationState.permissionState == PermissionState.granted {
                         Puck2D(bearing: PuckBearingSource.puck)
                             .showsAccuracyRing(true)
@@ -250,6 +246,8 @@ struct MapView: View {
                     routePlannerMapInset = newHeight
                 }
                 .onChange(of: listSheetHeight, initial: true) { listSheetMapInset = $1 }
+                // An idle map only places a new view annotation on its next frame, so the pin would wait for a pan
+                .onChange(of: placeMarkerLocations) { proxy.map?.triggerRepaint() }
                 .onChange(of: routePlannerDetent) {
                     refitRoutePlannerCamera()
                 }
@@ -272,6 +270,10 @@ struct MapView: View {
 }
 
 private extension MapView {
+    var placeMarkerLocations: [Shared.Location] {
+        uiState.mapUiState.routeStops.map(\.location) + [uiState.mapUiState.placeDetails?.location].compactMap { $0 }
+    }
+
     var isRoutePlanVisible: Bool {
         uiState.mapUiState.routePlan != nil || !uiState.mapUiState.routePlanMarkers.isEmpty
     }

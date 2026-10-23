@@ -18,6 +18,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
@@ -99,7 +100,16 @@ val viewModelModule = module {
     viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
     viewModel { params ->
-        RoutePlannerViewModel(get(), get(), get(), get(), get(), get(), get(), initialPlace = params.getOrNull())
+        RoutePlannerViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            initialStops = params.getOrNull<List<RoutePlannerWaypoint>>().orEmpty(),
+        )
     }
     viewModelOf(::SettingsViewModel)
     viewModel {

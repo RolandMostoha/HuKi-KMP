@@ -63,6 +63,7 @@ import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
+import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
@@ -73,7 +74,6 @@ private const val LINE_HIT_WIDTH = 24.0
 private const val LINE_HIT_OPACITY = 0.01
 private const val RAISED_MARKER_PRIORITY = 1L
 private const val SELECTED_MARKER_PRIORITY = 2L
-private const val INFO_WINDOW_PRIORITY = 3L
 
 @OptIn(MapboxExperimental::class)
 @Composable
@@ -132,7 +132,7 @@ fun OktLayer(okt: OktUiState, onEvent: (OktUiEvents) -> Unit) {
                     .allowOverlap(true)
                     .allowOverlapWithPuck(true)
                     .ignoreCameraPadding(true)
-                    .priority(INFO_WINDOW_PRIORITY)
+                    .priority(MapConstants.INFO_WINDOW_PRIORITY.toLong())
                     .build(),
             ) {
                 OktInfoWindow(

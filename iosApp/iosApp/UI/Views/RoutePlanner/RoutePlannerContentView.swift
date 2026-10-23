@@ -144,7 +144,7 @@ struct RoutePlannerContentView: View {
             if uiState.isMaxStopsReached {
                 RoutePlannerMaxStopsRowView(
                     strings: strings,
-                    maxStopCount: Int(RoutePlannerUiState.companion.MAX_WAYPOINT_COUNT),
+                    maxStopCount: Int(RoutePlanConstants.shared.MAX_WAYPOINT_COUNT),
                     rowHeight: rowHeight
                 )
                 .moveDisabled(true)

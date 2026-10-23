@@ -5,10 +5,12 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
+import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqAddress
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import hu.mostoha.mobile.kmp.huki.util.formatter.CoordinateFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 
 const val LOCATION_IQ_BB_SIZE = 4
@@ -72,3 +74,9 @@ fun LocationIqPlace.toPlaceSearchResult(userLocation: Location? = null): Place {
         },
     )
 }
+
+fun PlaceDetails.toDisplayName(): String =
+    when (this) {
+        is PlaceDetails.PlaceLoaded -> place.name
+        is PlaceDetails.Unresolved, is PlaceDetails.Loading -> CoordinateFormatter.formatCoordinates(location)
+    }

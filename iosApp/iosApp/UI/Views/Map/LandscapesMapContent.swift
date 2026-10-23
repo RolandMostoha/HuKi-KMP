@@ -36,7 +36,6 @@ struct LandscapesMapContent: MapContent {
     private static let labelSize = 14.0
     private static let labelHaloWidth = 1.5
     private static let selectedMarkerPriority = 11
-    private static let infoWindowPriority = 12
 
     var body: some MapContent {
         GeoJSONSource(id: Self.maskSourceId)
@@ -164,7 +163,7 @@ struct LandscapesMapContent: MapContent {
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
             .ignoreCameraPadding(true)
-            .priority(Self.infoWindowPriority)
+            .priority(Int(MapConstants.shared.INFO_WINDOW_PRIORITY))
         }
     }
 }
