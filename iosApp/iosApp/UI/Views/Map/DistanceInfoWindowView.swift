@@ -17,12 +17,12 @@ struct DistanceInfoWindowView: View {
                 .font(.system(size: Dimens.infoWindowDistanceFontSize, weight: .bold))
                 .foregroundStyle(Color(SharedRes.colors().primaryStrong.getUIColor()))
             Text(strings.get(desc: info.travelTime))
-                .font(.system(size: Dimens.infoWindowTravelTimeFontSize))
-                .foregroundStyle(Color(.secondaryLabel))
+                .font(.system(size: Dimens.infoWindowTravelTimeFontSize, weight: .medium))
+                .foregroundStyle(Color(.label).opacity(0.85))
         }
         .padding(.horizontal, Dimens.infoWindowHorizontalPadding)
         .padding(.vertical, Dimens.infoWindowVerticalPadding)
-        .padding(.bottom, Dimens.infoWindowTailHeight)
+        .padding(.bottom, Dimens.infoWindowTailHeight + Dimens.infoWindowBottomExtraPadding)
         .background(
             shape
                 .fill(Color(.systemBackground))

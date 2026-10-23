@@ -58,13 +58,13 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 ## Screenshot #3 — Navigation
 
 - dark mode.
-- Layers -> Satellite is ON.
-- GPX is opened, distances are turned on
--
+- OUTDOORS layer
+- GPX - just a simple route plan from My location
+- Markers, My location marker, Info window font sizes + padding are increased temporarily
 
 |               | Lat/Long/Zoom           |
 |---------------|-------------------------|
-| Camera        | 47.71791,18.89788,17.28 |
+| Camera        | 47.71840,18.89840,16.50 |
 | Camera (iPad) | -                       |
 | Location      | 47.71755,18.89761       |
 

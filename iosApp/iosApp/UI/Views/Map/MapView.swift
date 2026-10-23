@@ -93,16 +93,6 @@ struct MapView: View {
                     }
                     PlaceMarkersMapContent(mapUiState: uiState.mapUiState, colorScheme: colorScheme,
                                            onRouteStopClicked: onRouteStopClicked)
-                    if uiState.myLocationState.permissionState == PermissionState.granted {
-                        Puck2D(bearing: PuckBearingSource.puck)
-                            .showsAccuracyRing(true)
-                            .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
-                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
-                            .topImage(SharedRes.images().ic_my_location_top_image.appearanceImage(for: colorScheme))
-                            .bearingImage(SharedRes.images().ic_my_location_bearing.appearanceImage(for: colorScheme))
-                            .shadowImage(SharedRes.images().ic_my_location_shadow.appearanceImage(for: colorScheme))
-                            .scale(1.2)
-                    }
                     if uiState.mapUiState.gpxLayerVisible {
                         if let gpxDetails = uiState.mapUiState.gpxDetails {
                             if uiState.mapUiState.gpxRouteVisible {
@@ -145,6 +135,16 @@ struct MapView: View {
                             routePlan: uiState.mapUiState.routePlan,
                             markers: uiState.mapUiState.routePlanMarkers
                         )
+                    }
+                    if uiState.myLocationState.permissionState == PermissionState.granted {
+                        Puck2D(bearing: PuckBearingSource.puck)
+                            .showsAccuracyRing(true)
+                            .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
+                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
+                            .topImage(SharedRes.images().ic_my_location_top_image.appearanceImage(for: colorScheme))
+                            .bearingImage(SharedRes.images().ic_my_location_bearing.appearanceImage(for: colorScheme))
+                            .shadowImage(SharedRes.images().ic_my_location_shadow.appearanceImage(for: colorScheme))
+                            .scale(Dimens.myLocationPuckScale)
                     }
                 }
                 .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
