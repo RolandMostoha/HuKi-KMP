@@ -364,10 +364,10 @@
     <string name="discover_destinations_by_landscape">Tájak</string>
     <string name="discover_destinations_by_category">Kategóriák</string>
     <string name="discover_destinations_in_list">Lista</string>
-    <string name="landscapes_title">Tájegységek</string>
+    <string name="landscapes_title">Tájak és kirándulóhelyek</string>
     <string name="landscapes_a11y_show_all">Összes tájegység megjelenítése</string>
     <string name="landscapes_a11y_resume">Tájegységek megjelenítése</string>
-    <string name="categories_title">Kategóriák</string>
+    <string name="categories_title">Kirándulóhely kategóriák</string>
     <string name="categories_a11y_show_all">Az egész ország megjelenítése</string>
     <string name="categories_a11y_close">Kategóriák bezárása</string>
     <string name="categories_a11y_resume">Kategóriák megjelenítése</string>
@@ -413,5 +413,5 @@
     <string name="destinations_challenge_highest_peaks">Tájegységek legmagasabb csúcsai</string>
     <string name="destinations_challenge_panoramic_views">Panorámás kilátóhelyek</string>
     <string name="destinations_challenge_birdwatching">Madármegfigyelő helyek</string>
-    <string name="destinations_type_stargazing">Csillagmegfigyelés</string>
+    <string name="destinations_type_stargazing">Csillagles</string>
 </resources>

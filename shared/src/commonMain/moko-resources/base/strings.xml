@@ -364,10 +364,10 @@
     <string name="discover_destinations_by_landscape">Landscapes</string>
     <string name="discover_destinations_by_category">Categories</string>
     <string name="discover_destinations_in_list">List</string>
-    <string name="landscapes_title">Landscapes</string>
+    <string name="landscapes_title">Landscapes and destinations</string>
     <string name="landscapes_a11y_show_all">Show all landscapes</string>
     <string name="landscapes_a11y_resume">Show landscapes</string>
-    <string name="categories_title">Categories</string>
+    <string name="categories_title">Destination categories</string>
     <string name="categories_a11y_show_all">Show the whole country</string>
     <string name="categories_a11y_close">Close categories</string>
     <string name="categories_a11y_resume">Show categories</string>
