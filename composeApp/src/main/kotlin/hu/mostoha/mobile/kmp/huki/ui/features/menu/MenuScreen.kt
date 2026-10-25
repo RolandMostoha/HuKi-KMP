@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -94,6 +97,7 @@ fun MenuScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MenuContent(
     uiState: MenuUiState,
@@ -136,6 +140,23 @@ private fun MenuContent(
             .fillMaxSize()
             .testTag(TestTags.MENU_SCREEN_ROOT),
         containerColor = backgroundColor,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        modifier = Modifier.testTag(TestTags.MENU_BACK_BUTTON),
+                        onClick = { onEvent(MenuUiEvents.BackClicked) },
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_back),
+                            contentDescription = mokoString(SharedRes.strings.menu_a11y_back),
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor),
+            )
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -145,18 +166,6 @@ private fun MenuContent(
                 .padding(bottom = Dimens.ExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            IconButton(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = Dimens.Small, top = Dimens.Small)
-                    .testTag(TestTags.MENU_BACK_BUTTON),
-                onClick = { onEvent(MenuUiEvents.BackClicked) },
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_back),
-                    contentDescription = mokoString(SharedRes.strings.menu_a11y_back),
-                )
-            }
             MenuHero(versionName = uiState.versionName)
             Spacer(modifier = Modifier.height(Dimens.Medium))
             MenuCard {

@@ -22,6 +22,7 @@ fun createHttpClient(engine: HttpClientEngine): HttpClient =
         install(Logging) {
             logger = Logger.SIMPLE
             level = if (isDebugBuild) LogLevel.ALL else LogLevel.NONE
+            sanitizeHeader { header -> header == NetworkHeaders.HUKI_ROUTING_API_KEY }
         }
         install(HttpTimeout) {
             requestTimeoutMillis = REQUEST_TIMEOUT.inWholeMilliseconds

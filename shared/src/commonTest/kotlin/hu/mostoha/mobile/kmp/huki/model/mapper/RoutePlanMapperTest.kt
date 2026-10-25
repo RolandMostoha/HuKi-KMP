@@ -10,15 +10,18 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPath
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPoints
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperProfile
+import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRateLimit
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.ktor.http.headersOf
 import org.maplibre.spatialk.units.extensions.inMeters
 import org.maplibre.spatialk.units.extensions.meters
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 
 class RoutePlanMapperTest {
 
@@ -49,6 +52,36 @@ class RoutePlanMapperTest {
 
         actual.profile shouldBe GraphhopperProfile.BIKE
         actual.customModel.shouldBeNull()
+    }
+
+    @Test
+    fun `Given profile - When toHukiRoutingRouteRequest - Then HuKi-Routing profile without custom model is used`() {
+        hukiRoutingProfileTestCases().forEach { testCase ->
+            val actual = testCase.input.toHukiRoutingRouteRequest(WAYPOINTS)
+
+            actual.profile shouldBe testCase.result
+            actual.customModel.shouldBeNull()
+            actual.chDisabled.shouldBeNull()
+            actual.points shouldBe listOf(listOf(18.9, 47.7), listOf(19.0, 47.8))
+        }
+    }
+
+    @Test
+    fun `Given rate limit headers - When toGraphhopperRateLimit - Then remaining and reset are parsed`() {
+        val headers = headersOf("x-ratelimit-remaining" to listOf("42"), "x-ratelimit-reset" to listOf("3600"))
+
+        val actual = headers.toGraphhopperRateLimit()
+
+        actual shouldBe GraphhopperRateLimit(remaining = 42, resetIn = 3600.seconds)
+    }
+
+    @Test
+    fun `Given missing or malformed rate limit headers - When toGraphhopperRateLimit - Then nulls return`() {
+        val headers = headersOf("X-RateLimit-Remaining", "n/a")
+
+        val actual = headers.toGraphhopperRateLimit()
+
+        actual shouldBe GraphhopperRateLimit(remaining = null, resetIn = null)
     }
 
     @Test
@@ -178,7 +211,19 @@ class RoutePlanMapperTest {
             }
     }
 
+    private data class TestCase(
+        val input: RoutePlannerProfile,
+        val result: GraphhopperProfile,
+    )
+
     companion object {
+        private fun hukiRoutingProfileTestCases() =
+            listOf(
+                TestCase(RoutePlannerProfile.ON_TRAILS, GraphhopperProfile.HIKE_HUKI),
+                TestCase(RoutePlannerProfile.SHORTEST_ROUTE, GraphhopperProfile.HIKE),
+                TestCase(RoutePlannerProfile.BIKE, GraphhopperProfile.BIKE),
+            )
+
         private val WAYPOINTS = listOf(
             Location(latitude = 47.7, longitude = 18.9),
             Location(latitude = 47.8, longitude = 19.0),

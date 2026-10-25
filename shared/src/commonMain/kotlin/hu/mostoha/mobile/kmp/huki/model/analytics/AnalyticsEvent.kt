@@ -186,6 +186,26 @@ sealed interface AnalyticsEvent {
         override val name = "route_plan_daily_limit_reached"
     }
 
+    data object RoutingGraphhopperReserveReached : AnalyticsEvent {
+        override val name = "routing_gh_reserve_reached"
+    }
+
+    data object RoutingGraphhopperLimitHit : AnalyticsEvent {
+        override val name = "routing_gh_limit_hit"
+    }
+
+    data object RoutingHukiServed : AnalyticsEvent {
+        override val name = "routing_huki_served"
+    }
+
+    data object RoutingHukiFailed : AnalyticsEvent {
+        override val name = "routing_huki_failed"
+    }
+
+    data object RoutingGraphhopperAfterHukiFailure : AnalyticsEvent {
+        override val name = "routing_gh_after_huki_failure"
+    }
+
     data object RoutePlanAddStopFromSearchClicked : AnalyticsEvent {
         override val name = "route_plan_add_stop_from_search_clicked"
     }

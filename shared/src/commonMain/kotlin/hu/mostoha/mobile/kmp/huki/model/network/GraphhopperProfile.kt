@@ -8,6 +8,9 @@ enum class GraphhopperProfile {
     @SerialName("hike")
     HIKE,
 
+    @SerialName("hike_huki")
+    HIKE_HUKI,
+
     @SerialName("bike")
     BIKE,
 }

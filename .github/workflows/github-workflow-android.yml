@@ -24,6 +24,7 @@ jobs:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
           GRAPHHOPPER_API_KEY: ${{ secrets.GRAPHHOPPER_API_KEY }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Detekt
@@ -61,6 +62,7 @@ jobs:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
           GRAPHHOPPER_API_KEY: ${{ secrets.GRAPHHOPPER_API_KEY }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Enable KVM for Android emulator
@@ -101,6 +103,7 @@ jobs:
           MAPBOX_ACCESS_TOKEN_XML_BASE64: ${{ secrets.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}
           LOCATION_IQ_API_KEY: ${{ secrets.LOCATION_IQ_API_KEY }}
           GRAPHHOPPER_API_KEY: ${{ secrets.GRAPHHOPPER_API_KEY }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Install Maestro

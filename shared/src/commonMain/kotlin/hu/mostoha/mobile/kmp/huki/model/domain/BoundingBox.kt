@@ -22,6 +22,9 @@ fun BoundingBox.toLocations(): List<Location> =
         Location(south, east),
     )
 
+fun BoundingBox.contains(location: Location): Boolean =
+    location.latitude in south..north && location.longitude in west..east
+
 fun BoundingBox.center(): Location {
     val centerLat = (south + north) / 2
     val centerLon = (west + east) / 2

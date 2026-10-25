@@ -19,6 +19,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutingMode
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
 import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
@@ -28,22 +29,27 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
+import hu.mostoha.mobile.kmp.huki.repository.DefaultRoutingQuotaStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultSettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultWhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.FallbackRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
+import hu.mostoha.mobile.kmp.huki.repository.HukiRoutingRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.RoutePlannerRepository
+import hu.mostoha.mobile.kmp.huki.repository.RoutingQuotaStore
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
+import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
@@ -120,7 +126,19 @@ val viewModelModule = module {
 val networkModule = module {
     single<HttpClient> { createHttpClient(get()) }
     single<GeocodingRepository> { LocationIqGeocodingRepository(get(), get()) }
-    single<RoutePlannerRepository> { GraphhopperRoutePlannerRepository(get(), get()) }
+    single<RoutingQuotaStore> { DefaultRoutingQuotaStore(get()) }
+    single { GraphhopperRoutePlannerRepository(get(), get(), get(), get(), get()) }
+    single { HukiRoutingRoutePlannerRepository(get(), get()) }
+    single<RoutePlannerRepository> {
+        FallbackRoutePlannerRepository(
+            graphhopperRepository = get<GraphhopperRoutePlannerRepository>(),
+            hukiRoutingRepository = get<HukiRoutingRoutePlannerRepository>(),
+            routingQuotaStore = get(),
+            analyticsService = get(),
+            clock = get(),
+            routingMode = if (isDebugBuild) FeatureFlags.DEBUG_ROUTING_MODE else RoutingMode.AUTO,
+        )
+    }
 }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
