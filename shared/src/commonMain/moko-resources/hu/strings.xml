@@ -188,6 +188,9 @@
     <string name="map_label_scale_title">Térkép feliratok nagyítása</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">A beállításnál figyeljünk rá, hogy tényleg csak a szükséges szintig nagyítsuk. Túlzott nagyítás esetén a térkép elrejthet feliratokat, ha úgy érzékeli, hogy azok egymásra csúsznának.</string>
+    <string name="settings_section_gpx">GPX</string>
+    <string name="settings_gpx_distances_title">Állomások távolságai</string>
+    <string name="settings_gpx_distances_description">Mutasd az állomások távolságát és menetidejét GPX megnyitásakor</string>
 
     <string name="gpx_collection_title">GPX gyűjtemény</string>
     <string name="gpx_collection_subtitle_pattern">%d útvonal</string>

@@ -21,6 +21,8 @@ fun Preferences.toUserPreferences(): UserPreferences =
             factor = this[SettingsPreferenceKeys.MAP_LABEL_SCALE_FACTOR]?.let(MapLabelScale::coerceFactor)
                 ?: UserPreferences.DEFAULTS.mapLabelScale.factor,
         ),
+        gpxDistancesVisible = this[SettingsPreferenceKeys.GPX_DISTANCES_VISIBLE]
+            ?: UserPreferences.DEFAULTS.gpxDistancesVisible,
     )
 
 fun String?.toThemeMode(): ThemeMode =

@@ -154,6 +154,16 @@ private fun SettingsContent(
                     onCheckedChange = { onEvent(SettingsUiEvents.MapRotationToggled(it)) },
                 )
             }
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_gpx))
+            SettingsCard {
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_gpx_distances_title),
+                    description = mokoString(SharedRes.strings.settings_gpx_distances_description),
+                    checked = uiState.gpxDistancesVisible,
+                    testTag = TestTags.SETTINGS_GPX_DISTANCES_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.GpxDistancesToggled(it)) },
+                )
+            }
         }
     }
 }

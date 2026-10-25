@@ -9,6 +9,7 @@ data class SettingsUiState(
     val mapRotationEnabled: Boolean = UserPreferences.DEFAULTS.mapRotationEnabled,
     val mapLabelScale: MapLabelScale = UserPreferences.DEFAULTS.mapLabelScale,
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
+    val gpxDistancesVisible: Boolean = UserPreferences.DEFAULTS.gpxDistancesVisible,
 ) {
     companion object {
         val Default = SettingsUiState()

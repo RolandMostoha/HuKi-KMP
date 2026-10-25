@@ -40,6 +40,15 @@ class SettingsMapperTest {
     }
 
     @Test
+    fun `Given stored GPX distances flag - When toUserPreferences - Then the flag is returned`() {
+        val preferences = preferencesOf(SettingsPreferenceKeys.GPX_DISTANCES_VISIBLE to false)
+
+        val actual = preferences.toUserPreferences()
+
+        actual.gpxDistancesVisible shouldBe false
+    }
+
+    @Test
     fun `Given stored theme mode - When toUserPreferences - Then the theme mode is returned`() {
         testCases().forEach { testCase ->
             val preferences = if (testCase.input != null) {

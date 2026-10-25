@@ -188,6 +188,9 @@
     <string name="map_label_scale_title">Map text size</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">Only enlarge the labels as much as you really need. If they get too large, the map may hide labels it detects would overlap each other.</string>
+    <string name="settings_section_gpx">GPX</string>
+    <string name="settings_gpx_distances_title">Waypoint distances</string>
+    <string name="settings_gpx_distances_description">Show distance and travel time to waypoints when opening a GPX</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>

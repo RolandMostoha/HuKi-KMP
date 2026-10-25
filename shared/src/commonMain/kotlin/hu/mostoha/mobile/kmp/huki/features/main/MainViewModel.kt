@@ -105,6 +105,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -890,6 +891,7 @@ class MainViewModel(
             runCatching { readGpx() }
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
+                    val gpxDistancesVisible = settingsRepository.settings.first().gpxDistancesVisible
                     selectedWaypoint.value = null
                     cancelOktJobs()
                     cancelLandscapesJob()
@@ -904,7 +906,7 @@ class MainViewModel(
                                 routeStops = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
-                                allDistancesVisible = true,
+                                allDistancesVisible = gpxDistancesVisible,
                                 distanceInfoWindows = emptyList(),
                                 okt = null,
                             ),

@@ -47,6 +47,14 @@ appId: ${APP_ID}
 - tapOn:
     id: SETTINGS_MAP_ROTATION_TOGGLE
 
+# GPX waypoint distances are shown by default, turn them off
+- scrollUntilVisible:
+    element:
+      id: SETTINGS_GPX_DISTANCES_TOGGLE
+- assertVisible: "Waypoint distances"
+- tapOn:
+    id: SETTINGS_GPX_DISTANCES_TOGGLE
+
 # Back navigation returns to the menu, then to the map
 - tapOn:
     id: SETTINGS_BACK_BUTTON

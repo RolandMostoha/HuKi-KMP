@@ -18,4 +18,5 @@ interface SettingsRepository {
     suspend fun setBaseLayer(baseLayer: BaseLayer)
 
     suspend fun setMapLabelScale(mapLabelScale: MapLabelScale)
+    suspend fun setGpxDistancesVisible(visible: Boolean)
 }

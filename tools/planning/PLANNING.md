@@ -46,15 +46,16 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / tech tasks
 
-| Status | Feature                                                                                                        |
-|--------|----------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                        |
-| `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                      |
-| `[ ]`  | App store preview video (optional)                                                                             |
-| `[ ]`  | App store header picture/video (optional)                                                                      |
-| `[ ]`  | iPhone duo / proper iPad support                                                                               |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then) |
+| Status | Feature                                                                                                                       |
+|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                       |
+| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX, Place History should be migrated fine. |                                                                                       |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                     |
+| `[ ]`  | App store preview video (optional)                                                                                            |
+| `[ ]`  | App store header picture/video (optional)                                                                                     |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                              |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                               |
 
 ### Bugs
 
@@ -145,13 +146,13 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope | Task                                                                                                                                        |
 |--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
-| `[R]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files.                                  |
-| `[R]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
+| `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
+| `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
+| `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.         |
 | `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu. Add an option to toggle in GpxDetails as well.                      |
-| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                            |
 | `[R]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.               |
 | `[R]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                            |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
 
 ### FEATURE: GPX Collection

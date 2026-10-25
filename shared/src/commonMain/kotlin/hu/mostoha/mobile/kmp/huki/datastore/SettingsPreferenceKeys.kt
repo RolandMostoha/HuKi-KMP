@@ -11,5 +11,6 @@ internal object SettingsPreferenceKeys {
     val BASE_LAYER = stringPreferencesKey("base_layer")
     val MAP_LABEL_SCALE_FOLLOW_SYSTEM = booleanPreferencesKey("map_label_scale_follow_system")
     val MAP_LABEL_SCALE_FACTOR = floatPreferencesKey("map_label_scale_factor")
+    val GPX_DISTANCES_VISIBLE = booleanPreferencesKey("gpx_distances_visible")
     val WHATS_NEW_LAST_SEEN_VERSION = stringPreferencesKey("whats_new_last_seen_version")
 }

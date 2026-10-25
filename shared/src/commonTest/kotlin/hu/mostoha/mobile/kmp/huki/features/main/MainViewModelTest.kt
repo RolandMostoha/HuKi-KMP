@@ -1036,6 +1036,26 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given GPX distances setting is off - When GPX is imported - Then distance windows are hidden`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(gpxDistancesVisible = false))
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                allDistancesVisible shouldBe false
+                distanceInfoWindows shouldBe emptyList()
+            }
+        }
+    }
+
+    @Test
     fun `Given GPX with distances visible - When another GPX is imported - Then windows belong to the new GPX`() {
         runTest {
             val track = TEST_GPX_WAY_CLOSED.dropLast(1)
