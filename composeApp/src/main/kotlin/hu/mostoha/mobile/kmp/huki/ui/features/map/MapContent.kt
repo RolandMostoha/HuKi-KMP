@@ -51,6 +51,7 @@ import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
+import com.mapbox.maps.extension.style.expressions.dsl.generated.literal
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
@@ -85,6 +86,7 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
+import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -272,6 +274,7 @@ fun MapContent(
                         topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
                         bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
                         shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
+                        scaleExpression = literal(MY_LOCATION_PUCK_SCALE).toJson(),
                     )
                     accuracyRingColor = SharedRes.colors.accuracyRing.getColor(context)
                     pulsingColor = primaryLightColor.toArgb()

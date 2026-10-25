@@ -19,8 +19,6 @@ enum Dimens {
 
     static let zoomControlIconSize: CGFloat = 20
 
-    static let myLocationPuckScale: Double = 1.5
-
     static let gpxContentPaddingPortrait = EdgeInsets(
         top: 120,
         leading: 60,

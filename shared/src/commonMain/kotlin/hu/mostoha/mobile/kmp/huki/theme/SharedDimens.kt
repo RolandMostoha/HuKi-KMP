@@ -7,11 +7,13 @@ object SharedDimens {
 
     const val PLACE_MARKER_SCALE = 1.5
 
+    const val MY_LOCATION_PUCK_SCALE = 1.3
+
     const val MAP_LINE_STROKE_WIDTH = 1.5
 
     const val GPX_LINE_WIDTH = 11.0
-    const val GPX_EDGE_LOCATION_MARKER_SCALE = 1.5
-    const val GPX_WAYPOINT_MARKER_SCALE = 1.0
+    const val GPX_EDGE_LOCATION_MARKER_SCALE = 1.3
+    const val GPX_WAYPOINT_MARKER_SCALE = 0.9
     const val GPX_JEL_SYMBOL_MARKER_RATIO = 0.46
 
     const val OKT_BASE_LINE_WIDTH = 7.0

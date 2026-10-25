@@ -144,7 +144,7 @@ struct MapView: View {
                             .topImage(SharedRes.images().ic_my_location_top_image.appearanceImage(for: colorScheme))
                             .bearingImage(SharedRes.images().ic_my_location_bearing.appearanceImage(for: colorScheme))
                             .shadowImage(SharedRes.images().ic_my_location_shadow.appearanceImage(for: colorScheme))
-                            .scale(Dimens.myLocationPuckScale)
+                            .scale(SharedDimens.shared.MY_LOCATION_PUCK_SCALE)
                     }
                 }
                 .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
