@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 
 interface LocationMonitoringService {
@@ -15,8 +16,13 @@ interface LocationMonitoringService {
 /**
  * Emits the last known location first (if available) then continues with live [locationUpdates].
  */
-fun LocationMonitoringService.locations(): Flow<Location> =
+fun LocationMonitoringService.locations(): Flow<Location> = locationsWithLastKnown().filterNotNull()
+
+/**
+ * Emits the last known location first, `null` when there is none, then continues with live [locationUpdates].
+ */
+fun LocationMonitoringService.locationsWithLastKnown(): Flow<Location?> =
     flow {
-        lastKnownLocation()?.let { emit(it) }
+        emit(lastKnownLocation())
         emitAll(locationUpdates)
     }

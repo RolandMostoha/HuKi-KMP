@@ -19,7 +19,7 @@ struct GpxWaypointsMapContent: MapContent {
                         : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                 )
                 .iconEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
-                .symbolSortKey(waypoint.type == .intermediate ? 1 : 0)
+                .symbolSortKey(WaypointMarkerOrder.shared.sortKey(type: waypoint.type))
                 .onTapGesture {
                     onWaypointClicked(waypoint)
                 }

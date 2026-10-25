@@ -99,7 +99,8 @@
     <string name="map_a11y_route_stop">Útvonal megálló: %s</string>
     <string name="place_details_maps_navigation">Maps navigáció</string>
 
-    <string name="gpx_distance_info_window_a11y">Táv és idő a helyzetedtől eddig a pontig az útvonal mentén</string>
+    <string name="gpx_distance_info_window_start">Kezdőpont</string>
+    <string name="gpx_distance_info_window_end">Végpont</string>
 
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>
     <string name="gpx_control_route_visibility_title">Az útvonal láthatósága</string>

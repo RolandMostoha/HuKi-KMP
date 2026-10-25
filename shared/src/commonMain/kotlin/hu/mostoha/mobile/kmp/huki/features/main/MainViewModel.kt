@@ -28,7 +28,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
-import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
@@ -82,7 +81,10 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
+import hu.mostoha.mobile.kmp.huki.service.locationsWithLastKnown
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
+import hu.mostoha.mobile.kmp.huki.util.DistanceInfoWindowConfig
+import hu.mostoha.mobile.kmp.huki.util.GpxDistanceTracker
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
@@ -91,7 +93,6 @@ import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.nearestIndexTo
-import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -715,34 +716,20 @@ class MainViewModel(
         val allDistancesVisible = uiState
             .map { it.mapUiState.allDistancesVisible }
             .distinctUntilChanged()
-        combine(selectedWaypoint, allDistancesVisible) { selected, showAll ->
-            val gpxDetails = uiState.value.mapUiState.gpxDetails
-            when {
-                gpxDetails == null -> emptyList()
-                showAll -> gpxDetails.waypoints
-                selected != null -> listOf(selected)
-                else -> emptyList()
+        val userLocations = locationMonitoringService.locationsWithLastKnown()
+            .distinctUntilChanged { old, new ->
+                old != null && new != null && old.distanceBetween(new) < DistanceInfoWindowConfig.MIN_USER_MOVE
             }
-        }
-            .flatMapLatest { waypoints ->
-                val gpxDetails = uiState.value.mapUiState.gpxDetails
-                if (waypoints.isEmpty() || gpxDetails == null) {
+        uiState
+            .map { it.mapUiState.gpxDetails }
+            .distinctUntilChanged()
+            .flatMapLatest { gpxDetails ->
+                if (gpxDetails == null || gpxDetails.locations.size < 2) {
                     flowOf(emptyList())
                 } else {
-                    val isRoundTripRoute = gpxDetails.waypoints.any { it.type == WaypointType.ROUND_TRIP }
-                    locationMonitoringService.locations().map { location ->
-                        waypoints.map { waypoint ->
-                            val progress = gpxDetails.locations.routeProgressTo(
-                                from = location,
-                                to = waypoint.location,
-                                isRoundTrip = isRoundTripRoute,
-                            )
-                            DistanceInfoWindowData(
-                                location = waypoint.location,
-                                distance = DistanceFormatter.formatDistance(progress.distance),
-                                travelTime = TravelTimeFormatter.formatTravelTime(progress.travelTime),
-                            )
-                        }
+                    val tracker = GpxDistanceTracker(gpxDetails.locations, gpxDetails.waypoints)
+                    combine(userLocations, allDistancesVisible, selectedWaypoint) { location, showAll, selected ->
+                        tracker.distanceInfoWindows(location, showAll, selected)
                     }
                 }
             }
@@ -917,7 +904,7 @@ class MainViewModel(
                                 routeStops = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
-                                allDistancesVisible = false,
+                                allDistancesVisible = true,
                                 distanceInfoWindows = emptyList(),
                                 okt = null,
                             ),

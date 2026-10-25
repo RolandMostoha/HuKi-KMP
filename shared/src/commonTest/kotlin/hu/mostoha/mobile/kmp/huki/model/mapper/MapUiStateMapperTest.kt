@@ -24,9 +24,13 @@ class MapUiStateMapperTest {
             allDistancesVisible = true,
             distanceInfoWindows = listOf(
                 DistanceInfoWindowData(
+                    id = 0,
                     location = Location(47.0, 19.0),
+                    name = null,
+                    label = null,
                     distance = "1 km",
                     travelTime = StringDesc.Raw("15 min"),
+                    priority = 1,
                 ),
             ),
         )

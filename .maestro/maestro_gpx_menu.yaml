@@ -10,9 +10,10 @@ appId: ${APP_ID}
     arguments:
       skipWhatsNew: true
     permissions: { all: allow }
+# Pilisvörösvár, off the test GPX route -> distance windows are measured from the start, none are hidden
 - setLocation:
-    latitude: 47.7168079
-    longitude: 18.8950729
+    latitude: 47.6175
+    longitude: 18.9086
 - runFlow: subflows/maestro_flow_import_gpx.yaml
 
 # Dismiss the GPX Details sheet (without closing the GPX) to reveal the control FAB.
@@ -66,24 +67,30 @@ appId: ${APP_ID}
     id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
 - assertVisible: "Hide the route line"
 
-# Distances are hidden initially -> the toggle offers to show them
-- assertVisible: "Show distances"
-
-# Show distances for all waypoints -> distance info windows appear on the map
-- tapOn:
-    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+# Distances are shown by default -> the toggle offers to hide them, the windows carry waypoint names.
+# The END window has the highest overlap priority, so it stays visible at any zoom.
 - assertVisible: "Hide distances"
 - extendedWaitUntil:
     visible:
       id: MAP_DISTANCE_INFO_WINDOW
     timeout: 5000
+- assertVisible: ".*End.*"
 
-# Hide distances again -> the info windows disappear
+# Hide distances -> the info windows disappear
 - tapOn:
     id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
 - assertVisible: "Show distances"
 - extendedWaitUntil:
     notVisible:
+      id: MAP_DISTANCE_INFO_WINDOW
+    timeout: 5000
+
+# Show distances again -> the info windows reappear
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible: "Hide distances"
+- extendedWaitUntil:
+    visible:
       id: MAP_DISTANCE_INFO_WINDOW
     timeout: 5000
 

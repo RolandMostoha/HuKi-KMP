@@ -77,6 +77,15 @@ class TrackProgressIndex(private val locations: List<Location>) {
         )
     }
 
+    val endPosition: TrackPosition
+        get() = TrackPosition(
+            segmentIndex = (locations.size - 2).coerceAtLeast(0),
+            fraction = 1.0,
+            offTrackDistance = 0.meters,
+        )
+
+    fun distanceAlong(position: TrackPosition): Length = cumulativeMeters.at(position).meters
+
     /**
      * Walks towards [to] in whichever direction it lies along the track.
      */

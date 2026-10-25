@@ -148,7 +148,8 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[R]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
 | `[R]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files.                                  |
 | `[R]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
-| `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu                                                                      |
+| `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu. Add an option to toggle in GpxDetails as well.                      |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                            |
 | `[R]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.               |
 | `[R]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
@@ -164,9 +165,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Place Details
 
-| Status | Scope        | Task                                                              |
-|--------|--------------|-------------------------------------------------------------------|
-| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop) |
+| Status | Scope        | Task                                                                                                                                               |
+|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | PlaceDetails | Support opening lat,lon locations Intent from other apps. E.g. Google Photos -> Location -> Share. ![img_1.png](img_1.png) ![img_2.png](img_2.png) |
+| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                  |
 
 ### FEATURE: PlaceHistory
 

@@ -11,11 +11,12 @@ enum Dimens {
     static let infoWindowTailWidth: CGFloat = 16
     static let infoWindowTailHeight: CGFloat = 8
     static let infoWindowMarkerPadding: CGFloat = 1
-    static let infoWindowHorizontalPadding: CGFloat = 12
-    static let infoWindowVerticalPadding: CGFloat = 8
-    static let infoWindowBottomExtraPadding: CGFloat = 3
-    static let infoWindowDistanceFontSize: CGFloat = 16
-    static let infoWindowTravelTimeFontSize: CGFloat = 13
+    static let infoWindowHorizontalPadding: CGFloat = 10
+    static let infoWindowVerticalPadding: CGFloat = 6
+    static let infoWindowLineSpacing: CGFloat = 2
+    static let infoWindowNameFontSize: CGFloat = 13
+    static let infoWindowNameMaxWidth: CGFloat = 160
+    static let infoWindowDetailsFontSize: CGFloat = 13
 
     static let zoomControlIconSize: CGFloat = 20
 

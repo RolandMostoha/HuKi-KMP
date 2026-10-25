@@ -106,7 +106,7 @@ struct MapView: View {
                                 colorScheme: colorScheme,
                                 onWaypointClicked: onWaypointClicked
                             )
-                            ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.location.id) { info in
+                            ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.id) { info in
                                 let waypointType = gpxDetails.waypoints
                                     .first { $0.location.id == info.location.id }?.type
                                 let iconScale = CGFloat(
@@ -125,7 +125,9 @@ struct MapView: View {
                                 .variableAnchors([
                                     ViewAnnotationAnchorConfig(anchor: .bottom, offsetY: offsetY)
                                 ])
-                                .allowOverlap(true)
+                                .allowOverlap(false)
+                                .allowOverlapWithPuck(true)
+                                .priority(Int(info.priority))
                                 .ignoreCameraPadding(true)
                             }
                         }

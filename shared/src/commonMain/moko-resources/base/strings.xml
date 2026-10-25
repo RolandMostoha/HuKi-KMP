@@ -99,7 +99,8 @@
     <string name="map_a11y_route_stop">Route stop: %s</string>
     <string name="place_details_maps_navigation">Maps navigation</string>
 
-    <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>
+    <string name="gpx_distance_info_window_start">Start</string>
+    <string name="gpx_distance_info_window_end">End</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>
     <string name="gpx_control_route_visibility_title">Route visibility</string>

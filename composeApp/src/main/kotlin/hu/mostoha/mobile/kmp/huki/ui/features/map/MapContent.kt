@@ -398,7 +398,7 @@ private fun GpxLayer(
         }
     }
     mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->
-        key(distanceInfoWindowData.location) {
+        key(distanceInfoWindowData.id) {
             DistanceInfoWindowAnnotation(
                 info = distanceInfoWindowData,
                 gpxDetails = gpxDetails,

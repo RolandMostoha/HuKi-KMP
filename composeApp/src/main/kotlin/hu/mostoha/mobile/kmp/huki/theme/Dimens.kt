@@ -24,6 +24,7 @@ object Dimens {
     val InfoWindowTailWidth = 16.dp
     val InfoWindowTailHeight = 8.dp
     val InfoWindowMarkerPadding = 1.dp
+    val InfoWindowNameMaxWidth = 160.dp
     val FloatingActionElevation = 1.dp
     val FloatingActionSize = 56.dp
 
