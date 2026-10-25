@@ -199,6 +199,11 @@ class AnalyticsEventTest {
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.EMAIL), "menu_link_email", emptyMap()),
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.FACEBOOK), "menu_link_facebook", emptyMap()),
                 TestCase(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB), "menu_link_github", emptyMap()),
+                TestCase(AnalyticsEvent.RoutingGraphhopperReserveReached, "routing_gh_reserve_reached", emptyMap()),
+                TestCase(AnalyticsEvent.RoutingGraphhopperLimitHit, "routing_gh_limit_hit", emptyMap()),
+                TestCase(AnalyticsEvent.RoutingHukiServed, "routing_huki_served", emptyMap()),
+                TestCase(AnalyticsEvent.RoutingHukiFailed, "routing_huki_failed", emptyMap()),
+                TestCase(AnalyticsEvent.RoutingGraphhopperAfterHukiFailure, "routing_gh_after_huki_failure", emptyMap()),
                 TestCase(
                     AnalyticsEvent.SettingsZoomControlsToggled,
                     "settings_zoom_controls_toggled",

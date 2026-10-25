@@ -68,11 +68,7 @@ appId: ${APP_ID}
 - assertVisible:
     id: MENU_SCREEN_ROOT
 
-# Back navigation returns to the map — scroll back up to reach the pinned back button
-- scrollUntilVisible:
-    element:
-      id: MENU_BACK_BUTTON
-    direction: UP
+# Back navigation returns to the map
 - tapOn:
     id: MENU_BACK_BUTTON
 - assertVisible:

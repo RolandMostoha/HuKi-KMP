@@ -19,4 +19,13 @@ class DateTimeUtilsTest {
     fun `Given malformed string - When toInstantFromIsoOffset - Then null returns`() {
         "not-a-date".toInstantFromIsoOffset() shouldBe null
     }
+
+    @Test
+    fun `Given instant - When nextUtcMidnight - Then start of the next UTC day returns`() {
+        val instant = Instant.parse("2026-10-10T23:30:00+02:00")
+
+        val actual = instant.nextUtcMidnight()
+
+        actual shouldBe Instant.parse("2026-10-11T00:00:00Z")
+    }
 }

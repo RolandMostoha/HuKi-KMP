@@ -18,13 +18,16 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperCustomModel
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPriority
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperProfile
+import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRateLimit
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteRequest
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import hu.mostoha.mobile.kmp.huki.util.formatter.CoordinateFormatter
+import io.ktor.http.Headers
 import org.maplibre.spatialk.units.extensions.meters
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Custom GraphHopper model which prefers trail marks over shortest walking route
@@ -38,6 +41,9 @@ private val ON_TRAILS_CUSTOM_MODEL = GraphhopperCustomModel(
 private const val LONGITUDE_INDEX = 0
 private const val LATITUDE_INDEX = 1
 private const val ALTITUDE_INDEX = 2
+
+private const val HEADER_RATE_LIMIT_REMAINING = "X-RateLimit-Remaining"
+private const val HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset"
 
 fun RoutePlannerProfile.toRouteRequest(waypoints: List<Location>): GraphhopperRouteRequest {
     val points = waypoints.map { listOf(it.longitude, it.latitude) }
@@ -69,6 +75,28 @@ fun RoutePlannerProfile.toRouteRequest(waypoints: List<Location>): GraphhopperRo
         )
     }
 }
+
+/**
+ * HuKi-Routing has the trail bias baked into its hike_huki profile, so no custom model is sent.
+ */
+fun RoutePlannerProfile.toHukiRoutingRouteRequest(waypoints: List<Location>): GraphhopperRouteRequest =
+    GraphhopperRouteRequest(
+        profile = when (this) {
+            RoutePlannerProfile.ON_TRAILS -> GraphhopperProfile.HIKE_HUKI
+            RoutePlannerProfile.SHORTEST_ROUTE -> GraphhopperProfile.HIKE
+            RoutePlannerProfile.BIKE -> GraphhopperProfile.BIKE
+        },
+        points = waypoints.map { listOf(it.longitude, it.latitude) },
+        pointsEncoded = false,
+        elevation = true,
+        instructions = false,
+    )
+
+fun Headers.toGraphhopperRateLimit(): GraphhopperRateLimit =
+    GraphhopperRateLimit(
+        remaining = get(HEADER_RATE_LIMIT_REMAINING)?.toIntOrNull(),
+        resetIn = get(HEADER_RATE_LIMIT_RESET)?.toLongOrNull()?.seconds,
+    )
 
 fun Place.toRoutePlannerWaypoint(): RoutePlannerWaypoint =
     RoutePlannerWaypoint(name = StringDesc.Raw(name), placeName = name, location = location)

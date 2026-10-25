@@ -1,9 +1,13 @@
 package hu.mostoha.mobile.kmp.huki.util
 
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.format
 import kotlinx.datetime.offsetAt
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 /**
@@ -23,3 +27,8 @@ fun String.toInstantFromIsoOffset(): Instant? =
     runCatching {
         DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET.parse(this).toInstantUsingOffset()
     }.getOrNull()
+
+fun Instant.nextUtcMidnight(): Instant =
+    toLocalDateTime(TimeZone.UTC).date
+        .plus(1, DateTimeUnit.DAY)
+        .atStartOfDayIn(TimeZone.UTC)

@@ -6,6 +6,7 @@
 |--------|-----------------------------|
 | `[ ]`  | Not started                 |
 | `[R]`  | Required for Next Release   |
+| `[G]`  | Android 2.0 Go-Live         |
 | `[~]`  | In progress                 |
 | `[x]`  | Done                        |
 | `[-]`  | Cancelled / deprioritized   |
@@ -47,6 +48,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Feature                                                                                                        |
 |--------|----------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                        |
 | `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                      |
 | `[ ]`  | App store preview video (optional)                                                                             |
@@ -58,17 +60,26 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
-| `[R]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
+| `[G]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
+| `[G]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
+
+### FEATURE: Analytics
+
+| Status | Scope     | Task                                                                                                                |
+|--------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Analytics | My Location: No-signal / GPS lost                                                                                   |
+| `[ ]`  | Analytics | Search with no results                                                                                              |
+| `[ ]`  | Analytics | GPX as params: attach distance_km and waypoint_count as params                                                      |
+| `[ ]`  | Analytics | whats_new_shown, whats_new_dismissed                                                                                |
+| `[ ]`  | Analytics | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
 
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                              |
 |--------|-------|-----------------------------------------------------------------------------------|
-| `[R]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
-| `[ ]`  | Map   | Bug: GPX Menu -> Overview -> applies a big bottom padding, not necessary          |
+| `[G]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
 | `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking trails          |
 
 ### FEATURE: Landscape orientation
@@ -87,14 +98,14 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
-| `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
+| `[G]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
+| `[G]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Layers
 
 | Status | Scope  | Task                                                                                                                                                                                                                                                                                                                             |
 |--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[?]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Szilvási-kő") stay readable. Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
+| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Szilvási-kő") stay readable. Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Search
 
@@ -124,10 +135,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                                                                      |
-|--------|----------|-----------------------------------------------------------------------------------------------------------|
-| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                    |
-| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list). |
+| Status | Scope    | Task                                                                                                                  |
+|--------|----------|-----------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Maybe separating the 2 whatsnew is necessary per platform. |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).             |
 
 ### FEATURE: GPX
 
@@ -166,90 +178,23 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | RoutePlanner | Android: the planner loses its stops on a configuration change (rotation, dark-mode toggle) — `rememberScopedViewModelStoreOwner` does not survive one. Fix with `rememberViewModelStoreOwner` once the project is on AGP 9.1 / compileSdk 37 (androidx.lifecycle 2.11.0). |
-| `[ ]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
+| `[G]`  | RoutePlanner | Android: the planner loses its stops on a configuration change (rotation, dark-mode toggle) — `rememberScopedViewModelStoreOwner` does not survive one. Fix with `rememberViewModelStoreOwner` once the project is on AGP 9.1 / compileSdk 37 (androidx.lifecycle 2.11.0). |
+| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
+| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
 | `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                       |
 | `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                                                                                                       |
-| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                                                                                            |
 | `[?]`  | RoutePlanner | Add support for removing stops from Map during RoutePlan phase. If users click on the wps, there should be a toolbar "Delete Stop" button, which removes the waypoint.                                                                                                     |
 | `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                  |
+| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                                                                                               |
+| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                                                                                                         |
 
-### FEATURE: RoutePlanner: HuKi-Routing overflow fallback
-
-Goal: when the hosted GraphHopper API hits its daily limit (2500 credits, HTTP 429), retry the route on our self-hosted
-**HuKi-Routing** (Cloud Run, scale-to-zero) instead of showing the limit-reached error. GraphHopper stays the primary
-backend because it is global; HuKi-Routing only covers Hungary. Sep 2026: ~800 of 41.5k monthly requests overflowed, all
-on weekends, and the weekend peaks are growing.
-
-- URL: `https://huki-routing-550684341915.europe-west1.run.app` (`/route`, same API as GraphHopper)
-- Auth: `X-HuKi-Key` header. Key:
-  `gcloud secrets versions access latest --secret huki-routing-api-key --project huki-c8bc7`. **Never** as a `?key=`
-  query param, because the server logs request URLs.
-- Request shape differs from the hosted API: `profile=hike_huki` for Hike/RoundTrip, `hike` for Foot, **no
-  `custom_model`** (the trail bias is baked in). Round trip still needs `ch.disable=true`.
-- Cold start ~6 s when idle (then ~0.3 s per route). Any request wakes it, `/health` included (no key needed).
-- Outside Hungary it fails fast with **HTTP 400** and never returns a wrong route. Tested live:
-
-  | Waypoints                                                     | Response                                                     |
-      |---------------------------------------------------------------|--------------------------------------------------------------|
-  | Inside HU, or just across the border (Štúrovo)                | 200                                                          |
-  | Inside the bbox, no data (Vienna, Bratislava, Subotica, Rust) | 400 `PointNotFoundException` — `Cannot find point 1`         |
-  | Outside the bbox (Graz)                                       | 400 `PointOutOfBoundsException` — `Point 1 is out of bounds` |
-
-  Both are in `hints[].details`, with `point_index` = the failing waypoint. Graph bbox: lon 16.09–22.94, lat
-  45.71–48.60.
-
-**Design: client-side circuit breaker** (decided 2026-10-06). Not a plain retry-on-429: that would send every request to
-GraphHopper first after the limit, ~500 wasted 429s on a day like Oct 3. Not Remote Config as the main switch either:
-someone would have to flip it, reading GraphHopper's remaining credits from a server costs a credit per check, config
-fetches are slow, and one global switch would also cut off routes abroad.
-
-GraphHopper returns the limit on every response (verified):
-`x-ratelimit-limit: 2500`, `x-ratelimit-remaining`, `x-ratelimit-reset` (seconds until reset at 00:00 UTC),
-`x-ratelimit-credits` (cost of the request, 1 per route).
-
-```
-route(request):
-  inHungary = all waypoints inside the bbox above
-
-  if now < ghBlockedUntil:                         // already got a 429 today
-      return inHungary ? huki(request) : limitReached()
-  if inHungary && freshRemaining < GH_CREDIT_RESERVE:   // keep the last credits for routes abroad
-      return huki(request)
-
-  response = graphhopper(request)                  // store remaining + reset + timestamp
-  if response is 429:
-      ghBlockedUntil = now + x-ratelimit-reset     // persisted, survives app restarts
-      return inHungary ? huki(request) : limitReached()
-  return response
-
-huki fails (400 PointNotFound/PointOutOfBounds, network, 5xx) → limitReached()
-```
-
-- At most **one wasted GraphHopper call per device per day**. No server, no manual switch.
-- `freshRemaining` = the last `x-ratelimit-remaining`, used only if it is < 30 min old and from the same UTC day;
-  otherwise ask GraphHopper. `GH_CREDIT_RESERVE` default 300.
-- If a 429 has no `x-ratelimit-reset` header, block until the next 00:00 UTC.
-- Remote Config later, optional, defaults in code: `routing_mode` = `gh_first` (default) /
-  `huki_first` (big hiking events) / `gh_only` (kill switch), and `gh_credit_reserve`.
-
-| Status | Scope        | Task                                                                                                                                                                                  |
-|--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | RoutePlanner | Key in `secrets.properties`, new `HuKiRoutingRoutePlannerRepository` next to `GraphhopperRoutePlannerRepository` (request mapping: `hike_huki` / `hike`, no `GraphhopperCustomModel`) |
-| `[R]`  | RoutePlanner | `GraphhopperRoutePlannerRepository`: read the `X-RateLimit-*` response headers (Ktor) into a `RoutingQuotaStore` (DataStore): remaining, reset, timestamp, `ghBlockedUntil`           |
-| `[R]`  | RoutePlanner | Circuit-breaker `RoutePlannerRepository` wrapping both, wired in `SharedKoinModule`; HuKi-Routing failures → `NetworkError.RATE_LIMITED` as today                                     |
-| `[R]`  | RoutePlanner | Hungary bbox check (`all waypoints inside`) in `commonMain` + unit tests                                                                                                              |
-| `[R]`  | RoutePlanner | Unit tests (`commonTest`): 429 → blocked until reset; blocked + HU → HuKi only; blocked + abroad → `RATE_LIMITED`; reserve → HuKi early; stale remaining ignored                      |
-| `[R]`  | Analytics    | Next to `RoutePlanDailyLimitReached`: GraphHopper limit hit (with time of day), route served by HuKi-Routing, HuKi-Routing failed                                                     |
-| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                          |
-| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                    |
 
 ### FEATURE: Settings
 
 | Status | Scope    | Task                                                                    |
 |--------|----------|-------------------------------------------------------------------------|
-| `[R]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
+| `[G]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
 
 ### FEATURE: Map Label Scaling (Global Scale Factor)
 
@@ -282,6 +227,20 @@ Refs:
 | `[ ]`  | Map      | Apply `symbolScaleBehavior` in Android `MapContent` via `MapEffect` from the settings value   |
 | `[ ]`  | Map      | Default to `SymbolScaleBehavior.system` so it respects OS accessibility font scale out of box |
 
+### FEATURE: Menu - Guides
+
+Goal: a new section in Menu, with 1 page guides of different topics.
+
+| Status | Scope  | Task                                      |
+|--------|--------|-------------------------------------------|
+| `[ ]`  | Guides | Add "Problem on route" to Guides section. |
+
+#### Guides: Report problem on route
+
+- Use MTSZ (Magyar Természetjáró Szövetség) email's to report a problem
+- Include location (latitude, longitude)
+- Possible link to openstreetmap.org which include the problematic point
+
 ### FEATURE: Support + Billing
 
 - Support + Billing is necessary to help me keep the app free for everyone and support the development.
@@ -290,7 +249,13 @@ Refs:
 - Base concept: subscriptions and one time payments. Categorized by wild animals (e.g. Board=1EUR/month, Owl=1EUR).
 - The benefit of supporting is just visual: showing the supporter animal in various places (e.g. WhatsNew)
 
-#### FEATURE: Route Planner: Wandering mode
+| Status | Scope   | Task                |
+|--------|---------|---------------------|
+| `[G]`  | Support | Add Support feature |
+
+## Ideas / Experimental features 
+
+### FEATURE: Route Planner: Wandering mode
 
 Goal: Set a single starting point (e.g. parking), and show the straight line distance from the point. Works like a GPX
 with waypoints only, set a few points and leave the user to decide which route to follow.
@@ -327,31 +292,6 @@ email, chat). A zipped bundle is plain data, so an Android export imports on iOS
 | `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                      |
 | `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                     |
 | `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`          |
-
-### FEATURE: Analytics
-
-| Status | Scope     | Task                                                                                                                |
-|--------|-----------|---------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Analytics | My Location: No-signal / GPS lost                                                                                   |
-| `[ ]`  | Analytics | Search with no results                                                                                              |
-| `[ ]`  | Analytics | GPX as params: attach distance_km and waypoint_count as params                                                      |
-| `[ ]`  | Analytics | whats_new_shown, whats_new_dismissed                                                                                |
-| `[ ]`  | Analytics | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
-
-### FEATURE: Menu - Guides
-
-Goal: a new section in Menu, with 1 page guides of different topics.
-
-| Status | Scope  | Task                                      |
-|--------|--------|-------------------------------------------|
-| `[ ]`  | Guides | Add "Problem on route" to Guides section. |
-| `[ ]`  | Guides | Route Planner                             |
-
-#### Guides: Report problem on route
-
-- Use MTSZ (Magyar Természetjáró Szövetség) email's to report a problem
-- Include location (latitude, longitude)
-- Possible link to openstreetmap.org which include the problematic point
 
 ### TECH: iOS Mapbox viewport deprecation (ViewportObserver → `$viewport` binding)
 
