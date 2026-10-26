@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
@@ -47,7 +49,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = koinViewModel()) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onMapLabelScaleClicked: () -> Unit,
+    viewModel: SettingsViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ScreenViewEffect { viewModel.onEvent(SettingsUiEvents.ScreenViewed) }
     SettingsContent(
@@ -55,6 +61,7 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = koinViewMo
         uiEffects = viewModel.uiEffects,
         onEvent = viewModel::onEvent,
         onBack = onBack,
+        onMapLabelScaleClicked = onMapLabelScaleClicked,
     )
 }
 
@@ -65,11 +72,13 @@ private fun SettingsContent(
     uiEffects: Flow<SettingsUiEffects>,
     onEvent: (SettingsUiEvents) -> Unit,
     onBack: () -> Unit,
+    onMapLabelScaleClicked: () -> Unit,
 ) {
     LaunchedEffect(uiEffects) {
         uiEffects.collect { effect ->
             when (effect) {
                 SettingsUiEffects.NavigateBack -> onBack()
+                SettingsUiEffects.NavigateToMapLabelScale -> onMapLabelScaleClicked()
             }
         }
     }
@@ -121,6 +130,15 @@ private fun SettingsContent(
             }
             SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_map))
             SettingsCard {
+                SettingsNavigationItem(
+                    title = mokoString(SharedRes.strings.map_label_scale_title),
+                    value = mokoString(
+                        SharedRes.strings.map_label_scale_percent,
+                        uiState.mapLabelScale.effectivePercent(LocalConfiguration.current.fontScale),
+                    ),
+                    testTag = TestTags.SETTINGS_MAP_LABEL_SCALE_ROW,
+                    onClick = { onEvent(SettingsUiEvents.MapLabelScaleClicked) },
+                )
                 SettingsSwitchItem(
                     title = mokoString(SharedRes.strings.settings_zoom_controls_title),
                     description = mokoString(SharedRes.strings.settings_zoom_controls_description),
@@ -190,6 +208,41 @@ private fun SettingsPickerItem(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
+private fun SettingsNavigationItem(
+    title: String,
+    value: String,
+    testTag: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .testTag(testTag)
+            .padding(horizontal = Dimens.Large, vertical = Dimens.MediumLarge),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = Dimens.Large),
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
 private fun SettingsSwitchItem(
     title: String,
     description: String,
@@ -237,6 +290,7 @@ private fun SettingsContentPreview() {
             uiEffects = emptyFlow(),
             onEvent = {},
             onBack = {},
+            onMapLabelScaleClicked = {},
         )
     }
 }

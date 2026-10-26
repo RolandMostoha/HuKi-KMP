@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
 import hu.mostoha.mobile.kmp.huki.datastore.SettingsPreferenceKeys
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import io.kotest.matchers.shouldBe
@@ -68,7 +69,32 @@ class SettingsMapperTest {
         }
     }
 
+    @Test
+    fun `Given stored map label scale - When toUserPreferences - Then the clamped scale is returned`() {
+        mapLabelScaleTestCases().forEach { testCase ->
+            val preferences = preferencesOf(
+                SettingsPreferenceKeys.MAP_LABEL_SCALE_FOLLOW_SYSTEM to false,
+                SettingsPreferenceKeys.MAP_LABEL_SCALE_FACTOR to testCase.input,
+            )
+
+            val actual = preferences.toUserPreferences()
+
+            actual.mapLabelScale shouldBe MapLabelScale(followSystem = false, factor = testCase.expected)
+        }
+    }
+
     companion object {
+        fun mapLabelScaleTestCases() =
+            listOf(
+                MapLabelScaleTestCase(input = 0.85f, expected = 1.0f),
+                MapLabelScaleTestCase(input = 1.0f, expected = 1.0f),
+                MapLabelScaleTestCase(input = 1.3f, expected = 1.3f),
+                MapLabelScaleTestCase(input = 1.34f, expected = 1.3f),
+                MapLabelScaleTestCase(input = 1.36f, expected = 1.4f),
+                MapLabelScaleTestCase(input = 2.0f, expected = 2.0f),
+                MapLabelScaleTestCase(input = 2.5f, expected = 2.0f),
+            )
+
         fun baseLayerTestCases() =
             listOf(
                 BaseLayerTestCase(input = "OUTDOORS", expected = BaseLayer.OUTDOORS),
@@ -100,5 +126,10 @@ class SettingsMapperTest {
     data class BaseLayerTestCase(
         val input: String?,
         val expected: BaseLayer,
+    )
+
+    data class MapLabelScaleTestCase(
+        val input: Float,
+        val expected: Float,
     )
 }

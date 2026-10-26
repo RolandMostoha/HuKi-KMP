@@ -218,6 +218,7 @@ struct MapView: View {
                         cameraCenter = state.center
                     }
                 }
+                .mapLabelScale(uiState.mapUiState.labelScale, map: proxy.map)
                 .task(id: [isBaseLabelsHidden, proxy.map != nil]) {
                     await syncBaseLabelsVisibility(proxy: proxy)
                 }

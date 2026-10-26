@@ -37,6 +37,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeOutlines
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OktInfoWindowData
@@ -214,6 +215,10 @@ class MainViewModel(
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
             MainUiEvents.HikingLayerSelected -> toggleHikingLayer()
+            // Map label scale events
+            MainUiEvents.MapLabelScaleClicked -> showSheet(Sheet.MapLabelScale)
+            is MainUiEvents.MapLabelScaleChanged -> previewMapLabelScale(event.factor)
+            is MainUiEvents.MapLabelScaleCommitted -> commitMapLabelScale(event.factor)
             // GPX events
             MainUiEvents.GpxLayerSelected -> switchGpxLayer()
             MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
@@ -697,6 +702,7 @@ class MainViewModel(
                         mapUiState = it.mapUiState.copy(
                             baseLayer = settings.baseLayer,
                             rotationEnabled = settings.mapRotationEnabled,
+                            labelScale = settings.mapLabelScale,
                         ),
                     )
                 }
@@ -784,6 +790,20 @@ class MainViewModel(
         }
         viewModelScope.launch {
             settingsRepository.setBaseLayer(baseLayer)
+        }
+    }
+
+    private fun previewMapLabelScale(factor: Float) {
+        val scale = MapLabelScale(followSystem = false, factor = MapLabelScale.coerceFactor(factor))
+        _uiState.updateMapUiState { it.copy(labelScale = scale) }
+    }
+
+    private fun commitMapLabelScale(factor: Float) {
+        val scale = MapLabelScale(followSystem = false, factor = MapLabelScale.coerceFactor(factor))
+        analyticsService.logEvent(AnalyticsEvent.MapLabelScaleSelected(scale.percent))
+        _uiState.updateMapUiState { it.copy(labelScale = scale) }
+        viewModelScope.launch {
+            settingsRepository.setMapLabelScale(scale)
         }
     }
 

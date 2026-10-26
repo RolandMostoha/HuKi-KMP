@@ -85,6 +85,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
+import hu.mostoha.mobile.kmp.huki.model.mapper.toSymbolScaleBehavior
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
@@ -261,6 +262,9 @@ fun MapContent(
                         onEvent(MainUiEvents.FollowingDisabled)
                     }
                 }
+            }
+            MapEffect(mapUiState.labelScale) { mapView ->
+                mapView.mapboxMap.symbolScaleBehavior = mapUiState.labelScale.toSymbolScaleBehavior()
             }
             MapEffect(isDarkMode) { mapView ->
                 mapView.location.updateSettings {

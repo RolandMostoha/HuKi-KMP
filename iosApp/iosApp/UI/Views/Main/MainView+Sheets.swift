@@ -23,6 +23,8 @@ extension MainView {
             oktSheet(uiState: uiState)
         case .landscapes:
             landscapesSheet(uiState: uiState)
+        case .mapLabelScale:
+            mapLabelScaleSheet(uiState: uiState)
         }
     }
 
@@ -242,6 +244,23 @@ extension MainView {
             }
         )
         .presentationDetents([layersDetent])
+        .presentationDragIndicator(.hidden)
+    }
+
+    func mapLabelScaleSheet(uiState: MainUiState) -> some View {
+        MapLabelScaleSheetView(
+            strings: strings,
+            labelScale: uiState.mapUiState.labelScale,
+            onFactorChanged: { factor in
+                viewModel.onEvent(event: MainUiEventsMapLabelScaleChanged(factor: factor))
+            },
+            onFactorCommitted: { factor in
+                viewModel.onEvent(event: MainUiEventsMapLabelScaleCommitted(factor: factor))
+            },
+            onDismissRequest: {
+                viewModel.onEvent(event: MainUiEventsSheetDismissed())
+            }
+        )
         .presentationDragIndicator(.hidden)
     }
 

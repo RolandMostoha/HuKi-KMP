@@ -55,6 +55,7 @@ fun Sheet?.toScreen(): Screen =
         Sheet.Discover -> Screen.DISCOVER
         Sheet.Okt -> Screen.OKT
         Sheet.Landscapes -> Screen.LANDSCAPES
+        Sheet.MapLabelScale -> Screen.MAP_LABEL_SCALE
     }
 
 fun OktType.toBlueTrail(): BlueTrail =

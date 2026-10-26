@@ -154,6 +154,8 @@ enum Dimens {
     static let layersDetentHeight: CGFloat = 360
     static let layersPadDetentHeight: CGFloat = 400
 
+    static let mapLabelScaleDetentHeight: CGFloat = 200
+
     static let routePlannerDetentHeight: CGFloat = 520
     static let routePlannerMinimizedDetentHeight: CGFloat = 190
 

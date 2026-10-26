@@ -1,4 +1,4 @@
-import MapboxMaps
+@_spi(Experimental) import MapboxMaps
 import Shared
 import SwiftUI
 
@@ -144,5 +144,14 @@ extension JelSymbol {
         }
         jelMarkerImageCache.setObject(image, forKey: name as NSString)
         return PointAnnotation.Image(image: image, name: name)
+    }
+}
+
+extension MapLabelScale {
+    func toSymbolScaleBehavior() -> SymbolScaleBehavior {
+        if followSystem {
+            return .system { Double(MapLabelScale.companion.coerceFactor(scale: Float($0))) }
+        }
+        return .fixed(scaleFactor: Double(factor))
     }
 }

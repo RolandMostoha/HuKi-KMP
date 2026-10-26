@@ -1,6 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.theme
 
 object SharedDimens {
+    const val MAP_LABEL_SCALE_PERCENT_MIN_WIDTH = 52.0
+
     const val MAP_COMPASS_TOP_PADDING = 56.0
 
     const val PLACE_MARKER_SCALE = 1.5

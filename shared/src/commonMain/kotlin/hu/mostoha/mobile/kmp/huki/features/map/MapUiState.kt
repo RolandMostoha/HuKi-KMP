@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
@@ -12,6 +13,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toGpxWaypoints
 data class MapUiState(
     val baseLayer: BaseLayer = UserPreferences.DEFAULTS.baseLayer,
     val rotationEnabled: Boolean = UserPreferences.DEFAULTS.mapRotationEnabled,
+    val labelScale: MapLabelScale = UserPreferences.DEFAULTS.mapLabelScale,
     val hikingLayerVisible: Boolean = true,
     val gpxLayerVisible: Boolean = false,
     val gpxRouteVisible: Boolean = true,

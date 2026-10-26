@@ -7,5 +7,6 @@ sealed interface SettingsUiEvents {
     data object BackClicked : SettingsUiEvents
     data class MapZoomControlsToggled(val visible: Boolean) : SettingsUiEvents
     data class MapRotationToggled(val enabled: Boolean) : SettingsUiEvents
+    data object MapLabelScaleClicked : SettingsUiEvents
     data class ThemeModeSelected(val themeMode: ThemeMode) : SettingsUiEvents
 }

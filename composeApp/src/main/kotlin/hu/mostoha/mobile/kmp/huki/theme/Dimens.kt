@@ -44,6 +44,7 @@ object Dimens {
     val RoutePlannerWaypointIconColumnWidth = 20.dp
     val RoutePlannerConnectorWidth = 2.dp
     val SheetCameraBottomOffset = 20.dp
+    val ModalSheetBottomPadding = 30.dp
     val OktSheetCameraBottomOffset = 44.dp
 
     val PlaceDetailsTitleMinFontSize = 13.sp

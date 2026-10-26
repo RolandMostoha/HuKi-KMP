@@ -220,7 +220,7 @@ private extension MainView {
                 menuDestination
             }
             .navigationDestination(for: SettingsRoute.self) { _ in
-                SettingsView()
+                SettingsView(onMapLabelScaleClicked: openMapLabelScaleSheet)
             }
             .navigationDestination(for: DestinationsRoute.self) { _ in
                 DestinationsView(
@@ -261,6 +261,11 @@ private extension MainView {
             .navigationDestination(for: TrailSymbolsGuideRoute.self) { _ in
                 TrailSymbolsGuideView()
             }
+    }
+
+    func openMapLabelScaleSheet() {
+        viewModel.onEvent(event: MainUiEventsMapLabelScaleClicked.shared)
+        navigationPath = NavigationPath()
     }
 
     var menuDestination: some View {

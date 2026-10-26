@@ -54,7 +54,7 @@ fun LayersBottomSheet(
                     start = Dimens.Medium,
                     top = Dimens.Medium,
                     end = Dimens.Medium,
-                    bottom = Dimens.Large,
+                    bottom = Dimens.ModalSheetBottomPadding,
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

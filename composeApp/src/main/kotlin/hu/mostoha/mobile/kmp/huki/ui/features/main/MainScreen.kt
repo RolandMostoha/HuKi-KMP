@@ -65,6 +65,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesSheetHeights
 import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.rememberLandscapesSheetHeights
 import hu.mostoha.mobile.kmp.huki.ui.features.layers.LayersBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.map.MapContent
+import hu.mostoha.mobile.kmp.huki.ui.features.maplabelscale.MapLabelScaleBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.okt.OktBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.okt.rememberOktSheetHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
@@ -106,6 +107,8 @@ fun MainScreen(
     onOpenRoutePlannerConsumed: () -> Unit = {},
     openDiscover: Boolean = false,
     onOpenDiscoverConsumed: () -> Unit = {},
+    openMapLabelScale: Boolean = false,
+    onOpenMapLabelScaleConsumed: () -> Unit = {},
     viewModel: MainViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -151,6 +154,13 @@ fun MainScreen(
         if (openDiscover) {
             viewModel.onEvent(MainUiEvents.DiscoverClicked)
             onOpenDiscoverConsumed()
+        }
+    }
+
+    LaunchedEffect(openMapLabelScale) {
+        if (openMapLabelScale) {
+            viewModel.onEvent(MainUiEvents.MapLabelScaleClicked)
+            onOpenMapLabelScaleConsumed()
         }
     }
 
@@ -696,6 +706,15 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onOktInfoClicked = { onEvent(OktUiEvents.OktInfoClicked) },
                 onShowLandscapesClicked = { onEvent(LandscapesUiEvents.LandscapesShowClicked) },
                 onShowCategoriesClicked = { onEvent(LandscapesUiEvents.CategoriesShowClicked) },
+                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+            )
+        }
+        Sheet.MapLabelScale -> {
+            MapLabelScaleBottomSheet(
+                sheetState = sheetState,
+                labelScale = uiState.mapUiState.labelScale,
+                onFactorChanged = { onEvent(MainUiEvents.MapLabelScaleChanged(it)) },
+                onFactorCommitted = { onEvent(MainUiEvents.MapLabelScaleCommitted(it)) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
             )
         }
