@@ -99,7 +99,7 @@ private fun PlaceHistoryContent(
         }
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val barColor = MaterialTheme.colorScheme.surfaceVariant
+    val barColor = MaterialTheme.colorScheme.surface
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -214,7 +214,7 @@ private fun PlaceHistorySectionCard(section: PlaceHistorySection, onPlaceClick: 
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Dimens.Large),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shadowElevation = 0.5.dp,
     ) {
         Column {

@@ -65,7 +65,7 @@ fun GpxGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun GpxGuideContent(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val screenColor = MaterialTheme.colorScheme.surfaceVariant
+    val screenColor = MaterialTheme.colorScheme.surface
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier
@@ -114,7 +114,7 @@ private fun WhatIsCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .padding(horizontal = Dimens.Large)
             .clip(RoundedCornerShape(Dimens.Large))
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
@@ -187,7 +187,7 @@ private fun StepsSection(onOpenUrl: (String) -> Unit) {
                     shape = RoundedCornerShape(Dimens.Large),
                 ),
             shape = RoundedCornerShape(Dimens.Large),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
             Column {
                 Step(

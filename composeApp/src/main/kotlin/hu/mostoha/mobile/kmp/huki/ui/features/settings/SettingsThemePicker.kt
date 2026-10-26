@@ -34,7 +34,7 @@ fun SettingsThemePicker(
     val themeModes = ThemeMode.entries
     val themeModesLabel = mokoString(SharedRes.strings.settings_a11y_theme_picker)
     val colors = ToggleButtonDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         checkedContainerColor = MaterialTheme.colorScheme.primary,
         checkedContentColor = MaterialTheme.colorScheme.onPrimary,

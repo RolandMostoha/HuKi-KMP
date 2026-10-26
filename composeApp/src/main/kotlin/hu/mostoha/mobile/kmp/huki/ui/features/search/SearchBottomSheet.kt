@@ -127,7 +127,7 @@ private fun SearchBottomSheetContent(
             topEnd = Dimens.ExtraLarge,
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
     ) {
         Column(

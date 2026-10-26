@@ -34,7 +34,7 @@ fun DestinationTypeChip(
     type: DestinationType,
     modifier: Modifier = Modifier,
     contentColor: Color = mokoColor(type.colorRes).categoryTint(),
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     textStyle: TextStyle = MaterialTheme.typography.labelMedium,
     contentPadding: PaddingValues = PaddingValues(horizontal = Dimens.MediumLarge, vertical = Dimens.Small),
 ) {
@@ -68,7 +68,7 @@ private fun DestinationTypeChipPreview() {
     HuKiTheme {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(Dimens.Large),
             verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
         ) {

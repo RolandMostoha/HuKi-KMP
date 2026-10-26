@@ -129,7 +129,7 @@ private fun DestinationsContent(
         preview = DestinationPreview(destination, landscapeText, distance)
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val barColor = MaterialTheme.colorScheme.surfaceVariant
+    val barColor = MaterialTheme.colorScheme.surface
     val sortedLandscapes = remember(uiState.landscapes, context) {
         val strings = Strings(context)
         uiState.landscapes.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { strings.get(it.nameRes) })
@@ -238,7 +238,7 @@ private fun DestinationsTabBar(
 ) {
     val tabs = DestinationsTab.entries
     val colors = ToggleButtonDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         checkedContainerColor = MaterialTheme.colorScheme.primary,
         checkedContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -430,7 +430,7 @@ private fun LazyListScope.destinationCardItems(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = shape,
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
             Column {
                 row(index)

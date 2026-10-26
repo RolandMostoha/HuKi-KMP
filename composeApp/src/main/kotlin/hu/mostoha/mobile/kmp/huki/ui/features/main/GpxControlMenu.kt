@@ -43,7 +43,7 @@ fun GpxControlMenu(
     modifier: Modifier = Modifier,
     initiallyExpanded: Boolean = false,
 ) {
-    val itemContainerColor = MaterialTheme.colorScheme.surface
+    val itemContainerColor = MaterialTheme.colorScheme.surfaceBright
     val itemContentColor = MaterialTheme.colorScheme.onSurface
     var expanded by rememberSaveable { mutableStateOf(initiallyExpanded) }
     BackHandler(enabled = expanded) { expanded = false }
@@ -57,7 +57,7 @@ fun GpxControlMenu(
                 checked = expanded,
                 onCheckedChange = { expanded = it },
                 containerColor = ToggleFloatingActionButtonDefaults.containerColor(
-                    initialColor = MaterialTheme.colorScheme.surface,
+                    initialColor = MaterialTheme.colorScheme.surfaceBright,
                     finalColor = MaterialTheme.colorScheme.primary,
                 ),
             ) {

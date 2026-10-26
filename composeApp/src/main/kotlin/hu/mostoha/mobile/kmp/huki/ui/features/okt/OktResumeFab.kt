@@ -32,7 +32,7 @@ fun OktResumeFab(section: OktSectionItem, onClick: () -> Unit, modifier: Modifie
             .size(Dimens.OktResumeFabSize)
             .semantics { contentDescription = description }
             .testTag(TestTags.OKT_RESUME_FAB),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceBright,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = Dimens.FloatingActionElevation),
         shape = CircleShape,
     ) {

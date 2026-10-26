@@ -247,7 +247,7 @@ private fun LandscapesSheetHeader(
     onCloseClick: () -> Unit,
 ) {
     val iconButtonColors = IconButtonDefaults.iconButtonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
     )
     Row(
         modifier = Modifier

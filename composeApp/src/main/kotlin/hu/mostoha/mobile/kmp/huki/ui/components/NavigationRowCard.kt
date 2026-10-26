@@ -43,7 +43,7 @@ fun NavigationRowCard(
             .fillMaxWidth()
             .padding(horizontal = Dimens.Large),
         shape = RoundedCornerShape(Dimens.Large),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shadowElevation = 0.5.dp,
     ) {
         Row(

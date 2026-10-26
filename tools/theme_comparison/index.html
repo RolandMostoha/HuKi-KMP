@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HuKi Theme Comparison</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600&family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: one column of screen pairs, before | after side by side, stacking on narrow phones. Dark-first, sampled from the generated scheme. */
+:root {
+  --bg: #11140F;
+  --panel: #1D211B;
+  --line: #42493F;
+  --fg: #E0E4DA;
+  --muted: #C2C8BC;
+  --accent: #6BBA6F;
+  --font-display: "Rubik", system-ui, sans-serif;
+  --font-body: "Inter Tight", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F8FBF1; --panel: #ECEFE5; --line: #C2C8BC; --fg: #191D17; --muted: #42493F; --accent: #136313;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F8FBF1; --panel: #ECEFE5; --line: #C2C8BC; --fg: #191D17; --muted: #42493F; --accent: #136313;
+  color-scheme: light;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.55 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+main { max-width: 980px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; max-width: 65ch; }
+.eyebrow { font: 12px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 600 clamp(26px, 4vw, 36px)/1.15 var(--font-display); margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); }
+.roles { border: 1px solid var(--line); border-radius: 14px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 12px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+code { font: 13px var(--font-mono); }
+.sw { display: inline-flex; align-items: center; gap: 8px; font: 13px var(--font-mono); font-variant-numeric: tabular-nums; }
+.sw i { width: 18px; height: 18px; border-radius: 5px; border: 1px solid var(--line); display: inline-block; }
+section.pair { display: grid; gap: 14px; }
+section.pair h2 { font: 500 20px var(--font-display); margin: 0; }
+section.pair p { margin: 0; color: var(--muted); max-width: 65ch; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figcaption { font: 12px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+figure.after figcaption { color: var(--accent); }
+figure img { width: 100%; max-width: 100%; height: auto; border-radius: 18px; border: 1px solid var(--line); display: block; background: var(--panel); }
+@media (max-width: 420px) { .shots { gap: 8px; } figure img { border-radius: 12px; } }
+h2.mode { font: 600 clamp(22px, 3vw, 28px)/1.2 var(--font-display); margin: 16px 0 0; padding-top: 24px; border-top: 1px solid var(--line); }
+p.note { margin: -24px 0 0; color: var(--muted); max-width: 65ch; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">Pixel 6a</span>
+    <h1>Material 3 generated theme</h1>
+    <p>The full Material 3 scheme generated from HuKi green #136313, with every surface mapped to an official role. Screens and sheets sit on <code>surface</code>, cards and rows on <code>surfaceContainerHigh</code>, and floating map controls on <code>surfaceBright</code>.</p>
+  </header>
+
+  <div class="roles">
+    <table>
+      <thead><tr><th>Element</th><th>Role</th><th>Light</th><th>Dark</th></tr></thead>
+      <tbody>
+        <tr><td>Screen and sheet background</td><td><code>surface</code></td><td><span class="sw"><i style="background:#F8FBF1"></i>#F8FBF1</span></td><td><span class="sw"><i style="background:#11140F"></i>#11140F</span></td></tr>
+        <tr><td>Cards and rows</td><td><code>surfaceContainerHigh</code></td><td><span class="sw"><i style="background:#E6E9E0"></i>#E6E9E0</span></td><td><span class="sw"><i style="background:#272B25"></i>#272B25</span></td></tr>
+        <tr><td>Close buttons, chips, toggle fills</td><td><code>surfaceContainerHighest</code></td><td><span class="sw"><i style="background:#E0E4DA"></i>#E0E4DA</span></td><td><span class="sw"><i style="background:#32362F"></i>#32362F</span></td></tr>
+        <tr><td>Floating map controls</td><td><code>surfaceBright</code></td><td><span class="sw"><i style="background:#F8FBF1"></i>#F8FBF1</span></td><td><span class="sw"><i style="background:#363A34"></i>#363A34</span></td></tr>
+        <tr><td>Menus</td><td><code>surfaceContainer</code></td><td><span class="sw"><i style="background:#ECEFE5"></i>#ECEFE5</span></td><td><span class="sw"><i style="background:#1D211B"></i>#1D211B</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mode">Dark mode</h2>
+  <p class="note">Before: the hand-picked green-grey patch from earlier in this branch.</p>
+
+  <section class="pair">
+    <h2>Settings</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_06_settings.jpg" alt="Settings, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_06_settings.jpg" alt="Settings, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Menu</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_05_menu.jpg" alt="Menu, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_05_menu.jpg" alt="Menu, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Discover sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_03_discover.jpg" alt="Discover sheet, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_03_discover.jpg" alt="Discover sheet, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Layers sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_04_layers.jpg" alt="Layers sheet, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_04_layers.jpg" alt="Layers sheet, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Map text size sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_07_map_label_scale.jpg" alt="Map text size sheet, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_07_map_label_scale.jpg" alt="Map text size sheet, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Search</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_02_search.jpg" alt="Search, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_02_search.jpg" alt="Search, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Map</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_01_map.jpg" alt="Map, dark, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_01_map.jpg" alt="Map, dark, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <h2 class="mode">Light mode</h2>
+  <p class="note">Before: the committed theme, with Material's purple-tinted defaults still showing (for example the lilac switch track in Settings).</p>
+
+  <section class="pair">
+    <h2>Settings</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_06_settings.jpg" alt="Settings, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_06_settings.jpg" alt="Settings, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Menu</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_05_menu.jpg" alt="Menu, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_05_menu.jpg" alt="Menu, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Discover sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_03_discover.jpg" alt="Discover sheet, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_03_discover.jpg" alt="Discover sheet, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Layers sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_04_layers.jpg" alt="Layers sheet, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_04_layers.jpg" alt="Layers sheet, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Map text size sheet</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_07_map_label_scale.jpg" alt="Map text size sheet, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_07_map_label_scale.jpg" alt="Map text size sheet, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Search</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_02_search.jpg" alt="Search, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_02_search.jpg" alt="Search, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section class="pair">
+    <h2>Map</h2>
+    <div class="shots">
+      <figure><figcaption>Before</figcaption><img src="before_light_01_map.jpg" alt="Map, light, before" loading="lazy"></figure>
+      <figure class="after"><figcaption>After</figcaption><img src="after_light_01_map.jpg" alt="Map, light, after" loading="lazy"></figure>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

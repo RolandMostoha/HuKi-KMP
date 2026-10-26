@@ -79,7 +79,7 @@ fun DiscoverBottomSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surface,
         dragHandle = null,
         sheetState = sheetState,
     ) {
@@ -178,7 +178,7 @@ fun DiscoverContent(
                         HikeRecommendationCard(
                             recommendation = recommendation,
                             onClick = { onHikeRecommendationClicked(recommendation) },
-                            containerColor = MaterialTheme.colorScheme.surface,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             titleStyle = titleStyle,
                             modifier = Modifier
                                 .weight(1f)
@@ -206,7 +206,7 @@ fun DiscoverContent(
                     OktTypeCard(
                         type = type,
                         onClick = { onOktTypeClicked(type) },
-                        containerColor = MaterialTheme.colorScheme.surface,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                         modifier = Modifier
                             .weight(1f)
                             .testTag(TestTags.DISCOVER_OKT_CARD),
@@ -243,7 +243,9 @@ private fun HikeRecommendationsInfoButton(onClick: () -> Unit, onGpxGuideClicked
         tooltip = {
             RichTooltip(
                 shape = RoundedCornerShape(Dimens.Large),
-                colors = TooltipDefaults.richTooltipColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = TooltipDefaults.richTooltipColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ),
                 tonalElevation = 0.dp,
                 shadowElevation = Dimens.ExtraSmall,
                 modifier = Modifier.testTag(TestTags.DISCOVER_HIKE_RECOMMENDATIONS_INFO_TOOLTIP),
@@ -294,7 +296,9 @@ private fun OktInfoButton(onClick: () -> Unit) {
         tooltip = {
             RichTooltip(
                 shape = RoundedCornerShape(Dimens.Large),
-                colors = TooltipDefaults.richTooltipColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = TooltipDefaults.richTooltipColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ),
                 tonalElevation = 0.dp,
                 shadowElevation = Dimens.ExtraSmall,
                 title = { Text(mokoString(SharedRes.strings.okt_header_title)) },
@@ -344,7 +348,7 @@ private fun DiscoverHeader(onCloseClick: () -> Unit, modifier: Modifier = Modifi
         IconButton(
             onClick = onCloseClick,
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ),
             modifier = Modifier.testTag(TestTags.DISCOVER_CLOSE_BUTTON),
         ) {
@@ -372,7 +376,7 @@ private fun DiscoverContentPreview() {
             onShowLandscapesClicked = {},
             onShowCategoriesClicked = {},
             onCloseClicked = {},
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         )
     }
 }

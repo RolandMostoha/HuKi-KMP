@@ -34,7 +34,7 @@ fun HikeRecommendationCard(
     recommendation: HikeRecommendation,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     titleStyle: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
     Surface(

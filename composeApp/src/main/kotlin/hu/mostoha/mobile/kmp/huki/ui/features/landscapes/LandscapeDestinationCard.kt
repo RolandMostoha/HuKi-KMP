@@ -56,7 +56,9 @@ fun LandscapeDestinationCard(
 ) {
     val categoryColor = mokoColor(destination.type.colorRes)
     val surfaceColor = mokoColor(SharedRes.colors.mapStroke)
-    val containerColor by animateColorAsState(if (isSelected) categoryColor else MaterialTheme.colorScheme.surface)
+    val containerColor by animateColorAsState(
+        if (isSelected) categoryColor else MaterialTheme.colorScheme.surfaceContainerHigh,
+    )
     val titleColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
     val secondaryColor = if (isSelected) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant
     Column(

@@ -149,7 +149,7 @@ fun GpxDetailsBottomSheet(
                         onClick = onCloseClick,
                         modifier = Modifier.testTag(TestTags.GPX_DETAILS_CLOSE_BUTTON),
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ),
                     ) {
                         Icon(

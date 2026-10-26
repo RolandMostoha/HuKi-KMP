@@ -42,7 +42,7 @@ fun StatChip(
     val statContentDescription = if (label != null) "$label, $value" else value
     val containerModifier = modifier
         .clip(RoundedCornerShape(if (isLarge) 18.dp else Dimens.Large))
-        .background(MaterialTheme.colorScheme.surfaceVariant)
+        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
         .semantics(mergeDescendants = true) { contentDescription = statContentDescription }
         .padding(
             horizontal = if (isLarge) Dimens.ExtraSmall else Dimens.Small,

@@ -14,9 +14,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -72,7 +74,7 @@ fun LayersBottomSheet(
                     IconButton(
                         onClick = { onDismissRequest() },
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                         ),
                     ) {
                         Icon(
@@ -81,6 +83,7 @@ fun LayersBottomSheet(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
             Row(
                 modifier = Modifier

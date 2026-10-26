@@ -73,7 +73,7 @@ private fun SettingsContent(
             }
         }
     }
-    val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val backgroundColor = MaterialTheme.colorScheme.surface
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -165,7 +165,7 @@ private fun SettingsCard(content: @Composable () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = Dimens.Large),
         shape = RoundedCornerShape(Dimens.Large),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shadowElevation = 0.5.dp,
     ) {
         Column { content() }

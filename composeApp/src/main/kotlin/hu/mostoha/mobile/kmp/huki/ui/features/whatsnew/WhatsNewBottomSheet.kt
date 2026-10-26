@@ -64,7 +64,7 @@ fun WhatsNewBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surface,
         dragHandle = null,
     ) {
         Column(
@@ -129,7 +129,7 @@ private fun WhatsNewHeader(version: String, releaseDate: LocalDate, onCloseClick
         IconButton(
             onClick = onCloseClick,
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ),
             modifier = Modifier.testTagAsResourceId(TestTags.WHATS_NEW_CLOSE_BUTTON),
         ) {
@@ -230,7 +230,7 @@ private fun WhatsNewBottomSheetPreview() {
     HuKiTheme {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(Dimens.Large),
             verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
         ) {

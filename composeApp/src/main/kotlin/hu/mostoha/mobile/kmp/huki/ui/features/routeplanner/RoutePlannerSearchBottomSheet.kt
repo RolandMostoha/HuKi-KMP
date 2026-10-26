@@ -66,7 +66,7 @@ fun RoutePlannerSearchBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(RoutePlannerUiEvents.WaypointSearchDismissed) },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = MaterialTheme.colorScheme.surface,
         dragHandle = null,
         modifier = modifier,
     ) {

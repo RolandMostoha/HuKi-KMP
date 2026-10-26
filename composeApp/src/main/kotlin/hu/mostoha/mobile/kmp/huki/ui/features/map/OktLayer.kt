@@ -262,7 +262,7 @@ private fun OktMarkerViewPreview() {
     HuKiTheme {
         Row(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .padding(Dimens.Large),
             horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
         ) {

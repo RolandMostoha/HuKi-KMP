@@ -68,7 +68,7 @@ fun RecentGpxSection(
         Card(
             modifier = Modifier.padding(horizontal = Dimens.Large),
             shape = RoundedCornerShape(Dimens.Large),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
         ) {
             files.forEachIndexed { index, file ->

@@ -50,7 +50,9 @@ fun OktStampCard(
 ) {
     val oktBlue = mokoColor(SharedRes.colors.oktBlue)
     val onOktBlue = mokoColor(SharedRes.colors.onOktBlue)
-    val containerColor by animateColorAsState(if (isSelected) oktBlue else MaterialTheme.colorScheme.surface)
+    val containerColor by animateColorAsState(
+        if (isSelected) oktBlue else MaterialTheme.colorScheme.surfaceContainerHigh,
+    )
     val titleColor = if (isSelected) onOktBlue else MaterialTheme.colorScheme.onSurface
     val secondaryColor = if (isSelected) onOktBlue.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
     val distanceDescription = mokoString(SharedRes.strings.okt_a11y_stamp_distance, stamp.legDistance)

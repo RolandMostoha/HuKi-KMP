@@ -130,7 +130,7 @@ private fun DistanceChip(text: String, typeColor: Color) {
         text = text,
         modifier = Modifier
             .clip(RoundedCornerShape(percent = 50))
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(horizontal = Dimens.MediumLarge, vertical = Dimens.Small),
         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
         color = typeColor,

@@ -214,7 +214,9 @@ private fun OktSheetHeader(type: OktType, onStartClick: () -> Unit, onCloseClick
         }
         IconButton(
             onClick = onCloseClick,
-            colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            ),
             modifier = Modifier.testTag(TestTags.OKT_CLOSE_BUTTON),
         ) {
             Icon(

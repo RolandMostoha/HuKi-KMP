@@ -35,7 +35,7 @@ fun OktTypeCard(
     type: OktType,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
 ) {
     val title = mokoString(type.title)
     val subtitle = mokoString(type.subtitle)
@@ -87,7 +87,7 @@ private fun OktTypeCardPreview() {
     HuKiTheme {
         Row(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(Dimens.Large),
             horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
         ) {
@@ -95,7 +95,7 @@ private fun OktTypeCardPreview() {
                 OktTypeCard(
                     type = type,
                     onClick = {},
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     modifier = Modifier.weight(1f),
                 )
             }

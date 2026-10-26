@@ -61,7 +61,7 @@ fun DestinationInfoWindow(
             tailWidth = Dimens.InfoWindowTailWidth,
             tailHeight = Dimens.InfoWindowTailHeight,
         ),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         shadowElevation = Dimens.Small,
     ) {
         Column(

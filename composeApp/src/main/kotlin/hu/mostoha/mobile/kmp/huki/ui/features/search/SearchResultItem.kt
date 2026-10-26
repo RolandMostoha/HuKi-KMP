@@ -55,7 +55,7 @@ fun SearchResultItem(place: Place, onClick: () -> Unit, modifier: Modifier = Mod
             .fillMaxWidth()
             .testTag(TestTags.SEARCH_RESULT_ITEM),
         shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = Dimens.Large, vertical = Dimens.MediumLarge),

@@ -30,7 +30,7 @@ fun MapZoomControls(onZoomInClicked: () -> Unit, onZoomOutClicked: () -> Unit, m
     Surface(
         modifier = modifier.width(Dimens.ZoomControlWidth),
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         contentColor = MaterialTheme.colorScheme.onSurface,
         shadowElevation = Dimens.FloatingActionElevation,
     ) {

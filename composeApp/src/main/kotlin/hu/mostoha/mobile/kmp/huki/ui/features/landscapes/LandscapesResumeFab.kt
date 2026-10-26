@@ -33,7 +33,7 @@ fun LandscapesResumeFab(grouping: LandscapesGrouping, onClick: () -> Unit, modif
         modifier = modifier
             .size(Dimens.OktResumeFabSize)
             .testTagAsResourceId(TestTags.LANDSCAPES_RESUME_FAB),
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.surfaceBright,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = Dimens.FloatingActionElevation),
         shape = CircleShape,
     ) {

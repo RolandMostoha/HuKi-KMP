@@ -63,7 +63,7 @@ fun TrailSymbolsGuideScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun TrailSymbolsGuideContent(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val screenColor = MaterialTheme.colorScheme.surfaceVariant
+    val screenColor = MaterialTheme.colorScheme.surface
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier
@@ -140,7 +140,7 @@ private fun SymbolSection(title: String, symbols: List<TrailSymbol>) {
                     shape = RoundedCornerShape(Dimens.Large),
                 ),
             shape = RoundedCornerShape(Dimens.Large),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
         ) {
             Column {
                 symbols.forEachIndexed { index, symbol ->

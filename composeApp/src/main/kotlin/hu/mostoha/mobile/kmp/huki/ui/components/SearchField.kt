@@ -76,9 +76,9 @@ fun SearchField(
             keyboardType = KeyboardType.Text,
         ),
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = MaterialTheme.colorScheme.surface,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         ),
     )
 }

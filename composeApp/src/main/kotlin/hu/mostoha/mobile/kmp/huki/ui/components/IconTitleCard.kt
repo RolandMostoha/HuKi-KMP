@@ -38,7 +38,7 @@ fun IconTitleCard(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(Dimens.Large),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shadowElevation = 0.5.dp,
     ) {
         Column(

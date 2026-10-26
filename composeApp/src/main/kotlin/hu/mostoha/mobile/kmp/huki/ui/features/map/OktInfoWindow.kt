@@ -48,7 +48,7 @@ fun OktInfoWindow(info: OktInfoWindowData, onPlaceDetailsClick: () -> Unit, modi
             tailWidth = Dimens.InfoWindowTailWidth,
             tailHeight = Dimens.InfoWindowTailHeight,
         ),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         shadowElevation = Dimens.Small,
     ) {
         Row(

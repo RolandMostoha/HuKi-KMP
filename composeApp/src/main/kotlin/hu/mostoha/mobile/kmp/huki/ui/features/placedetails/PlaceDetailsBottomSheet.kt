@@ -163,7 +163,7 @@ private fun PlaceDetailsHeader(placeDetails: PlaceDetails, onCloseClick: () -> U
             onClick = onCloseClick,
             modifier = Modifier.testTag(TestTags.PLACE_DETAILS_CLOSE_BUTTON),
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             ),
         ) {
             Icon(

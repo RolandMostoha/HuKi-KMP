@@ -245,7 +245,7 @@ private fun FabColumnAction(
                 )
             }
             FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceBright,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = Dimens.FloatingActionElevation,
                 ),
@@ -322,7 +322,7 @@ private fun DiscoverFabAction(visible: Boolean, onDiscoverClicked: () -> Unit, m
     ) {
         FloatingActionButton(
             modifier = Modifier.testTag(TestTags.MAIN_FAB_DISCOVER_BUTTON),
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = Dimens.FloatingActionElevation,
             ),

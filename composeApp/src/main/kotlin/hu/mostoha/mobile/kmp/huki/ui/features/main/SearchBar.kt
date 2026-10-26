@@ -37,7 +37,7 @@ fun SearchBar(onSearchClick: () -> Unit, onMenuClick: () -> Unit, modifier: Modi
             .height(65.dp)
             .fillMaxWidth(),
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         shadowElevation = Dimens.FloatingActionElevation,
     ) {
         Row(
@@ -49,7 +49,7 @@ fun SearchBar(onSearchClick: () -> Unit, onMenuClick: () -> Unit, modifier: Modi
                     .weight(1f)
                     .fillMaxHeight(),
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 onClick = {
                     onSearchClick()
                 },

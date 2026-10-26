@@ -40,7 +40,7 @@ fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifi
             tailWidth = Dimens.InfoWindowTailWidth,
             tailHeight = Dimens.InfoWindowTailHeight,
         ),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.surfaceBright,
         shadowElevation = Dimens.Small,
     ) {
         Column(

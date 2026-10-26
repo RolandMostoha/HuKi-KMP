@@ -60,7 +60,7 @@ fun RoutePlannerWaypointList(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.Large))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = SURFACE_ALPHA))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = SURFACE_ALPHA))
             .padding(horizontal = Dimens.MediumLarge),
     ) {
         if (isCollapsed) {
@@ -187,7 +187,7 @@ private fun ColumnScope.ReorderableStops(
                         clip = isDragged
                     }
                     .background(
-                        color = if (isDragged) MaterialTheme.colorScheme.surface else Color.Transparent,
+                        color = if (isDragged) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent,
                         shape = draggedRowShape,
                     )
                     .semantics {

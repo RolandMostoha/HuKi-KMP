@@ -96,7 +96,11 @@ fun OktSectionRow(
 ) {
     val oktBlue = mokoColor(SharedRes.colors.oktBlue)
     val containerColor by animateColorAsState(
-        if (isSelected) oktBlue.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+        if (isSelected) {
+            oktBlue.copy(alpha = 0.15f)
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0f)
+        },
     )
     val stamps = if (isReversed) section.reversedStamps else section.stamps
     Column(
@@ -290,7 +294,7 @@ private fun OktSectionMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
             shape = RoundedCornerShape(Dimens.Large),
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             tonalElevation = 0.dp,
             shadowElevation = Dimens.FloatingActionElevation,
         ) {

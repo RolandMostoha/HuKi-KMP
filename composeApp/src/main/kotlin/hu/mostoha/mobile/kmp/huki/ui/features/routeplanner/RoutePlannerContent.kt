@@ -245,7 +245,7 @@ private fun RoutePlannerHeader(onCloseClick: () -> Unit, modifier: Modifier = Mo
         IconButton(
             onClick = onCloseClick,
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             ),
             modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_CLOSE_BUTTON),
         ) {

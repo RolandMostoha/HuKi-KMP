@@ -53,7 +53,7 @@ fun GpxFileOptionsMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             shape = RoundedCornerShape(Dimens.Large),
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             tonalElevation = 0.dp,
             shadowElevation = Dimens.FloatingActionElevation,
         ) {

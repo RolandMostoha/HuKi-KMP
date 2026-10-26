@@ -53,7 +53,7 @@ fun RecentPlacesSection(
                 .padding(horizontal = Dimens.Large)
                 .padding(top = Dimens.Medium),
             shape = RoundedCornerShape(Dimens.Large),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
         ) {
             places.forEachIndexed { index, place ->
