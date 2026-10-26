@@ -1045,6 +1045,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+            advanceUntilIdle()
 
             val actual = viewModel.uiState.value
             actual.mapUiState.gpxDetails?.locations shouldBe TEST_GPX_DETAILS.locations.reversed()
@@ -1103,6 +1104,46 @@ class MainViewModelTest {
                 allDistancesVisible shouldBe false
                 distanceInfoWindows shouldBe emptyList()
             }
+        }
+    }
+
+    @Test
+    fun `Given GPX slope colors setting is off - When GPX is imported - Then slope colors are hidden`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(gpxSlopeColorsVisible = false))
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given imported GPX - When GpxSlopeColorsToggled - Then slope colors toggle off and on`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe true
+
+            viewModel.onEvent(MainUiEvents.GpxSlopeColorsToggled)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe false
+
+            viewModel.onEvent(MainUiEvents.GpxSlopeColorsToggled)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe true
+            analyticsService.loggedEvents.count { it == AnalyticsEvent.GpxSlopeColorsToggled } shouldBe 2
         }
     }
 

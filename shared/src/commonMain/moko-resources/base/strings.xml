@@ -109,6 +109,9 @@
     <string name="gpx_control_distances_title">Waypoint distances</string>
     <string name="gpx_control_distances_show">Show distances</string>
     <string name="gpx_control_distances_hide">Hide distances</string>
+    <string name="gpx_control_slope_colors_title">Slope colors</string>
+    <string name="gpx_control_slope_colors_show">Show slope colors</string>
+    <string name="gpx_control_slope_colors_hide">Hide slope colors</string>
     <string name="gpx_control_direction_title">Direction of travel</string>
     <string name="gpx_control_direction_reverse">Reverse direction</string>
     <string name="gpx_control_overview_title">Zoom to fit the route</string>
@@ -193,6 +196,8 @@
     <string name="settings_section_gpx">GPX</string>
     <string name="settings_gpx_distances_title">Waypoint distances</string>
     <string name="settings_gpx_distances_description">Show distance and travel time to waypoints when opening a GPX</string>
+    <string name="settings_gpx_slope_colors_title">Slope colors</string>
+    <string name="settings_gpx_slope_colors_description">Color GPX tracks by the steepness of climbs and descents</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>

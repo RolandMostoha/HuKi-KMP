@@ -7,6 +7,7 @@ data class UserPreferences(
     val baseLayer: BaseLayer,
     val mapLabelScale: MapLabelScale,
     val gpxDistancesVisible: Boolean,
+    val gpxSlopeColorsVisible: Boolean,
 ) {
     companion object {
         val DEFAULTS = UserPreferences(
@@ -16,6 +17,7 @@ data class UserPreferences(
             baseLayer = BaseLayer.OUTDOORS,
             mapLabelScale = MapLabelScale.DEFAULT,
             gpxDistancesVisible = true,
+            gpxSlopeColorsVisible = true,
         )
     }
 }

@@ -116,6 +116,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.maplibre.spatialk.units.extensions.inMeters
@@ -157,6 +159,7 @@ class MainViewModel(
     private var landscapeOutlines: LandscapeOutlines? = null
     private var landscapesJob: Job? = null
     private var oktLocationJob: Job? = null
+    private val gpxReverseMutex = Mutex()
     private var oktUserPosition: TrackPosition? = null
 
     init {
@@ -233,6 +236,7 @@ class MainViewModel(
             is MainUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
             MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
+            MainUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors()
             MainUiEvents.GpxDirectionReversed -> reverseGpxDirection()
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
             is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
@@ -893,7 +897,7 @@ class MainViewModel(
             runCatching { readGpx() }
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
-                    val gpxDistancesVisible = settingsRepository.settings.first().gpxDistancesVisible
+                    val settings = settingsRepository.settings.first()
                     selectedWaypoint.value = null
                     cancelOktJobs()
                     cancelLandscapesJob()
@@ -908,7 +912,8 @@ class MainViewModel(
                                 routeStops = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
-                                allDistancesVisible = gpxDistancesVisible,
+                                allDistancesVisible = settings.gpxDistancesVisible,
+                                gpxSlopeColorsVisible = settings.gpxSlopeColorsVisible,
                                 distanceInfoWindows = emptyList(),
                                 okt = null,
                             ),
@@ -959,16 +964,29 @@ class MainViewModel(
         }
     }
 
+    private fun toggleGpxSlopeColors() {
+        analyticsService.logEvent(AnalyticsEvent.GpxSlopeColorsToggled)
+        _uiState.updateMapUiState {
+            it.copy(gpxSlopeColorsVisible = it.gpxSlopeColorsVisible.not())
+        }
+    }
+
     private fun reverseGpxDirection() {
-        val gpxDetails = _uiState.value.mapUiState.gpxDetails?.takeIf { it.isReversible } ?: return
-        analyticsService.logEvent(AnalyticsEvent.GpxDirectionReversed)
-        selectedWaypoint.value = null
-        val reversed = gpxDetails.reversed()
-        _uiState.update { uiState ->
-            uiState.copy(
-                mapUiState = uiState.mapUiState.copy(gpxDetails = reversed),
-                sheet = if (uiState.sheet is Sheet.Gpx) Sheet.Gpx(reversed) else uiState.sheet,
-            )
+        viewModelScope.launch {
+            // Serializes quick repeated taps, so each one reverses the result of the previous
+            gpxReverseMutex.withLock {
+                val gpxDetails = _uiState.value.mapUiState.gpxDetails?.takeIf { it.isReversible } ?: return@withLock
+                analyticsService.logEvent(AnalyticsEvent.GpxDirectionReversed)
+                selectedWaypoint.value = null
+                val reversed = withContext(defaultDispatcher) { gpxDetails.reversed() }
+                _uiState.update { uiState ->
+                    if (uiState.mapUiState.gpxDetails?.layerId != gpxDetails.layerId) return@update uiState
+                    uiState.copy(
+                        mapUiState = uiState.mapUiState.copy(gpxDetails = reversed),
+                        sheet = if (uiState.sheet is Sheet.Gpx) Sheet.Gpx(reversed) else uiState.sheet,
+                    )
+                }
+            }
         }
     }
 

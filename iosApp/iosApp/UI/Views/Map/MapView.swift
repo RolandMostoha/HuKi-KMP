@@ -93,43 +93,41 @@ struct MapView: View {
                     }
                     PlaceMarkersMapContent(mapUiState: uiState.mapUiState, colorScheme: colorScheme,
                                            onRouteStopClicked: onRouteStopClicked)
-                    if uiState.mapUiState.gpxLayerVisible {
-                        if let gpxDetails = uiState.mapUiState.gpxDetails {
-                            if uiState.mapUiState.gpxRouteVisible {
-                                GpxRouteMapContent(gpxDetails: gpxDetails)
-                            }
-
-                            GpxWaypointsMapContent(
-                                waypoints: gpxDetails.waypoints,
-                                jelSymbol: gpxDetails.jelSymbol,
-                                baseLayer: uiState.mapUiState.baseLayer,
-                                colorScheme: colorScheme,
-                                onWaypointClicked: onWaypointClicked
+                    if uiState.mapUiState.gpxLayerVisible, let gpxDetails = uiState.mapUiState.gpxDetails {
+                        if uiState.mapUiState.gpxRouteVisible {
+                            GpxRouteMapContent(gpxDetails: gpxDetails, colorScheme: colorScheme,
+                                               slopeColorsVisible: uiState.mapUiState.gpxSlopeColorsVisible)
+                        }
+                        GpxWaypointsMapContent(
+                            waypoints: gpxDetails.waypoints,
+                            jelSymbol: gpxDetails.jelSymbol,
+                            baseLayer: uiState.mapUiState.baseLayer,
+                            colorScheme: colorScheme,
+                            onWaypointClicked: onWaypointClicked
+                        )
+                        ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.id) { info in
+                            let waypointType = gpxDetails.waypoints
+                                .first { $0.location.id == info.location.id }?.type
+                            let iconScale = CGFloat(
+                                waypointType == .intermediate
+                                    ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
+                                    : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
                             )
-                            ForEvery(uiState.mapUiState.distanceInfoWindows, id: \.id) { info in
-                                let waypointType = gpxDetails.waypoints
-                                    .first { $0.location.id == info.location.id }?.type
-                                let iconScale = CGFloat(
-                                    waypointType == .intermediate
-                                        ? SharedDimens.shared.GPX_WAYPOINT_MARKER_SCALE
-                                        : SharedDimens.shared.GPX_EDGE_LOCATION_MARKER_SCALE
-                                )
-                                let markerHeight = (waypointType?.icon.toUIImage()?.size.height ?? 0) * iconScale
-                                let offsetY = markerHeight / 2 + Dimens.infoWindowMarkerPadding
-                                MapViewAnnotation(coordinate: info.location.coordinate) {
-                                    DistanceInfoWindowView(info: info)
-                                        .onTapGesture {
-                                            onDistanceInfoWindowDismissed()
-                                        }
-                                }
-                                .variableAnchors([
-                                    ViewAnnotationAnchorConfig(anchor: .bottom, offsetY: offsetY)
-                                ])
-                                .allowOverlap(false)
-                                .allowOverlapWithPuck(true)
-                                .priority(Int(info.priority))
-                                .ignoreCameraPadding(true)
+                            let markerHeight = (waypointType?.icon.toUIImage()?.size.height ?? 0) * iconScale
+                            let offsetY = markerHeight / 2 + Dimens.infoWindowMarkerPadding
+                            MapViewAnnotation(coordinate: info.location.coordinate) {
+                                DistanceInfoWindowView(info: info)
+                                    .onTapGesture {
+                                        onDistanceInfoWindowDismissed()
+                                    }
                             }
+                            .variableAnchors([
+                                ViewAnnotationAnchorConfig(anchor: .bottom, offsetY: offsetY)
+                            ])
+                            .allowOverlap(false)
+                            .allowOverlapWithPuck(true)
+                            .priority(Int(info.priority))
+                            .ignoreCameraPadding(true)
                         }
                     }
                     if isRoutePlanVisible {

@@ -84,6 +84,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
+import hu.mostoha.mobile.kmp.huki.model.mapper.toSlopeFeatures
 import hu.mostoha.mobile.kmp.huki.model.mapper.toSymbolScaleBehavior
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
@@ -92,6 +93,7 @@ import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
+import hu.mostoha.mobile.kmp.huki.theme.SlopeColorScale
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -106,6 +108,7 @@ import kotlinx.coroutines.flow.filterNotNull
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
+private const val SLOPE_LAYER_SUFFIX = "_slope"
 
 @OptIn(MapboxDelicateApi::class, MapboxExperimental::class)
 @Composable
@@ -380,12 +383,27 @@ private fun GpxLayer(
         LaunchedEffect(key1 = gpxDetails.layerId) {
             geoJsonSource.data = GeoJSONData(gpxDetails.locations.toLineString())
         }
-        RouteLineLayer(
-            sourceState = geoJsonSource,
-            layerId = gpxDetails.layerId,
-            routeColor = routeColor,
-            routeStrokeColor = routeStrokeColor,
-        )
+        if (mapUiState.gpxSlopeColorsVisible && gpxDetails.hasSlopeSegments) {
+            val slopeSourceId = "${gpxDetails.layerId}$SLOPE_LAYER_SUFFIX"
+            val slopeSource = rememberGeoJsonSourceState(key = slopeSourceId)
+            val flatColor = routeColor.toArgb()
+            LaunchedEffect(gpxDetails.layerId, flatColor) {
+                slopeSource.data = GeoJSONData(gpxDetails.slopeSegments.toSlopeFeatures(SlopeColorScale(flatColor)))
+            }
+            SlopeRouteLineLayer(
+                routeSourceState = geoJsonSource,
+                slopeSourceState = slopeSource,
+                layerId = slopeSourceId,
+                casingColor = mokoColor(SharedRes.colors.markerStroke),
+            )
+        } else {
+            RouteLineLayer(
+                sourceState = geoJsonSource,
+                layerId = gpxDetails.layerId,
+                routeColor = routeColor,
+                routeStrokeColor = routeStrokeColor,
+            )
+        }
         RouteDirectionLayer(
             sourceState = geoJsonSource,
             layerId = "${gpxDetails.layerId}$DIRECTION_LAYER_SUFFIX",

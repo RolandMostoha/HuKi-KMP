@@ -5,7 +5,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import kotlin.uuid.Uuid
 
 /**
- * Travel time and elevation stats are recalculated, as walking uphill is slower than downhill.
+ * Travel time, elevation stats and slopes are recalculated, as walking uphill is slower than downhill.
  */
 fun GpxDetails.reversed(): GpxDetails {
     val reversedLocations = locations.reversed()
@@ -16,6 +16,7 @@ fun GpxDetails.reversed(): GpxDetails {
         travelTime = reversedLocations.calculateTravelTime(),
         incline = reversedLocations.calculateIncline(),
         decline = reversedLocations.calculateDecline(),
+        slopeSegments = reversedLocations.calculateSlopeSegments(),
     )
 }
 

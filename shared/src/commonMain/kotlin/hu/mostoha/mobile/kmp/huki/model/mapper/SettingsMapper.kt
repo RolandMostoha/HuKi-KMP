@@ -23,6 +23,8 @@ fun Preferences.toUserPreferences(): UserPreferences =
         ),
         gpxDistancesVisible = this[SettingsPreferenceKeys.GPX_DISTANCES_VISIBLE]
             ?: UserPreferences.DEFAULTS.gpxDistancesVisible,
+        gpxSlopeColorsVisible = this[SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE]
+            ?: UserPreferences.DEFAULTS.gpxSlopeColorsVisible,
     )
 
 fun String?.toThemeMode(): ThemeMode =

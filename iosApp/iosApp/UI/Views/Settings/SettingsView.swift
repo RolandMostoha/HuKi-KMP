@@ -73,6 +73,13 @@ struct SettingsView: View {
                         testTag: TestTags.shared.SETTINGS_GPX_DISTANCES_TOGGLE,
                         onToggle: { viewModel.onEvent(event: SettingsUiEventsGpxDistancesToggled(visible: $0)) }
                     )
+                    SettingsToggleRow(
+                        title: strings.get(id: SharedRes.strings().settings_gpx_slope_colors_title),
+                        description: strings.get(id: SharedRes.strings().settings_gpx_slope_colors_description),
+                        isOn: uiState.gpxSlopeColorsVisible,
+                        testTag: TestTags.shared.SETTINGS_GPX_SLOPE_COLORS_TOGGLE,
+                        onToggle: { viewModel.onEvent(event: SettingsUiEventsGpxSlopeColorsToggled(visible: $0)) }
+                    )
                 }
             }
             .accessibilityIdentifier(TestTags.shared.SETTINGS_SCREEN_ROOT)

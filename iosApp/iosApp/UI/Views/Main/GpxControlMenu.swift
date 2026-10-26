@@ -5,9 +5,12 @@ struct GpxControlMenu: View {
     let strings: Strings
     var isRouteVisible: Bool = true
     var isAllDistancesVisible: Bool = false
+    var isSlopeColorsAvailable: Bool = true
+    var isSlopeColorsVisible: Bool = true
     var isReversible: Bool = true
     var onToggleLine: () -> Void = {}
     var onToggleDistances: () -> Void = {}
+    var onToggleSlopeColors: () -> Void = {}
     var onReverseDirection: () -> Void = {}
     var onOverview: () -> Void = {}
     var onClear: () -> Void = {}
@@ -99,6 +102,19 @@ struct GpxControlMenu: View {
                 action: onToggleDistances
             )
             .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON)
+            if isSlopeColorsAvailable {
+                menuRow(
+                    icon: "paintpalette",
+                    title: strings.get(
+                        id: isSlopeColorsVisible
+                            ? SharedRes.strings().gpx_control_slope_colors_hide
+                            : SharedRes.strings().gpx_control_slope_colors_show
+                    ),
+                    description: strings.get(id: SharedRes.strings().gpx_control_slope_colors_title),
+                    action: onToggleSlopeColors
+                )
+                .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_SLOPE_COLORS_BUTTON)
+            }
             if isReversible {
                 menuRow(
                     icon: "arrow.left.arrow.right",

@@ -62,4 +62,10 @@ class DefaultSettingsRepository(private val dataStore: DataStore<Preferences>) :
             preferences[SettingsPreferenceKeys.GPX_DISTANCES_VISIBLE] = visible
         }
     }
+
+    override suspend fun setGpxSlopeColorsVisible(visible: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE] = visible
+        }
+    }
 }

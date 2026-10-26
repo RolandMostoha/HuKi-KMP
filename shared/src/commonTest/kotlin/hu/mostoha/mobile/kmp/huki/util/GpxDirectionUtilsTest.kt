@@ -27,6 +27,7 @@ class GpxDirectionUtilsTest {
         travelTime = uphillTrack.calculateTravelTime(),
         incline = uphillTrack.calculateIncline(),
         decline = uphillTrack.calculateDecline(),
+        slopeSegments = uphillTrack.calculateSlopeSegments(),
     )
 
     @Test
@@ -62,6 +63,14 @@ class GpxDirectionUtilsTest {
 
         actual.incline shouldBe gpxDetails.decline
         actual.decline shouldBe gpxDetails.incline
+    }
+
+    @Test
+    fun `Given uphill GPX - When reversed - Then slopes turn into descents`() {
+        val actual = gpxDetails.reversed()
+
+        actual.slopeSegments.first().slopePercent shouldBeLessThan 0.0
+        actual.slopeSegments shouldBe uphillTrack.reversed().calculateSlopeSegments()
     }
 
     @Test

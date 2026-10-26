@@ -122,6 +122,10 @@ sealed interface AnalyticsEvent {
         override val name = "gpx_distances_toggled"
     }
 
+    data object GpxSlopeColorsToggled : AnalyticsEvent {
+        override val name = "gpx_slope_colors_toggled"
+    }
+
     data object GpxDirectionReversed : AnalyticsEvent {
         override val name = "gpx_direction_reversed"
     }
@@ -341,6 +345,10 @@ sealed interface AnalyticsEvent {
 
     data object SettingsGpxDistancesToggled : AnalyticsEvent {
         override val name = "settings_gpx_distances_toggled"
+    }
+
+    data object SettingsGpxSlopeColorsToggled : AnalyticsEvent {
+        override val name = "settings_gpx_slope_colors_toggled"
     }
 
     data class SettingsThemeSelected(val theme: Theme) : AnalyticsEvent {

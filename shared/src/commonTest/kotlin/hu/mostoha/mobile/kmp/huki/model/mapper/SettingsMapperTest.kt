@@ -49,6 +49,15 @@ class SettingsMapperTest {
     }
 
     @Test
+    fun `Given stored GPX slope colors flag - When toUserPreferences - Then the flag is returned`() {
+        val preferences = preferencesOf(SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE to false)
+
+        val actual = preferences.toUserPreferences()
+
+        actual.gpxSlopeColorsVisible shouldBe false
+    }
+
+    @Test
     fun `Given stored theme mode - When toUserPreferences - Then the theme mode is returned`() {
         testCases().forEach { testCase ->
             val preferences = if (testCase.input != null) {

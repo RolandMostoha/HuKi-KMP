@@ -36,9 +36,12 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun GpxControlMenu(
     isRouteVisible: Boolean,
     isAllDistancesVisible: Boolean,
+    isSlopeColorsAvailable: Boolean,
+    isSlopeColorsVisible: Boolean,
     isReversible: Boolean,
     onToggleLineClicked: () -> Unit,
     onToggleDistancesClicked: () -> Unit,
+    onToggleSlopeColorsClicked: () -> Unit,
     onReverseDirectionClicked: () -> Unit,
     onOverviewClicked: () -> Unit,
     onClearClicked: () -> Unit,
@@ -133,6 +136,31 @@ fun GpxControlMenu(
                 )
             },
         )
+        if (isSlopeColorsAvailable) {
+            FloatingActionButtonMenuItem(
+                modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_TOGGLE_SLOPE_COLORS_BUTTON),
+                onClick = onToggleSlopeColorsClicked,
+                containerColor = itemContainerColor,
+                contentColor = itemContentColor,
+                icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_palette),
+                        contentDescription = null,
+                    )
+                },
+                text = {
+                    Text(
+                        text = mokoString(
+                            if (isSlopeColorsVisible) {
+                                SharedRes.strings.gpx_control_slope_colors_hide
+                            } else {
+                                SharedRes.strings.gpx_control_slope_colors_show
+                            },
+                        ),
+                    )
+                },
+            )
+        }
         if (isReversible) {
             FloatingActionButtonMenuItem(
                 modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_REVERSE_DIRECTION_BUTTON),
@@ -188,9 +216,12 @@ private fun GpxControlMenuCollapsedPreview() {
             GpxControlMenu(
                 isRouteVisible = true,
                 isAllDistancesVisible = false,
+                isSlopeColorsAvailable = true,
+                isSlopeColorsVisible = true,
                 isReversible = true,
                 onToggleLineClicked = {},
                 onToggleDistancesClicked = {},
+                onToggleSlopeColorsClicked = {},
                 onReverseDirectionClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},
@@ -207,9 +238,12 @@ private fun GpxControlMenuExpandedPreview() {
             GpxControlMenu(
                 isRouteVisible = true,
                 isAllDistancesVisible = true,
+                isSlopeColorsAvailable = true,
+                isSlopeColorsVisible = true,
                 isReversible = true,
                 onToggleLineClicked = {},
                 onToggleDistancesClicked = {},
+                onToggleSlopeColorsClicked = {},
                 onReverseDirectionClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},

@@ -19,4 +19,6 @@ interface SettingsRepository {
 
     suspend fun setMapLabelScale(mapLabelScale: MapLabelScale)
     suspend fun setGpxDistancesVisible(visible: Boolean)
+
+    suspend fun setGpxSlopeColorsVisible(visible: Boolean)
 }

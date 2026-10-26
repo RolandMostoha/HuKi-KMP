@@ -10,6 +10,7 @@ data class SettingsUiState(
     val mapLabelScale: MapLabelScale = UserPreferences.DEFAULTS.mapLabelScale,
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
     val gpxDistancesVisible: Boolean = UserPreferences.DEFAULTS.gpxDistancesVisible,
+    val gpxSlopeColorsVisible: Boolean = UserPreferences.DEFAULTS.gpxSlopeColorsVisible,
 ) {
     companion object {
         val Default = SettingsUiState()

@@ -326,6 +326,9 @@ private fun MainContent(
                 onGpxToggleDistancesClicked = {
                     onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
                 },
+                onGpxToggleSlopeColorsClicked = {
+                    onEvent(MainUiEvents.GpxSlopeColorsToggled)
+                },
                 onGpxReverseDirectionClicked = {
                     onEvent(MainUiEvents.GpxDirectionReversed)
                 },

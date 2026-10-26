@@ -57,6 +57,15 @@ appId: ${APP_ID}
     checked: true
 - tapOn:
     id: SETTINGS_GPX_DISTANCES_TOGGLE
+- scrollUntilVisible:
+    element:
+      id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
+- assertVisible: "Slope colors"
+- assertVisible:
+    id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
+    checked: true
+- tapOn:
+    id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
 
 # Back navigation returns to the menu, then to the map
 - tapOn:
@@ -104,4 +113,15 @@ appId: ${APP_ID}
     id: SETTINGS_GPX_DISTANCES_TOGGLE
 - assertVisible:
     id: SETTINGS_GPX_DISTANCES_TOGGLE
+    checked: true
+- scrollUntilVisible:
+    element:
+      id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
+- assertVisible:
+    id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
+    checked: false
+- tapOn:
+    id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
+- assertVisible:
+    id: SETTINGS_GPX_SLOPE_COLORS_TOGGLE
     checked: true

@@ -163,6 +163,13 @@ private fun SettingsContent(
                     testTag = TestTags.SETTINGS_GPX_DISTANCES_TOGGLE,
                     onCheckedChange = { onEvent(SettingsUiEvents.GpxDistancesToggled(it)) },
                 )
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_gpx_slope_colors_title),
+                    description = mokoString(SharedRes.strings.settings_gpx_slope_colors_description),
+                    checked = uiState.gpxSlopeColorsVisible,
+                    testTag = TestTags.SETTINGS_GPX_SLOPE_COLORS_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.GpxSlopeColorsToggled(it)) },
+                )
             }
         }
     }
