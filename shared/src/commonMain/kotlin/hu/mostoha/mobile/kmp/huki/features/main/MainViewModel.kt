@@ -93,6 +93,7 @@ import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.nearestIndexTo
+import hu.mostoha.mobile.kmp.huki.util.reversed
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -232,6 +233,7 @@ class MainViewModel(
             is MainUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
             MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
             MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
+            MainUiEvents.GpxDirectionReversed -> reverseGpxDirection()
             MainUiEvents.GpxOverviewClicked -> showGpxOverview()
             is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
             MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
@@ -954,6 +956,19 @@ class MainViewModel(
         selectedWaypoint.value = null
         _uiState.updateMapUiState {
             it.copy(allDistancesVisible = it.allDistancesVisible.not())
+        }
+    }
+
+    private fun reverseGpxDirection() {
+        val gpxDetails = _uiState.value.mapUiState.gpxDetails?.takeIf { it.isReversible } ?: return
+        analyticsService.logEvent(AnalyticsEvent.GpxDirectionReversed)
+        selectedWaypoint.value = null
+        val reversed = gpxDetails.reversed()
+        _uiState.update { uiState ->
+            uiState.copy(
+                mapUiState = uiState.mapUiState.copy(gpxDetails = reversed),
+                sheet = if (uiState.sheet is Sheet.Gpx) Sheet.Gpx(reversed) else uiState.sheet,
+            )
         }
     }
 

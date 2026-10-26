@@ -36,8 +36,10 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 fun GpxControlMenu(
     isRouteVisible: Boolean,
     isAllDistancesVisible: Boolean,
+    isReversible: Boolean,
     onToggleLineClicked: () -> Unit,
     onToggleDistancesClicked: () -> Unit,
+    onReverseDirectionClicked: () -> Unit,
     onOverviewClicked: () -> Unit,
     onClearClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -131,6 +133,21 @@ fun GpxControlMenu(
                 )
             },
         )
+        if (isReversible) {
+            FloatingActionButtonMenuItem(
+                modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_REVERSE_DIRECTION_BUTTON),
+                onClick = onReverseDirectionClicked,
+                containerColor = itemContainerColor,
+                contentColor = itemContentColor,
+                icon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_swap_horiz),
+                        contentDescription = null,
+                    )
+                },
+                text = { Text(text = mokoString(SharedRes.strings.gpx_control_direction_reverse)) },
+            )
+        }
         FloatingActionButtonMenuItem(
             modifier = Modifier.testTag(TestTags.MAIN_FAB_GPX_OVERVIEW_BUTTON),
             onClick = {
@@ -171,8 +188,10 @@ private fun GpxControlMenuCollapsedPreview() {
             GpxControlMenu(
                 isRouteVisible = true,
                 isAllDistancesVisible = false,
+                isReversible = true,
                 onToggleLineClicked = {},
                 onToggleDistancesClicked = {},
+                onReverseDirectionClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},
             )
@@ -188,8 +207,10 @@ private fun GpxControlMenuExpandedPreview() {
             GpxControlMenu(
                 isRouteVisible = true,
                 isAllDistancesVisible = true,
+                isReversible = true,
                 onToggleLineClicked = {},
                 onToggleDistancesClicked = {},
+                onReverseDirectionClicked = {},
                 onOverviewClicked = {},
                 onClearClicked = {},
                 initiallyExpanded = true,

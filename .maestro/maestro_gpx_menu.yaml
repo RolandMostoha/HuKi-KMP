@@ -1,7 +1,7 @@
 appId: ${APP_ID}
 ---
 # GPX Control Menu: reveal the control FAB, open the menu, and exercise its
-# actions: toggle route line visibility, show/hide distances, overview, and clear.
+# actions: toggle route line visibility, show/hide distances, reverse direction, overview, and clear.
 # clearState is false so the uploaded GPX fixtures survive on iOS (they live in the app's
 # Documents container, which clearState would wipe); the in-memory UI state still resets on
 # cold launch, so determinism is preserved on both platforms.
@@ -15,6 +15,13 @@ appId: ${APP_ID}
     latitude: 47.6175
     longitude: 18.9086
 - runFlow: subflows/maestro_flow_import_gpx.yaml
+
+# Reversing from GPX Details keeps the sheet open on the same GPX
+- tapOn:
+    id: GPX_DETAILS_REVERSE_DIRECTION_BUTTON
+- assertVisible:
+    id: GPX_DETAILS_TITLE
+- assertVisible: "gpx_test_with_comments.gpx"
 
 # Dismiss the GPX Details sheet (without closing the GPX) to reveal the control FAB.
 # Tapping Start Route deterministically hides the sheet on both platforms, which avoids
@@ -33,6 +40,8 @@ appId: ${APP_ID}
     id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
+- assertVisible:
+    id: MAIN_FAB_GPX_REVERSE_DIRECTION_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_OVERVIEW_BUTTON
 - assertVisible:
@@ -93,6 +102,15 @@ appId: ${APP_ID}
     visible:
       id: MAP_DISTANCE_INFO_WINDOW
     timeout: 5000
+
+# Reverse the direction back -> the GPX stays open with its distance windows
+- tapOn:
+    id: MAIN_FAB_GPX_REVERSE_DIRECTION_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAP_DISTANCE_INFO_WINDOW
+    timeout: 5000
+- assertVisible: ".*End.*"
 
 # Clear removes the GPX entirely -> the control FAB disappears and the SearchBar returns
 - tapOn:

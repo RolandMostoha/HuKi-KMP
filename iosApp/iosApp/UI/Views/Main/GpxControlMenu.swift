@@ -5,8 +5,10 @@ struct GpxControlMenu: View {
     let strings: Strings
     var isRouteVisible: Bool = true
     var isAllDistancesVisible: Bool = false
+    var isReversible: Bool = true
     var onToggleLine: () -> Void = {}
     var onToggleDistances: () -> Void = {}
+    var onReverseDirection: () -> Void = {}
     var onOverview: () -> Void = {}
     var onClear: () -> Void = {}
 
@@ -97,6 +99,15 @@ struct GpxControlMenu: View {
                 action: onToggleDistances
             )
             .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON)
+            if isReversible {
+                menuRow(
+                    icon: "arrow.left.arrow.right",
+                    title: strings.get(id: SharedRes.strings().gpx_control_direction_reverse),
+                    description: strings.get(id: SharedRes.strings().gpx_control_direction_title),
+                    action: onReverseDirection
+                )
+                .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_REVERSE_DIRECTION_BUTTON)
+            }
             menuRow(
                 icon: "rectangle.expand.diagonal",
                 title: strings.get(id: SharedRes.strings().gpx_control_overview_desc),

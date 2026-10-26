@@ -271,9 +271,15 @@ extension MainView {
         return isLandscape ? .large : .height(Dimens.layersDetentHeight)
     }
 
+    private func gpxCollapsedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
+        .height(Dimens.gpxDetailsCollapsedHeight(isReversible: gpxDetails.isReversible))
+    }
+
     private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
         let hasEnd = gpxDetails.waypoints.contains { $0.type == .end }
-        return .height(Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isPad: isPad))
+        return .height(
+            Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isReversible: gpxDetails.isReversible, isPad: isPad)
+        )
     }
 
     @ViewBuilder
@@ -294,6 +300,9 @@ extension MainView {
                 onShareClick: {
                     viewModel.onEvent(event: MainUiEventsGpxShareClicked())
                 },
+                onReverseDirectionClick: {
+                    viewModel.onEvent(event: MainUiEventsGpxDirectionReversed())
+                },
                 onDismissRequest: {
                     viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
                 }
@@ -304,7 +313,7 @@ extension MainView {
             .presentationDetents(
                 isPad
                     ? [gpxExpandedDetent(gpxDetails)]
-                    : [.height(Dimens.gpxDetailsCollapsedDetentHeight), gpxExpandedDetent(gpxDetails)],
+                    : [gpxCollapsedDetent(gpxDetails), gpxExpandedDetent(gpxDetails)],
                 selection: $gpxDetent
             )
             .presentationDragIndicator(isPad ? .hidden : .visible)
@@ -313,7 +322,7 @@ extension MainView {
             .onChange(of: gpxDetails.fileUri, initial: true) {
                 gpxDetent = isPad
                     ? gpxExpandedDetent(gpxDetails)
-                    : .height(Dimens.gpxDetailsCollapsedDetentHeight)
+                    : gpxCollapsedDetent(gpxDetails)
             }
         } else {
             EmptyView()

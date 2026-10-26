@@ -23,7 +23,7 @@ enum Dimens {
     static let gpxContentPaddingPortrait = EdgeInsets(
         top: 120,
         leading: 60,
-        bottom: 300,
+        bottom: 362,
         trailing: 60
     )
     static let gpxContentPaddingLandscape = EdgeInsets(
@@ -138,12 +138,20 @@ enum Dimens {
     static let gpxDetailsPadExpandedDetentHeight: CGFloat = 382
     static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 442
     static let gpxDetailsJelSymbolSize: CGFloat = 20
+    static let gpxDetailsReverseButtonHeight: CGFloat = 80
+    static let gpxDetailsCollapsedReverseButtonHeight: CGFloat = 62
 
-    static func gpxDetailsExpandedHeight(hasEnd: Bool, isPad: Bool) -> CGFloat {
+    static func gpxDetailsCollapsedHeight(isReversible: Bool) -> CGFloat {
+        gpxDetailsCollapsedDetentHeight + (isReversible ? gpxDetailsCollapsedReverseButtonHeight : 0)
+    }
+
+    static func gpxDetailsExpandedHeight(hasEnd: Bool, isReversible: Bool, isPad: Bool) -> CGFloat {
+        let reverseButtonHeight = isReversible ? gpxDetailsReverseButtonHeight : 0
         if isPad {
-            return hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight
+            return (hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight)
+                + reverseButtonHeight
         }
-        return hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight
+        return (hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight) + reverseButtonHeight
     }
 
     static let placeDetailsDetentHeight: CGFloat = 215

@@ -2,10 +2,8 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 
 import org.maplibre.spatialk.units.Length
 import kotlin.time.Duration
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 data class GpxDetails(
     val layerId: String = Uuid.random().toString(),
     val fileName: String,
@@ -20,4 +18,7 @@ data class GpxDetails(
     val incline: Int,
     val decline: Int,
     val jelSymbol: JelSymbol? = null,
-)
+) {
+    val isReversible: Boolean
+        get() = locations.size >= 2
+}

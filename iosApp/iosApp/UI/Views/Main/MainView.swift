@@ -185,6 +185,10 @@ struct MainView: View {
                 .onChange(of: uiState.alert != nil) { _, newValue in
                     showAlert = newValue
                 }
+                // A sheet keeps its id across content updates (e.g. a reversed GPX), so track its latest value
+                .onChange(of: uiState.sheet) { _, newSheet in
+                    if let newSheet, newSheet.id == presentedSheet?.id { presentedSheet = newSheet }
+                }
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
                 landscapesResumeButton(uiState: uiState)
@@ -294,11 +298,15 @@ private extension MainView {
                 strings: strings,
                 isRouteVisible: uiState.mapUiState.gpxRouteVisible,
                 isAllDistancesVisible: uiState.mapUiState.allDistancesVisible,
+                isReversible: uiState.mapUiState.gpxDetails?.isReversible ?? false,
                 onToggleLine: {
                     viewModel.onEvent(event: MainUiEventsGpxRouteVisibilityToggled())
                 },
                 onToggleDistances: {
                     viewModel.onEvent(event: MainUiEventsGpxDistancesVisibilityToggled())
+                },
+                onReverseDirection: {
+                    viewModel.onEvent(event: MainUiEventsGpxDirectionReversed())
                 },
                 onOverview: {
                     viewModel.onEvent(event: MainUiEventsGpxOverviewClicked())

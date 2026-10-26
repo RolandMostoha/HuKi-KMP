@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import co.touchlab.kermit.Logger
 import com.mapbox.geojson.Point
 import com.mapbox.maps.ImageHolder
@@ -60,6 +63,7 @@ import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
+import dev.icerock.moko.resources.ImageResource
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.LandscapesUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
@@ -84,14 +88,15 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toSymbolScaleBehavior
 import hu.mostoha.mobile.kmp.huki.model.mapper.zoom
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
+import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
-import hu.mostoha.mobile.kmp.huki.util.toComposeColor
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -100,6 +105,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
+private const val DIRECTION_LAYER_SUFFIX = "_direction"
 
 @OptIn(MapboxDelicateApi::class, MapboxExperimental::class)
 @Composable
@@ -111,13 +117,13 @@ fun MapContent(
     routePlannerBottomInset: Dp? = null,
     listSheetHeight: Dp? = null,
 ) {
-    val context = LocalContext.current
     val density = LocalDensity.current
     val isLandscape by rememberUpdatedState(
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
     )
     val insetPadding = WindowInsets.safeDrawing.asPaddingValues()
     val isDarkMode = LocalIsDarkTheme.current
+    val themedContext = LocalThemedContext.current ?: LocalContext.current
     val mapViewportState = rememberMapViewportState {
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
@@ -238,9 +244,10 @@ fun MapContent(
                 )
             },
         ) {
-            val primaryColor = SharedRes.colors.primary.toComposeColor(context)
-            val primaryLightColor = SharedRes.colors.primaryLight.toComposeColor(context)
-            val mapStrokeColor = SharedRes.colors.mapStroke.toComposeColor(context)
+            val primaryColor = mokoColor(SharedRes.colors.primary)
+            val primaryLightColor = mokoColor(SharedRes.colors.primaryLight)
+            val mapStrokeColor = mokoColor(SharedRes.colors.mapStroke)
+            val accuracyRingColor = mokoColor(SharedRes.colors.accuracyRing)
 
             MapEffect(Unit) { mapView ->
                 mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
@@ -271,12 +278,12 @@ fun MapContent(
             MapEffect(isDarkMode) { mapView ->
                 mapView.location.updateSettings {
                     locationPuck = LocationPuck2D(
-                        topImage = ImageHolder.from(SharedRes.images.ic_my_location_top_image.drawableResId),
-                        bearingImage = ImageHolder.from(SharedRes.images.ic_my_location_bearing.drawableResId),
-                        shadowImage = ImageHolder.from(SharedRes.images.ic_my_location_shadow.drawableResId),
+                        topImage = themedContext.toImageHolder(SharedRes.images.ic_my_location_top_image),
+                        bearingImage = themedContext.toImageHolder(SharedRes.images.ic_my_location_bearing),
+                        shadowImage = themedContext.toImageHolder(SharedRes.images.ic_my_location_shadow),
                         scaleExpression = literal(MY_LOCATION_PUCK_SCALE).toJson(),
                     )
-                    accuracyRingColor = SharedRes.colors.accuracyRing.getColor(context)
+                    this.accuracyRingColor = accuracyRingColor.toArgb()
                     pulsingColor = primaryLightColor.toArgb()
                 }
             }
@@ -379,6 +386,11 @@ private fun GpxLayer(
             routeColor = routeColor,
             routeStrokeColor = routeStrokeColor,
         )
+        RouteDirectionLayer(
+            sourceState = geoJsonSource,
+            layerId = "${gpxDetails.layerId}$DIRECTION_LAYER_SUFFIX",
+            arrowColor = routeStrokeColor,
+        )
     }
     WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->
         val jelSymbol = MarkerIcons.waypointJelSymbol(waypoint.type, gpxDetails.jelSymbol)
@@ -407,6 +419,12 @@ private fun GpxLayer(
         }
     }
 }
+
+/**
+ * Mapbox decodes drawable ids with the MapView's context, which ignores the in-app dark theme.
+ */
+private fun Context.toImageHolder(image: ImageResource): ImageHolder =
+    ImageHolder.from(requireNotNull(ContextCompat.getDrawable(this, image.drawableResId)).toBitmap())
 
 @Preview
 @Composable

@@ -50,6 +50,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|-------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                       |
 | `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX, Place History should be migrated fine. |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                        |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                         |
+| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                            |
+| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                             |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                     |
 | `[ ]`  | App store preview video (optional)                                                                                            |
 | `[ ]`  | App store header picture/video (optional)                                                                                     |
@@ -78,10 +82,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Map
 
-| Status | Scope | Task                                                                              |
-|--------|-------|-----------------------------------------------------------------------------------|
-| `[G]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
-| `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking trails          |
+| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                                                        |
+|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Map    | After state restoration / app kill -> restore last camera state + last opened GPX                                                                                                                                                                                                                                                                           |
+| `[ ]`  | Map    | Is there any optimization strategy for raster layers? HuKi-hiking trails                                                                                                                                                                                                                                                                                    |
+| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Pilisszentiván") stay readable. ![img_6.png](img_6.png) Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Landscape orientation
 
@@ -101,12 +106,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
 | `[G]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
-
-### FEATURE: Layers
-
-| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                             |
-|--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Szilvási-kő") stay readable. Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Search
 
@@ -149,9 +148,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
 | `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
 | `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.         |
-| `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu. Add an option to toggle in GpxDetails as well.                      |
+| `[x]`  | GPX   | Display direction arrows. Add an option to toggle (reverse) direction in GpxMenu. Add the option to GpxDetails as well.                     |
 | `[R]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.               |
 | `[R]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
+| `[G]`  | GPX   | Add a dedicated button to show/hide GPX without entering to GPX Menu                                                                        |
 | `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                            |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
 

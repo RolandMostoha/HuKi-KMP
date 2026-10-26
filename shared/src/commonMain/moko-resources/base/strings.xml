@@ -109,6 +109,8 @@
     <string name="gpx_control_distances_title">Waypoint distances</string>
     <string name="gpx_control_distances_show">Show distances</string>
     <string name="gpx_control_distances_hide">Hide distances</string>
+    <string name="gpx_control_direction_title">Direction of travel</string>
+    <string name="gpx_control_direction_reverse">Reverse direction</string>
     <string name="gpx_control_overview_title">Zoom to fit the route</string>
     <string name="gpx_control_overview_desc">Zoom to route</string>
     <string name="gpx_control_clear_title">Close GPX</string>

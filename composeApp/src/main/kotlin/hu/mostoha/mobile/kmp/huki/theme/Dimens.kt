@@ -72,9 +72,9 @@ object Dimens {
     val LandscapesDestinationSheetCameraBottomOffset = 44.dp
 
     val GpxContentPaddingPortrait = PaddingValues(
-        top = 150.dp,
+        top = 200.dp,
         start = 60.dp,
-        bottom = 340.dp,
+        bottom = 400.dp,
         end = 60.dp,
     )
     val GpxContentPaddingLandscape = PaddingValues(

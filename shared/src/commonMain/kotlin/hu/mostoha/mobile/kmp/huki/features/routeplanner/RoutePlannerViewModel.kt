@@ -49,10 +49,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class RoutePlannerViewModel(
     private val locationMonitoringService: LocationMonitoringService,
     private val routePlannerRepository: RoutePlannerRepository,

@@ -1036,6 +1036,57 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given imported GPX - When GpxDirectionReversed - Then map and sheet show the reversed route`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+
+            val actual = viewModel.uiState.value
+            actual.mapUiState.gpxDetails?.locations shouldBe TEST_GPX_DETAILS.locations.reversed()
+            actual.sheet shouldBe Sheet.Gpx(actual.mapUiState.gpxDetails!!)
+            analyticsService.loggedEvents.last() shouldBe AnalyticsEvent.GpxDirectionReversed
+        }
+    }
+
+    @Test
+    fun `Given imported GPX - When GpxDirectionReversed twice - Then the original route returns`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+
+            viewModel.uiState.value.mapUiState.gpxDetails?.locations shouldBe TEST_GPX_DETAILS.locations
+        }
+    }
+
+    @Test
+    fun `Given waypoints only GPX - When GpxDirectionReversed - Then GPX is unchanged`() {
+        runTest {
+            val gpxDetails = TEST_GPX_DETAILS.copy(locations = emptyList())
+            everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+
+            viewModel.uiState.value.mapUiState.gpxDetails shouldBe gpxDetails
+            analyticsService.loggedEvents.contains(AnalyticsEvent.GpxDirectionReversed) shouldBe false
+        }
+    }
+
+    @Test
     fun `Given GPX distances setting is off - When GPX is imported - Then distance windows are hidden`() {
         runTest {
             every { settingsRepository.settings } returns

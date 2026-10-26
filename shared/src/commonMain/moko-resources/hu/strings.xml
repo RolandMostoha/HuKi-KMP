@@ -109,6 +109,8 @@
     <string name="gpx_control_distances_title">Állomások távolságai</string>
     <string name="gpx_control_distances_show">Távolság megjelenítése</string>
     <string name="gpx_control_distances_hide">Távolság elrejtése</string>
+    <string name="gpx_control_direction_title">Haladási irány</string>
+    <string name="gpx_control_direction_reverse">Irány megfordítása</string>
     <string name="gpx_control_overview_title">Teljes útvonal megtekintése</string>
     <string name="gpx_control_overview_desc">Zoom az útvonalhoz</string>
     <string name="gpx_control_clear_title">GPX Bezárása</string>

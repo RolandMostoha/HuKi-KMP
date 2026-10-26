@@ -8,6 +8,7 @@ struct GpxDetailsSheetView: View {
     let onNavigateToStart: () -> Void
     let onNavigateToEnd: () -> Void
     let onShareClick: () -> Void
+    let onReverseDirectionClick: () -> Void
     let onDismissRequest: () -> Void
 
     private var hasEndWaypoint: Bool {
@@ -26,6 +27,14 @@ struct GpxDetailsSheetView: View {
                         action: onStartClick
                     )
                     .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_START_BUTTON)
+                    if gpxDetails.isReversible {
+                        SecondaryButton(
+                            icon: .system("arrow.left.arrow.right"),
+                            title: strings.get(id: SharedRes.strings().gpx_control_direction_reverse),
+                            action: onReverseDirectionClick
+                        )
+                        .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_REVERSE_DIRECTION_BUTTON)
+                    }
                     navigationButtons
                     SecondaryButton(
                         icon: .system("square.and.arrow.up"),

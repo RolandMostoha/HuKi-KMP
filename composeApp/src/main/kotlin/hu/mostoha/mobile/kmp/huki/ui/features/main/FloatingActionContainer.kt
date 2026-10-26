@@ -64,6 +64,7 @@ fun FloatingActionContainer(
     onZoomOutClicked: () -> Unit,
     onGpxToggleLineClicked: () -> Unit,
     onGpxToggleDistancesClicked: () -> Unit,
+    onGpxReverseDirectionClicked: () -> Unit,
     onGpxOverviewClicked: () -> Unit,
     onGpxClearClicked: () -> Unit,
     onOktResumeClicked: () -> Unit,
@@ -90,8 +91,10 @@ fun FloatingActionContainer(
             GpxControlMenu(
                 isRouteVisible = mainUiState.mapUiState.gpxRouteVisible,
                 isAllDistancesVisible = mainUiState.mapUiState.allDistancesVisible,
+                isReversible = mainUiState.mapUiState.gpxDetails?.isReversible == true,
                 onToggleLineClicked = onGpxToggleLineClicked,
                 onToggleDistancesClicked = onGpxToggleDistancesClicked,
+                onReverseDirectionClicked = onGpxReverseDirectionClicked,
                 onOverviewClicked = onGpxOverviewClicked,
                 onClearClicked = onGpxClearClicked,
             )
@@ -375,6 +378,7 @@ private fun MainContentPreview() {
             onZoomOutClicked = {},
             onGpxToggleLineClicked = {},
             onGpxToggleDistancesClicked = {},
+            onGpxReverseDirectionClicked = {},
             onGpxOverviewClicked = {},
             onGpxClearClicked = {},
             onOktResumeClicked = {},

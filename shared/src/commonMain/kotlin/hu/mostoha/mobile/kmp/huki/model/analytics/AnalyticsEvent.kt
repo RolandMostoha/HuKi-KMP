@@ -122,6 +122,10 @@ sealed interface AnalyticsEvent {
         override val name = "gpx_distances_toggled"
     }
 
+    data object GpxDirectionReversed : AnalyticsEvent {
+        override val name = "gpx_direction_reversed"
+    }
+
     data object GpxOverviewClicked : AnalyticsEvent {
         override val name = "gpx_overview_clicked"
     }

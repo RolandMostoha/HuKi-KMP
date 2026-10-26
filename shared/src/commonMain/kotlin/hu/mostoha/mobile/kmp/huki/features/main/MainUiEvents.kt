@@ -114,6 +114,7 @@ sealed interface MainUiEvents {
     data class RoutePlanGpxSaved(val uri: String) : MainUiEvents
     data object GpxRouteVisibilityToggled : MainUiEvents
     data object GpxDistancesVisibilityToggled : MainUiEvents
+    data object GpxDirectionReversed : MainUiEvents
     data object GpxOverviewClicked : MainUiEvents
     data class GpxWaypointClicked(val waypoint: GpxWaypoint) : MainUiEvents
     data object DistanceInfoWindowDismissed : MainUiEvents

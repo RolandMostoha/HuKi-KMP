@@ -52,6 +52,9 @@ appId: ${APP_ID}
     element:
       id: SETTINGS_GPX_DISTANCES_TOGGLE
 - assertVisible: "Waypoint distances"
+- assertVisible:
+    id: SETTINGS_GPX_DISTANCES_TOGGLE
+    checked: true
 - tapOn:
     id: SETTINGS_GPX_DISTANCES_TOGGLE
 
@@ -87,3 +90,18 @@ appId: ${APP_ID}
 - assertVisible:
     id: SETTINGS_THEME_PICKER
 - assertVisible: "Dark"
+
+# The GPX distances choice survives the relaunch too
+- scrollUntilVisible:
+    element:
+      id: SETTINGS_GPX_DISTANCES_TOGGLE
+- assertVisible:
+    id: SETTINGS_GPX_DISTANCES_TOGGLE
+    checked: false
+
+# GPX flows keep app data between runs, so restore the default for them
+- tapOn:
+    id: SETTINGS_GPX_DISTANCES_TOGGLE
+- assertVisible:
+    id: SETTINGS_GPX_DISTANCES_TOGGLE
+    checked: true

@@ -326,6 +326,9 @@ private fun MainContent(
                 onGpxToggleDistancesClicked = {
                     onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
                 },
+                onGpxReverseDirectionClicked = {
+                    onEvent(MainUiEvents.GpxDirectionReversed)
+                },
                 onGpxOverviewClicked = {
                     onEvent(MainUiEvents.GpxOverviewClicked)
                 },
@@ -525,6 +528,9 @@ private fun MainStandardBottomSheet(
                 },
                 onShareClick = {
                     onEvent(MainUiEvents.GpxShareClicked)
+                },
+                onReverseDirectionClick = {
+                    onEvent(MainUiEvents.GpxDirectionReversed)
                 },
                 onCloseClick = {
                     coroutineScope.launch {

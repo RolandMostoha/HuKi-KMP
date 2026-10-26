@@ -26,8 +26,11 @@ import dev.icerock.moko.resources.desc.StringDesc
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.theme.DarkMapInfoWindow
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.LightMapInfoWindow
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -45,7 +48,7 @@ fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifi
             tailWidth = Dimens.InfoWindowTailWidth,
             tailHeight = Dimens.InfoWindowTailHeight,
         ),
-        color = MaterialTheme.colorScheme.surface,
+        color = if (LocalIsDarkTheme.current) DarkMapInfoWindow else LightMapInfoWindow,
         shadowElevation = Dimens.Small,
     ) {
         Column(
