@@ -22,6 +22,11 @@ object MapConstants {
         west = 16.114,
     )
 
+    /**
+     * Outdoors style layer the hiking raster is drawn below, keeping road, peak and place names above the trails.
+     */
+    const val OUTDOORS_HIKING_LAYER_BELOW_ID = "road-label"
+
     const val NEARBY_DESTINATIONS_MIN_ZOOM = 6.0
 
     const val PLACE_DEFAULT_CAMERA_ZOOM = 16.0

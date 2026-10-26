@@ -80,7 +80,7 @@ struct MapView: View {
                                              onEvent: onLandscapesEvent)
                     }
                     if uiState.mapUiState.hikingLayerVisible {
-                        HikingTrailsMapContent()
+                        HikingTrailsMapContent(baseLayer: uiState.mapUiState.baseLayer)
                     }
                     if let okt = uiState.mapUiState.okt {
                         OktMapContent(

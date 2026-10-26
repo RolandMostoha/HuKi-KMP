@@ -49,13 +49,8 @@ import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
-import com.mapbox.maps.extension.compose.style.DoubleValue
-import com.mapbox.maps.extension.compose.style.LongValue
-import com.mapbox.maps.extension.compose.style.StringListValue
-import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
-import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
@@ -71,7 +66,6 @@ import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
-import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
 import hu.mostoha.mobile.kmp.huki.model.mapper.followLocation
@@ -177,7 +171,13 @@ fun MapContent(
             modifier = Modifier
                 .testTag(TestTags.MAP_MAPBOX)
                 .fillMaxSize(),
-            style = { MapBaseStyle(baseLayer = mapUiState.baseLayer, isDarkMode = isDarkMode) },
+            style = {
+                MapBaseStyle(
+                    baseLayer = mapUiState.baseLayer,
+                    isDarkMode = isDarkMode,
+                    isHikingLayerVisible = mapUiState.hikingLayerVisible,
+                )
+            },
             mapViewportState = mapViewportState,
             mapState = mapState,
             onMapClickListener = OnMapClickListener { dismissInfoWindows(mapUiState, onEvent) },
@@ -280,19 +280,6 @@ fun MapContent(
             BaseLabelsVisibilityEffect(isHidden = mapUiState.isBaseLabelsHidden)
             mapUiState.landscapes?.let { landscapes ->
                 LandscapesLayer(landscapes = landscapes, onEvent = onEvent)
-            }
-            if (mapUiState.hikingLayerVisible) {
-                RasterLayer(
-                    layerId = OverlayLayer.TURISTAUTAK.layerId,
-                    sourceState = rememberRasterSourceState {
-                        tileSize = LongValue(OverlayLayer.TURISTAUTAK.tileSize)
-                        tiles = StringListValue(OverlayLayer.TURISTAUTAK.tiles)
-                        minZoom = LongValue(OverlayLayer.TURISTAUTAK.minZoom)
-                        maxZoom = LongValue(OverlayLayer.TURISTAUTAK.maxZoom)
-                    },
-                ) {
-                    rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)
-                }
             }
             mapUiState.okt?.let { okt ->
                 OktLayer(okt = okt, onEvent = onEvent)
