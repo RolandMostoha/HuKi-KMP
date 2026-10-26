@@ -9,6 +9,7 @@ import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
+import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
@@ -149,6 +150,36 @@ class SettingsViewModelTest {
 
                 actual shouldBe SettingsUiEffects.NavigateBack
             }
+        }
+    }
+
+    @Test
+    fun `Given stored map label scale - When observed - Then uiState reflects the scale`() {
+        runTest {
+            val labelScale = MapLabelScale(followSystem = false, factor = 1.6f)
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(mapLabelScale = labelScale))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapLabelScale shouldBe labelScale
+        }
+    }
+
+    @Test
+    fun `Given default state - When MapLabelScaleClicked event - Then NavigateToMapLabelScale effect is emitted`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(SettingsUiEvents.MapLabelScaleClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe SettingsUiEffects.NavigateToMapLabelScale
+            }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsMapLabelScaleClicked)
         }
     }
 

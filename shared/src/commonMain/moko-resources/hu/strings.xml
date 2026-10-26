@@ -184,6 +184,9 @@
     <string name="settings_zoom_controls_description">Mindig mutasd a + / − gombokat térképen</string>
     <string name="settings_map_rotation_title">Térkép forgatása</string>
     <string name="settings_map_rotation_description">Két ujjas térkép forgatás engedélyezése</string>
+    <string name="map_label_scale_title">Térkép feliratok nagyítása</string>
+    <string name="map_label_scale_percent">%d%%</string>
+    <string name="map_label_scale_info">A beállításnál figyeljünk rá, hogy tényleg csak a szükséges szintig nagyítsuk. Túlzott nagyítás esetén a térkép elrejthet feliratokat, ha úgy érzékeli, hogy azok egymásra csúsznának.</string>
 
     <string name="gpx_collection_title">GPX gyűjtemény</string>
     <string name="gpx_collection_subtitle_pattern">%d útvonal</string>

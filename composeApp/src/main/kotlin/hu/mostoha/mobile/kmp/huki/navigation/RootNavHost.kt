@@ -36,6 +36,7 @@ private object Routes {
     const val LOCATION_IQ = "location_iq"
     const val EXTRA_OPEN_ROUTE_PLANNER_KEY = "extra_open_route_planner"
     const val EXTRA_OPEN_DISCOVER_KEY = "extra_open_discover"
+    const val EXTRA_OPEN_MAP_LABEL_SCALE_KEY = "extra_open_map_label_scale"
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
     const val EXTRA_PLACE_OSM_TYPE_KEY = "extra_place_osm_type"
     const val EXTRA_PLACE_OSM_ID_KEY = "extra_place_osm_id"
@@ -99,6 +100,9 @@ fun RootNavHost() {
             val openDiscover by entry.savedStateHandle
                 .getStateFlow(Routes.EXTRA_OPEN_DISCOVER_KEY, false)
                 .collectAsStateWithLifecycle()
+            val openMapLabelScale by entry.savedStateHandle
+                .getStateFlow(Routes.EXTRA_OPEN_MAP_LABEL_SCALE_KEY, false)
+                .collectAsStateWithLifecycle()
             MainScreen(
                 onMenuClicked = { navController.navigate(Routes.MENU) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
@@ -123,6 +127,10 @@ fun RootNavHost() {
                 onOpenRoutePlannerConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = false },
                 openDiscover = openDiscover,
                 onOpenDiscoverConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_DISCOVER_KEY] = false },
+                openMapLabelScale = openMapLabelScale,
+                onOpenMapLabelScaleConsumed = {
+                    entry.savedStateHandle[Routes.EXTRA_OPEN_MAP_LABEL_SCALE_KEY] = false
+                },
             )
         }
         composable(Routes.MENU) {
@@ -147,6 +155,11 @@ fun RootNavHost() {
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
+                onMapLabelScaleClicked = {
+                    val mainEntry = navController.getBackStackEntry<Main>()
+                    mainEntry.savedStateHandle[Routes.EXTRA_OPEN_MAP_LABEL_SCALE_KEY] = true
+                    navController.popBackStack<Main>(inclusive = false)
+                },
             )
         }
         composable(Routes.DESTINATIONS) {

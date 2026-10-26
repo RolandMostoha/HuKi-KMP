@@ -47,6 +47,11 @@ sealed class Sheet {
      * Landscapes Standard Sheet is shown with the landscapes and their destinations.
      */
     data object Landscapes : Sheet()
+
+    /**
+     * Map Label Scale Modal Sheet is shown above the live map.
+     */
+    data object MapLabelScale : Sheet()
 }
 
 fun Sheet.isStandard(): Boolean =
@@ -57,4 +62,8 @@ fun Sheet.isStandard(): Boolean =
         this is Sheet.Okt ||
         this is Sheet.Landscapes
 
-fun Sheet.isModal(): Boolean = this is Sheet.Layers || this is Sheet.WhatsNew || this is Sheet.Discover
+fun Sheet.isModal(): Boolean =
+    this is Sheet.Layers ||
+        this is Sheet.WhatsNew ||
+        this is Sheet.Discover ||
+        this is Sheet.MapLabelScale

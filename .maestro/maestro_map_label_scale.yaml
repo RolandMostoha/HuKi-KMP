@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Settings, the row shows the size derived from the default phone text size
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- assertVisible:
+    id: SETTINGS_MAP_LABEL_SCALE_ROW
+- assertVisible: "100%"
+
+# The row returns to the map and opens the sheet above it
+- tapOn:
+    id: SETTINGS_MAP_LABEL_SCALE_ROW
+- assertVisible:
+    id: MAP_LABEL_SCALE_SHEET
+
+# Drag the slider to the maximum
+- swipe:
+    from:
+      id: MAP_LABEL_SCALE_SLIDER
+    direction: RIGHT
+
+# Closing keeps the user on the map
+- tapOn:
+    id: MAP_LABEL_SCALE_CLOSE_BUTTON
+- assertNotVisible:
+    id: MAP_LABEL_SCALE_SHEET
+- assertVisible:
+    id: MAP_MAPBOX
+
+# The Settings row shows the new size
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- assertVisible: "200%"
+
+# The custom size survives a relaunch
+- launchApp:
+    arguments:
+      skipWhatsNew: true
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_SETTINGS
+- assertVisible: "200%"

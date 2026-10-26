@@ -92,6 +92,13 @@ sealed interface MainUiEvents {
     data object HikingLayerSelected : MainUiEvents
 
     /**
+     * Map label scale events
+     */
+    data object MapLabelScaleClicked : MainUiEvents
+    data class MapLabelScaleChanged(val factor: Float) : MainUiEvents
+    data class MapLabelScaleCommitted(val factor: Float) : MainUiEvents
+
+    /**
      * GPX events
      */
     data object GpxLayerSelected : MainUiEvents

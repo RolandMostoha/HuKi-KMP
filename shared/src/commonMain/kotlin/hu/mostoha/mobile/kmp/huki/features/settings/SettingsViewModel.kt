@@ -45,6 +45,7 @@ class SettingsViewModel(
             SettingsUiEvents.BackClicked -> sendEffect(SettingsUiEffects.NavigateBack)
             is SettingsUiEvents.MapZoomControlsToggled -> toggleMapZoomControls(event.visible)
             is SettingsUiEvents.MapRotationToggled -> toggleMapRotation(event.enabled)
+            SettingsUiEvents.MapLabelScaleClicked -> openMapLabelScale()
             is SettingsUiEvents.ThemeModeSelected -> selectThemeMode(event.themeMode)
         }
     }
@@ -63,6 +64,11 @@ class SettingsViewModel(
         }
     }
 
+    private fun openMapLabelScale() {
+        analyticsService.logEvent(AnalyticsEvent.SettingsMapLabelScaleClicked)
+        sendEffect(SettingsUiEffects.NavigateToMapLabelScale)
+    }
+
     private fun selectThemeMode(themeMode: ThemeMode) {
         analyticsService.logEvent(AnalyticsEvent.SettingsThemeSelected(themeMode.toTheme()))
         viewModelScope.launch {
@@ -77,6 +83,7 @@ class SettingsViewModel(
                     it.copy(
                         mapZoomControlsVisible = settings.mapZoomControlsVisible,
                         mapRotationEnabled = settings.mapRotationEnabled,
+                        mapLabelScale = settings.mapLabelScale,
                         themeMode = settings.themeMode,
                     )
                 }

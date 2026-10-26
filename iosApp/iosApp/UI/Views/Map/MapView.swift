@@ -80,7 +80,7 @@ struct MapView: View {
                                              onEvent: onLandscapesEvent)
                     }
                     if uiState.mapUiState.hikingLayerVisible {
-                        HikingTrailsMapContent()
+                        HikingTrailsMapContent(baseLayer: uiState.mapUiState.baseLayer)
                     }
                     if let okt = uiState.mapUiState.okt {
                         OktMapContent(
@@ -218,6 +218,7 @@ struct MapView: View {
                         cameraCenter = state.center
                     }
                 }
+                .mapLabelScale(uiState.mapUiState.labelScale, map: proxy.map)
                 .task(id: [isBaseLabelsHidden, proxy.map != nil]) {
                     await syncBaseLabelsVisibility(proxy: proxy)
                 }

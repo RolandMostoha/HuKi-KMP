@@ -338,4 +338,12 @@ sealed interface AnalyticsEvent {
     data class SettingsThemeSelected(val theme: Theme) : AnalyticsEvent {
         override val name = "settings_theme_selected_${theme.value}"
     }
+
+    data object SettingsMapLabelScaleClicked : AnalyticsEvent {
+        override val name = "settings_map_label_scale_clicked"
+    }
+
+    data class MapLabelScaleSelected(val percent: Int) : AnalyticsEvent {
+        override val name = "map_label_scale_$percent"
+    }
 }

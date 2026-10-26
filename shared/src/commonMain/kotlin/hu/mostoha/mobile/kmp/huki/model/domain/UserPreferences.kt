@@ -5,6 +5,7 @@ data class UserPreferences(
     val mapRotationEnabled: Boolean,
     val themeMode: ThemeMode,
     val baseLayer: BaseLayer,
+    val mapLabelScale: MapLabelScale,
 ) {
     companion object {
         val DEFAULTS = UserPreferences(
@@ -12,6 +13,7 @@ data class UserPreferences(
             mapRotationEnabled = true,
             themeMode = ThemeMode.SYSTEM,
             baseLayer = BaseLayer.OUTDOORS,
+            mapLabelScale = MapLabelScale.DEFAULT,
         )
     }
 }

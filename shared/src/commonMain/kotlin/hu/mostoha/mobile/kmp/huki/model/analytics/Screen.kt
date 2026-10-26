@@ -19,4 +19,5 @@ enum class Screen(val value: String) {
     DISCOVER("discover"),
     OKT("okt"),
     LANDSCAPES("landscapes"),
+    MAP_LABEL_SCALE("map_label_scale"),
 }

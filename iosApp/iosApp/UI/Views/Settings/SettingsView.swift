@@ -6,9 +6,12 @@ enum SettingsRoute: Hashable {
 }
 
 struct SettingsView: View {
+    let onMapLabelScaleClicked: () -> Void
+
     @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getSettingsViewModel)
     private var viewModel: SettingsViewModel { holder.viewModel }
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let strings = Strings()
 
@@ -29,6 +32,24 @@ struct SettingsView: View {
                     }
                 }
                 Section(strings.get(id: SharedRes.strings().settings_section_map)) {
+                    Button(
+                        action: { viewModel.onEvent(event: SettingsUiEventsMapLabelScaleClicked.shared) },
+                        label: {
+                            HStack {
+                                LabeledContent(
+                                    strings.get(id: SharedRes.strings().map_label_scale_title),
+                                    value: mapLabelScaleValue(uiState.mapLabelScale)
+                                )
+                                Image(systemName: "chevron.forward")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                                    .accessibilityHidden(true)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                    )
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(TestTags.shared.SETTINGS_MAP_LABEL_SCALE_ROW)
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(strings.get(id: SharedRes.strings().settings_zoom_controls_title))
@@ -105,10 +126,17 @@ struct SettingsView: View {
         }
     }
 
+    private func mapLabelScaleValue(_ labelScale: MapLabelScale) -> String {
+        let percent = labelScale.effectivePercent(systemScale: dynamicTypeSize.mapboxSymbolScale)
+        return strings.get(id: SharedRes.strings().map_label_scale_percent, args: [percent])
+    }
+
     private func handleEffect(_ effect: SettingsUiEffects) {
         switch onEnum(of: effect) {
         case .navigateBack:
             dismiss()
+        case .navigateToMapLabelScale:
+            onMapLabelScaleClicked()
         }
     }
 }

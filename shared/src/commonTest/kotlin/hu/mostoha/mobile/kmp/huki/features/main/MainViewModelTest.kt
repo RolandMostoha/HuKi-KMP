@@ -39,6 +39,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
@@ -848,6 +849,61 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.rotationEnabled shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given stored map label scale - When view model created - Then uiState has the stored scale`() {
+        runTest {
+            val labelScale = MapLabelScale(followSystem = false, factor = 1.5f)
+            every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(mapLabelScale = labelScale))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.labelScale shouldBe labelScale
+        }
+    }
+
+    @Test
+    fun `When MapLabelScaleClicked - Then map label scale sheet is shown`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLabelScaleClicked)
+
+            viewModel.uiState.value.sheet shouldBe Sheet.MapLabelScale
+        }
+    }
+
+    @Test
+    fun `When MapLabelScaleChanged - Then uiState has the preview factor and nothing is saved`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLabelScaleChanged(factor = 1.4f))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.labelScale shouldBe MapLabelScale(followSystem = false, factor = 1.4f)
+            verifySuspend(VerifyMode.not) { settingsRepository.setMapLabelScale(any()) }
+        }
+    }
+
+    @Test
+    fun `When MapLabelScaleCommitted - Then fixed scale is saved and logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLabelScaleCommitted(factor = 1.5f))
+            advanceUntilIdle()
+
+            val expected = MapLabelScale(followSystem = false, factor = 1.5f)
+            viewModel.uiState.value.mapUiState.labelScale shouldBe expected
+            verifySuspend { settingsRepository.setMapLabelScale(expected) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MapLabelScaleSelected(percent = 150))
         }
     }
 
