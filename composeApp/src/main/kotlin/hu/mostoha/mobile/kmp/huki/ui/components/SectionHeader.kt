@@ -10,6 +10,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
@@ -23,6 +24,7 @@ fun SectionHeader(
     actionText: String? = null,
     onActionClick: (() -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
+    titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
 ) {
     Row(
         modifier = modifier
@@ -33,7 +35,7 @@ fun SectionHeader(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            style = titleStyle.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.weight(1f),
         )
         if (actionText != null && onActionClick != null) {

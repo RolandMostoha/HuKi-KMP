@@ -61,6 +61,8 @@ import hu.mostoha.mobile.kmp.huki.util.openUrl
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 import kotlinx.coroutines.launch
 
+private val SectionTitleFontSize = 19.sp
+
 private val HikeRecommendationTitleSizes = listOf(14.sp, 13.sp, 12.sp, 11.sp)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,7 +125,10 @@ fun DiscoverContent(
             modifier = Modifier.padding(top = Dimens.SectionSpacing),
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {
-            SectionHeader(title = mokoString(SharedRes.strings.destinations_section_title))
+            SectionHeader(
+                title = mokoString(SharedRes.strings.destinations_section_title),
+                titleStyle = MaterialTheme.typography.titleLarge.copy(fontSize = SectionTitleFontSize),
+            )
             Row(
                 modifier = Modifier.padding(horizontal = Dimens.Large),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
@@ -162,6 +167,7 @@ fun DiscoverContent(
         ) {
             SectionHeader(
                 title = mokoString(SharedRes.strings.discover_hike_recommendations_title),
+                titleStyle = MaterialTheme.typography.titleLarge.copy(fontSize = SectionTitleFontSize),
                 trailingContent = {
                     HikeRecommendationsInfoButton(
                         onClick = onInfoClicked,
@@ -196,6 +202,7 @@ fun DiscoverContent(
         ) {
             SectionHeader(
                 title = mokoString(SharedRes.strings.okt_header_title),
+                titleStyle = MaterialTheme.typography.titleLarge.copy(fontSize = SectionTitleFontSize),
                 trailingContent = { OktInfoButton(onClick = onOktInfoClicked) },
             )
             Row(
