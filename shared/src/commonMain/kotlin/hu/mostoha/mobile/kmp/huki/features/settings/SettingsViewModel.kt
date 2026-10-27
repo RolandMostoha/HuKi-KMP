@@ -47,6 +47,8 @@ class SettingsViewModel(
             is SettingsUiEvents.MapRotationToggled -> toggleMapRotation(event.enabled)
             SettingsUiEvents.MapLabelScaleClicked -> openMapLabelScale()
             is SettingsUiEvents.ThemeModeSelected -> selectThemeMode(event.themeMode)
+            is SettingsUiEvents.GpxDistancesToggled -> toggleGpxDistances(event.visible)
+            is SettingsUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors(event.visible)
         }
     }
 
@@ -76,6 +78,20 @@ class SettingsViewModel(
         }
     }
 
+    private fun toggleGpxDistances(visible: Boolean) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsGpxDistancesToggled)
+        viewModelScope.launch {
+            settingsRepository.setGpxDistancesVisible(visible)
+        }
+    }
+
+    private fun toggleGpxSlopeColors(visible: Boolean) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsGpxSlopeColorsToggled)
+        viewModelScope.launch {
+            settingsRepository.setGpxSlopeColorsVisible(visible)
+        }
+    }
+
     private fun observeSettings() {
         settingsRepository.settings
             .onEach { settings ->
@@ -85,6 +101,8 @@ class SettingsViewModel(
                         mapRotationEnabled = settings.mapRotationEnabled,
                         mapLabelScale = settings.mapLabelScale,
                         themeMode = settings.themeMode,
+                        gpxDistancesVisible = settings.gpxDistancesVisible,
+                        gpxSlopeColorsVisible = settings.gpxSlopeColorsVisible,
                     )
                 }
             }

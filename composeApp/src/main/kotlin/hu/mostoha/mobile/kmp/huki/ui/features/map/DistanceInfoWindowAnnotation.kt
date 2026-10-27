@@ -12,6 +12,7 @@ import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationAnchorConfig
 import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
+import hu.mostoha.mobile.kmp.huki.features.main.GpxUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
@@ -55,13 +56,15 @@ fun DistanceInfoWindowAnnotation(
                         .build(),
                 ),
             )
-            .allowOverlap(true)
+            .allowOverlap(false)
+            .allowOverlapWithPuck(true)
+            .priority(info.priority.toLong())
             .ignoreCameraPadding(true)
             .build(),
     ) {
         DistanceInfoWindow(
             info = info,
-            modifier = modifier.clickable { onEvent(MainUiEvents.DistanceInfoWindowDismissed) },
+            modifier = modifier.clickable { onEvent(GpxUiEvents.DistanceInfoWindowDismissed) },
         )
     }
 }

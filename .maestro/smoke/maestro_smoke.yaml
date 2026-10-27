@@ -60,21 +60,19 @@ appId: ${APP_ID}
             id: MAIN_FAB_GPX_CONTROL_BUTTON
           timeout: 15000
 - tapOn:
-    id: MAIN_FAB_GPX_CONTROL_BUTTON
-- assertVisible:
     id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Show the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Hide the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_CONTROL_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_OVERVIEW_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_CLEAR_BUTTON
-- tapOn:
-    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
-- assertVisible: "Show the route line"
-- tapOn:
-    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
-- assertVisible: "Hide the route line"
 - tapOn:
     id: MAIN_FAB_GPX_CLEAR_BUTTON
 - extendedWaitUntil:

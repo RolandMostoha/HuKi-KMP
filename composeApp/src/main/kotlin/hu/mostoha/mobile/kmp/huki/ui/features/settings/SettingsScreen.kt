@@ -154,6 +154,23 @@ private fun SettingsContent(
                     onCheckedChange = { onEvent(SettingsUiEvents.MapRotationToggled(it)) },
                 )
             }
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_gpx))
+            SettingsCard {
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_gpx_distances_title),
+                    description = mokoString(SharedRes.strings.settings_gpx_distances_description),
+                    checked = uiState.gpxDistancesVisible,
+                    testTag = TestTags.SETTINGS_GPX_DISTANCES_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.GpxDistancesToggled(it)) },
+                )
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_gpx_slope_colors_title),
+                    description = mokoString(SharedRes.strings.settings_gpx_slope_colors_description),
+                    checked = uiState.gpxSlopeColorsVisible,
+                    testTag = TestTags.SETTINGS_GPX_SLOPE_COLORS_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.GpxSlopeColorsToggled(it)) },
+                )
+            }
         }
     }
 }

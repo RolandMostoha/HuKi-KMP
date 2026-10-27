@@ -24,8 +24,10 @@ object Dimens {
     val InfoWindowTailWidth = 16.dp
     val InfoWindowTailHeight = 8.dp
     val InfoWindowMarkerPadding = 1.dp
+    val InfoWindowNameMaxWidth = 160.dp
     val FloatingActionElevation = 1.dp
     val FloatingActionSize = 56.dp
+    val FloatingActionSpacing = 14.dp
 
     val ZoomControlWidth = 53.dp
     val ZoomControlIconSize = 51.dp
@@ -71,9 +73,9 @@ object Dimens {
     val LandscapesDestinationSheetCameraBottomOffset = 44.dp
 
     val GpxContentPaddingPortrait = PaddingValues(
-        top = 150.dp,
+        top = 200.dp,
         start = 60.dp,
-        bottom = 340.dp,
+        bottom = 400.dp,
         end = 60.dp,
     )
     val GpxContentPaddingLandscape = PaddingValues(

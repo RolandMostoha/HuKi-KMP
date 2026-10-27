@@ -7,12 +7,27 @@ object SharedDimens {
 
     const val PLACE_MARKER_SCALE = 1.5
 
+    const val MY_LOCATION_PUCK_SCALE = 1.3
+
     const val MAP_LINE_STROKE_WIDTH = 1.5
 
-    const val GPX_LINE_WIDTH = 11.0
-    const val GPX_EDGE_LOCATION_MARKER_SCALE = 1.5
-    const val GPX_WAYPOINT_MARKER_SCALE = 1.0
+    const val GPX_LINE_WIDTH = 12.0
+    const val GPX_EDGE_LOCATION_MARKER_SCALE = 1.3
+    const val GPX_WAYPOINT_MARKER_SCALE = 0.9
     const val GPX_JEL_SYMBOL_MARKER_RATIO = 0.46
+    const val GPX_DIRECTION_ARROW_SPACING = 70.0
+
+    /**
+     * Narrower than the GPX line, so a strip of the line stays visible around the arrow.
+     */
+    const val GPX_DIRECTION_ARROW_WIDTH = 7.0
+    const val GPX_DIRECTION_ARROW_LENGTH = 7.0
+
+    /**
+     * How deep the back of the arrowhead is cut in, as a share of its length.
+     */
+    const val GPX_DIRECTION_ARROW_NOTCH_RATIO = 0.35
+    const val GPX_DIRECTION_ARROW_MIN_ZOOM = 10L
 
     const val OKT_BASE_LINE_WIDTH = 7.0
     const val OKT_SELECTED_LINE_WIDTH = 10.0

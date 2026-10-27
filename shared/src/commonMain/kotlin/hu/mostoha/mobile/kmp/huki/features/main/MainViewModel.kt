@@ -28,7 +28,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
-import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
@@ -82,7 +81,10 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
+import hu.mostoha.mobile.kmp.huki.service.locationsWithLastKnown
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
+import hu.mostoha.mobile.kmp.huki.util.DistanceInfoWindowConfig
+import hu.mostoha.mobile.kmp.huki.util.GpxDistanceTracker
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
@@ -91,7 +93,7 @@ import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.nearestIndexTo
-import hu.mostoha.mobile.kmp.huki.util.routeProgressTo
+import hu.mostoha.mobile.kmp.huki.util.reversed
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -104,6 +106,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -113,6 +116,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.maplibre.spatialk.units.extensions.inMeters
@@ -154,6 +159,7 @@ class MainViewModel(
     private var landscapeOutlines: LandscapeOutlines? = null
     private var landscapesJob: Job? = null
     private var oktLocationJob: Job? = null
+    private val gpxReverseMutex = Mutex()
     private var oktUserPosition: TrackPosition? = null
 
     init {
@@ -219,20 +225,27 @@ class MainViewModel(
             MainUiEvents.MapLabelScaleClicked -> showSheet(Sheet.MapLabelScale)
             is MainUiEvents.MapLabelScaleChanged -> previewMapLabelScale(event.factor)
             is MainUiEvents.MapLabelScaleCommitted -> commitMapLabelScale(event.factor)
-            // GPX events
-            MainUiEvents.GpxLayerSelected -> switchGpxLayer()
-            MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
-            is MainUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
-            MainUiEvents.GpxCloseClicked -> closeGpx()
-            MainUiEvents.GpxShareClicked -> shareGpx()
-            is MainUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
-            is MainUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
-            is MainUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
-            MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
-            MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
-            MainUiEvents.GpxOverviewClicked -> showGpxOverview()
-            is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
-            MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
+            is GpxUiEvents -> onGpxEvent(event)
+        }
+    }
+
+    private fun onGpxEvent(event: GpxUiEvents) {
+        when (event) {
+            GpxUiEvents.GpxLayerSelected -> switchGpxLayer()
+            GpxUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
+            is GpxUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
+            GpxUiEvents.GpxCloseClicked -> closeGpx()
+            GpxUiEvents.GpxShareClicked -> shareGpx()
+            is GpxUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
+            is GpxUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
+            is GpxUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
+            GpxUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
+            GpxUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
+            GpxUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors()
+            GpxUiEvents.GpxDirectionReversed -> reverseGpxDirection()
+            GpxUiEvents.GpxOverviewClicked -> showGpxOverview()
+            is GpxUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
+            GpxUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
         }
     }
 
@@ -715,34 +728,20 @@ class MainViewModel(
         val allDistancesVisible = uiState
             .map { it.mapUiState.allDistancesVisible }
             .distinctUntilChanged()
-        combine(selectedWaypoint, allDistancesVisible) { selected, showAll ->
-            val gpxDetails = uiState.value.mapUiState.gpxDetails
-            when {
-                gpxDetails == null -> emptyList()
-                showAll -> gpxDetails.waypoints
-                selected != null -> listOf(selected)
-                else -> emptyList()
+        val userLocations = locationMonitoringService.locationsWithLastKnown()
+            .distinctUntilChanged { old, new ->
+                old != null && new != null && old.distanceBetween(new) < DistanceInfoWindowConfig.MIN_USER_MOVE
             }
-        }
-            .flatMapLatest { waypoints ->
-                val gpxDetails = uiState.value.mapUiState.gpxDetails
-                if (waypoints.isEmpty() || gpxDetails == null) {
+        uiState
+            .map { it.mapUiState.gpxDetails }
+            .distinctUntilChanged()
+            .flatMapLatest { gpxDetails ->
+                if (gpxDetails == null || gpxDetails.locations.size < 2) {
                     flowOf(emptyList())
                 } else {
-                    val isRoundTripRoute = gpxDetails.waypoints.any { it.type == WaypointType.ROUND_TRIP }
-                    locationMonitoringService.locations().map { location ->
-                        waypoints.map { waypoint ->
-                            val progress = gpxDetails.locations.routeProgressTo(
-                                from = location,
-                                to = waypoint.location,
-                                isRoundTrip = isRoundTripRoute,
-                            )
-                            DistanceInfoWindowData(
-                                location = waypoint.location,
-                                distance = DistanceFormatter.formatDistance(progress.distance),
-                                travelTime = TravelTimeFormatter.formatTravelTime(progress.travelTime),
-                            )
-                        }
+                    val tracker = GpxDistanceTracker(gpxDetails.locations, gpxDetails.waypoints)
+                    combine(userLocations, allDistancesVisible, selectedWaypoint) { location, showAll, selected ->
+                        tracker.distanceInfoWindows(location, showAll, selected)
                     }
                 }
             }
@@ -903,6 +902,7 @@ class MainViewModel(
             runCatching { readGpx() }
                 .onSuccess { gpxDetails ->
                     analyticsEvent?.let { analyticsService.logEvent(it) }
+                    val settings = settingsRepository.settings.first()
                     selectedWaypoint.value = null
                     cancelOktJobs()
                     cancelLandscapesJob()
@@ -917,7 +917,8 @@ class MainViewModel(
                                 routeStops = emptyList(),
                                 gpxLayerVisible = true,
                                 gpxRouteVisible = true,
-                                allDistancesVisible = false,
+                                allDistancesVisible = settings.gpxDistancesVisible,
+                                gpxSlopeColorsVisible = settings.gpxSlopeColorsVisible,
                                 distanceInfoWindows = emptyList(),
                                 okt = null,
                             ),
@@ -965,6 +966,32 @@ class MainViewModel(
         selectedWaypoint.value = null
         _uiState.updateMapUiState {
             it.copy(allDistancesVisible = it.allDistancesVisible.not())
+        }
+    }
+
+    private fun toggleGpxSlopeColors() {
+        analyticsService.logEvent(AnalyticsEvent.GpxSlopeColorsToggled)
+        _uiState.updateMapUiState {
+            it.copy(gpxSlopeColorsVisible = it.gpxSlopeColorsVisible.not())
+        }
+    }
+
+    private fun reverseGpxDirection() {
+        viewModelScope.launch {
+            // Serializes quick repeated taps, so each one reverses the result of the previous
+            gpxReverseMutex.withLock {
+                val gpxDetails = _uiState.value.mapUiState.gpxDetails?.takeIf { it.isReversible } ?: return@withLock
+                analyticsService.logEvent(AnalyticsEvent.GpxDirectionReversed)
+                selectedWaypoint.value = null
+                val reversed = withContext(defaultDispatcher) { gpxDetails.reversed() }
+                _uiState.update { uiState ->
+                    if (uiState.mapUiState.gpxDetails?.layerId != gpxDetails.layerId) return@update uiState
+                    uiState.copy(
+                        mapUiState = uiState.mapUiState.copy(gpxDetails = reversed),
+                        sheet = if (uiState.sheet is Sheet.Gpx) Sheet.Gpx(reversed) else uiState.sheet,
+                    )
+                }
+            }
         }
     }
 

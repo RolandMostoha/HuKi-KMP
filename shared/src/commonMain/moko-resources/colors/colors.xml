@@ -44,6 +44,11 @@
         <light>#ffffff</light>
         <dark>#0E0A0F</dark>
     </color>
+    <!-- Fixed color: matches the stroke of the map marker SVGs, which don't follow dark mode -->
+    <color name="markerStroke">
+        <light>#1A1A1A</light>
+        <dark>#1A1A1A</dark>
+    </color>
     <color name="accuracyRing">
         <light>#1363138A</light>
         <dark>#6BBA6F8A</dark>

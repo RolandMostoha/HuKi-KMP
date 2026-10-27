@@ -81,10 +81,10 @@ struct MainView: View {
                         viewModel.onEvent(event: MainUiEventsCompassClicked.shared)
                     },
                     onWaypointClicked: { waypoint in
-                        viewModel.onEvent(event: MainUiEventsGpxWaypointClicked(waypoint: waypoint))
+                        viewModel.onEvent(event: GpxUiEventsGpxWaypointClicked(waypoint: waypoint))
                     },
                     onDistanceInfoWindowDismissed: {
-                        viewModel.onEvent(event: MainUiEventsDistanceInfoWindowDismissed.shared)
+                        viewModel.onEvent(event: GpxUiEventsDistanceInfoWindowDismissed.shared)
                     },
                     onMapLongClicked: { location in
                         viewModel.onEvent(event: MainUiEventsMapLongClicked(location: location))
@@ -185,6 +185,10 @@ struct MainView: View {
                 .onChange(of: uiState.alert != nil) { _, newValue in
                     showAlert = newValue
                 }
+                // A sheet keeps its id across content updates (e.g. a reversed GPX), so track its latest value
+                .onChange(of: uiState.sheet) { _, newSheet in
+                    if let newSheet, newSheet.id == presentedSheet?.id { presentedSheet = newSheet }
+                }
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
                 landscapesResumeButton(uiState: uiState)
@@ -199,7 +203,7 @@ struct MainView: View {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: filePickerTypes) { result in
             switch result {
             case .success(let url):
-                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
+                viewModel.onEvent(event: GpxUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
             case .failure(let error):
                 logError(message: "Failed to import GPX file: \(error)")
             }
@@ -238,7 +242,7 @@ private extension MainView {
                 GpxCollectionView(
                     onOpenTutorial: { navigationPath.append(GpxGuideRoute.gpxGuide) },
                     onOpenGpx: { uri in
-                        viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
+                        viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
                         navigationPath = NavigationPath()
                     }
                 )
@@ -285,33 +289,6 @@ private extension MainView {
             onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
             onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
         )
-    }
-
-    @ViewBuilder
-    func gpxControlMenu(uiState: MainUiState) -> some View {
-        if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil, uiState.mapUiState.gpxLayerVisible {
-            GpxControlMenu(
-                strings: strings,
-                isRouteVisible: uiState.mapUiState.gpxRouteVisible,
-                isAllDistancesVisible: uiState.mapUiState.allDistancesVisible,
-                onToggleLine: {
-                    viewModel.onEvent(event: MainUiEventsGpxRouteVisibilityToggled())
-                },
-                onToggleDistances: {
-                    viewModel.onEvent(event: MainUiEventsGpxDistancesVisibilityToggled())
-                },
-                onOverview: {
-                    viewModel.onEvent(event: MainUiEventsGpxOverviewClicked())
-                },
-                onClear: {
-                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
-                }
-            )
-            .safeAreaPadding(.horizontal)
-            .padding(.bottom, isLandscape ? 12 : 0)
-            .ignoresSafeArea(.container, edges: isLandscape ? .bottom : [])
-            .transition(.opacity)
-        }
     }
 
     @ViewBuilder
@@ -387,7 +364,7 @@ private extension MainView {
         do {
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
             try FileManager.default.copyItem(at: url, to: destination)
-            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
+            viewModel.onEvent(event: GpxUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
             navigationPath = NavigationPath()
         } catch {
             logError(message: "Failed to copy incoming GPX file: \(error)")

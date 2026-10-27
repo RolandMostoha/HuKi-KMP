@@ -19,7 +19,7 @@ class TrackProgressIndexTest {
                 to = index.positionOf(testCase.to),
             )
 
-            val expected = TRACK.routeProgressTo(from = testCase.from, to = testCase.to, isRoundTrip = false)
+            val expected = TRACK.referenceRouteProgress(from = testCase.from, to = testCase.to)
             actual.distance.inMeters shouldBe expected.distance.inMeters.plusOrMinus(TOLERANCE_METERS)
             actual.travelTime.toDouble(DurationUnit.MINUTES) shouldBe
                 expected.travelTime.toDouble(DurationUnit.MINUTES).plusOrMinus(TOLERANCE_MINUTES)

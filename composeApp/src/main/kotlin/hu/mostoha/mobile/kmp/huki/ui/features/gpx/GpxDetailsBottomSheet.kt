@@ -61,6 +61,7 @@ fun GpxDetailsBottomSheet(
     onNavigateToStart: () -> Unit,
     onNavigateToEnd: () -> Unit,
     onShareClick: () -> Unit,
+    onReverseDirectionClick: () -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
     onCollapsedHeightMeasured: (Dp) -> Unit = {},
@@ -182,6 +183,21 @@ fun GpxDetailsBottomSheet(
                             end = Dimens.ExtraLarge,
                         ),
                 )
+                if (gpxDetails.isReversible) {
+                    SecondaryButton(
+                        iconResId = R.drawable.ic_swap_horiz,
+                        text = mokoString(SharedRes.strings.gpx_control_direction_reverse),
+                        onClick = onReverseDirectionClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(TestTags.GPX_DETAILS_REVERSE_DIRECTION_BUTTON)
+                            .padding(
+                                start = Dimens.ExtraLarge,
+                                top = Dimens.Medium,
+                                end = Dimens.ExtraLarge,
+                            ),
+                    )
+                }
             }
             Column(
                 modifier = Modifier
@@ -251,6 +267,7 @@ private fun GpxDetailsBottomSheetPreview() {
             onNavigateToStart = {},
             onNavigateToEnd = {},
             onShareClick = {},
+            onReverseDirectionClick = {},
             onCloseClick = {},
         )
     }

@@ -13,5 +13,8 @@ val DarkBackground = Color(0xFF2D2D2D)
 val LightSurfaceVariant = Color(0xFFF6FBF4)
 val DarkSurfaceVariant = Color(0xFF121712)
 
+val LightMapInfoWindow = Color.White
+val DarkMapInfoWindow = Color.Black
+
 val ColorScheme.dividerColor: Color
     get() = outlineVariant.copy(alpha = 0.2f)

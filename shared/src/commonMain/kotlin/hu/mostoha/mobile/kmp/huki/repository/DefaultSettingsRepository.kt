@@ -56,4 +56,16 @@ class DefaultSettingsRepository(private val dataStore: DataStore<Preferences>) :
             preferences[SettingsPreferenceKeys.MAP_LABEL_SCALE_FACTOR] = mapLabelScale.factor
         }
     }
+
+    override suspend fun setGpxDistancesVisible(visible: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.GPX_DISTANCES_VISIBLE] = visible
+        }
+    }
+
+    override suspend fun setGpxSlopeColorsVisible(visible: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE] = visible
+        }
+    }
 }

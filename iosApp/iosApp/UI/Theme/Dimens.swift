@@ -11,20 +11,19 @@ enum Dimens {
     static let infoWindowTailWidth: CGFloat = 16
     static let infoWindowTailHeight: CGFloat = 8
     static let infoWindowMarkerPadding: CGFloat = 1
-    static let infoWindowHorizontalPadding: CGFloat = 12
-    static let infoWindowVerticalPadding: CGFloat = 8
-    static let infoWindowBottomExtraPadding: CGFloat = 3
-    static let infoWindowDistanceFontSize: CGFloat = 16
-    static let infoWindowTravelTimeFontSize: CGFloat = 13
+    static let infoWindowHorizontalPadding: CGFloat = 10
+    static let infoWindowVerticalPadding: CGFloat = 6
+    static let infoWindowLineSpacing: CGFloat = 2
+    static let infoWindowNameFontSize: CGFloat = 13
+    static let infoWindowNameMaxWidth: CGFloat = 160
+    static let infoWindowDetailsFontSize: CGFloat = 13
 
     static let zoomControlIconSize: CGFloat = 20
-
-    static let myLocationPuckScale: Double = 1.5
 
     static let gpxContentPaddingPortrait = EdgeInsets(
         top: 120,
         leading: 60,
-        bottom: 300,
+        bottom: 362,
         trailing: 60
     )
     static let gpxContentPaddingLandscape = EdgeInsets(
@@ -139,12 +138,20 @@ enum Dimens {
     static let gpxDetailsPadExpandedDetentHeight: CGFloat = 382
     static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 442
     static let gpxDetailsJelSymbolSize: CGFloat = 20
+    static let gpxDetailsReverseButtonHeight: CGFloat = 80
+    static let gpxDetailsCollapsedReverseButtonHeight: CGFloat = 62
 
-    static func gpxDetailsExpandedHeight(hasEnd: Bool, isPad: Bool) -> CGFloat {
+    static func gpxDetailsCollapsedHeight(isReversible: Bool) -> CGFloat {
+        gpxDetailsCollapsedDetentHeight + (isReversible ? gpxDetailsCollapsedReverseButtonHeight : 0)
+    }
+
+    static func gpxDetailsExpandedHeight(hasEnd: Bool, isReversible: Bool, isPad: Bool) -> CGFloat {
+        let reverseButtonHeight = isReversible ? gpxDetailsReverseButtonHeight : 0
         if isPad {
-            return hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight
+            return (hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight)
+                + reverseButtonHeight
         }
-        return hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight
+        return (hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight) + reverseButtonHeight
     }
 
     static let placeDetailsDetentHeight: CGFloat = 215

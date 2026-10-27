@@ -9,4 +9,6 @@ sealed interface SettingsUiEvents {
     data class MapRotationToggled(val enabled: Boolean) : SettingsUiEvents
     data object MapLabelScaleClicked : SettingsUiEvents
     data class ThemeModeSelected(val themeMode: ThemeMode) : SettingsUiEvents
+    data class GpxDistancesToggled(val visible: Boolean) : SettingsUiEvents
+    data class GpxSlopeColorsToggled(val visible: Boolean) : SettingsUiEvents
 }

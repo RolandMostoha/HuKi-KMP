@@ -26,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanTitle
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
+import hu.mostoha.mobile.kmp.huki.util.calculateSlopeSegments
 import hu.mostoha.mobile.kmp.huki.util.calculateTotalDistance
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
@@ -222,6 +223,7 @@ open class DefaultGpxRepository(
             incline = locations.calculateIncline(),
             decline = locations.calculateDecline(),
             jelSymbol = gpx.toJelSymbol(),
+            slopeSegments = locations.calculateSlopeSegments(),
         )
     }
 

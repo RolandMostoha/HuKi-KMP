@@ -17,7 +17,7 @@ extension MainView {
                 )
             },
             onRoutePlanSaved: { fileUri in
-                viewModel.onEvent(event: MainUiEventsRoutePlanGpxSaved(uri: fileUri))
+                viewModel.onEvent(event: GpxUiEventsRoutePlanGpxSaved(uri: fileUri))
             },
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())

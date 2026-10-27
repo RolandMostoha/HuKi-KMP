@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -15,7 +16,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
+import hu.mostoha.mobile.kmp.huki.model.domain.SlopeSegment
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.SlopeColorScale
 import hu.mostoha.mobile.kmp.huki.util.dpToPx
 
 fun CameraPosition.toCameraOptions(): CameraOptions =
@@ -33,6 +36,15 @@ fun Point.toLocation(): Location = Location(latitude = latitude(), longitude = l
 fun List<Location>.toPoints(): List<Point> = map { it.toPoint() }
 
 fun List<Location>.toLineString(): LineString = LineString.fromLngLats(this.toPoints())
+
+const val SLOPE_COLOR_PROPERTY = "color"
+
+fun List<SlopeSegment>.toSlopeFeatures(colorScale: SlopeColorScale): List<Feature> =
+    map { segment ->
+        Feature.fromGeometry(segment.locations.toLineString()).apply {
+            addStringProperty(SLOPE_COLOR_PROPERTY, colorScale.colorHex(segment.slopePercent))
+        }
+    }
 
 fun CameraState.toCameraPosition() =
     CameraPosition(

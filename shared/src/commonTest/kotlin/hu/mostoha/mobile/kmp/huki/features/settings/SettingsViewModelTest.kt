@@ -138,6 +138,58 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `Given stored GPX distances flag - When observed - Then uiState reflects the flag`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(gpxDistancesVisible = false))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.gpxDistancesVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given default state - When GpxDistancesToggled event - Then repository stores the flag`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.GpxDistancesToggled(visible = false))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setGpxDistancesVisible(false) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsGpxDistancesToggled)
+        }
+    }
+
+    @Test
+    fun `Given stored GPX slope colors flag - When observed - Then uiState reflects the flag`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(gpxSlopeColorsVisible = false))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.gpxSlopeColorsVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given default state - When GpxSlopeColorsToggled event - Then repository stores the flag`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.GpxSlopeColorsToggled(visible = false))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setGpxSlopeColorsVisible(false) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsGpxSlopeColorsToggled)
+        }
+    }
+
+    @Test
     fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         runTest {
             val viewModel = createViewModel()

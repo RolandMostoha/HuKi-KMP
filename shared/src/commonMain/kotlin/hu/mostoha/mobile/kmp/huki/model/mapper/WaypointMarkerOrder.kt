@@ -12,5 +12,10 @@ object WaypointMarkerOrder {
         WaypointType.ROUND_TRIP,
     )
 
-    fun sort(waypoints: List<GpxWaypoint>): List<GpxWaypoint> = waypoints.sortedBy { drawOrder.indexOf(it.type) }
+    fun sort(waypoints: List<GpxWaypoint>): List<GpxWaypoint> = waypoints.sortedBy { sortKey(it.type) }
+
+    /**
+     * Mapbox draws lower symbol sort keys first, so higher keys end up on top.
+     */
+    fun sortKey(type: WaypointType): Double = drawOrder.indexOf(type).toDouble()
 }

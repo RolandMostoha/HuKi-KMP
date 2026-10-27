@@ -22,6 +22,7 @@ data class MapUiState(
     val routePlan: RoutePlan? = null,
     val routePlanWaypoints: List<GpxWaypoint> = emptyList(),
     val allDistancesVisible: Boolean = false,
+    val gpxSlopeColorsVisible: Boolean = false,
     val distanceInfoWindows: List<DistanceInfoWindowData> = emptyList(),
     val okt: OktUiState? = null,
     val landscapes: LandscapesUiState? = null,

@@ -46,15 +46,22 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / tech tasks
 
-| Status | Feature                                                                                                        |
-|--------|----------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                        |
-| `[ ]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                      |
-| `[ ]`  | App store preview video (optional)                                                                             |
-| `[ ]`  | App store header picture/video (optional)                                                                      |
-| `[ ]`  | iPhone duo / proper iPad support                                                                               |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then) |
+| Status | Feature                                                                                                                       |
+|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                       |
+| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX, Place History should be migrated fine. |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                        |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                         |
+| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                     |
+| `[G]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                            |
+| `[G]`  | Separate Mapbox token Android vs iOS                                                                                          |
+| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                             |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                     |
+| `[ ]`  | App store preview video (optional)                                                                                            |
+| `[ ]`  | App store header picture/video (optional)                                                                                     |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                              |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                               |
 
 ### Bugs
 
@@ -77,10 +84,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Map
 
-| Status | Scope | Task                                                                              |
-|--------|-------|-----------------------------------------------------------------------------------|
-| `[G]`  | Map   | After state restoration / app kill -> restore last camera state + last opened GPX |
-| `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking trails          |
+| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                                                        |
+|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Map    | After state restoration / app kill -> restore last camera state + last opened GPX                                                                                                                                                                                                                                                                           |
+| `[ ]`  | Map    | Is there any optimization strategy for raster layers? HuKi-hiking trails                                                                                                                                                                                                                                                                                    |
+| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Pilisszentiván") stay readable. ![img_6.png](img_6.png) Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Landscape orientation
 
@@ -100,12 +108,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
 | `[G]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
-
-### FEATURE: Layers
-
-| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                             |
-|--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Szilvási-kő") stay readable. Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Search
 
@@ -143,15 +145,16 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                                                                                        |
-|--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
-| `[R]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files.                                  |
-| `[R]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
-| `[R]`  | GPX   | Display direction arrows. Add an option to toggle direction in GpxMenu                                                                      |
-| `[R]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.               |
-| `[R]`  | GPX   | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
+| Status | Scope | Task                                                                                                                                 |
+|--------|-------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs. |
+| `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                     |
+| `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.  |
+| `[x]`  | GPX   | Display direction arrows. Add an option to toggle (reverse) direction in GpxMenu. Add the option to GpxDetails as well.              |
+| `[x]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.        |
+| `[x]`  | GPX   | Add a dedicated FAB button above GPX menu, to show/hide GPX route without entering to GPX Menu.                                      |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                     |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                |
 
 ### FEATURE: GPX Collection
 
@@ -164,9 +167,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Place Details
 
-| Status | Scope        | Task                                                              |
-|--------|--------------|-------------------------------------------------------------------|
-| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop) |
+| Status | Scope        | Task                                                                                                                                               |
+|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | PlaceDetails | Support opening lat,lon locations Intent from other apps. E.g. Google Photos -> Location -> Share. ![img_1.png](img_1.png) ![img_2.png](img_2.png) |
+| `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                  |
 
 ### FEATURE: PlaceHistory
 
@@ -179,6 +183,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | RoutePlanner | Android: the planner loses its stops on a configuration change (rotation, dark-mode toggle) — `rememberScopedViewModelStoreOwner` does not survive one. Fix with `rememberViewModelStoreOwner` once the project is on AGP 9.1 / compileSdk 37 (androidx.lifecycle 2.11.0). |
+| `[G]`  | RoutePlanner | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations.                                                                                                                                |
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
 | `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                       |
@@ -231,9 +236,10 @@ Refs:
 
 Goal: a new section in Menu, with 1 page guides of different topics.
 
-| Status | Scope  | Task                                      |
-|--------|--------|-------------------------------------------|
-| `[ ]`  | Guides | Add "Problem on route" to Guides section. |
+| Status | Scope  | Task                                                                                |
+|--------|--------|-------------------------------------------------------------------------------------|
+| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                           |
+| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section. |
 
 #### Guides: Report problem on route
 

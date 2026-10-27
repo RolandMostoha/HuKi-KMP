@@ -99,15 +99,20 @@
     <string name="map_a11y_route_stop">Route stop: %s</string>
     <string name="place_details_maps_navigation">Maps navigation</string>
 
-    <string name="gpx_distance_info_window_a11y">Distance and time from your location to this point along the track</string>
+    <string name="gpx_distance_info_window_start">Start</string>
+    <string name="gpx_distance_info_window_end">End</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>
-    <string name="gpx_control_route_visibility_title">Route visibility</string>
     <string name="gpx_control_route_visibility_show">Show the route line</string>
     <string name="gpx_control_route_visibility_hide">Hide the route line</string>
     <string name="gpx_control_distances_title">Waypoint distances</string>
     <string name="gpx_control_distances_show">Show distances</string>
     <string name="gpx_control_distances_hide">Hide distances</string>
+    <string name="gpx_control_slope_colors_title">Slope colors</string>
+    <string name="gpx_control_slope_colors_show">Show slope colors</string>
+    <string name="gpx_control_slope_colors_hide">Hide slope colors</string>
+    <string name="gpx_control_direction_title">Direction of travel</string>
+    <string name="gpx_control_direction_reverse">Reverse direction</string>
     <string name="gpx_control_overview_title">Zoom to fit the route</string>
     <string name="gpx_control_overview_desc">Zoom to route</string>
     <string name="gpx_control_clear_title">Close GPX</string>
@@ -187,6 +192,11 @@
     <string name="map_label_scale_title">Map text size</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">Only enlarge the labels as much as you really need. If they get too large, the map may hide labels it detects would overlap each other.</string>
+    <string name="settings_section_gpx">GPX</string>
+    <string name="settings_gpx_distances_title">Waypoint distances</string>
+    <string name="settings_gpx_distances_description">Show distance and travel time to waypoints when opening a GPX</string>
+    <string name="settings_gpx_slope_colors_title">Slope colors</string>
+    <string name="settings_gpx_slope_colors_description">Color GPX tracks by the steepness of climbs and descents</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>
@@ -364,10 +374,10 @@
     <string name="discover_destinations_by_landscape">Landscapes</string>
     <string name="discover_destinations_by_category">Categories</string>
     <string name="discover_destinations_in_list">List</string>
-    <string name="landscapes_title">Landscapes</string>
+    <string name="landscapes_title">Landscapes and destinations</string>
     <string name="landscapes_a11y_show_all">Show all landscapes</string>
     <string name="landscapes_a11y_resume">Show landscapes</string>
-    <string name="categories_title">Categories</string>
+    <string name="categories_title">Destination categories</string>
     <string name="categories_a11y_show_all">Show the whole country</string>
     <string name="categories_a11y_close">Close categories</string>
     <string name="categories_a11y_resume">Show categories</string>
