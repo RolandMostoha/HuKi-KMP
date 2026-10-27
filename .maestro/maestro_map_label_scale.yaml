@@ -16,7 +16,7 @@ appId: ${APP_ID}
     id: MENU_ROW_SETTINGS
 - assertVisible:
     id: SETTINGS_MAP_LABEL_SCALE_ROW
-- assertVisible: "100%"
+- assertVisible: ".*100%"
 
 # The row returns to the map and opens the sheet above it
 - tapOn:
@@ -25,10 +25,22 @@ appId: ${APP_ID}
     id: MAP_LABEL_SCALE_SHEET
 
 # Drag the slider to the maximum
-- swipe:
-    from:
-      id: MAP_LABEL_SCALE_SLIDER
-    direction: RIGHT
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - swipe:
+          from:
+            id: MAP_LABEL_SCALE_SLIDER
+          direction: RIGHT
+# The iOS slider only drags from its thumb, which sits at the left end at 100%
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: "15%, 86%"
+          end: "90%, 86%"
 
 # Closing keeps the user on the map
 - tapOn:
@@ -42,7 +54,7 @@ appId: ${APP_ID}
 - tapOn: "Menu"
 - tapOn:
     id: MENU_ROW_SETTINGS
-- assertVisible: "200%"
+- assertVisible: ".*200%"
 
 # The custom size survives a relaunch
 - launchApp:
@@ -55,4 +67,4 @@ appId: ${APP_ID}
 - tapOn: "Menu"
 - tapOn:
     id: MENU_ROW_SETTINGS
-- assertVisible: "200%"
+- assertVisible: ".*200%"
