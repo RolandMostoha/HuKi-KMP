@@ -53,7 +53,8 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                        |
 | `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                         |
 | `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                     |
-| `[G]`  | Separate Mapbox token Android vs iOS                                                                                            |
+| `[G]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                            |
+| `[G]`  | Separate Mapbox token Android vs iOS                                                                                          |
 | `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                             |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                     |
 | `[ ]`  | App store preview video (optional)                                                                                            |
@@ -144,16 +145,16 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                                                                                        |
-|--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs.        |
-| `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                            |
-| `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.         |
-| `[x]`  | GPX   | Display direction arrows. Add an option to toggle (reverse) direction in GpxMenu. Add the option to GpxDetails as well.                     |
-| `[x]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.               |
-| `[G]`  | GPX   | Add a dedicated button to show/hide GPX without entering to GPX Menu                                                                        |
-| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                            |
-| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                       |
+| Status | Scope | Task                                                                                                                                 |
+|--------|-------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs. |
+| `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                     |
+| `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.  |
+| `[x]`  | GPX   | Display direction arrows. Add an option to toggle (reverse) direction in GpxMenu. Add the option to GpxDetails as well.              |
+| `[x]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.        |
+| `[x]`  | GPX   | Add a dedicated FAB button above GPX menu, to show/hide GPX route without entering to GPX Menu.                                      |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                     |
+| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                |
 
 ### FEATURE: GPX Collection
 

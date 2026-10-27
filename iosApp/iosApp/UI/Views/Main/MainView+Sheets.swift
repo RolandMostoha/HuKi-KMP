@@ -203,7 +203,7 @@ extension MainView {
                 viewModel.onEvent(event: event)
             },
             onGpxFileSelected: { uri in
-                viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
+                viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
             },
             onSeeAllGpxClicked: { openSearchSeeAll(.gpx, route: GpxCollectionRoute.gpxCollection) },
             onSeeAllPlacesClicked: { openSearchSeeAll(.places, route: PlaceHistoryRoute.placeHistory) },
@@ -237,7 +237,7 @@ extension MainView {
                 viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
             },
             onGpxLayerSelected: {
-                viewModel.onEvent(event: MainUiEventsGpxLayerSelected())
+                viewModel.onEvent(event: GpxUiEventsGpxLayerSelected())
             },
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
@@ -289,22 +289,22 @@ extension MainView {
                 strings: strings,
                 gpxDetails: gpxDetails,
                 onStartClick: {
-                    viewModel.onEvent(event: MainUiEventsGpxStartNavigationClicked())
+                    viewModel.onEvent(event: GpxUiEventsGpxStartNavigationClicked())
                 },
                 onNavigateToStart: {
-                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .start))
+                    viewModel.onEvent(event: GpxUiEventsGpxMapsNavigationClicked(type: .start))
                 },
                 onNavigateToEnd: {
-                    viewModel.onEvent(event: MainUiEventsGpxMapsNavigationClicked(type: .end))
+                    viewModel.onEvent(event: GpxUiEventsGpxMapsNavigationClicked(type: .end))
                 },
                 onShareClick: {
-                    viewModel.onEvent(event: MainUiEventsGpxShareClicked())
+                    viewModel.onEvent(event: GpxUiEventsGpxShareClicked())
                 },
                 onReverseDirectionClick: {
-                    viewModel.onEvent(event: MainUiEventsGpxDirectionReversed())
+                    viewModel.onEvent(event: GpxUiEventsGpxDirectionReversed())
                 },
                 onDismissRequest: {
-                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                    viewModel.onEvent(event: GpxUiEventsGpxCloseClicked())
                 }
             )
             .sheet(item: $gpxShareItem) { item in

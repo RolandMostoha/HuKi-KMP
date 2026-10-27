@@ -65,6 +65,7 @@ import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
 import dev.icerock.moko.resources.ImageResource
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.main.GpxUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.LandscapesUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
@@ -330,7 +331,7 @@ fun MapContent(
 private fun dismissInfoWindows(mapUiState: MapUiState, onEvent: (MainUiEvents) -> Unit): Boolean =
     when {
         mapUiState.distanceInfoWindows.isNotEmpty() -> {
-            onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            onEvent(GpxUiEvents.DistanceInfoWindowDismissed)
             true
         }
         mapUiState.okt?.infoWindow != null -> {
@@ -419,7 +420,7 @@ private fun GpxLayer(
         }
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {
-                onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+                onEvent(GpxUiEvents.GpxWaypointClicked(waypoint))
                 true
             }
             iconImage = waypointIconImage

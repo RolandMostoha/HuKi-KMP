@@ -13,22 +13,22 @@ extension MainView {
                 isSlopeColorsVisible: uiState.mapUiState.gpxSlopeColorsVisible,
                 isReversible: uiState.mapUiState.gpxDetails?.isReversible ?? false,
                 onToggleLine: {
-                    viewModel.onEvent(event: MainUiEventsGpxRouteVisibilityToggled())
+                    viewModel.onEvent(event: GpxUiEventsGpxRouteVisibilityToggled())
                 },
                 onToggleDistances: {
-                    viewModel.onEvent(event: MainUiEventsGpxDistancesVisibilityToggled())
+                    viewModel.onEvent(event: GpxUiEventsGpxDistancesVisibilityToggled())
                 },
                 onToggleSlopeColors: {
-                    viewModel.onEvent(event: MainUiEventsGpxSlopeColorsToggled())
+                    viewModel.onEvent(event: GpxUiEventsGpxSlopeColorsToggled())
                 },
                 onReverseDirection: {
-                    viewModel.onEvent(event: MainUiEventsGpxDirectionReversed())
+                    viewModel.onEvent(event: GpxUiEventsGpxDirectionReversed())
                 },
                 onOverview: {
-                    viewModel.onEvent(event: MainUiEventsGpxOverviewClicked())
+                    viewModel.onEvent(event: GpxUiEventsGpxOverviewClicked())
                 },
                 onClear: {
-                    viewModel.onEvent(event: MainUiEventsGpxCloseClicked())
+                    viewModel.onEvent(event: GpxUiEventsGpxCloseClicked())
                 }
             )
             .safeAreaPadding(.horizontal)

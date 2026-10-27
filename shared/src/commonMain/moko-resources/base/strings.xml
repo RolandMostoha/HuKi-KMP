@@ -103,7 +103,6 @@
     <string name="gpx_distance_info_window_end">End</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>
-    <string name="gpx_control_route_visibility_title">Route visibility</string>
     <string name="gpx_control_route_visibility_show">Show the route line</string>
     <string name="gpx_control_route_visibility_hide">Hide the route line</string>
     <string name="gpx_control_distances_title">Waypoint distances</string>

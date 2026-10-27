@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import dev.icerock.moko.permissions.compose.BindEffect
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.features.main.GpxUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.LandscapesUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEffects
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
@@ -117,7 +118,7 @@ fun MainScreen(
 
     LaunchedEffect(openGpxUri) {
         openGpxUri?.let {
-            viewModel.onEvent(MainUiEvents.GpxFileReopened(it))
+            viewModel.onEvent(GpxUiEvents.GpxFileReopened(it))
             onOpenGpxConsumed()
         }
     }
@@ -211,7 +212,7 @@ private fun MainContent(
     val gpxFilePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri: Uri? ->
-            uri?.let { onEvent(MainUiEvents.GpxFileSelected(it.toString(), GpxSource.LAYERS)) }
+            uri?.let { onEvent(GpxUiEvents.GpxFileSelected(it.toString(), GpxSource.LAYERS)) }
         },
     )
 
@@ -321,22 +322,22 @@ private fun MainContent(
                     onEvent(MainUiEvents.ZoomOutClicked)
                 },
                 onGpxToggleLineClicked = {
-                    onEvent(MainUiEvents.GpxRouteVisibilityToggled)
+                    onEvent(GpxUiEvents.GpxRouteVisibilityToggled)
                 },
                 onGpxToggleDistancesClicked = {
-                    onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+                    onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
                 },
                 onGpxToggleSlopeColorsClicked = {
-                    onEvent(MainUiEvents.GpxSlopeColorsToggled)
+                    onEvent(GpxUiEvents.GpxSlopeColorsToggled)
                 },
                 onGpxReverseDirectionClicked = {
-                    onEvent(MainUiEvents.GpxDirectionReversed)
+                    onEvent(GpxUiEvents.GpxDirectionReversed)
                 },
                 onGpxOverviewClicked = {
-                    onEvent(MainUiEvents.GpxOverviewClicked)
+                    onEvent(GpxUiEvents.GpxOverviewClicked)
                 },
                 onGpxClearClicked = {
-                    onEvent(MainUiEvents.GpxCloseClicked)
+                    onEvent(GpxUiEvents.GpxCloseClicked)
                 },
                 onOktResumeClicked = {
                     onEvent(OktUiEvents.OktResumeClicked)
@@ -489,7 +490,7 @@ private fun RoutePlannerSheetOverlay(
                 onEffect = { effect ->
                     when (effect) {
                         is RoutePlannerUiEffects.RoutePlanSaved -> {
-                            onEvent(MainUiEvents.RoutePlanGpxSaved(effect.fileUri))
+                            onEvent(GpxUiEvents.RoutePlanGpxSaved(effect.fileUri))
                         }
                         RoutePlannerUiEffects.MinimizeSheet -> onDetentChange(RoutePlannerDetent.MINIMIZED)
                         RoutePlannerUiEffects.ExpandSheet -> onDetentChange(RoutePlannerDetent.EXPANDED)
@@ -521,24 +522,24 @@ private fun MainStandardBottomSheet(
             GpxDetailsBottomSheet(
                 gpxDetails = sheet.gpxDetails,
                 onStartClick = {
-                    onEvent(MainUiEvents.GpxStartNavigationClicked)
+                    onEvent(GpxUiEvents.GpxStartNavigationClicked)
                 },
                 onNavigateToStart = {
-                    onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                    onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
                 },
                 onNavigateToEnd = {
-                    onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+                    onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
                 },
                 onShareClick = {
-                    onEvent(MainUiEvents.GpxShareClicked)
+                    onEvent(GpxUiEvents.GpxShareClicked)
                 },
                 onReverseDirectionClick = {
-                    onEvent(MainUiEvents.GpxDirectionReversed)
+                    onEvent(GpxUiEvents.GpxDirectionReversed)
                 },
                 onCloseClick = {
                     coroutineScope.launch {
                         sheetState.hide()
-                        onEvent(MainUiEvents.GpxCloseClicked)
+                        onEvent(GpxUiEvents.GpxCloseClicked)
                     }
                 },
                 onCollapsedHeightMeasured = onGpxPeekHeightMeasured,
@@ -633,7 +634,7 @@ private fun MainStandardBottomSheet(
                     onGpxFileSelected = { fileUri ->
                         coroutineScope.launch {
                             sheetState.hide()
-                            onEvent(MainUiEvents.GpxFileReopened(fileUri))
+                            onEvent(GpxUiEvents.GpxFileReopened(fileUri))
                         }
                     },
                     onSeeAllGpxClicked = {
@@ -693,7 +694,7 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 isGpxLayerSelected = uiState.mapUiState.gpxLayerVisible,
                 onBaseLayerSelected = { onEvent(MainUiEvents.BaseLayerSelected(it)) },
                 onHikingLayerSelected = { onEvent(MainUiEvents.HikingLayerSelected) },
-                onGpxLayerSelected = { onEvent(MainUiEvents.GpxLayerSelected) },
+                onGpxLayerSelected = { onEvent(GpxUiEvents.GpxLayerSelected) },
                 onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
             )
         }

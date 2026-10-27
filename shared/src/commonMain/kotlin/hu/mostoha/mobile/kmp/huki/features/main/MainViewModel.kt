@@ -225,22 +225,27 @@ class MainViewModel(
             MainUiEvents.MapLabelScaleClicked -> showSheet(Sheet.MapLabelScale)
             is MainUiEvents.MapLabelScaleChanged -> previewMapLabelScale(event.factor)
             is MainUiEvents.MapLabelScaleCommitted -> commitMapLabelScale(event.factor)
-            // GPX events
-            MainUiEvents.GpxLayerSelected -> switchGpxLayer()
-            MainUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
-            is MainUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
-            MainUiEvents.GpxCloseClicked -> closeGpx()
-            MainUiEvents.GpxShareClicked -> shareGpx()
-            is MainUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
-            is MainUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
-            is MainUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
-            MainUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
-            MainUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
-            MainUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors()
-            MainUiEvents.GpxDirectionReversed -> reverseGpxDirection()
-            MainUiEvents.GpxOverviewClicked -> showGpxOverview()
-            is MainUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
-            MainUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
+            is GpxUiEvents -> onGpxEvent(event)
+        }
+    }
+
+    private fun onGpxEvent(event: GpxUiEvents) {
+        when (event) {
+            GpxUiEvents.GpxLayerSelected -> switchGpxLayer()
+            GpxUiEvents.GpxStartNavigationClicked -> startGpxNavigation()
+            is GpxUiEvents.GpxMapsNavigationClicked -> openMapsNavigation(event.type)
+            GpxUiEvents.GpxCloseClicked -> closeGpx()
+            GpxUiEvents.GpxShareClicked -> shareGpx()
+            is GpxUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
+            is GpxUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
+            is GpxUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
+            GpxUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
+            GpxUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
+            GpxUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors()
+            GpxUiEvents.GpxDirectionReversed -> reverseGpxDirection()
+            GpxUiEvents.GpxOverviewClicked -> showGpxOverview()
+            is GpxUiEvents.GpxWaypointClicked -> selectWaypoint(event.waypoint)
+            GpxUiEvents.DistanceInfoWindowDismissed -> dismissDistanceInfoWindow()
         }
     }
 

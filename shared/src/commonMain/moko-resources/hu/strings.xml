@@ -103,7 +103,6 @@
     <string name="gpx_distance_info_window_end">Végpont</string>
 
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>
-    <string name="gpx_control_route_visibility_title">Az útvonal láthatósága</string>
     <string name="gpx_control_route_visibility_show">Útvonal megjelenítése</string>
     <string name="gpx_control_route_visibility_hide">Útvonal elrejtése</string>
     <string name="gpx_control_distances_title">Állomások távolságai</string>

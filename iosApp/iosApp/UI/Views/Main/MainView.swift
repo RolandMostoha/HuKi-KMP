@@ -81,10 +81,10 @@ struct MainView: View {
                         viewModel.onEvent(event: MainUiEventsCompassClicked.shared)
                     },
                     onWaypointClicked: { waypoint in
-                        viewModel.onEvent(event: MainUiEventsGpxWaypointClicked(waypoint: waypoint))
+                        viewModel.onEvent(event: GpxUiEventsGpxWaypointClicked(waypoint: waypoint))
                     },
                     onDistanceInfoWindowDismissed: {
-                        viewModel.onEvent(event: MainUiEventsDistanceInfoWindowDismissed.shared)
+                        viewModel.onEvent(event: GpxUiEventsDistanceInfoWindowDismissed.shared)
                     },
                     onMapLongClicked: { location in
                         viewModel.onEvent(event: MainUiEventsMapLongClicked(location: location))
@@ -203,7 +203,7 @@ struct MainView: View {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: filePickerTypes) { result in
             switch result {
             case .success(let url):
-                viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
+                viewModel.onEvent(event: GpxUiEventsGpxFileSelected(uri: url.absoluteString, source: .layers))
             case .failure(let error):
                 logError(message: "Failed to import GPX file: \(error)")
             }
@@ -242,7 +242,7 @@ private extension MainView {
                 GpxCollectionView(
                     onOpenTutorial: { navigationPath.append(GpxGuideRoute.gpxGuide) },
                     onOpenGpx: { uri in
-                        viewModel.onEvent(event: MainUiEventsGpxFileReopened(uri: uri))
+                        viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
                         navigationPath = NavigationPath()
                     }
                 )
@@ -364,7 +364,7 @@ private extension MainView {
         do {
             try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
             try FileManager.default.copyItem(at: url, to: destination)
-            viewModel.onEvent(event: MainUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
+            viewModel.onEvent(event: GpxUiEventsGpxFileSelected(uri: destination.absoluteString, source: .files))
             navigationPath = NavigationPath()
         } catch {
             logError(message: "Failed to copy incoming GPX file: \(error)")

@@ -38,7 +38,7 @@ class GpxDirectionUtilsTest {
     }
 
     @Test
-    fun `Given GPX with start and end - When reversed - Then start and end swap, others stay`() {
+    fun `Given GPX with start and end - When reversed - Then start and end swap and others stay`() {
         val actual = gpxDetails.reversed()
 
         actual.waypoints shouldBe listOf(

@@ -81,28 +81,6 @@ fun FloatingActionContainer(
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .padding(bottom = Dimens.Small),
     ) {
-        AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomStart),
-            visible = mainUiState.sheet == null &&
-                mainUiState.mapUiState.gpxDetails != null &&
-                mainUiState.mapUiState.gpxLayerVisible,
-            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
-            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
-        ) {
-            GpxControlMenu(
-                isRouteVisible = mainUiState.mapUiState.gpxRouteVisible,
-                isAllDistancesVisible = mainUiState.mapUiState.allDistancesVisible,
-                isSlopeColorsAvailable = mainUiState.mapUiState.gpxDetails?.hasSlopeSegments == true,
-                isSlopeColorsVisible = mainUiState.mapUiState.gpxSlopeColorsVisible,
-                isReversible = mainUiState.mapUiState.gpxDetails?.isReversible == true,
-                onToggleLineClicked = onGpxToggleLineClicked,
-                onToggleDistancesClicked = onGpxToggleDistancesClicked,
-                onToggleSlopeColorsClicked = onGpxToggleSlopeColorsClicked,
-                onReverseDirectionClicked = onGpxReverseDirectionClicked,
-                onOverviewClicked = onGpxOverviewClicked,
-                onClearClicked = onGpxClearClicked,
-            )
-        }
         val okt = mainUiState.mapUiState.okt
         // Keeps the last section so the FAB can still slide out after OKT is cleared
         val resumeSection = rememberLastNonNull(okt?.selectedSection)
@@ -211,6 +189,28 @@ fun FloatingActionContainer(
                 )
             }
         }
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomStart),
+            visible = mainUiState.sheet == null &&
+                mainUiState.mapUiState.gpxDetails != null &&
+                mainUiState.mapUiState.gpxLayerVisible,
+            enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
+        ) {
+            GpxControlMenu(
+                isRouteVisible = mainUiState.mapUiState.gpxRouteVisible,
+                isAllDistancesVisible = mainUiState.mapUiState.allDistancesVisible,
+                isSlopeColorsAvailable = mainUiState.mapUiState.gpxDetails?.hasSlopeSegments == true,
+                isSlopeColorsVisible = mainUiState.mapUiState.gpxSlopeColorsVisible,
+                isReversible = mainUiState.mapUiState.gpxDetails?.isReversible == true,
+                onToggleLineClicked = onGpxToggleLineClicked,
+                onToggleDistancesClicked = onGpxToggleDistancesClicked,
+                onToggleSlopeColorsClicked = onGpxToggleSlopeColorsClicked,
+                onReverseDirectionClicked = onGpxReverseDirectionClicked,
+                onOverviewClicked = onGpxOverviewClicked,
+                onClearClicked = onGpxClearClicked,
+            )
+        }
     }
 }
 
@@ -235,7 +235,7 @@ private fun FabColumnAction(
                 .padding(end = Dimens.Medium)
                 .wrapContentWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(Dimens.FloatingActionSpacing),
         ) {
             val myLocationStatus = mainUiState.myLocationState.myLocationStatus
             val isZoomControlsVisible = mainUiState.mapZoomControlsAlwaysVisible ||

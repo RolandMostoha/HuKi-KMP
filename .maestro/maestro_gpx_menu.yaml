@@ -1,7 +1,7 @@
 appId: ${APP_ID}
 ---
-# GPX Control Menu: reveal the control FAB, open the menu, and exercise its
-# actions: toggle route line visibility, show/hide distances and slope colors, reverse direction, overview, and clear.
+# GPX Control Menu: reveal the control FAB, toggle the route line with the FAB above it, open the menu, and exercise
+# its actions: show/hide distances and slope colors, reverse direction, overview, and clear.
 # clearState is false so the uploaded GPX fixtures survive on iOS (they live in the app's
 # Documents container, which clearState would wipe); the in-memory UI state still resets on
 # cold launch, so determinism is preserved on both platforms.
@@ -33,11 +33,18 @@ appId: ${APP_ID}
       id: MAIN_FAB_GPX_CONTROL_BUTTON
     timeout: 5000
 
+# The route line FAB sits above the menu: route is visible initially -> it offers to hide it
+- assertVisible: "Hide the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Show the route line"
+- tapOn:
+    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
+- assertVisible: "Hide the route line"
+
 # Open the GPX control menu
 - tapOn:
     id: MAIN_FAB_GPX_CONTROL_BUTTON
-- assertVisible:
-    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
 - assertVisible:
     id: MAIN_FAB_GPX_TOGGLE_DISTANCES_BUTTON
 - assertVisible:
@@ -64,19 +71,6 @@ appId: ${APP_ID}
           timeout: 5000
       - tapOn:
           id: MAIN_FAB_GPX_CONTROL_BUTTON
-
-# Route is visible initially -> the toggle offers to hide it
-- assertVisible: "Hide the route line"
-
-# Toggle the route line OFF -> the toggle now offers to show it
-- tapOn:
-    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
-- assertVisible: "Show the route line"
-
-# Toggle the route line back ON
-- tapOn:
-    id: MAIN_FAB_GPX_TOGGLE_LINE_BUTTON
-- assertVisible: "Hide the route line"
 
 # Distances are shown by default -> the toggle offers to hide them, the windows carry waypoint names.
 # The END window has the highest overlap priority, so it stays visible at any zoom.

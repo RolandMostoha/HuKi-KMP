@@ -594,7 +594,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
 
-                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+                viewModel.onEvent(GpxUiEvents.GpxStartNavigationClicked)
 
                 awaitItem().myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
             }
@@ -613,7 +613,7 @@ class MainViewModelTest {
                     myLocationStatus shouldBe MyLocationStatus.NotAvailable
                 }
 
-                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+                viewModel.onEvent(GpxUiEvents.GpxStartNavigationClicked)
 
                 with(awaitItem().myLocationState) {
                     permissionState shouldBe PermissionState.Granted
@@ -635,7 +635,7 @@ class MainViewModelTest {
                     myLocationStatus shouldBe MyLocationStatus.NotAvailable
                 }
 
-                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+                viewModel.onEvent(GpxUiEvents.GpxStartNavigationClicked)
 
                 with(awaitItem().myLocationState) {
                     permissionState shouldBe PermissionState.Denied
@@ -927,7 +927,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().sheet shouldBe null
 
-                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+                viewModel.onEvent(GpxUiEvents.GpxLayerSelected)
 
                 expectNoEvents()
             }
@@ -952,7 +952,7 @@ class MainViewModelTest {
                     mapUiState.gpxDetails shouldBe null
                 }
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 with(awaitItem()) {
                     isGpxLoading shouldBe true
@@ -976,19 +976,19 @@ class MainViewModelTest {
             val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoint))
+            viewModel.onEvent(GpxUiEvents.GpxWaypointClicked(waypoint))
             advanceUntilIdle()
 
             val info = viewModel.uiState.value.mapUiState.distanceInfoWindows.singleOrNull()
             info.shouldNotBeNull()
             info.location shouldBe waypoint.location
 
-            viewModel.onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            viewModel.onEvent(GpxUiEvents.DistanceInfoWindowDismissed)
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.distanceInfoWindows shouldBe emptyList()
@@ -1009,7 +1009,7 @@ class MainViewModelTest {
             val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1017,7 +1017,7 @@ class MainViewModelTest {
                 distanceInfoWindows.map { it.location } shouldBe waypoints.map { it.location }
             }
 
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1025,7 +1025,7 @@ class MainViewModelTest {
                 distanceInfoWindows shouldBe emptyList()
             }
 
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1041,10 +1041,10 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = false)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+            viewModel.onEvent(GpxUiEvents.GpxDirectionReversed)
             advanceUntilIdle()
 
             val actual = viewModel.uiState.value
@@ -1060,11 +1060,11 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = false)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
-            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+            viewModel.onEvent(GpxUiEvents.GpxDirectionReversed)
+            viewModel.onEvent(GpxUiEvents.GpxDirectionReversed)
 
             viewModel.uiState.value.mapUiState.gpxDetails?.locations shouldBe TEST_GPX_DETAILS.locations
         }
@@ -1077,10 +1077,10 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns gpxDetails
             val viewModel = createViewModel(grantedPermission = false)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxDirectionReversed)
+            viewModel.onEvent(GpxUiEvents.GpxDirectionReversed)
 
             viewModel.uiState.value.mapUiState.gpxDetails shouldBe gpxDetails
             analyticsService.loggedEvents.contains(AnalyticsEvent.GpxDirectionReversed) shouldBe false
@@ -1097,7 +1097,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1116,7 +1116,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe false
@@ -1129,17 +1129,17 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe true
 
-            viewModel.onEvent(MainUiEvents.GpxSlopeColorsToggled)
+            viewModel.onEvent(GpxUiEvents.GpxSlopeColorsToggled)
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe false
 
-            viewModel.onEvent(MainUiEvents.GpxSlopeColorsToggled)
+            viewModel.onEvent(GpxUiEvents.GpxSlopeColorsToggled)
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.gpxSlopeColorsVisible shouldBe true
@@ -1171,11 +1171,11 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
             everySuspend { gpxRepository.readGpxFile(any()) } returns firstGpx
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("first"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("first"))
             advanceUntilIdle()
 
             everySuspend { gpxRepository.readGpxFile(any()) } returns secondGpx
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("second"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("second"))
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.distanceInfoWindows.map { it.location } shouldBe
@@ -1197,11 +1197,11 @@ class MainViewModelTest {
             val service = locationMonitoringService(lastKnownLocation = track[2])
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
             viewModel.uiState.value.mapUiState.distanceInfoWindows shouldBe emptyList()
 
-            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoints[1]))
+            viewModel.onEvent(GpxUiEvents.GpxWaypointClicked(waypoints[1]))
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.distanceInfoWindows.map { it.location } shouldBe listOf(track[1])
@@ -1222,17 +1222,17 @@ class MainViewModelTest {
             val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxWaypointClicked(waypoints[1]))
+            viewModel.onEvent(GpxUiEvents.GpxWaypointClicked(waypoints[1]))
             advanceUntilIdle()
             viewModel.uiState.value.mapUiState.distanceInfoWindows.map { it.location } shouldBe
                 listOf(waypoints[1].location)
 
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1240,7 +1240,7 @@ class MainViewModelTest {
                 distanceInfoWindows.map { it.location } shouldBe waypoints.map { it.location }
             }
 
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1262,11 +1262,11 @@ class MainViewModelTest {
             val service = locationMonitoringService(lastKnownLocation = TEST_GPX_WAY_CLOSED.first())
             val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
             viewModel.uiState.value.mapUiState.distanceInfoWindows.shouldNotBeEmpty()
 
-            viewModel.onEvent(MainUiEvents.DistanceInfoWindowDismissed)
+            viewModel.onEvent(GpxUiEvents.DistanceInfoWindowDismissed)
             advanceUntilIdle()
 
             with(viewModel.uiState.value.mapUiState) {
@@ -1286,16 +1286,16 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().mapUiState.gpxLayerVisible shouldBe false
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 awaitItem().mapUiState.gpxLayerVisible shouldBe false
                 awaitItem().mapUiState.gpxLayerVisible shouldBe true
 
-                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+                viewModel.onEvent(GpxUiEvents.GpxLayerSelected)
 
                 awaitItem().mapUiState.gpxLayerVisible shouldBe false
 
-                viewModel.onEvent(MainUiEvents.GpxLayerSelected)
+                viewModel.onEvent(GpxUiEvents.GpxLayerSelected)
 
                 awaitItem().mapUiState.gpxLayerVisible shouldBe true
             }
@@ -1310,7 +1310,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 skipItems(1)
 
@@ -1368,7 +1368,7 @@ class MainViewModelTest {
             advanceUntilIdle()
             viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
 
-            viewModel.onEvent(MainUiEvents.RoutePlanGpxSaved("uri"))
+            viewModel.onEvent(GpxUiEvents.RoutePlanGpxSaved("uri"))
             advanceUntilIdle()
 
             val mapUiState = viewModel.uiState.value.mapUiState
@@ -1385,7 +1385,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.RoutePlanGpxSaved("uri"))
+            viewModel.onEvent(GpxUiEvents.RoutePlanGpxSaved("uri"))
             advanceUntilIdle()
 
             analyticsService.loggedEvents.shouldBeEmpty()
@@ -1541,7 +1541,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().sheet shouldBe null
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 awaitItem().sheet shouldBe null
                 awaitItem().sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
@@ -1559,12 +1559,12 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem()
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 awaitItem()
                 awaitItem()
 
-                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+                viewModel.onEvent(GpxUiEvents.GpxCloseClicked)
 
                 with(awaitItem()) {
                     mapUiState.gpxDetails shouldBe null
@@ -1589,11 +1589,11 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
 
                 awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(startLocation)
                 ensureAllEventsConsumed()
@@ -1615,11 +1615,11 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
 
                 awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(endLocation)
                 ensureAllEventsConsumed()
@@ -1639,11 +1639,11 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
 
                 awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(roundTripLocation)
                 ensureAllEventsConsumed()
@@ -1658,7 +1658,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
                 advanceUntilIdle()
 
                 expectNoEvents()
@@ -1673,11 +1673,11 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxShareClicked)
+                viewModel.onEvent(GpxUiEvents.GpxShareClicked)
 
                 awaitItem() shouldBe MainUiEffects.ShareGpxFile(
                     fileUri = TEST_GPX_DETAILS.fileUri,
@@ -1695,7 +1695,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mainUiEffects.test {
-                viewModel.onEvent(MainUiEvents.GpxShareClicked)
+                viewModel.onEvent(GpxUiEvents.GpxShareClicked)
                 advanceUntilIdle()
 
                 expectNoEvents()
@@ -1713,7 +1713,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().alert shouldBe null
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 // Loading state
                 awaitItem().alert shouldBe null
@@ -1777,7 +1777,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().isSearchBarVisible shouldBe true
 
-                viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+                viewModel.onEvent(GpxUiEvents.GpxStartNavigationClicked)
 
                 awaitItem().isSearchBarVisible shouldBe false
             }
@@ -2057,7 +2057,7 @@ class MainViewModelTest {
             viewModel.uiState.test {
                 awaitItem().isSearchBarVisible shouldBe true
 
-                viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+                viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
 
                 awaitItem().isSearchBarVisible shouldBe true // Loading
                 with(awaitItem()) {
@@ -2065,7 +2065,7 @@ class MainViewModelTest {
                     isSearchBarVisible shouldBe false
                 }
 
-                viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+                viewModel.onEvent(GpxUiEvents.GpxCloseClicked)
 
                 with(awaitItem()) {
                     mapUiState.gpxLayerVisible shouldBe false
@@ -2202,7 +2202,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImported(GpxSource.FILES))
@@ -2217,7 +2217,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri", GpxSource.LAYERS))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri", GpxSource.LAYERS))
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImported(GpxSource.LAYERS))
@@ -2231,10 +2231,10 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxShareClicked)
+            viewModel.onEvent(GpxUiEvents.GpxShareClicked)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(
@@ -2251,7 +2251,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileReopened("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileReopened("uri"))
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.HistoryGpxSelected)
@@ -2264,7 +2264,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxStartNavigationClicked)
+            viewModel.onEvent(GpxUiEvents.GpxStartNavigationClicked)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxNavigationStarted)
@@ -2277,7 +2277,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+            viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxMapsNavigationOpened)
@@ -2291,7 +2291,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxImportFailed)
@@ -2304,7 +2304,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxCloseClicked)
+            viewModel.onEvent(GpxUiEvents.GpxCloseClicked)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxClosed)
@@ -2317,7 +2317,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxRouteVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxRouteVisibilityToggled)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxRouteVisibilityToggled)
@@ -2330,7 +2330,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxDistancesVisibilityToggled)
+            viewModel.onEvent(GpxUiEvents.GpxDistancesVisibilityToggled)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxDistancesToggled)
@@ -2343,7 +2343,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxOverviewClicked)
+            viewModel.onEvent(GpxUiEvents.GpxOverviewClicked)
             advanceUntilIdle()
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxOverviewClicked)
@@ -2809,7 +2809,7 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
             advanceUntilIdle()
 
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
@@ -2882,7 +2882,7 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
@@ -2901,7 +2901,7 @@ class MainViewModelTest {
             everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.GpxFileSelected("uri"))
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
             viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
             advanceUntilIdle()

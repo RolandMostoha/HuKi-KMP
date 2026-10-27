@@ -16,9 +16,11 @@ struct GpxControlMenu: View {
     var onClear: () -> Void = {}
 
     @State private var isExpanded = false
+    @State private var isRouteFabVisible = true
     @Namespace private var glassNamespace
 
     private let menuGlassID = "gpx_control_menu_glass"
+    private let fabUnionID = "gpx_control_fab_union"
     private let destructiveIconColor = Color(SharedRes.colors().errorOnMap.getUIColor())
 
     var body: some View {
@@ -46,9 +48,15 @@ struct GpxControlMenu: View {
                         .glassEffect(in: RoundedRectangle(cornerRadius: 28, style: .continuous))
                         .glassEffectID(menuGlassID, in: glassNamespace)
                 } else {
-                    gpxControlFab
-                        .glassEffect(.regular.interactive(), in: Circle())
-                        .glassEffectID(menuGlassID, in: glassNamespace)
+                    VStack {
+                        if isRouteFabVisible {
+                            routeVisibilityFab
+                                .glassEffectUnion(id: fabUnionID, namespace: glassNamespace)
+                        }
+                        gpxControlFab
+                            .glassEffectUnion(id: fabUnionID, namespace: glassNamespace)
+                            .glassEffectID(menuGlassID, in: glassNamespace)
+                    }
                 }
             }
         } else {
@@ -57,11 +65,39 @@ struct GpxControlMenu: View {
                     gpxPanel
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
                 } else {
-                    gpxControlFab
-                        .background(.ultraThinMaterial, in: Circle())
+                    GlassContainer {
+                        VStack {
+                            if isRouteFabVisible {
+                                routeVisibilityFab
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                            gpxControlFab
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private var routeVisibilityFab: some View {
+        Button {
+            onToggleLine()
+        } label: {
+            Image(systemName: isRouteVisible ? "eye.slash" : "eye")
+                .fontWeight(.bold)
+                // The glass pill sizes to its widest icon; this matches the layers/location pill
+                .frame(width: 22)
+                .floatingButtonPadding(.top)
+        }
+        .glassButtonStyle()
+        .accessibilityLabel(
+            strings.get(
+                id: isRouteVisible
+                    ? SharedRes.strings().gpx_control_route_visibility_hide
+                    : SharedRes.strings().gpx_control_route_visibility_show
+            )
+        )
+        .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_LINE_BUTTON)
     }
 
     private var gpxControlFab: some View {
@@ -70,27 +106,15 @@ struct GpxControlMenu: View {
         } label: {
             Image(systemName: "slider.horizontal.3")
                 .fontWeight(.bold)
-                .frame(width: 56, height: 56)
-                .contentShape(Circle())
+                .floatingButtonPadding(.bottom)
         }
-        .buttonStyle(PressFeedbackButtonStyle())
+        .glassButtonStyle()
         .accessibilityLabel(strings.get(id: SharedRes.strings().gpx_control_a11y_fab))
         .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_CONTROL_BUTTON)
     }
 
     private var gpxPanel: some View {
         VStack(alignment: .leading, spacing: 4) {
-            menuRow(
-                icon: isRouteVisible ? "eye" : "eye.slash",
-                title: strings.get(
-                    id: isRouteVisible
-                        ? SharedRes.strings().gpx_control_route_visibility_hide
-                        : SharedRes.strings().gpx_control_route_visibility_show
-                ),
-                description: strings.get(id: SharedRes.strings().gpx_control_route_visibility_title),
-                action: onToggleLine
-            )
-            .accessibilityIdentifier(TestTags.shared.MAIN_FAB_GPX_TOGGLE_LINE_BUTTON)
             menuRow(
                 icon: "ruler",
                 title: strings.get(
@@ -179,11 +203,19 @@ struct GpxControlMenu: View {
     }
 
     private func expand() {
-        withAnimation(.smooth(duration: 0.35)) { isExpanded = true }
+        withAnimation(.smooth(duration: 0.35)) {
+            isExpanded = true
+            isRouteFabVisible = false
+        }
     }
 
     private func collapse() {
         guard isExpanded else { return }
-        withAnimation(.smooth(duration: 0.35)) { isExpanded = false }
+        withAnimation(.smooth(duration: 0.35)) {
+            isExpanded = false
+        } completion: {
+            guard !isExpanded else { return }
+            withAnimation(.smooth(duration: 0.25)) { isRouteFabVisible = true }
+        }
     }
 }
