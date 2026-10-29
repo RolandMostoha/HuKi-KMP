@@ -119,6 +119,8 @@ fix/<short_description>
 
 - Use lowercase snake_case for the description.
 - Examples: `feature/gpx`, `feature/search`, `fix/my_location_permissions`
+- **Small changes go straight to `main`**, no branch: UI tweaks, small fixes, cleanups, docs, config.
+  Features and larger fixes get a `feature/` / `fix/` branch.
 
 ### Commit Messages
 

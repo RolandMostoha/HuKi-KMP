@@ -41,8 +41,6 @@ import androidx.core.graphics.drawable.toBitmap
 import co.touchlab.kermit.Logger
 import com.mapbox.geojson.Point
 import com.mapbox.maps.ImageHolder
-import com.mapbox.maps.MapboxDelicateApi
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.MapboxMapComposable
@@ -112,7 +110,6 @@ private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
 private const val SLOPE_LAYER_SUFFIX = "_slope"
 
-@OptIn(MapboxDelicateApi::class, MapboxExperimental::class)
 @Composable
 fun MapContent(
     mapUiState: MapUiState,
@@ -369,7 +366,6 @@ private fun MapViewportState.handleMapEffect(
     }
 }
 
-@OptIn(MapboxDelicateApi::class)
 @Composable
 @MapboxMapComposable
 private fun GpxLayer(

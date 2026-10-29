@@ -2,7 +2,6 @@ package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.style.GenericStyle
 import com.mapbox.maps.extension.compose.style.MapboxStyleComposable
@@ -24,7 +23,6 @@ private typealias MapSlotContent = @Composable () -> Unit
 
 @Composable
 @MapboxStyleComposable
-@OptIn(MapboxExperimental::class)
 fun MapBaseStyle(baseLayer: BaseLayer, isDarkMode: Boolean, isHikingLayerVisible: Boolean) {
     val lightPreset = if (isDarkMode) LightPresetValue.NIGHT else LightPresetValue.DAY
     val hikingSlotContent: MapSlotContent? = if (isHikingLayerVisible) {

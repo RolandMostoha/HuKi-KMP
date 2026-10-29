@@ -18,6 +18,8 @@ kotlin {
     compilerOptions {
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
+        optIn.add("com.mapbox.maps.MapboxDelicateApi")
+        optIn.add("com.mapbox.maps.MapboxExperimental")
     }
 }
 

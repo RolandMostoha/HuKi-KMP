@@ -46,22 +46,24 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / tech tasks
 
-| Status | Feature                                                                                                                       |
-|--------|-------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                       |
-| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX, Place History should be migrated fine. |                                                                                       |
-| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                        |
-| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                         |
-| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                     |
-| `[G]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                            |
-| `[G]`  | Separate Mapbox token Android vs iOS                                                                                          |
-| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                             |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                     |
-| `[ ]`  | App store preview video (optional)                                                                                            |
-| `[ ]`  | App store header picture/video (optional)                                                                                     |
-| `[ ]`  | iPhone duo / proper iPad support                                                                                              |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                |
-| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                               |
+| Status | Feature                                                                                                                                                                    |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                    |
+| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB. |                                                                                       |
+| `[G]`  | Android: Prepare for config change - state restoration. My location state, GPX, RoutePlanner, Lansdcapes should restore the last state (revise the list)                    |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                     |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                      |
+| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                  |
+| `[G]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                |
+| `[G]`  | Separate Mapbox token Android vs iOS                                                                                                                                       |
+| `[G]`  | Separate LocationIQ token Android vs iOS                                                                                                                                   |
+| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                          |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                  |
+| `[ ]`  | App store preview video (optional)                                                                                                                                         |
+| `[ ]`  | App store header picture/video (optional)                                                                                                                                  |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                           |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                             |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                            |
 
 ### Bugs
 
@@ -197,49 +199,19 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Settings
 
-| Status | Scope    | Task                                                                    |
-|--------|----------|-------------------------------------------------------------------------|
-| `[G]`  | Settings | Add Increase map font size in Settings (see FEATURE: Map Label Scaling) |
-
-### FEATURE: Map Label Scaling (Global Scale Factor)
-
-Goal: let users increase map **label/icon size** without enlarging the map graphics (roads, fills, casings) — a
-text-visibility + accessibility win for the #1 feature "Map, text visibility".
-
-Only affects icons + text labels; map geometry stays the same and zoom interpolation is preserved by the renderer (no
-per-layer `text-size` expression juggling).
-
-Approach: Mapbox's **global scale factor**, exposed on Android Compose as
-`mapboxMap.symbolScaleBehavior` (set via `MapEffect`), with three modes:
-
-Blockers:
-
-- **Version gap**: requires Mapbox **11.26.0** (Android + iOS). We are pinned to **11.20.1** in
-  `libs.versions.toml` / the iOS pod, so this needs an SDK bump + map re-verify on both platforms.
-- **Experimental**: `symbolScaleBehavior` is flagged experimental/`@MapboxExperimental` and the signature may change in
-  a later 11.x.
-
-Refs:
-[Mapbox blog — new scaling/styling](https://www.mapbox.com/blog/new-scaling-and-styling-capabilities-support-clear-responsive-and-expressive-map-design)
-[Android Compose example](https://docs.mapbox.com/android/maps/examples/compose/global-scale-factor/)
-
-| Status | Scope    | Task                                                                                          |
-|--------|----------|-----------------------------------------------------------------------------------------------|
-| `[ ]`  | Map      | Bump Mapbox SDK to 11.26.0+ (Android + iOS pod), re-verify map screens on both platforms      |
-| `[ ]`  | Map      | Confirm the iOS SwiftUI equivalent of `symbolScaleBehavior` and wire it in `MapContent` (iOS) |
-| `[ ]`  | Settings | Add label-size preference to `AppSettings` + DataStore (Fixed factor and/or System/Custom)    |
-| `[ ]`  | Settings | Settings UI control (slider or presets) feeding the map scale factor                          |
-| `[ ]`  | Map      | Apply `symbolScaleBehavior` in Android `MapContent` via `MapEffect` from the settings value   |
-| `[ ]`  | Map      | Default to `SymbolScaleBehavior.system` so it respects OS accessibility font scale out of box |
+| Status | Scope    | Task |
+|--------|----------|------|
+| `[ ]`  | Settings |      |
 
 ### FEATURE: Menu - Guides
 
 Goal: a new section in Menu, with 1 page guides of different topics.
 
-| Status | Scope  | Task                                                                                |
-|--------|--------|-------------------------------------------------------------------------------------|
-| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                           |
-| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section. |
+| Status | Scope  | Task                                                                                                                                                                   |
+|--------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Guides | Add "Gyorstalpaló" to Guides section with My location - Navigation state, Route Planner, Travel Time calculation logic, Slope calculation (HuKi-Android for reference) |
+| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                                              |
+| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                                                    |
 
 #### Guides: Report problem on route
 

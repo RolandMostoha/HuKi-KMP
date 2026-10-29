@@ -33,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mapbox.maps.AnnotatedFeature
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationAnchorConfig
 import com.mapbox.maps.ViewAnnotationOptions
@@ -75,7 +74,6 @@ private const val LINE_HIT_OPACITY = 0.01
 private const val RAISED_MARKER_PRIORITY = 1L
 private const val SELECTED_MARKER_PRIORITY = 2L
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 fun OktLayer(okt: OktUiState, onEvent: (OktUiEvents) -> Unit) {
@@ -153,7 +151,6 @@ private fun rememberOktLineSource(line: OktLine): GeoJsonSourceState {
     return source
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 private fun OktLineLayer(

@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapboxMapComposable
 import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.ColorValue
@@ -34,7 +33,6 @@ import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import kotlin.math.ceil
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 fun RouteLineLayer(
@@ -59,7 +57,6 @@ fun RouteLineLayer(
     }
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 fun SlopeRouteLineLayer(
@@ -94,7 +91,6 @@ fun SlopeRouteLineLayer(
 
 private const val DIRECTION_ARROW_IMAGE_ID = "route_direction_arrow"
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 fun RouteDirectionLayer(sourceState: GeoJsonSourceState, layerId: String, arrowColor: Color) {

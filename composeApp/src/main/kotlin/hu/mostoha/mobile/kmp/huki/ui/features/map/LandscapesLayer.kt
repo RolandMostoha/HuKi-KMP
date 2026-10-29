@@ -33,7 +33,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mapbox.maps.AnnotatedFeature
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationAnchorConfig
 import com.mapbox.maps.ViewAnnotationOptions
@@ -156,7 +155,6 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
     }
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 private fun HungaryMaskLayer(geoJson: String) {
@@ -170,7 +168,6 @@ private fun HungaryMaskLayer(geoJson: String) {
     }
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 private fun LandscapeOutlineLayers(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents) -> Unit) {
@@ -252,7 +249,6 @@ private fun LandscapeOutlineLayers(landscapes: LandscapesUiState, onEvent: (Land
     }
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 @MapboxMapComposable
 private fun SelectedLandscapeLayers(sourceState: GeoJsonSourceState, landscape: Landscape, color: Color) {

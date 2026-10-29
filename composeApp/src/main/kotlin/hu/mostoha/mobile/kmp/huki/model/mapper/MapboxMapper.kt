@@ -10,7 +10,6 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.CameraState
 import com.mapbox.maps.EdgeInsets
-import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.SymbolScaleBehavior
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
@@ -119,7 +118,6 @@ private fun PaddingValues.toEdgeInset(density: Density): EdgeInsets =
         calculateRightPadding(LayoutDirection.Ltr).dpToPx(density).toDouble(),
     )
 
-@OptIn(MapboxExperimental::class)
 fun MapLabelScale.toSymbolScaleBehavior(): SymbolScaleBehavior =
     if (followSystem) {
         SymbolScaleBehavior.system(MapLabelScale::coerceFactor)
