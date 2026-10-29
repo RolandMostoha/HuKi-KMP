@@ -155,7 +155,8 @@ struct MapView: View {
                     scaleBar: ScaleBarViewOptions(
                         position: .topLeft,
                         margins: .init(x: 16.0, y: 16.0),
-                        visibility: .adaptive
+                        visibility: .adaptive,
+                        units: .metric
                     ),
                     // The built-in compass is hidden, we are using a custom one
                     compass: CompassViewOptions(visibility: .hidden),

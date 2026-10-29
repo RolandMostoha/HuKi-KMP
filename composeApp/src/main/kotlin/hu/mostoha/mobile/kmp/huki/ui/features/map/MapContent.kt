@@ -55,6 +55,7 @@ import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.style.expressions.dsl.generated.literal
+import com.mapbox.maps.plugin.DistanceUnits
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
@@ -203,8 +204,10 @@ fun MapContent(
                         .testTag(TestTags.MAIN_SCALE_BAR)
                         .padding(horizontal = Dimens.Large),
                     contentPadding = insetPadding,
-                    height = 2.dp,
+                    height = 3.dp,
+                    borderWidth = 1.dp,
                     textSize = 10.sp,
+                    distanceUnits = DistanceUnits.METRIC,
                     ratio = if (isLandscape) SCALE_BAR_RATIO_LANDSCAPE else SCALE_BAR_RATIO_PORTRAIT,
                 )
             },
