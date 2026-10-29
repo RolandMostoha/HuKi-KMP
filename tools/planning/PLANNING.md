@@ -108,7 +108,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
+| `[x]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
 | `[G]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search

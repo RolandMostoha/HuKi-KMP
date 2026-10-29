@@ -107,6 +107,7 @@ kotlin {
             implementation(libs.moko.permissions.test)
         }
         androidMain.dependencies {
+            implementation(libs.androidx.core.location.altitude)
             implementation(libs.google.play.services.location)
             implementation(libs.koin.android)
             implementation(libs.koin.compose)

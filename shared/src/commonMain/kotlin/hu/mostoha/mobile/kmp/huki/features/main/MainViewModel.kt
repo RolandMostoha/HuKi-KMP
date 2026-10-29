@@ -122,6 +122,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.maplibre.spatialk.units.extensions.inMeters
 import org.maplibre.spatialk.units.extensions.meters
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
@@ -166,6 +167,7 @@ class MainViewModel(
         initLogging()
         initMyLocation()
         initDistanceMonitoring()
+        initAltitudeMonitoring()
         initWhatsNew()
         initLaunchArgGpx()
         observeSettings()
@@ -747,6 +749,14 @@ class MainViewModel(
             }
             .flowOn(defaultDispatcher)
             .onEach { data -> _uiState.updateMapUiState { it.copy(distanceInfoWindows = data) } }
+            .launchIn(viewModelScope)
+    }
+
+    private fun initAltitudeMonitoring() {
+        locationMonitoringService.locations()
+            .map { it.altitude?.roundToInt() }
+            .distinctUntilChanged()
+            .onEach { altitude -> _uiState.updateMyLocationState { it.copy(altitude = altitude) } }
             .launchIn(viewModelScope)
     }
 

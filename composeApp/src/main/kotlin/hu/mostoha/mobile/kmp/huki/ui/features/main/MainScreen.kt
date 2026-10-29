@@ -286,6 +286,7 @@ private fun MainContent(
                 mapUiState = uiState.mapUiState,
                 mapUiEffects = mapUiEffects,
                 onEvent = onEvent,
+                altitude = uiState.myLocationState.altitude,
                 routePlannerBottomInset = routePlannerMapInset(
                     sheet = uiState.sheet,
                     detent = routePlannerDetent,

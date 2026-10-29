@@ -264,6 +264,7 @@ struct MapView: View {
                     .padding(.trailing, 16)
                     .transition(.opacity)
                 }
+                altitudeOrnament
                 debugCameraPanel
             }
             .animation(.smooth(duration: 0.3), value: isCompassVisible)
@@ -278,12 +279,6 @@ private extension MapView {
 
     var isRoutePlanVisible: Bool {
         uiState.mapUiState.routePlan != nil || !uiState.mapUiState.routePlanMarkers.isEmpty
-    }
-
-    func isFacingNorth(_ bearing: Double) -> Bool {
-        let tolerance = MapConstants.shared.MAP_FACING_NORTH_TOLERANCE
-        let rotation = abs(bearing)
-        return rotation >= 360.0 - tolerance || rotation <= tolerance
     }
 
     @ViewBuilder

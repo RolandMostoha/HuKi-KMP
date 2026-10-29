@@ -107,6 +107,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
+private val ALTITUDE_TOP_PADDING = 32.dp
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
 private const val SLOPE_LAYER_SUFFIX = "_slope"
 
@@ -118,6 +119,7 @@ fun MapContent(
     modifier: Modifier = Modifier,
     routePlannerBottomInset: Dp? = null,
     listSheetHeight: Dp? = null,
+    altitude: Int? = null,
 ) {
     val density = LocalDensity.current
     val isLandscape by rememberUpdatedState(
@@ -317,6 +319,13 @@ fun MapContent(
             }
             PlaceMarkersLayer(mapUiState = mapUiState, isDarkMode = isDarkMode, onEvent = onEvent)
         }
+        MapAltitude(
+            altitude = altitude,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(insetPadding)
+                .padding(start = Dimens.Large, top = ALTITUDE_TOP_PADDING),
+        )
         MapCameraDebugPanel(
             enabled = FeatureFlags.DEBUG_SHOW_CAMERA_PANEL,
             visible = isCameraPanelVisible,

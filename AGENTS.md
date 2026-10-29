@@ -97,6 +97,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - **Location**: `LocationMonitoringService` (commonMain) is the shared location source — a `locationUpdates` stream plus a one-shot `lastKnownLocation()`.
   - Android: backed by Mapbox's `LocationService`. It uses Google's Fused Location Provider automatically when `play-services-location` is on the classpath.
   - iOS: backed by CoreLocation (`CLLocationManager`).
+  - `Location.altitude` is above mean sea level and `null` without a valid vertical accuracy. Android converts the
+    WGS84 ellipsoid height with `androidx.core:core-location-altitude` (on-device geoid, works offline).
 - Androidx ViewModel: ViewModel bridge for KMP.
 - Androidx Material3: Theme, UI Components.
 - Androidx DataStore (multiplatform): key/value storge e.g. user preferences.

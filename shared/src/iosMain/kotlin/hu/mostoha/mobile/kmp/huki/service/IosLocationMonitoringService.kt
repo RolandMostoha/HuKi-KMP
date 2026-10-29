@@ -1,8 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.service
 
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.mapper.toLocation
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.useContents
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,12 +28,7 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
         if (!locationManager.isAuthorized()) {
             return null
         }
-        val clLocation = locationManager.location ?: return locationUpdates.replayCache.lastOrNull()
-        return Location(
-            latitude = clLocation.coordinate.useContents { latitude },
-            longitude = clLocation.coordinate.useContents { longitude },
-            altitude = clLocation.altitude,
-        )
+        return locationManager.location?.toLocation() ?: locationUpdates.replayCache.lastOrNull()
     }
 
     private fun CLLocationManager.isAuthorized(): Boolean =
@@ -65,13 +60,7 @@ class IosLocationMonitoringService(scope: CoroutineScope) : LocationMonitoringSe
         val delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
             override fun locationManager(manager: CLLocationManager, didUpdateLocations: List<*>) {
                 val clLocation = didUpdateLocations.lastOrNull() as? CLLocation ?: return
-                trySend(
-                    Location(
-                        latitude = clLocation.coordinate.useContents { latitude },
-                        longitude = clLocation.coordinate.useContents { longitude },
-                        altitude = clLocation.altitude,
-                    ),
-                )
+                trySend(clLocation.toLocation())
             }
 
             override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {

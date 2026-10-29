@@ -314,6 +314,37 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given location with altitude - When location updates - Then uiState has rounded altitude`() {
+        runTest {
+            val updates = MutableSharedFlow<Location>()
+            val service = locationMonitoringService(lastKnownLocation = null, updates = updates)
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+
+            updates.emit(Location(latitude = 47.7, longitude = 18.9, altitude = 699.6))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.myLocationState.altitude shouldBe 700
+        }
+    }
+
+    @Test
+    fun `Given location with altitude - When location without altitude arrives - Then uiState altitude is cleared`() {
+        runTest {
+            val updates = MutableSharedFlow<Location>()
+            val altitudeLocation = Location(latitude = 47.7, longitude = 18.9, altitude = 699.6)
+            val service = locationMonitoringService(lastKnownLocation = altitudeLocation, updates = updates)
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            advanceUntilIdle()
+
+            updates.emit(Location(latitude = 47.7, longitude = 18.9, altitude = null))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.myLocationState.altitude shouldBe null
+        }
+    }
+
+    @Test
     fun `Given FollowingLiveCompass my location - When MyLocationLongClicked - Then it stays FollowingLiveCompass`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
