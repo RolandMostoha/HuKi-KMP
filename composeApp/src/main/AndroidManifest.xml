@@ -15,7 +15,8 @@
 
         <activity
             android:exported="true"
-            android:name="hu.mostoha.mobile.kmp.huki.MainActivity">
+            android:name="hu.mostoha.mobile.kmp.huki.MainActivity"
+            android:theme="@style/Theme.HuKi.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -6,6 +6,7 @@ android-targetSdk = "37"
 androidx-activity = "1.13.0"
 androidx-compose-bom = "2026.08.00"
 androidx-core-location-altitude = "1.0.1"
+androidx-core-splashscreen = "1.2.0"
 androidx-datastore = "1.2.1"
 androidx-navigation-compose = "2.10.0"
 androidx-room = "2.8.4"
@@ -49,6 +50,7 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-core-location-altitude = { module = "androidx.core:core-location-altitude", version.ref = "androidx-core-location-altitude" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-lifecycle-runtimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-viewmodel" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-viewmodel" }

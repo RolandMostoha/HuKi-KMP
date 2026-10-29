@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.HuKi.Starting" parent="Base.Theme.HuKi.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/anim_splash</item>
+        <item name="windowSplashScreenAnimationDuration">@integer/splash_animation_duration</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splash_branding</item>
+    </style>
+</resources>
