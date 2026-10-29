@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.util
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -23,7 +24,10 @@ fun mokoString(desc: StringDesc): String = Strings(LocalContext.current).get(des
 fun mokoColor(id: ColorResource): Color = id.toComposeColor(LocalThemedContext.current ?: LocalContext.current)
 
 @Composable
-fun mokoImage(id: ImageResource): ImageVector = ImageVector.vectorResource(id.drawableResId)
+fun mokoImage(id: ImageResource): ImageVector {
+    val context = LocalThemedContext.current ?: LocalContext.current
+    return remember(context, id) { ImageVector.vectorResource(context.theme, context.resources, id.drawableResId) }
+}
 
 fun ColorResource.toComposeColor(context: Context): Color = Color(this.getColor(context))
 

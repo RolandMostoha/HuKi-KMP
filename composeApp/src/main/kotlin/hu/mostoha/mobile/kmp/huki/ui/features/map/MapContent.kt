@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -91,13 +90,13 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
-import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MAP_COMPASS_TOP_PADDING
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
 import hu.mostoha.mobile.kmp.huki.theme.SlopeColorScale
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
+import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -108,6 +107,7 @@ import kotlinx.coroutines.flow.filterNotNull
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
 private val ALTITUDE_TOP_PADDING = 32.dp
+private val COMPASS_SIZE = 58.dp
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
 private const val SLOPE_LAYER_SUFFIX = "_slope"
 
@@ -213,7 +213,7 @@ fun MapContent(
             compass = {
                 Compass(
                     modifier = Modifier.padding(
-                        top = 35.dp,
+                        top = 44.dp,
                         end = Dimens.ExtraLarge,
                     ),
                     contentPadding = insetPadding,
@@ -221,10 +221,10 @@ fun MapContent(
                 ) {
                     Image(
                         modifier = Modifier
-                            .size(MAP_COMPASS_TOP_PADDING.dp)
+                            .size(COMPASS_SIZE)
                             .clip(CircleShape)
                             .clickable { onEvent(MainUiEvents.CompassClicked) },
-                        painter = painterResource(id = SharedRes.images.ic_my_location_compass.drawableResId),
+                        imageVector = mokoImage(SharedRes.images.ic_my_location_compass),
                         contentDescription = mokoString(SharedRes.strings.my_location_a11y_compass),
                     )
                 }

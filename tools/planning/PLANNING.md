@@ -46,24 +46,24 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / tech tasks
 
-| Status | Feature                                                                                                                                                                    |
-|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                    |
-| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB. |                                                                                       |
-| `[G]`  | Android: Prepare for config change - state restoration. My location state, GPX, RoutePlanner, Lansdcapes should restore the last state (revise the list)                    |                                                                                       |
-| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                     |
-| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                      |
-| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                  |
-| `[G]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                |
-| `[G]`  | Separate Mapbox token Android vs iOS                                                                                                                                       |
-| `[G]`  | Separate LocationIQ token Android vs iOS                                                                                                                                   |
-| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                          |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                  |
-| `[ ]`  | App store preview video (optional)                                                                                                                                         |
-| `[ ]`  | App store header picture/video (optional)                                                                                                                                  |
-| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                           |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                             |
-| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                            |
+| Status | Feature                                                                                                                                                                                                |
+|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                                                |
+| `[G]`  | Android: Prepare for config change AND process death -> state restoration. Map and camera state, My location state, GPX, RoutePlanner, Lansdcapes, OKT should restore the last state (revise the list) |                                                                                       |
+| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                             |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
+| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                              |
+| `[x]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                                            |
+| `[G]`  | Separate Mapbox token Android vs iOS                                                                                                                                                                   |
+| `[G]`  | Separate LocationIQ token Android vs iOS                                                                                                                                                               |
+| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                                                      |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                              |
+| `[ ]`  | App store preview video (optional)                                                                                                                                                                     |
+| `[ ]`  | App store header picture/video (optional)                                                                                                                                                              |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                       |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                         |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                        |
 
 ### Bugs
 
@@ -88,9 +88,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope  | Task                                                                                                                                                                                                                                                                                                                                                        |
 |--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Map    | After state restoration / app kill -> restore last camera state + last opened GPX                                                                                                                                                                                                                                                                           |
 | `[ ]`  | Map    | Is there any optimization strategy for raster layers? HuKi-hiking trails                                                                                                                                                                                                                                                                                    |
-| `[G]`  | Layers | Draw the hiking (turistautak) raster below the base map labels so place/peak names (e.g. "Pilisszentiván") stay readable. ![img_6.png](img_6.png) Outdoors: `GenericStyle(layerPositionedContent = { belowLayer(...) })` / iOS `.position(.below(...))`; Standard/Satellite: `middle` slot. Check trail visibility vs. road/contour labels and tap targets. |
 
 ### FEATURE: Landscape orientation
 
@@ -162,9 +160,9 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope         | Task                                         |
 |--------|---------------|----------------------------------------------|
-| `[ ]`  | GPXCollection | Implement rename                             |
-| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name      |
-| `[ ]`  | GPXCollection | Filter by distance, open date, per landscape |
+| `[G]`  | GPXCollection | Implement rename file                        |
+| `[G]`  | GPXCollection | Searchbar, free search text by gpx name      |
+| `[G]`  | GPXCollection | Filter by distance, open date, per landscape |
 | `[ ]`  | GPXCollection | "Mark Completed" GPX files                   |
 
 ### FEATURE: Place Details
@@ -184,7 +182,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | RoutePlanner | Android: the planner loses its stops on a configuration change (rotation, dark-mode toggle) — `rememberScopedViewModelStoreOwner` does not survive one. Fix with `rememberViewModelStoreOwner` once the project is on AGP 9.1 / compileSdk 37 (androidx.lifecycle 2.11.0). |
 | `[G]`  | RoutePlanner | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations.                                                                                                                                |
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |

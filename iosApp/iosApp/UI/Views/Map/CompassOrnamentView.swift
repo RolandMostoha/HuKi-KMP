@@ -10,12 +10,14 @@ struct CompassOrnamentView: View {
 
     var body: some View {
         Button(action: onTap) {
-            Image(uiImage: SharedRes.images().ic_my_location_compass.toUIImage()!)
+            Image(uiImage: SharedRes.images().ic_my_location_compass_needle.toUIImage()!)
                 .resizable()
-                .frame(width: 48, height: 48)
                 .rotationEffect(.degrees(-bearing))
+                .frame(width: 50, height: 50)
+                .contentShape(Circle())
         }
         .buttonStyle(PressFeedbackButtonStyle())
+        .glassBackground(.regular, in: Circle(), interactive: true)
         .accessibilityLabel(accessibilityLabel)
     }
 }
