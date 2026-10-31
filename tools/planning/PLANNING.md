@@ -72,6 +72,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[G]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
+| `[G]`  | Settings   | Bug: iOS. Discover->GPX Tooltip->GPX Guide-> double back button without title ![img.png](img.png)                                                                                                                                                                                                                                  |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
 
@@ -230,6 +231,16 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | `[G]`  | Support | Add Support feature |
 
 ## Ideas / Experimental features 
+
+### FEATURE: Full offline mode with downloaded Mapbox layers + Hiking layer
+
+Hiking layer https://data2.openstreetmap.hu/ - TuraReteg.sqlitedb
+
+### FEATURE: Background location monitoring
+
+Entry service for many related features, e.g. haptic warning for going off the GPX route, route recording
+
+#### FEATURE: Haptic warning for going off the GPX route
 
 ### FEATURE: Route Planner: Wandering mode
 

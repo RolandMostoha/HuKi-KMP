@@ -1,6 +1,12 @@
 #!/bin/bash
 # Pushes every tools/gpx/*.gpx file to /sdcard/Download on the connected Android device/emulator.
 # Used to seed test GPX fixtures before Maestro E2E runs or manual GPX import testing.
+# Usage: android_upload_test_gpx_files.sh [device-serial]
+
+# Targets the given device when several are connected
+if [ -n "${1:-}" ]; then
+    export ANDROID_SERIAL="$1"
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
