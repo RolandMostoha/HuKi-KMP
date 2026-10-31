@@ -79,7 +79,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - TestTag IDs for Maestro element targets
 - Analytics: check for worth-to-measure events
 - Crashlytics: check for worth-to-measure non-fatals, logs, breadcrumbs 
-- Always ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
+- Ask: should the state be restored for this feature? Handle process death if so
+- Ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
 - Privacy Policy: check if change is necessary
@@ -205,6 +206,14 @@ UI → UiEvent → ViewModel → UiState
   - Android: Jetpack `androidx.navigation.compose` — single `NavHost` hosted by `RootNavHost`.
   - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
 
+### State restoration
+- Restore after the OS kills the app in the background; a user swipe-away / force-quit starts fresh.
+- `MainViewModel` owns the session: restores it in `init`, builds it in `sessionSnapshot()`.
+- `MainSession`: what is restored — camera, my-location mode, one GPX / OKT / Landscapes / Route Planner feature (references and flags, never geometry).
+- `MainSessionSnapshot`: its `@Serializable` JSON form, mapped in `SessionMapper.kt`.
+- `SessionSavedState.kt`: stores the JSON in Android's `SavedStateHandle`; iOS `MainSceneView` keeps it in `@SceneStorage`.
+- E2E: `maestro_state_restoration.yaml`.
+
 ## Coding Rules & Constraints
 
 ### General
@@ -214,36 +223,11 @@ UI → UiEvent → ViewModel → UiState
 - Dark mode: Mapbox doesn't have dark modes for its layers (Outdoors, Satellite etc.) so we use light mode only for the map (markers, routes etc.)
 
 ### Comments
-
-Before writing a comment, **both** must hold. If either fails, delete it.
-
-1. **It says something the code cannot.** A *why*, an invariant, a constraint, a workaround, a
-   non-obvious external fact. If it paraphrases the declaration's name, signature or fields, it is noise.
-2. **It stays true when the code around it changes.** A comment naming callers, usage sites,
-   platforms or file locations is correct only on the day it is written, and nothing forces an update.
-
-**Banned, no exceptions:**
-- **Restating the declaration.** `/** Aggregated numbers of a route */` above
-  `data class RouteStats(travelTime, distance, incline, decline)` adds nothing to the signature.
-- **Naming usage sites.** `... shown in GPX Details and Route Planner` becomes a lie, and a
-  maintenance chore, the day a third screen uses it.
-- **Cross-platform referrals.** "We did this on Android, that on iOS".
-- **Comparing to alternatives.** `(@State re-creates it on every view init)` describes another
-  approach, not this code. Say what this code does; the list of alternatives never ends, and the
-  previous version lives in git.
-- **Doc comments on Composables / SwiftUI views.** Go straight from `import` to
-  `struct X: View` / `@Composable fun X()`. Add a `@Preview` / `#Preview` instead.
-
-**Length:**
-- Preferred: none, or 1 line.
-- 2–3 lines is the hard maximum, and must be called out in the task summary with the reason it was
-  needed. If it isn't worth justifying there, don't write it.
-
-**Style:**
-- Kotlin: use KDoc `/** */` for comments on declarations, including members inside a class, interface or
-  object; plain `//` only for notes inside function bodies.
-- Kotlin KDoc: always use the extended multi-line format, even for a one-liner — `/**`, ` * text`, ` */` on separate lines; never `/** text */`.
-- Swift: follow the comment-marks rule in **SwiftUI - iOS**.
+- Write one only if it says what the code can't (why, invariant, constraint, workaround) and stays true when surrounding code changes.
+- Banned: restating the declaration, naming usage sites, cross-platform referrals, comparing to alternatives, doc comments on Composables / SwiftUI views (add a Preview instead).
+- Length: none or 1 line preferred; 2–3 lines max, justified in the task summary.
+- Kotlin: KDoc `/** */` on declarations, always multi-line (`/**`, ` * text`, ` */`); `//` only inside function bodies.
+- Swift: `///` on non-private declarations, `//` on private ones and inside function bodies.
 
 ### KMP
 - No Java in Common: Strictly avoid `java.*` imports in `commonMain`.
@@ -257,10 +241,10 @@ Before writing a comment, **both** must hold. If either fails, delete it.
   - fun onEvent(event: [X]UiEvents) should contain 1 liner actions. Extract to a dedicated function if more complex than 1 line.
 
 ### Mappers
-- Type mappers between layers (data↔domain, domain↔domain, platform↔domain) are **top-level extension functions** named `to<Target>()`, grouped by the domain concept they map in `model/mapper/<Concept>Mapper.kt` (e.g. `GpxMapper.kt`, `MapboxMapper.kt`).
-- Do **not** place mappers on the model classes themselves: a `model/data` class must not import `model/domain` types (and vice versa), so co-locating a mapper in the model file leaks a cross-layer dependency.
-- Keep mappers out of repositories/ViewModels — they belong in `model/mapper` so they stay reusable and unit-testable.
-- Use an injectable Mapper **class** (Koin) only when the mapping needs a dependency (formatter, locale, clock, resource provider).
+- Top-level extension functions `to<Target>()`, grouped per concept in `model/mapper/<Concept>Mapper.kt` (e.g. `GpxMapper.kt`).
+- Never in the model classes: `model/data` and `model/domain` must not import each other.
+- Never inside repositories / ViewModels, so they stay reusable and unit-testable.
+- Injectable Mapper class (Koin) only when the mapping needs a dependency (formatter, locale, clock, resources).
 
 ### Unit tests
 - Use `Given X - When Y - Then Z`
@@ -315,50 +299,25 @@ val [actual] = operation(X)
 - Prefer icons from the official Apple SF Symbols icon set: https://developer.apple.com/sf-symbols/.
 - Prefer official SwiftUi components instead of custom views
 - Whenever makes sense, extract UI components to separate classes → E.g. `struct DestinationPreviewCard: View`
-- Comment marks: formatting only, for comments that already passed **Comments** — `///` for non-private declarations (Quick Help / DocC surface), `//` for private ones and for notes inside function bodies. Not a licence to document non-private declarations.
 
 ### Gradle KTS & Libraries
 - Use alphabetical order in libs.versions.toml, per section.
 
 ### Good to know
-- `shared/**/data/Destinations.kt` is a large (~3000-line) static data. Read it with `grep`/ranged reads rather than loading the whole.
-  - Description copy follows the `destination-descriptions` skill (`.claude/skills/destination-descriptions/SKILL.md`); validate with `python3 tools/destinations/validate_destinations.py`.
-  - `Destination.id` is a stable `town_name` snake_case slug, used as the place history key. Never change a shipped id; legacy numeric OSM ids are re-keyed by the frozen map in `database/migration/Migration1To2.kt`.
-  - `Destination.website` (optional, https only) backs the InfoWindow "Website" button. To add or review one, follow the `destination-website` skill (`.claude/skills/destination-website/SKILL.md`).
-- OKT / RPDDK / AKT (Blue Trails): full-trail GPX files are bundled in `shared/src/commonMain/moko-resources/files/`, read via `BundledFileReader`. Sections are static data in `shared/**/data/OktSections.kt` (ported from the legacy app). To update a trail, follow the `update-blue-trail-gpx` skill (`.claude/skills/update-blue-trail-gpx/SKILL.md`): swap the GPX file, compact it with `tools/python/compact_bundled_gpx.py`, and update its `OktType.gpxFile` reference.
-- Educational trail routes: `moko-resources/files/edut_<trail_name>.gpx`, referenced by `Destination.routeGpxFile`, are generated by `tools/python/generate_educational_trails.py` from OSM. To add, fix or remove a trail, follow the `generate-educational-trail-gpx` skill (`.claude/skills/generate-educational-trail-gpx/SKILL.md`).
-- Landscape outlines: `moko-resources/files/landscapes.geojson` (with `landscape_labels.geojson` and the `hungary_mask.geojson` overlay) is generated by `tools/python/generate_landscape_outlines.py` from OSM or hand-drawn outlines. Don't edit the generated GeoJSON by hand; follow the `generate-landscape-outlines` skill (`.claude/skills/generate-landscape-outlines/SKILL.md`).
-- `tools/planning/PLANNING.md` is the live plan board — roadmap, backlog, bugs, and per-feature task lists (with status legend). Read it before starting feature or bugfix work to "see ahead".
+- `shared/**/data/Destinations.kt`: ~3000 lines of static data, read it with `grep` / ranged reads.
+  - Descriptions: `destination-descriptions` skill, validate with `tools/destinations/validate_destinations.py`.
+  - `Destination.id` is the place history key: never change a shipped id (legacy ids: `Migration1To2.kt`).
+  - `Destination.website`: `destination-website` skill.
+- Blue Trails (OKT / RPDDK / AKT): bundled GPX in `moko-resources/files/`, sections in `OktSections.kt`. Update with the `update-blue-trail-gpx` skill.
+- Educational trails: generated `edut_*.gpx` files, `generate-educational-trail-gpx` skill.
+- Landscape outlines: generated GeoJSON, never edit by hand, `generate-landscape-outlines` skill.
+- `tools/planning/PLANNING.md`: the live plan board (roadmap, backlog, bugs). Read it before feature or bugfix work.
 
 ## Release / Versioning / WhatsNew
-
-- **WhatsNew**: add release content under `tools/release/whatsnew/v<version>/` (matching `appVersion` in root `version.properties`):
-  - `whatsnew-en-US.md` (required) and `whatsnew-hu-HU.md` — one release-note bullet per line.
-  - `metadata.json` — `releaseDate` (ISO `yyyy-MM-dd`) and an optional per-locale `message` (`title`/`body`) for the personal message card.
-- **Generation**: the `generateWhatsNew` Gradle task (in `:shared`, runs before compile) generates `WhatsNewContent.kt` (with `currentVersion`) and the moko `strings_whatsnew.xml` files. Both are generated — do not edit by hand.
-- **Show-once**: the sheet auto-shows on first launch after an update; `DefaultWhatsNewRepository` compares `currentVersion` against the `WHATS_NEW_LAST_SEEN_VERSION` DataStore key. `FeatureFlags.ALWAYS_SHOW_WHATSNEW` forces it for debugging (keep `false` on commit).
-- **E2E**: because the sheet auto-shows on a clean `clearState` launch, every Maestro flow except `maestro_whats_new.yaml` passes `arguments: { skipWhatsNew: true }` to `launchApp` to suppress it (`AppLaunchConfig.skipWhatsNew`, read from the intent extra on Android and `ProcessInfo.arguments` on iOS). Add this arg to any new flow.
-
-### Release runbook (iOS)
-
-Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) and is delivered by fastlane.
-
-1. One release commit on `main` (`release(v<X>): update store content, versioning`):
-    - `version.properties` — bump `appVersion` and `iosBuildNumber`
-    - `tools/release/whatsnew/v<X>/` — EN + HU notes and `metadata.json
-    - `iosApp/fastlane/metadata/` — (if changed) description, promo text, keywords
-    - `iosApp/fastlane/screenshots/` — (if changed)
-    - `tools/screenshots/` — (if changed) raw captures, `SCREENSHOTS.md` and the AppMockUp `.mockup` design sources, so the store assets and their sources stay in one commit
-2. `bundle exec fastlane verify` — read-only; checks App Store Connect agrees with `version.properties`.
-3. Tag that commit: `git tag ios/v<X> && git push origin ios/v<X>`.
-4. The tag runs `.github/workflows/github-workflow-ios-release.yml`: uploads to TestFlight and stages
-   all store content. Nothing is submitted for review.
-5. Test the TestFlight build, then in App Store Connect select the build and press **Add for Review**.
-
-- `version.properties` is the single source of truth — fastlane reads it, never writes it.
-- Ad-hoc internal TestFlight builds: `bundle exec fastlane beta` locally (never reviewed).
-- Store content only (build already on TestFlight): run the **iOS Release** workflow manually on `main` with `metadata_only` checked.
-- **Tagging convention**: `ios/v<appVersion>`
+- To cut a release, bump the version, write WhatsNew notes or run fastlane, follow the `release` skill (`.claude/skills/release/SKILL.md`).
+- `WhatsNewContent.kt` and `strings_whatsnew.xml` are generated by `generateWhatsNew` — never edit them by hand.
+- Keep `FeatureFlags.ALWAYS_SHOW_WHATSNEW` `false` on commit.
+- Every Maestro flow except `maestro_whats_new.yaml` passes `arguments: { skipWhatsNew: true }` to `launchApp`. Add it to any new flow.
 
 ## Code Quality & Linting
 ### Android
@@ -392,6 +351,7 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
 - `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
 - `ios_toggle_demo_mode.sh` — toggle a clean "demo" status bar (9:41, full Wi-Fi/cellular, 100% battery) on the booted simulator via `simctl status_bar`. Use for: "demo mode (iOS)", clean status bar for App Store screenshots.
+- `ios_trigger_state_restoration.sh [simulator-udid]` — background the running app (opens Settings), terminate it like the OS would, then relaunch it so the `@SceneStorage` session is restored. Use for: "trigger state restoration (iOS)", "simulate process death (iOS)".
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android
@@ -400,7 +360,8 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
 - `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
-- `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
+- `android_trigger_state_restoration.sh [device-serial] [package]` — press Home, `am kill` the backgrounded app like the OS would, then reopen it from Recents so the saved state is restored. Defaults to the first adb device and the debug package. Use for: "trigger state restoration (Android)", "simulate process death (Android)".
+- `android_upload_test_gpx_files.sh [device-serial]` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
 - `android_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the connected emulator's location (`adb emu geo fix`) through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Requires an emulator (not a physical device). Use for: "simulate walking a route", "move location along GPX".
 
 ### Cross-platform

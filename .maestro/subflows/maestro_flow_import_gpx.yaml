@@ -32,16 +32,16 @@ appId: ${APP_ID}
             - extendedWaitUntil:
                 visible: "Browse"
             - tapOn: "Browse"
-            - tapOn:
-                id: "gpx_test_with_comments, gpx"
       - runFlow:
           when:
-            # Old simulator -> Browse is already open
-            visible:
-              id: "BackButton"
+            # The picker reopens where it was left, which can be the Browse root
+            notVisible:
+              id: "gpx_test_with_comments, gpx"
           commands:
-            - tapOn:
-                id: "gpx_test_with_comments, gpx"
+            - tapOn: "On My iPhone"
+            - tapOn: "HuKi"
+      - tapOn:
+          id: "gpx_test_with_comments, gpx"
 
 # Wait until the GPX Details state is reached (file name shown in the sheet)
 - extendedWaitUntil:

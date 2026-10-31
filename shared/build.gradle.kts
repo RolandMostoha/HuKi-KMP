@@ -78,6 +78,7 @@ kotlin {
         }
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodelSavedstate)
             api(libs.moko.resources)
             api(libs.moko.graphics)
             api(libs.moko.permissions)

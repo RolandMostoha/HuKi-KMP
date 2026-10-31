@@ -310,7 +310,8 @@ private extension MapView {
                         ),
                         bearing: KotlinDouble(value: position.bearing),
                         pitch: KotlinDouble(value: position.pitch),
-                        contentPadding: nil
+                        contentPadding: nil,
+                        animated: true
                     ))
                 },
                 onClose: { isDebugCameraPanelVisible = false }
@@ -347,7 +348,7 @@ private extension MapView {
             ? .default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
             : .easeInOut(duration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
         appliedCameraPadding = targetPadding
-        withViewportAnimation(animation) {
+        withViewportAnimation(effect.animated ? animation : .default(maxDuration: 0)) {
             viewport = .target(
                 for: effect,
                 isLandscape: isMapLandscape,

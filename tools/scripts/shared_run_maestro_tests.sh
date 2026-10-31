@@ -51,7 +51,7 @@ for test_file in .maestro/maestro_*.yaml; do
       ./tools/scripts/ios_upload_test_gpx_files.sh "$DEVICE_ID"
     elif [[ "$APP_ID" == *".android."* ]]; then
       echo "Uploading GPX files for Android..."
-      ./tools/scripts/android_upload_test_gpx_files.sh
+      ./tools/scripts/android_upload_test_gpx_files.sh "$DEVICE_ID"
     fi
 
   # Use the variables in the maestro command

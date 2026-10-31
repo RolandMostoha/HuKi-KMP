@@ -4,10 +4,12 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.BlueTrail
 import hu.mostoha.mobile.kmp.huki.model.analytics.HikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
+import hu.mostoha.mobile.kmp.huki.model.analytics.RestoredFeature
 import hu.mostoha.mobile.kmp.huki.model.analytics.RouteProfile
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
@@ -70,4 +72,13 @@ fun HikeRecommendation.toHikeRecommender(): HikeRecommender =
         HikeRecommendation.AKTIVKALANDOR -> HikeRecommender.AKTIVKALANDOR
         HikeRecommendation.KIRANDULASTIPPEK -> HikeRecommender.KIRANDULASTIPPEK
         HikeRecommendation.TERMESZETJARO -> HikeRecommender.TERMESZETJARO
+    }
+
+fun FeatureSession?.toRestoredFeature(): RestoredFeature =
+    when (this) {
+        is FeatureSession.Gpx -> RestoredFeature.GPX
+        is FeatureSession.Okt -> RestoredFeature.OKT
+        is FeatureSession.Landscapes -> RestoredFeature.LANDSCAPES
+        is FeatureSession.RoutePlanner -> RestoredFeature.ROUTE_PLANNER
+        null -> RestoredFeature.MAP
     }

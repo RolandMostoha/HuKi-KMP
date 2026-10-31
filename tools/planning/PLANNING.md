@@ -49,11 +49,12 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Feature                                                                                                                                                                                                |
 |--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                                                |
-| `[G]`  | Android: Prepare for config change AND process death -> state restoration. Map and camera state, My location state, GPX, RoutePlanner, Lansdcapes, OKT should restore the last state (revise the list) |                                                                                       |
+| `[x]`  | Android: Prepare for config change AND process death -> state restoration. Map and camera state, My location state, GPX, RoutePlanner, Lansdcapes, OKT should restore the last state (revise the list) |                                                                                       |
 | `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                             |                                                                                       |
 | `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
 | `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
 | `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                              |
+| `[G]`  | Android:  Support multi app language                                                                                                                                                                   |
 | `[x]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                                            |
 | `[G]`  | Separate Mapbox token Android vs iOS                                                                                                                                                                   |
 | `[G]`  | Separate LocationIQ token Android vs iOS                                                                                                                                                               |
@@ -71,6 +72,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[G]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
+| `[G]`  | Settings   | Bug: iOS. Discover->GPX Tooltip->GPX Guide-> double back button without title ![img.png](img.png)                                                                                                                                                                                                                                  |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                      |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                              |
 
@@ -229,6 +231,16 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | `[G]`  | Support | Add Support feature |
 
 ## Ideas / Experimental features 
+
+### FEATURE: Full offline mode with downloaded Mapbox layers + Hiking layer
+
+Hiking layer https://data2.openstreetmap.hu/ - TuraReteg.sqlitedb
+
+### FEATURE: Background location monitoring
+
+Entry service for many related features, e.g. haptic warning for going off the GPX route, route recording
+
+#### FEATURE: Haptic warning for going off the GPX route
 
 ### FEATURE: Route Planner: Wandering mode
 

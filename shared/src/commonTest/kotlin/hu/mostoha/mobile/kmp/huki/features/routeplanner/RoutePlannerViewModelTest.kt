@@ -24,6 +24,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
@@ -1210,6 +1211,45 @@ class RoutePlannerViewModelTest {
 
                 expectMostRecentItem() shouldBe RoutePlannerUiEffects.Close
             }
+        }
+    }
+
+    @Test
+    fun `Given a restored session - When the planner is opened - Then its exact stops and profile come back and the route is requested`() {
+        runTest {
+            val waypoints = listOf(place("Dobogókő", FAR_PLACE_LOCATION), place("Ram-hegy"))
+                .map { it.toRoutePlannerWaypoint() } + RoutePlannerWaypoint()
+            val session = RoutePlannerSession(RoutePlannerProfile.BIKE, waypoints)
+
+            val viewModel = RoutePlannerViewModel(
+                locationMonitoringService,
+                routePlannerRepository,
+                geocodingRepository,
+                placeHistoryRepository,
+                gpxRepository,
+                analyticsService,
+                crashlyticsService,
+                initialStops = listOf(place("Pilisszentlászló").toRoutePlannerWaypoint()),
+                restoredSession = session,
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.uiState.value.session shouldBe session
+            verifySuspend {
+                routePlannerRepository.getRoutePlan(RoutePlannerProfile.BIKE, listOf(FAR_PLACE_LOCATION, PLACE_LOCATION))
+            }
+        }
+    }
+
+    @Test
+    fun `Given an open planner - When the profile changes - Then the session follows`() {
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(RoutePlannerUiEvents.ProfileSelected(RoutePlannerProfile.SHORTEST_ROUTE))
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.uiState.value.session.routeProfile shouldBe RoutePlannerProfile.SHORTEST_ROUTE
         }
     }
 

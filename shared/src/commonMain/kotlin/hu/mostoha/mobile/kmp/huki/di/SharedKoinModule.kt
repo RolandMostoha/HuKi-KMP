@@ -90,10 +90,11 @@ val appModule = module {
 }
 
 val viewModelModule = module {
-    viewModel {
+    viewModel { params ->
         MainViewModel(
             get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
-            get(named(Dispatcher.Default)),
+            defaultDispatcher = get(named(Dispatcher.Default)),
+            savedStateHandle = params.getOrNull() ?: get(),
         )
     }
     viewModel {
@@ -115,6 +116,7 @@ val viewModelModule = module {
             get(),
             get(),
             initialStops = params.getOrNull<List<RoutePlannerWaypoint>>().orEmpty(),
+            restoredSession = params.getOrNull(),
         )
     }
     viewModelOf(::SettingsViewModel)

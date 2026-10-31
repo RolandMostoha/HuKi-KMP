@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.location.LOCATION
@@ -119,6 +120,7 @@ class MainViewModelOktTest {
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
+            savedStateHandle = SavedStateHandle(),
         )
 
     private fun TestScope.createOpenedViewModel(

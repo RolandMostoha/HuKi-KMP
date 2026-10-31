@@ -12,6 +12,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
@@ -60,6 +61,7 @@ class RoutePlannerViewModel(
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     initialStops: List<RoutePlannerWaypoint> = emptyList(),
+    restoredSession: RoutePlannerSession? = null,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoutePlannerUiState.Default)
@@ -77,8 +79,12 @@ class RoutePlannerViewModel(
     )
 
     init {
-        // Seeded before my location loads, so no state ever has my location as the only stop
-        initialStops.forEach { addWaypoint(it, guardRange = true) }
+        if (restoredSession != null) {
+            restoreSession(restoredSession)
+        } else {
+            // Seeded before my location loads, so no state ever has my location as the only stop
+            initialStops.forEach { addWaypoint(it, guardRange = true) }
+        }
         initLogging()
         observeRoutePlanRequests()
         loadMyLocation()
@@ -103,6 +109,10 @@ class RoutePlannerViewModel(
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
         }
+    }
+
+    private fun restoreSession(session: RoutePlannerSession) {
+        _uiState.update { it.copy(routeProfile = session.routeProfile, waypoints = session.waypoints) }
     }
 
     private fun selectProfile(routeProfile: RoutePlannerProfile) {

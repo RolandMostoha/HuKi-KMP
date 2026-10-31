@@ -11,6 +11,7 @@ sealed interface MapUiEffects : UiEffect {
         val bearing: Double? = null,
         val pitch: Double? = null,
         val contentPadding: ContentPadding? = null,
+        val animated: Boolean = true,
     ) : MapUiEffects
 
     data class ShowMyLocation(

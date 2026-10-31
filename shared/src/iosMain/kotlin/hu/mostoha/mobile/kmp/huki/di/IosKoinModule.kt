@@ -26,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.IosBundledFileReader
@@ -34,6 +35,7 @@ import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.IosLocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
+import hu.mostoha.mobile.kmp.huki.util.mainSessionSavedStateHandle
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +79,10 @@ fun initKoin(analyticsService: AnalyticsService, crashlyticsService: Crashlytics
 }
 
 object KoinViewModelProvider : KoinComponent {
-    fun getMainViewModel(): MainViewModel = get()
+    /**
+     * [session] is the JSON of `MainViewModel.sessionSnapshot`.
+     */
+    fun getMainViewModel(session: String?): MainViewModel = get { parametersOf(mainSessionSavedStateHandle(session)) }
     fun getPlaceFinderViewModel(owner: IosViewModelStoreOwner): PlaceFinderViewModel = owner.resolve()
     fun getMenuViewModel(owner: IosViewModelStoreOwner): MenuViewModel = owner.resolve()
     fun getGpxCollectionViewModel(owner: IosViewModelStoreOwner): GpxCollectionViewModel = owner.resolve()
@@ -88,7 +93,8 @@ object KoinViewModelProvider : KoinComponent {
     fun getRoutePlannerViewModel(
         owner: IosViewModelStoreOwner,
         stops: List<RoutePlannerWaypoint>,
-    ): RoutePlannerViewModel = owner.resolve { parametersOf(stops) }
+        restored: RoutePlannerSession?,
+    ): RoutePlannerViewModel = owner.resolve { parametersOf(stops, restored) }
     fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
     fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
 

@@ -17,6 +17,7 @@ fun GpxDetails.reversed(): GpxDetails {
         incline = reversedLocations.calculateIncline(),
         decline = reversedLocations.calculateDecline(),
         slopeSegments = reversedLocations.calculateSlopeSegments(),
+        isReversed = !isReversed,
     )
 }
 
