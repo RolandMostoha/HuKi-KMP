@@ -362,4 +362,8 @@ sealed interface AnalyticsEvent {
     data class MapLabelScaleSelected(val percent: Int) : AnalyticsEvent {
         override val name = "map_label_scale_$percent"
     }
+
+    data class SessionRestored(val feature: RestoredFeature) : AnalyticsEvent {
+        override val name = "session_restored_${feature.value}"
+    }
 }

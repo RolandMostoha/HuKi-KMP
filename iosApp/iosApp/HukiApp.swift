@@ -36,7 +36,7 @@ struct HukiApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainSceneView()
         }
     }
 }

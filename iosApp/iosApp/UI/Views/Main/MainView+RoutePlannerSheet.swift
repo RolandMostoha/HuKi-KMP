@@ -2,10 +2,11 @@ import Shared
 import SwiftUI
 
 extension MainView {
-    func routePlannerSheet(stops: [RoutePlannerWaypoint]) -> some View {
+    func routePlannerSheet(stops: [RoutePlannerWaypoint], restored: RoutePlannerSession?) -> some View {
         RoutePlannerSheetView(
             strings: strings,
             stops: stops,
+            restored: restored,
             pick: routePlannerPick,
             onRoutePlanUpdated: { routePlan, markers, isAwaitingRoutePlan in
                 viewModel.onEvent(
@@ -15,6 +16,9 @@ extension MainView {
                         isAwaitingRoutePlan: isAwaitingRoutePlan
                     )
                 )
+            },
+            onSessionChanged: { session in
+                viewModel.onEvent(event: MainUiEventsRoutePlannerStateChanged(session: session))
             },
             onRoutePlanSaved: { fileUri in
                 viewModel.onEvent(event: GpxUiEventsRoutePlanGpxSaved(uri: fileUri))

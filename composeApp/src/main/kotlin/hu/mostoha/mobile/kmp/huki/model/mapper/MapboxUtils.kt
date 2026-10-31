@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.MapAnimationOwnerRegistry
@@ -90,6 +91,7 @@ internal fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus,
                     .zoom(zoom)
                     .pitch(0.0)
                     .bearing(FollowPuckViewportStateBearing.Constant(0.0))
+                    .padding(NO_PADDING)
                     .build(),
                 defaultTransitionOptions = transitionOptions,
             )
@@ -100,6 +102,7 @@ internal fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus,
                     .zoom(zoom)
                     .pitch(MapConstants.FOLLOW_LOCATION_LIVE_COMPASS_PITCH)
                     .bearing(FollowPuckViewportStateBearing.SyncWithLocationPuck)
+                    .padding(NO_PADDING)
                     .build(),
                 defaultTransitionOptions = transitionOptions,
             )
@@ -134,6 +137,7 @@ internal fun MapViewportState.moveCamera(
     routePlannerBottomInset: Dp? = null,
     listSheetHeight: Dp? = null,
 ) {
+    val durationMs = if (effect.animated) AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds else 0L
     when (val target = effect.target) {
         is CameraTarget.Center -> this.flyTo(
             cameraOptions = CameraOptions.Builder()
@@ -148,12 +152,12 @@ internal fun MapViewportState.moveCamera(
                 }
                 .build(),
             animationOptions = MapAnimationOptions.mapAnimationOptions {
-                duration(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+                duration(durationMs)
             },
         )
         is CameraTarget.Bounds -> {
             val transitionOptions = DefaultViewportTransitionOptions.Builder()
-                .maxDurationMs(AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds)
+                .maxDurationMs(durationMs)
                 .build()
             this.transitionToOverviewState(
                 overviewViewportStateOptions = OverviewViewportStateOptions.Builder()
@@ -172,3 +176,5 @@ internal fun MapViewportState.moveCamera(
         }
     }
 }
+
+private val NO_PADDING = EdgeInsets(0.0, 0.0, 0.0, 0.0)

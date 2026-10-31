@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import dev.icerock.moko.permissions.compose.BindEffect
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.GpxUiEvents
@@ -53,6 +54,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.isModal
@@ -80,7 +82,6 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
 import hu.mostoha.mobile.kmp.huki.util.openUrl
-import hu.mostoha.mobile.kmp.huki.util.rememberScopedViewModelStoreOwner
 import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -351,6 +352,7 @@ private fun MainContent(
             (uiState.sheet as? Sheet.RoutePlanner)?.let { sheet ->
                 RoutePlannerSheetOverlay(
                     stops = sheet.stops,
+                    restored = sheet.restored,
                     pick = routePlannerPick,
                     detent = routePlannerDetent,
                     onDetentChange = { routePlannerDetent = it },
@@ -457,6 +459,7 @@ private fun routePlannerMapInset(
 @Composable
 private fun RoutePlannerSheetOverlay(
     stops: List<RoutePlannerWaypoint>,
+    restored: RoutePlannerSession?,
     pick: RoutePlannerPick?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
@@ -468,7 +471,7 @@ private fun RoutePlannerSheetOverlay(
     onExpandedHeightMeasured: (Dp) -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
+        LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
     ) {
         RoutePlannerSheet(
             detent = detent,
@@ -478,6 +481,7 @@ private fun RoutePlannerSheetOverlay(
         ) { sheetModifier ->
             RoutePlannerBottomSheet(
                 stops = stops,
+                restored = restored,
                 pick = pick,
                 detent = detent,
                 onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
@@ -488,6 +492,7 @@ private fun RoutePlannerSheetOverlay(
                 onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan ->
                     onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan))
                 },
+                onSessionChanged = { session -> onEvent(MainUiEvents.RoutePlannerStateChanged(session)) },
                 onEffect = { effect ->
                     when (effect) {
                         is RoutePlannerUiEffects.RoutePlanSaved -> {
@@ -596,7 +601,7 @@ private fun MainStandardBottomSheet(
         }
         is Sheet.Search -> {
             CompositionLocalProvider(
-                LocalViewModelStoreOwner provides rememberScopedViewModelStoreOwner(),
+                LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
             ) {
                 SearchBottomSheet(
                     onCloseClick = {

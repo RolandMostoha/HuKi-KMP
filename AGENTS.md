@@ -79,7 +79,8 @@ Chores is a checklist which should be checked for every "feature complete" code 
 - TestTag IDs for Maestro element targets
 - Analytics: check for worth-to-measure events
 - Crashlytics: check for worth-to-measure non-fatals, logs, breadcrumbs 
-- Always ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
+- Ask: should the state be restored for this feature? Handle process death if so
+- Ask: what happens with this feature in offline mode? → for a hiking app offline mode is crucial
 - Permissions denied / not-granted paths
 - Docs updated — AGENTS.md / README.md
 - Privacy Policy: check if change is necessary
@@ -204,6 +205,14 @@ UI → UiEvent → ViewModel → UiState
 - **Native per platform, shared ViewModel/state.** Each platform owns its own back stack using its native API.
   - Android: Jetpack `androidx.navigation.compose` — single `NavHost` hosted by `RootNavHost`.
   - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
+
+### State restoration
+- Restore after the OS kills the app in the background; a user swipe-away / force-quit starts fresh.
+- `MainViewModel` owns the session: restores it in `init`, builds it in `sessionSnapshot()`.
+- `MainSession`: what is restored — camera, my-location mode, one GPX / OKT / Landscapes / Route Planner feature (references and flags, never geometry).
+- `MainSessionSnapshot`: its `@Serializable` JSON form, mapped in `SessionMapper.kt`.
+- `SessionSavedState.kt`: stores the JSON in Android's `SavedStateHandle`; iOS `MainSceneView` keeps it in `@SceneStorage`.
+- E2E: `maestro_state_restoration.yaml`.
 
 ## Coding Rules & Constraints
 
@@ -392,6 +401,7 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
 - `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
 - `ios_toggle_demo_mode.sh` — toggle a clean "demo" status bar (9:41, full Wi-Fi/cellular, 100% battery) on the booted simulator via `simctl status_bar`. Use for: "demo mode (iOS)", clean status bar for App Store screenshots.
+- `ios_trigger_state_restoration.sh [simulator-udid]` — background the running app (opens Settings), terminate it like the OS would, then relaunch it so the `@SceneStorage` session is restored. Use for: "trigger state restoration (iOS)", "simulate process death (iOS)".
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android
@@ -400,6 +410,7 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
 - `android_toggle_demo_mode.sh` — toggle SystemUI Demo Mode, which applies its own clean status bar defaults (4:00, full Wi-Fi, full battery, no notifications — the clock differs from iOS by design). Use for: "demo mode (Android)", clean status bar for Play Store screenshots.
 - `android_toggle_internet.sh` — toggle Wi-Fi + cellular data together on the connected device. Use for: "toggle internet", "go offline" / "go online" on Android (e.g. testing offline mode chore).
 - `android_toggle_language.sh` — toggle the HuKi app's per-app language between Hungarian (`hu-HU`) and English (`en-US`).
+- `android_trigger_state_restoration.sh [device-serial] [package]` — press Home, `am kill` the backgrounded app like the OS would, then reopen it from Recents so the saved state is restored. Defaults to the first adb device and the debug package. Use for: "trigger state restoration (Android)", "simulate process death (Android)".
 - `android_upload_test_gpx_files.sh` — `adb push` every `tools/gpx/*.gpx` into `/sdcard/Download`. Use for: "upload test gpx files (Android)", or before running Maestro tests on Android.
 - `android_simulate_gpx_walk.sh <path.gpx> [delay] [step]` — simulate "walking" along a GPX track by stepping the connected emulator's location (`adb emu geo fix`) through each `<trkpt>` with a delay. Use `step` to skip points on dense tracks. Requires an emulator (not a physical device). Use for: "simulate walking a route", "move location along GPX".
 

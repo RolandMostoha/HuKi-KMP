@@ -4,6 +4,9 @@ import dev.icerock.moko.resources.StringResource
 import hu.mostoha.mobile.huki.shared.SharedRes
 
 sealed class MyLocationStatus(val a11yId: StringResource) {
+    val isFollowing: Boolean
+        get() = this == Following || this == FollowingLiveCompass
+
     /**
      * My location is not available.
      */

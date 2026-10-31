@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
@@ -33,6 +34,9 @@ data class RoutePlannerUiState(
 
     val routeStats: RouteStats?
         get() = routePlan?.routeStats
+
+    val session: RoutePlannerSession
+        get() = RoutePlannerSession(routeProfile = routeProfile, waypoints = waypoints)
 
     val isRoundTrip: Boolean
         get() = stops.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT &&
@@ -108,14 +112,19 @@ data class RoutePlannerUiState(
     companion object {
         private val MY_LOCATION_MAX_RANGE: Length = 25.kilometers
 
+        /**
+         * Stable across states and processes, so the location fix can find this stop, also after a restore.
+         */
+        const val MY_LOCATION_WAYPOINT_ID = "my_location"
+
         private val DEFAULT_WAYPOINTS = listOf(
-            RoutePlannerWaypoint(name = StringDesc.Resource(SharedRes.strings.route_planner_my_location)),
+            RoutePlannerWaypoint(
+                id = MY_LOCATION_WAYPOINT_ID,
+                name = StringDesc.Resource(SharedRes.strings.route_planner_my_location),
+            ),
             RoutePlannerWaypoint(),
             RoutePlannerWaypoint(),
         )
-
-        // Stable across states, so the location fix can find this stop when it arrives.
-        val MY_LOCATION_WAYPOINT_ID = DEFAULT_WAYPOINTS.first().id
 
         val Default = RoutePlannerUiState()
     }

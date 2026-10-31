@@ -4,7 +4,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct MainView: View {
-    @State var viewModel = KoinViewModelProvider.shared.getMainViewModel()
+    let viewModel: MainViewModel
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
     @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
@@ -47,6 +47,10 @@ struct MainView: View {
 
     var routePlannerSheetHeight: CGFloat {
         routePlannerDetent == .minimized ? routePlannerHeights.minimized : routePlannerHeights.expanded
+    }
+
+    init(viewModel: MainViewModel) {
+        self.viewModel = viewModel
     }
 
     var body: some View {

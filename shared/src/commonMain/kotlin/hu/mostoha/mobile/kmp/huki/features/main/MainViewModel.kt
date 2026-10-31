@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.features.main
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -30,23 +31,28 @@ import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DomainException
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
+import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeOutlines
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.MainSession
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.NonGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.OktInfoWindowData
+import hu.mostoha.mobile.kmp.huki.model.domain.OktLine
 import hu.mostoha.mobile.kmp.huki.model.domain.OktMarker
+import hu.mostoha.mobile.kmp.huki.model.domain.OktSectionGeometry
 import hu.mostoha.mobile.kmp.huki.model.domain.OktTrail
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteProgress
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
@@ -55,11 +61,13 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toBlueTrail
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoWindowTitle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
+import hu.mostoha.mobile.kmp.huki.model.mapper.toMainSession
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktLine
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktMarkers
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktSectionItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRestoredFeature
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
@@ -90,9 +98,12 @@ import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import hu.mostoha.mobile.kmp.huki.util.encodeSession
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 import hu.mostoha.mobile.kmp.huki.util.nearestIndexTo
+import hu.mostoha.mobile.kmp.huki.util.registerMainSession
+import hu.mostoha.mobile.kmp.huki.util.restoreMainSession
 import hu.mostoha.mobile.kmp.huki.util.reversed
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -140,6 +151,7 @@ class MainViewModel(
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState.Default)
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
@@ -154,6 +166,12 @@ class MainViewModel(
 
     private var placeDetailsJob: Job? = null
     private var framedRouteStopLocations: List<Location> = emptyList()
+    private var routePlannerSession: RoutePlannerSession? = null
+
+    /**
+     * The map keeps the padding of the last camera move while panning, so the saved center is only valid with it.
+     */
+    private var cameraPadding: ContentPadding? = null
 
     private var oktTrail: OktTrail? = null
     private var oktJob: Job? = null
@@ -165,14 +183,20 @@ class MainViewModel(
 
     init {
         initLogging()
-        initMyLocation()
+        val restoredSession = initSession()
+        initMyLocation(restoredSession)
         initDistanceMonitoring()
         initAltitudeMonitoring()
-        initWhatsNew()
+        initWhatsNew(restoredSession)
         initLaunchArgGpx()
         observeSettings()
         observeSheetViews()
     }
+
+    fun sessionSnapshot(): String =
+        _uiState.value
+            .toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlannerSession)
+            .encodeSession()
 
     fun onEvent(event: MainUiEvents) {
         logEventChanges(event)
@@ -211,6 +235,7 @@ class MainViewModel(
             // Route Planner events
             MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
             is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers, event.isAwaitingRoutePlan)
+            is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession = event.session
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -542,6 +567,7 @@ class MainViewModel(
     }
 
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
+        routePlannerSession = null
         selectedWaypoint.value = null
         framedRouteStopLocations = emptyList()
         cancelPlaceDetailsLoad()
@@ -661,13 +687,14 @@ class MainViewModel(
         }
     }
 
-    private fun initMyLocation() {
+    private fun initMyLocation(restoredSession: MainSession?) {
         viewModelScope.launch {
             val permissionState = permissionsController.getPermissionState(Permission.LOCATION)
-            val myLocationStatus = if (permissionState == PermissionState.Granted) {
-                MyLocationStatus.Following
-            } else {
-                MyLocationStatus.NotAvailable
+            val myLocationStatus = when {
+                permissionState != PermissionState.Granted -> MyLocationStatus.NotAvailable
+                restoredSession == null -> MyLocationStatus.Following
+                restoredSession.myLocationStatus == MyLocationStatus.NotAvailable -> MyLocationStatus.Default
+                else -> restoredSession.myLocationStatus
             }
             _uiState.update { uiState ->
                 uiState.copy(
@@ -675,15 +702,69 @@ class MainViewModel(
                         permissionState = permissionState,
                         myLocationStatus = myLocationStatus,
                     ),
-                    isMyLocationLoading = myLocationStatus != MyLocationStatus.NotAvailable &&
-                        !uiState.myLocationState.hasLocationFix,
+                    isMyLocationLoading = myLocationStatus.isFollowing && !uiState.myLocationState.hasLocationFix,
                 )
             }
-            sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+            if (restoredSession != null && !myLocationStatus.isFollowing) {
+                val camera = restoredSession.camera
+                sendEffect(
+                    MapUiEffects.UpdateCamera(
+                        target = CameraTarget.Center(camera.location, camera.zoom),
+                        bearing = camera.bearing,
+                        pitch = camera.pitch,
+                        contentPadding = restoredSession.cameraPadding,
+                        animated = false,
+                    ),
+                )
+            } else {
+                sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+            }
         }
     }
 
-    private fun initWhatsNew() {
+    private fun initSession(): MainSession? {
+        savedStateHandle.registerMainSession(::sessionSnapshot)
+        if (AppLaunchConfig.importGpxPath != null) return null
+        val session = savedStateHandle.restoreMainSession() ?: return null
+        restoreSession(session)
+        return session
+    }
+
+    private fun restoreSession(session: MainSession) {
+        val restoredFeature = session.feature.toRestoredFeature()
+        crashlyticsService.log("Session: restoring ${restoredFeature.value}")
+        mapCameraStore.update(session.camera)
+        cameraPadding = session.cameraPadding
+        _uiState.updateMapUiState { it.copy(hikingLayerVisible = session.hikingLayerVisible) }
+        when (val feature = session.feature) {
+            is FeatureSession.Gpx -> restoreGpx(feature)
+            is FeatureSession.Okt -> openOkt(feature.type, restored = feature)
+            is FeatureSession.Landscapes -> showLandscapes(feature.grouping, restored = feature)
+            is FeatureSession.RoutePlanner -> restoreRoutePlanner(feature.session)
+            null -> onSessionRestored(null)
+        }
+    }
+
+    private fun onSessionRestored(feature: FeatureSession?) {
+        analyticsService.logEvent(AnalyticsEvent.SessionRestored(feature.toRestoredFeature()))
+    }
+
+    private fun restoreGpx(session: FeatureSession.Gpx) {
+        loadGpx(analyticsEvent = null, restored = session) {
+            val gpxDetails = gpxRepository.readGpxFile(session.fileUri)
+            if (session.isReversed) withContext(defaultDispatcher) { gpxDetails.reversed() } else gpxDetails
+        }
+    }
+
+    private fun restoreRoutePlanner(session: RoutePlannerSession) {
+        routePlannerSession = session
+        _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session)) }
+        onSessionRestored(FeatureSession.RoutePlanner(session))
+    }
+
+    private fun initWhatsNew(restoredSession: MainSession?) {
+        // Waits for a fresh launch instead of replacing the restored sheet
+        if (restoredSession?.feature != null) return
         viewModelScope.launch {
             if (whatsNewRepository.shouldShowWhatsNew()) {
                 showSheet(Sheet.WhatsNew(whatsNewRepository.currentWhatsNew))
@@ -900,7 +981,11 @@ class MainViewModel(
         loadGpx(analyticsEvent) { gpxRepository.readGpxFile(uri) }
     }
 
-    private fun loadGpx(analyticsEvent: AnalyticsEvent?, readGpx: suspend () -> GpxDetails) {
+    private fun loadGpx(
+        analyticsEvent: AnalyticsEvent?,
+        restored: FeatureSession.Gpx? = null,
+        readGpx: suspend () -> GpxDetails,
+    ) {
         cancelPlaceDetailsLoad()
         viewModelScope.launch {
             _uiState.update {
@@ -925,22 +1010,38 @@ class MainViewModel(
                                 routePlan = null,
                                 routePlanWaypoints = emptyList(),
                                 routeStops = emptyList(),
-                                gpxLayerVisible = true,
-                                gpxRouteVisible = true,
-                                allDistancesVisible = settings.gpxDistancesVisible,
-                                gpxSlopeColorsVisible = settings.gpxSlopeColorsVisible,
+                                gpxLayerVisible = restored?.isLayerVisible ?: true,
+                                gpxRouteVisible = restored?.isRouteVisible ?: true,
+                                allDistancesVisible = restored?.isAllDistancesVisible ?: settings.gpxDistancesVisible,
+                                gpxSlopeColorsVisible = restored?.isSlopeColorsVisible
+                                    ?: settings.gpxSlopeColorsVisible,
                                 distanceInfoWindows = emptyList(),
                                 okt = null,
                             ),
-                            sheet = Sheet.Gpx(gpxDetails),
+                            sheet = if (restored?.isSheetVisible == false) null else Sheet.Gpx(gpxDetails),
                             alert = null,
                             isGpxLoading = false,
                         )
                     }
-                    fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
+                    if (restored == null) {
+                        fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
+                    } else {
+                        onSessionRestored(restored)
+                    }
                 }
-                .onFailure { exception -> onGpxImportFailed(exception) }
+                .onFailure { exception ->
+                    if (restored == null) onGpxImportFailed(exception) else onGpxRestoreFailed(exception)
+                }
         }
+    }
+
+    /**
+     * The file can be gone since the session was saved, so no alert.
+     */
+    private fun onGpxRestoreFailed(exception: Throwable) {
+        Logger.w(exception) { "Session: failed to restore the GPX file." }
+        crashlyticsService.log("Session: GPX restore failed")
+        _uiState.update { it.copy(isGpxLoading = false) }
     }
 
     private fun onGpxImportFailed(exception: Throwable) {
@@ -1022,8 +1123,8 @@ class MainViewModel(
         _uiState.updateMapUiState { it.copy(allDistancesVisible = false) }
     }
 
-    private fun openOkt(type: OktType) {
-        analyticsService.logEvent(AnalyticsEvent.OktOpened(type.toBlueTrail()))
+    private fun openOkt(type: OktType, restored: FeatureSession.Okt? = null) {
+        if (restored == null) analyticsService.logEvent(AnalyticsEvent.OktOpened(type.toBlueTrail()))
         selectedWaypoint.value = null
         cancelPlaceDetailsLoad()
         cancelOktJobs()
@@ -1031,7 +1132,7 @@ class MainViewModel(
         oktJob = viewModelScope.launch {
             _uiState.update { it.copy(sheet = null, isOktLoading = true, alert = null) }
             try {
-                showOktTrail(oktRepository.getOktTrail(type))
+                showOktTrail(oktRepository.getOktTrail(type), restored)
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
@@ -1040,12 +1141,16 @@ class MainViewModel(
         }
     }
 
-    private suspend fun showOktTrail(trail: OktTrail) {
+    private suspend fun showOktTrail(trail: OktTrail, restored: FeatureSession.Okt? = null) {
         val fullTrail = trail.sections.first { it.section.id == trail.type.fullTrailId }
+        val selected = restored
+            ?.let { session -> trail.sections.firstOrNull { it.section.id == session.selectedSectionId } }
+            ?: fullTrail
         val (sections, baseLine) = withContext(defaultDispatcher) {
             trail.sections.map { it.toOktSectionItem(trail.type) } to
                 trail.baseLine.toOktLine("okt_base_${trail.type.name}")
         }
+        val selectedLine = oktSectionLine(trail, selected, baseLine)
         oktTrail = trail
         observeOktUserPosition(trail)
         _uiState.update { uiState ->
@@ -1061,17 +1166,18 @@ class MainViewModel(
                         okt = OktUiState(
                             type = trail.type,
                             sections = sections,
-                            selectedSectionId = fullTrail.section.id,
+                            selectedSectionId = selected.section.id,
                             baseLine = baseLine,
-                            selectedLine = baseLine,
-                            markers = fullTrail.toOktMarkers(),
+                            selectedLine = selectedLine,
+                            markers = selected.toOktMarkers(),
+                            reversedSectionIds = restored?.reversedSectionIds.orEmpty(),
                         ),
                     ),
-                sheet = Sheet.Okt,
+                sheet = if (restored?.isSheetVisible == false) null else Sheet.Okt,
                 isOktLoading = false,
             )
         }
-        fitCameraTo(baseLine.bounds, ContentPadding.MAP_OKT)
+        if (restored == null) fitCameraTo(baseLine.bounds, ContentPadding.MAP_OKT) else onSessionRestored(restored)
     }
 
     private fun onOktLoadFailed(exception: Exception) {
@@ -1106,10 +1212,10 @@ class MainViewModel(
         val geometry = trail.sections.firstOrNull { it.section.id == sectionId } ?: return
         oktJob?.cancel()
         oktJob = viewModelScope.launch {
-            val line = when (sectionId) {
-                okt.selectedSectionId -> okt.selectedLine
-                trail.type.fullTrailId -> okt.baseLine
-                else -> withContext(defaultDispatcher) { geometry.locations.toOktLine("okt_section_$sectionId") }
+            val line = if (sectionId == okt.selectedSectionId) {
+                okt.selectedLine
+            } else {
+                oktSectionLine(trail, geometry, okt.baseLine)
             }
             _uiState.updateOktUiState {
                 it.copy(
@@ -1123,6 +1229,13 @@ class MainViewModel(
             fitCameraTo(line.bounds, contentPadding)
         }
     }
+
+    private suspend fun oktSectionLine(trail: OktTrail, geometry: OktSectionGeometry, baseLine: OktLine): OktLine =
+        if (geometry.section.id == trail.type.fullTrailId) {
+            baseLine
+        } else {
+            withContext(defaultDispatcher) { geometry.locations.toOktLine("okt_section_${geometry.section.id}") }
+        }
 
     private fun reverseOktSection(sectionId: String) {
         val okt = _uiState.value.mapUiState.okt ?: return
@@ -1281,12 +1394,12 @@ class MainViewModel(
         landscapesJob = null
     }
 
-    private fun showLandscapes(grouping: LandscapesGrouping) {
+    private fun showLandscapes(grouping: LandscapesGrouping, restored: FeatureSession.Landscapes? = null) {
         val openedEvent = when (grouping) {
             LandscapesGrouping.LANDSCAPE -> AnalyticsEvent.LandscapesOpened
             LandscapesGrouping.CATEGORY -> AnalyticsEvent.CategoriesOpened
         }
-        analyticsService.logEvent(openedEvent)
+        if (restored == null) analyticsService.logEvent(openedEvent)
         selectedWaypoint.value = null
         cancelPlaceDetailsLoad()
         cancelOktJobs()
@@ -1327,13 +1440,16 @@ class MainViewModel(
                                 hungaryMaskGeoJson = outlines.hungaryMaskGeoJson,
                                 grouping = grouping,
                                 categories = categories,
+                                selectedLandscapeId = restored?.selectedLandscapeId,
+                                selectedCategoryId = restored?.selectedCategoryId,
+                                selectedDestinationId = restored?.selectedDestinationId,
                             ),
                         ),
-                    sheet = Sheet.Landscapes,
+                    sheet = if (restored?.isSheetVisible == false) null else Sheet.Landscapes,
                     isOktLoading = false,
                 )
             }
-            fitCameraToLandscapes()
+            if (restored == null) fitCameraToLandscapes() else onSessionRestored(restored)
         }
     }
 
@@ -1480,6 +1596,11 @@ class MainViewModel(
     private suspend fun sendEffect(uiEffect: UiEffect) {
         Logger.d { "UiEffect: ${uiEffect.toString().trimLongLists()}" }
         when (uiEffect) {
+            is MapUiEffects.UpdateCamera -> cameraPadding = uiEffect.contentPadding
+            is MapUiEffects.ShowMyLocation -> cameraPadding = null
+            else -> Unit
+        }
+        when (uiEffect) {
             is MainUiEffects -> _mainUiEffects.send(uiEffect)
             is MapUiEffects -> _mapUiEffects.send(uiEffect)
         }
@@ -1492,8 +1613,8 @@ class MainViewModel(
     }
 
     private fun logEventChanges(event: MainUiEvents) {
-        // Camera changes arrive on every frame of a pan
-        if (event !is MainUiEvents.MapCameraChanged) {
+        // Camera and Route Planner changes arrive on every pan frame and edit
+        if (event !is MainUiEvents.MapCameraChanged && event !is MainUiEvents.RoutePlannerStateChanged) {
             Logger.d { "MainEvent: $event" }
         }
     }

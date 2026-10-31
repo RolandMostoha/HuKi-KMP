@@ -29,6 +29,7 @@ struct RoutePlannerSheetView: View {
     let strings: Strings
     let pick: RoutePlannerPick?
     let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint], Bool) -> Void
+    let onSessionChanged: (RoutePlannerSession) -> Void
     let onRoutePlanSaved: (String) -> Void
     let onDismissRequest: () -> Void
     let detent: RoutePlannerDetent
@@ -47,8 +48,10 @@ struct RoutePlannerSheetView: View {
     init(
         strings: Strings,
         stops: [RoutePlannerWaypoint],
+        restored: RoutePlannerSession?,
         pick: RoutePlannerPick?,
         onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint], Bool) -> Void,
+        onSessionChanged: @escaping (RoutePlannerSession) -> Void,
         onRoutePlanSaved: @escaping (String) -> Void,
         onDismissRequest: @escaping () -> Void,
         detent: RoutePlannerDetent = .expanded,
@@ -61,6 +64,7 @@ struct RoutePlannerSheetView: View {
         self.strings = strings
         self.pick = pick
         self.onRoutePlanUpdated = onRoutePlanUpdated
+        self.onSessionChanged = onSessionChanged
         self.onRoutePlanSaved = onRoutePlanSaved
         self.onDismissRequest = onDismissRequest
         self.detent = detent
@@ -70,7 +74,7 @@ struct RoutePlannerSheetView: View {
         self.onExpandAfterPickRequest = onExpandAfterPickRequest
         self.onInitialAppear = onInitialAppear
         _holder = StateObject(wrappedValue: ViewModelHolder { owner in
-            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops)
+            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops, restored: restored)
         })
     }
 
@@ -109,6 +113,7 @@ struct RoutePlannerSheetView: View {
             .onChange(of: uiState.routePlanMarkers, initial: true) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.routePlan) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.isAwaitingRoutePlan) { notifyRoutePlanUpdated(uiState) }
+            .onChange(of: uiState.session, initial: true) { onSessionChanged(uiState.session) }
             .alert(
                 strings.get(id: SharedRes.strings().route_planner_save_error_title),
                 isPresented: $showsSaveError

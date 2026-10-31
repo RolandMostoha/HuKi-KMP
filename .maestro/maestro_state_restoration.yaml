@@ -1,0 +1,127 @@
+appId: ${APP_ID}
+---
+# State restoration: a started OKT section and the Route Planner stops survive the OS killing the
+# app in the background, while a user force-quit starts fresh.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Start the first OKT section, which hides the sheet behind the resume FAB.
+- tapOn:
+    id: MAIN_FAB_DISCOVER_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: DISCOVER_SHEET
+    timeout: 5000
+- scrollUntilVisible:
+    element:
+      id: DISCOVER_OKT_CARD
+    timeout: 5000
+- tapOn:
+    id: DISCOVER_OKT_CARD
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 15000
+- tapOn:
+    id: OKT_SECTION_ROW
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: OKT_STAMP_CARD
+      index: 0
+    timeout: 5000
+- tapOn:
+    id: OKT_STAMP_CARD
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: OKT_START_BUTTON
+    timeout: 5000
+- tapOn:
+    id: OKT_START_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: OKT_RESUME_FAB
+    timeout: 5000
+
+# The OS kills the backgrounded app, relaunching restores the started section.
+- pressKey: Home
+- killApp
+- launchApp:
+    stopApp: false
+    arguments:
+      skipWhatsNew: true
+- extendedWaitUntil:
+    visible:
+      id: OKT_RESUME_FAB
+    timeout: 15000
+- assertNotVisible:
+    id: MAIN_SEARCH_BAR
+- tapOn:
+    id: OKT_RESUME_FAB
+- extendedWaitUntil:
+    visible:
+      id: OKT_SHEET
+    timeout: 5000
+
+# Close the trail, plan a route with two stops, then let the OS kill the app again.
+- tapOn:
+    id: OKT_CLOSE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 5000
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Dobog"
+- tapOn: "Dobogókő"
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- tapOn:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+- tapOn:
+    id: ROUTE_PLANNER_SEARCH_FIELD
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- pressKey: Home
+- killApp
+- launchApp:
+    stopApp: false
+    arguments:
+      skipWhatsNew: true
+
+# The planner reopens with both stops and plans the route again.
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SHEET
+    timeout: 15000
+- assertVisible: "Dobogókő"
+- assertVisible: "Rám-szakadék"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+
+# A force-quit (stopApp) discards the saved state, the app starts on the plain map.
+- launchApp:
+    stopApp: true
+    arguments:
+      skipWhatsNew: true
+- extendedWaitUntil:
+    visible:
+      id: MAIN_SEARCH_BAR
+    timeout: 15000
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET

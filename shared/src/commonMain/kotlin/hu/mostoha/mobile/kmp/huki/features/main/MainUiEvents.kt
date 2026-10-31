@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 
 sealed interface MainUiEvents {
@@ -70,6 +71,7 @@ sealed interface MainUiEvents {
         val markers: List<GpxWaypoint>,
         val isAwaitingRoutePlan: Boolean = false,
     ) : MainUiEvents
+    data class RoutePlannerStateChanged(val session: RoutePlannerSession) : MainUiEvents
 
     /**
      * My location events
