@@ -286,7 +286,7 @@ shows live hike info there instead, like Apple Maps navigation. Depends on Backg
 
 ### FEATURE: Camera panel
 
-Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful, they can record their
+Inspired by the debug camera panel (DEBUG_CAMERA_PANEL_ENABLED), add this as a usable feature for users. This might be useful, they can record their
 exact location / zoom level with a CROSS marker.
 
 ### FEATURE: GPX Collection Import/Export (device-to-device, no cloud)

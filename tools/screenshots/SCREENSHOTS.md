@@ -8,7 +8,7 @@ position for the location puck, plus the UI state (theme + open sheet) to show.
 - **Demo mode**: ON — clean status bar (`ios_toggle_demo_mode.sh` / `android_toggle_demo_mode.sh`)
 - **Languages**: capture every screenshot in both `en-US` and `hu-HU`
   (`ios_toggle_language.sh` / `android_toggle_language.sh`)
-- Enable the debug camera panel with `DEBUG_SHOW_CAMERA_PANEL = true` (see `FeatureFlags`).
+- Open the debug camera panel by tapping the map scale bar (debug builds only, see `FeatureFlags.DEBUG_CAMERA_PANEL_ENABLED`).
   The panel shows the live camera readout **and** a `lat,lon,zoom` input with a go button
   that jumps the camera there — read a framing off the readout, then reapply it any time.
     - **Camera** → type the scene's `lat,lon,zoom` into the panel input and tap go
@@ -92,7 +92,7 @@ Light mode. Destinations view.
 
 Pre-requisites:
 
-- DEBUG_SHOW_CAMERA_PANEL = true
+- Debug build (the camera panel opens from the scale bar)
 - MAP_FOLLOW_ANIM_DURATION: Duration = 1000.milliseconds
 - Scene #1 is set
 - No debug panel is shown

@@ -69,7 +69,7 @@ fun MapCameraDebugPanel(
 @Composable
 private fun MapCameraDebugOpenArea(onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
-        // DEBUG only: opens the debug camera panel
+        // DEBUG only: tapping the scale bar opens the debug camera panel
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
