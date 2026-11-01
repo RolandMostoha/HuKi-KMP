@@ -58,6 +58,7 @@ import com.mapbox.maps.plugin.PuckBearing
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
+import com.mapbox.maps.plugin.locationcomponent.LocationComponentConstants.LOCATION_INDICATOR_LAYER
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.viewport.viewport
@@ -435,6 +436,10 @@ private fun GpxLayer(
             iconSize = waypoint.type.markerScale
             iconEmissiveStrength = MapLighting.OVERLAY_EMISSIVE_STRENGTH
         }
+    }
+    // Every PointAnnotation adds its layer on top of the style, so the markers would bury the location puck
+    MapEffect(gpxDetails.layerId, gpxDetails.waypoints) { mapView ->
+        mapView.mapboxMap.moveStyleLayer(LOCATION_INDICATOR_LAYER, null)
     }
     mapUiState.distanceInfoWindows.forEach { distanceInfoWindowData ->
         key(distanceInfoWindowData.id) {
