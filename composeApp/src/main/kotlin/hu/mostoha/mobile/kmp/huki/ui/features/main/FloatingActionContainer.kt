@@ -75,6 +75,8 @@ fun FloatingActionContainer(
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val isSearchBarVisible = mainUiState.isSearchBarVisible && mainUiState.sheet == null
+    val fabStartPadding = Dimens.Medium + Dimens.Medium
+    val fabBottomPadding = if (isLandscape) Dimens.Small else Dimens.Small + Dimens.Large
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -87,10 +89,7 @@ fun FloatingActionContainer(
         AnimatedVisibility(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(
-                    start = Dimens.Medium + Dimens.Medium,
-                    bottom = if (isLandscape) Dimens.Small else Dimens.Small + Dimens.Large,
-                ),
+                .padding(start = fabStartPadding, bottom = fabBottomPadding),
             visible = mainUiState.sheet == null && okt != null,
             enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
@@ -103,10 +102,7 @@ fun FloatingActionContainer(
         AnimatedVisibility(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(
-                    start = Dimens.Medium + Dimens.Medium,
-                    bottom = if (isLandscape) Dimens.Small else Dimens.Small + Dimens.Large,
-                ),
+                .padding(start = fabStartPadding, bottom = fabBottomPadding),
             visible = mainUiState.sheet == null && landscapes != null,
             enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
@@ -209,6 +205,8 @@ fun FloatingActionContainer(
                 onReverseDirectionClicked = onGpxReverseDirectionClicked,
                 onOverviewClicked = onGpxOverviewClicked,
                 onClearClicked = onGpxClearClicked,
+                buttonStartPadding = fabStartPadding,
+                buttonBottomPadding = fabBottomPadding,
             )
         }
     }

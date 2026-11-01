@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -42,6 +43,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
@@ -65,6 +67,8 @@ fun GpxControlMenu(
     onOverviewClicked: () -> Unit,
     onClearClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    buttonStartPadding: Dp = FabMenuInset,
+    buttonBottomPadding: Dp = FabMenuInset,
     initiallyExpanded: Boolean = false,
 ) {
     var expanded by rememberSaveable { mutableStateOf(initiallyExpanded) }
@@ -89,7 +93,9 @@ fun GpxControlMenu(
             )
         }
         GpxFabMenu(
-            modifier = Modifier.align(Alignment.BottomStart),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(x = buttonStartPadding - FabMenuInset, y = FabMenuInset - buttonBottomPadding),
             buttonModifier = Modifier.onGloballyPositioned { menuButtonOrigin = it.positionInRoot() },
             expanded = expanded,
             onExpandedChange = { expanded = it },
@@ -130,6 +136,11 @@ fun GpxControlMenu(
         }
     }
 }
+
+/**
+ * The fixed start and bottom padding that [FloatingActionButtonMenu] puts around its button.
+ */
+private val FabMenuInset = 16.dp
 
 @Composable
 private fun GpxRouteVisibilityFab(isRouteVisible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
