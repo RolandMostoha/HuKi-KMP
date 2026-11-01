@@ -35,6 +35,9 @@ android {
         versionName = versionProp("appVersion")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    androidResources {
+        localeFilters += setOf("en", "hu")
+    }
     buildFeatures {
         buildConfig = true
         compose = true
