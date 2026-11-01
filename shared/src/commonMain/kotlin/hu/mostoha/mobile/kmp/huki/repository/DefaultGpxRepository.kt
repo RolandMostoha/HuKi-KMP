@@ -33,6 +33,7 @@ import hu.mostoha.mobile.kmp.huki.util.formatter.GpxFormatter
 import hu.mostoha.mobile.kmp.huki.util.isCloseWithThreshold
 import hu.mostoha.mobile.kmp.huki.util.toGpxTrackId
 import hu.mostoha.mobile.kmp.huki.util.toInstantFromIsoOffset
+import hu.mostoha.mobile.kmp.huki.util.withNamedEdges
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.lastModified
 import io.github.vinceglb.filekit.name
@@ -215,7 +216,7 @@ open class DefaultGpxRepository(
             fileUri = filePath,
             title = GpxFormatter.formatTitle(gpx),
             locations = locations,
-            waypoints = waypoints + edgeLocations,
+            waypoints = waypoints.withNamedEdges(edgeLocations, locations),
             bounds = locations + waypoints.map { it.location },
             totalDistance = locations.calculateTotalDistance(),
             travelTime = locations.calculateTravelTime(),

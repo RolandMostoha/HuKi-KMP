@@ -10,15 +10,17 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
 
-fun GpxWaypoint.toDistanceInfoWindow(id: Int, progress: RouteProgress?): DistanceInfoWindowData =
-    DistanceInfoWindowData(
+fun GpxWaypoint.toDistanceInfoWindow(id: Int, progress: RouteProgress?): DistanceInfoWindowData {
+    val name = name?.trim()?.takeIf { it.isNotEmpty() }
+    return DistanceInfoWindowData(
         id = id,
         location = location,
-        name = name?.trim()?.takeIf { it.isNotEmpty() },
-        label = when (type) {
-            WaypointType.START -> StringDesc.Resource(SharedRes.strings.gpx_distance_info_window_start)
-            WaypointType.END -> StringDesc.Resource(SharedRes.strings.gpx_distance_info_window_end)
-            WaypointType.INTERMEDIATE, WaypointType.ROUND_TRIP -> null
+        name = name,
+        label = when {
+            name != null -> null
+            type == WaypointType.START -> StringDesc.Resource(SharedRes.strings.gpx_distance_info_window_start)
+            type == WaypointType.END -> StringDesc.Resource(SharedRes.strings.gpx_distance_info_window_end)
+            else -> null
         },
         distance = progress?.let { DistanceFormatter.formatDistance(it.distance) },
         travelTime = progress?.let { TravelTimeFormatter.formatTravelTime(it.travelTime) },
@@ -28,3 +30,4 @@ fun GpxWaypoint.toDistanceInfoWindow(id: Int, progress: RouteProgress?): Distanc
             WaypointType.INTERMEDIATE -> 1
         },
     )
+}

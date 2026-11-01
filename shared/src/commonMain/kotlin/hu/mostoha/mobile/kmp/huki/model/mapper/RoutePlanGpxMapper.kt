@@ -30,7 +30,7 @@ private val ILLEGAL_FILE_NAME_CHARS = charArrayOf('/', '\\', ':', '*', '?', '"',
 
 /**
  * The plan's geometry becomes a single track, so re-reading it takes the same path as any external GPX.
- * Only the intermediate stops become waypoints — start and end markers are derived from the track's edges.
+ * Named start and end waypoints sit exactly on the track's edges, as routing snaps the stops off their picked spot.
  */
 fun RoutePlan.toGpxDocument(
     title: String,
@@ -52,7 +52,7 @@ fun RoutePlan.toGpxDocument(
                 segments = listOf(TrackSegment(points = locations.map { it.toGpxWaypoint() })),
             ),
         ),
-        waypoints = toIntermediateGpxWaypoints(stopPlaceNames),
+        waypoints = toStopGpxWaypoints(stopPlaceNames),
     )
 
 /**
@@ -85,14 +85,24 @@ fun List<String?>.toRoutePlanFileName(token: Int): String {
     return "$destination$FILE_NAME_SEPARATOR$flag"
 }
 
-private fun RoutePlan.toIntermediateGpxWaypoints(stopPlaceNames: List<String?>): List<Waypoint> =
-    waypoints.mapIndexedNotNull { index, location ->
+private fun RoutePlan.toStopGpxWaypoints(stopPlaceNames: List<String?>): List<Waypoint> {
+    val start = locations.firstOrNull()?.toNamedGpxWaypoint(stopPlaceNames.firstOrNull())
+    val end = locations.lastOrNull()?.takeIf { waypoints.size > 1 }?.toNamedGpxWaypoint(stopPlaceNames.lastOrNull())
+    val intermediates = waypoints.mapIndexedNotNull { index, location ->
         if (index == 0 || index == waypoints.lastIndex) {
             null
         } else {
-            location.toGpxWaypoint().copy(name = stopPlaceNames.getOrNull(index)?.trim()?.ifEmpty { null })
+            location.toGpxWaypoint().copy(name = stopPlaceNames.getOrNull(index).toPlaceNameOrNull())
         }
     }
+
+    return listOfNotNull(start) + intermediates + listOfNotNull(end)
+}
+
+private fun Location.toNamedGpxWaypoint(placeName: String?): Waypoint? =
+    placeName.toPlaceNameOrNull()?.let { toGpxWaypoint().copy(name = it) }
+
+private fun String?.toPlaceNameOrNull(): String? = this?.trim()?.ifEmpty { null }
 
 private fun String?.toStopNameOrNull(): String? = this?.trim()?.ifEmpty { null }?.toTruncatedStopName()
 

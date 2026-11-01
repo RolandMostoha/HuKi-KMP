@@ -59,6 +59,18 @@ class DistanceInfoWindowMapperTest {
         actual.map { it.name } shouldBe listOf("Dobogókő", null, null)
     }
 
+    @Test
+    fun `Given named edge waypoints - When toDistanceInfoWindow - Then the name replaces the start and end label`() {
+        val waypoints = listOf(WaypointType.START, WaypointType.END).map { type ->
+            GpxWaypoint(LOCATION, type, name = "Dobogókő")
+        }
+
+        val actual = waypoints.map { it.toDistanceInfoWindow(id = 0, progress = null) }
+
+        actual.map { it.name } shouldBe listOf("Dobogókő", "Dobogókő")
+        actual.map { it.label } shouldBe listOf(null, null)
+    }
+
     private data class TestCase(
         val type: WaypointType,
         val label: StringDesc?,

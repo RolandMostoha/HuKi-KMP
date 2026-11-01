@@ -5,7 +5,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -50,8 +49,29 @@ class RoutePlanGpxMapperTest {
     }
 
     @Test
-    fun `Given start and end stops - When mapped to a GPX document - Then only intermediate stops become waypoints`() {
+    fun `Given named stops - When mapped to a GPX document - Then every stop becomes a named waypoint`() {
         val document = routePlan().toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT)
+
+        document.waypoints.map { it.name } shouldBe listOf("Dobogókő", "Rám-szakadék", "Pilisszentkereszt")
+    }
+
+    @Test
+    fun `Given a route plan - When mapped to a GPX document - Then the start and end waypoints sit on the track edges`() {
+        val routePlan = routePlan().copy(
+            locations = listOf(Location(47.501, 19.001), Location(47.55, 18.95), Location(47.599, 18.899)),
+        )
+
+        val document = routePlan.toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT)
+
+        document.waypoints.first().latitude to document.waypoints.first().longitude shouldBe (47.501 to 19.001)
+        document.waypoints.last().latitude to document.waypoints.last().longitude shouldBe (47.599 to 18.899)
+    }
+
+    @Test
+    fun `Given unresolved ends - When mapped to a GPX document - Then only named stops become waypoints`() {
+        val stopNames = placeNames(null, "Rám-szakadék", " ")
+
+        val document = routePlan().toGpxDocument(TITLE, stopNames, RoutePlannerProfile.ON_TRAILS, CREATED_AT)
 
         document.waypoints shouldHaveSize 1
         document.waypoints.first().name shouldBe "Rám-szakadék"
@@ -147,15 +167,18 @@ class RoutePlanGpxMapperTest {
     }
 
     @Test
-    fun `Given a decoded route plan GPX - When read back - Then the intermediate waypoint name survives`() {
+    fun `Given a decoded route plan GPX - When read back - Then the stop names and edge coordinates survive`() {
+        val routePlan = routePlan()
         val xml = Gpx.encodeToString(
-            routePlan().toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT),
+            routePlan.toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT),
         )
 
-        val waypoint = Gpx.decodeFromString(xml).waypoints.firstOrNull()
+        val decoded = Gpx.decodeFromString(xml)
 
-        waypoint.shouldNotBeNull()
-        waypoint.name shouldBe "Rám-szakadék"
+        decoded.waypoints.map { it.name } shouldBe listOf("Dobogókő", "Rám-szakadék", "Pilisszentkereszt")
+        val trackPoints = decoded.tracks.first().segments.first().points
+        decoded.waypoints.first().latitude shouldBe trackPoints.first().latitude
+        decoded.waypoints.last().longitude shouldBe trackPoints.last().longitude
     }
 
     private fun routePlan(): RoutePlan =
