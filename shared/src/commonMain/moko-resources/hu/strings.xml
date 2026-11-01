@@ -128,7 +128,7 @@
     <string name="menu_title">Menü</string>
     <string name="menu_a11y_back">Vissza</string>
     <string name="menu_app_name">HuKi</string>
-    <string name="menu_app_description">Hungarian Hiking App</string>
+    <string name="menu_app_description">Magyar Túratérkép</string>
     <string name="menu_version_pattern">Verzió v%s</string>
     <string name="menu_item_settings">Beállítások</string>
     <string name="menu_item_settings_description">Alkalmazás beállításai</string>
