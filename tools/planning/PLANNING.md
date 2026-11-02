@@ -53,11 +53,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                             |                                                                                       |
 | `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
 | `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
-| `[G]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                              |
+| `[ ]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                              |
 | `[x]`  | Android:  Support multi app language                                                                                                                                                                   |
 | `[x]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                                            |
-| `[G]`  | Separate Mapbox token Android vs iOS                                                                                                                                                                   |
-| `[G]`  | Separate LocationIQ token Android vs iOS                                                                                                                                                               |
+| `[G]`  | Separate Mapbox token Android vs iOS, Separate LocationIQ token Android vs iOS. Use some secu tool to make sure tokens are not stolen.                                                                 |
 | `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                                                      |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                              |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                     |
@@ -71,7 +70,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope      | Bug                                                                                                                                                                                                                                                                                                             |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | Settings   | Bug: Android. FABs are not aligned with opened GPX, different bottom paddings ![img_5.png](img_5.png)                                                                                                                                                                                                           |
-| `[G]`  | Settings   | Bug: Android and iOS. Zoom buttons. If GPX is opened, show them regardless of the my location state. Even is users move away the camera, we want to show zoom buttons always for started GPX.                                                                                                                   |
+| `[x]`  | Settings   | Bug: Android and iOS. Zoom buttons. If GPX is opened, show them regardless of the my location state. Even is users move away the camera, we want to show zoom buttons always for started GPX.                                                                                                                   |
 | `[G]`  | Search     | Bug: Android. DestinationsSection->overscrollEffect = null is used because of this bug. LazyRow shows spurious stretch-overscroll mid-list on fling (cards widen/shake even when not at an edge). Only on fling, not on controlled drag (scroll-to-stop). (possibly a Compose foundation fling/overscroll bug). |
 | `[G]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                                                                                                           |
 | `[G]`  | Settings   | Bug: iOS. Discover->GPX Tooltip->GPX Guide-> double back button without title ![img.png](img.png)                                                                                                                                                                                                               |
@@ -112,7 +111,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
-| `[G]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
+| `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
 
@@ -163,12 +162,13 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: GPX Collection
 
-| Status | Scope         | Task                                         |
-|--------|---------------|----------------------------------------------|
-| `[G]`  | GPXCollection | Implement rename file                        |
-| `[G]`  | GPXCollection | Searchbar, free search text by gpx name      |
-| `[G]`  | GPXCollection | Filter by distance, open date, per landscape |
-| `[ ]`  | GPXCollection | "Mark Completed" GPX files                   |
+| Status | Scope         | Task                                                                                                                                        |
+|--------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | GPXCollection | Order by distance, open date, per landscape. Segmented                                                                                      |
+| `[ ]`  | GPXCollection | Implement rename file                                                                                                                       |
+| `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                     |
+| `[ ]`  | GPXCollection | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations. |
+| `[ ]`  | GPXCollection | "Mark Completed" GPX files. Updated metadata schema.                                                                                        |
 
 ### FEATURE: Place Details
 
@@ -187,7 +187,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | RoutePlanner | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations.                                                                                                                                |
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
 | `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
 | `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                       |

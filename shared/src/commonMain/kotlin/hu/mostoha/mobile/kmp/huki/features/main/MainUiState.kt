@@ -24,10 +24,15 @@ data class MainUiState(
     val alert: Alert? = null,
 ) {
     val isSearchBarVisible: Boolean
-        get() = !mapUiState.gpxLayerVisible &&
+        get() = !mapUiState.isGpxShown &&
             mapUiState.okt == null &&
             mapUiState.landscapes == null &&
             myLocationState.myLocationStatus != MyLocationStatus.FollowingLiveCompass
+
+    val isZoomControlsVisible: Boolean
+        get() = mapZoomControlsAlwaysVisible ||
+            mapUiState.isGpxShown ||
+            myLocationState.myLocationStatus == MyLocationStatus.FollowingLiveCompass
 
     companion object {
         val Default = MainUiState()

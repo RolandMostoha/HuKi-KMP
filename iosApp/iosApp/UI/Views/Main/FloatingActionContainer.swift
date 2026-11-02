@@ -20,17 +20,6 @@ struct FloatingActionContainer: View {
 
     private var isWideLayout: Bool { layoutMode.isWide }
 
-    private var isFollowingLiveCompass: Bool {
-        if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
-            return true
-        }
-        return false
-    }
-
-    private var isZoomControlsVisible: Bool {
-        uiState.mapZoomControlsAlwaysVisible || isFollowingLiveCompass
-    }
-
     var body: some View {
         Group {
             if isWideLayout {
@@ -56,14 +45,14 @@ struct FloatingActionContainer: View {
         }
         .animation(.smooth(duration: 0.3), value: uiState.sheet)
         .animation(.smooth(duration: 0.3), value: uiState.isSearchBarVisible)
-        .animation(.smooth(duration: 0.3), value: isZoomControlsVisible)
+        .animation(.smooth(duration: 0.3), value: uiState.isZoomControlsVisible)
     }
 
     @ViewBuilder
     private var fabControls: some View {
         if uiState.sheet == nil {
             VStack(alignment: .trailing, spacing: 16) {
-                if isZoomControlsVisible {
+                if uiState.isZoomControlsVisible {
                     MapZoomControls(
                         strings: strings,
                         onZoomInClicked: onZoomInClicked,

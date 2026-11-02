@@ -29,6 +29,9 @@ data class MapUiState(
     val routeStops: List<PlaceDetails> = emptyList(),
 ) {
 
+    val isGpxShown: Boolean
+        get() = gpxDetails != null && gpxLayerVisible
+
     val routePlanMarkers: List<GpxWaypoint>
         get() = routePlan?.toGpxWaypoints() ?: routePlanWaypoints
 

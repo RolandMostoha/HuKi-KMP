@@ -4,7 +4,7 @@ import SwiftUI
 extension MainView {
     @ViewBuilder
     func gpxControlMenu(uiState: MainUiState) -> some View {
-        if uiState.sheet == nil, uiState.mapUiState.gpxDetails != nil, uiState.mapUiState.gpxLayerVisible {
+        if uiState.sheet == nil, uiState.mapUiState.isGpxShown {
             GpxControlMenu(
                 strings: strings,
                 isRouteVisible: uiState.mapUiState.gpxRouteVisible,

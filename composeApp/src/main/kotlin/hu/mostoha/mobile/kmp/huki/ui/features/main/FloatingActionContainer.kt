@@ -187,9 +187,7 @@ fun FloatingActionContainer(
         }
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.BottomStart),
-            visible = mainUiState.sheet == null &&
-                mainUiState.mapUiState.gpxDetails != null &&
-                mainUiState.mapUiState.gpxLayerVisible,
+            visible = mainUiState.sheet == null && mainUiState.mapUiState.isGpxShown,
             enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
             exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut(),
         ) {
@@ -235,11 +233,8 @@ private fun FabColumnAction(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Dimens.FloatingActionSpacing),
         ) {
-            val myLocationStatus = mainUiState.myLocationState.myLocationStatus
-            val isZoomControlsVisible = mainUiState.mapZoomControlsAlwaysVisible ||
-                myLocationStatus == MyLocationStatus.FollowingLiveCompass
             AnimatedVisibility(
-                visible = isZoomControlsVisible,
+                visible = mainUiState.isZoomControlsVisible,
                 enter = fadeIn() + scaleIn(),
                 exit = fadeOut() + scaleOut(),
             ) {
@@ -282,6 +277,7 @@ private fun FabColumnAction(
                 shape = CircleShape,
                 onClick = {},
             ) {
+                val myLocationStatus = mainUiState.myLocationState.myLocationStatus
                 val myLocationIconRes = when (myLocationStatus) {
                     MyLocationStatus.Default -> R.drawable.ic_fab_my_location_default
                     MyLocationStatus.Following -> R.drawable.ic_fab_my_location_following
