@@ -3,6 +3,10 @@ package hu.mostoha.mobile.kmp.huki.ui.features.main
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
@@ -19,6 +23,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -236,8 +241,9 @@ private fun MainContent(
 
     LaunchedEffect(uiState.sheet) {
         val sheet = uiState.sheet
-        routePlannerDetent = RoutePlannerDetent.EXPANDED
-        if (sheet !is Sheet.RoutePlanner) {
+        if (sheet is Sheet.RoutePlanner) {
+            routePlannerDetent = RoutePlannerDetent.EXPANDED
+        } else {
             routePlannerPick = null
         }
         showModalBottomSheet = syncSheetStates(
@@ -349,20 +355,33 @@ private fun MainContent(
                 },
                 onMenuClicked = onMenuClicked,
             )
-            (uiState.sheet as? Sheet.RoutePlanner)?.let { sheet ->
-                RoutePlannerSheetOverlay(
-                    stops = sheet.stops,
-                    restored = sheet.restored,
-                    pick = routePlannerPick,
-                    detent = routePlannerDetent,
-                    onDetentChange = { routePlannerDetent = it },
-                    minimizedHeight = routePlannerPeekHeight,
-                    expandedHeight = routePlannerExpandedHeight,
-                    onEvent = onEvent,
-                    onLocationIqClicked = onLocationIqClicked,
-                    onMinimizedHeightMeasured = { routePlannerPeekHeight = it },
-                    onExpandedHeightMeasured = { routePlannerExpandedHeight = it },
-                )
+            AnimatedContent(
+                targetState = uiState.sheet as? Sheet.RoutePlanner,
+                transitionSpec = {
+                    (slideInVertically { it } togetherWith slideOutVertically { it }).using(null)
+                },
+                contentKey = { it != null },
+                label = "routePlannerSheet",
+            ) { sheet ->
+                sheet?.let {
+                    // Reset after the slide-out, so the closing sheet keeps its detent while it leaves
+                    DisposableEffect(Unit) {
+                        onDispose { routePlannerDetent = RoutePlannerDetent.EXPANDED }
+                    }
+                    RoutePlannerSheetOverlay(
+                        stops = sheet.stops,
+                        restored = sheet.restored,
+                        pick = routePlannerPick,
+                        detent = routePlannerDetent,
+                        onDetentChange = { routePlannerDetent = it },
+                        minimizedHeight = routePlannerPeekHeight,
+                        expandedHeight = routePlannerExpandedHeight,
+                        onEvent = onEvent,
+                        onLocationIqClicked = onLocationIqClicked,
+                        onMinimizedHeightMeasured = { routePlannerPeekHeight = it },
+                        onExpandedHeightMeasured = { routePlannerExpandedHeight = it },
+                    )
+                }
             }
             if (showModalBottomSheet) {
                 MainModalBottomSheet(
@@ -561,7 +580,12 @@ private fun MainStandardBottomSheet(
                     onSectionWebsiteClick = { onEvent(OktUiEvents.OktSectionWebsiteClicked(it)) },
                     onSectionReverseClick = { onEvent(OktUiEvents.OktSectionReverseClicked(it)) },
                     onStampClick = { onEvent(OktUiEvents.OktMarkerClicked(it)) },
-                    onCloseClick = { onEvent(OktUiEvents.OktCloseClicked) },
+                    onCloseClick = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(OktUiEvents.OktCloseClicked)
+                        }
+                    },
                 )
             }
         }
@@ -574,7 +598,12 @@ private fun MainStandardBottomSheet(
                     onCategoryClick = { onEvent(LandscapesUiEvents.CategoryClicked(it)) },
                     onShowAllClick = { onEvent(LandscapesUiEvents.LandscapesShowAllClicked) },
                     onDestinationClick = { onEvent(LandscapesUiEvents.LandscapesDestinationClicked(it)) },
-                    onCloseClick = { onEvent(LandscapesUiEvents.LandscapesCloseClicked) },
+                    onCloseClick = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onEvent(LandscapesUiEvents.LandscapesCloseClicked)
+                        }
+                    },
                     onSwipeDown = { coroutineScope.launch { sheetState.hide() } },
                 )
             }
@@ -691,6 +720,13 @@ private fun MainUiEffectHandler(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, onEvent: (MainUiEvents) -> Unit) {
+    val coroutineScope = rememberCoroutineScope()
+    // A close button removes the sheet from composition without animating, unless it is hidden first
+    val dismissSheet: () -> Unit = {
+        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+            if (!sheetState.isVisible) onEvent(MainUiEvents.SheetDismissed)
+        }
+    }
     when (val sheet = uiState.sheet) {
         is Sheet.Layers -> {
             LayersBottomSheet(
@@ -701,14 +737,14 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onBaseLayerSelected = { onEvent(MainUiEvents.BaseLayerSelected(it)) },
                 onHikingLayerSelected = { onEvent(MainUiEvents.HikingLayerSelected) },
                 onGpxLayerSelected = { onEvent(GpxUiEvents.GpxLayerSelected) },
-                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+                onDismissRequest = dismissSheet,
             )
         }
         is Sheet.WhatsNew -> {
             WhatsNewBottomSheet(
                 whatsNew = sheet.whatsNew,
                 sheetState = sheetState,
-                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+                onDismissRequest = dismissSheet,
             )
         }
         Sheet.Discover -> {
@@ -722,7 +758,7 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 onOktInfoClicked = { onEvent(OktUiEvents.OktInfoClicked) },
                 onShowLandscapesClicked = { onEvent(LandscapesUiEvents.LandscapesShowClicked) },
                 onShowCategoriesClicked = { onEvent(LandscapesUiEvents.CategoriesShowClicked) },
-                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+                onDismissRequest = dismissSheet,
             )
         }
         Sheet.MapLabelScale -> {
@@ -731,7 +767,7 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 labelScale = uiState.mapUiState.labelScale,
                 onFactorChanged = { onEvent(MainUiEvents.MapLabelScaleChanged(it)) },
                 onFactorCommitted = { onEvent(MainUiEvents.MapLabelScaleCommitted(it)) },
-                onDismissRequest = { onEvent(MainUiEvents.SheetDismissed) },
+                onDismissRequest = dismissSheet,
             )
         }
         else -> Unit

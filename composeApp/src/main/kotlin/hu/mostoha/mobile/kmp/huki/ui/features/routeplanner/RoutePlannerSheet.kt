@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -38,6 +39,8 @@ import androidx.compose.ui.unit.Velocity
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.math.roundToInt
+
+private val SheetShape = RoundedCornerShape(topStart = Dimens.ExtraLarge, topEnd = Dimens.ExtraLarge)
 
 @Composable
 fun RoutePlannerSheet(
@@ -87,10 +90,8 @@ fun RoutePlannerSheet(
                     val placeable = measurable.measure(constraints.copy(minHeight = height, maxHeight = height))
                     layout(placeable.width, height) { placeable.place(0, 0) }
                 }
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(topStart = Dimens.ExtraLarge, topEnd = Dimens.ExtraLarge),
-                ),
+                .shadow(elevation = Dimens.Small, shape = SheetShape)
+                .background(color = MaterialTheme.colorScheme.surface, shape = SheetShape),
         )
         content(
             Modifier

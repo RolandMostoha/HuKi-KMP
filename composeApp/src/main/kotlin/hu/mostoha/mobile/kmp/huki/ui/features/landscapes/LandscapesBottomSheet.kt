@@ -1,7 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.landscapes
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -30,8 +31,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -75,10 +76,10 @@ import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 import java.text.Collator
-import kotlin.math.abs
 
 private const val SHEET_EXPANDED_FRACTION = 0.9f
 private val DragThreshold = 32.dp
+private val FlingVelocityThreshold = 1000.dp
 private val LandscapeIconSize = 26.dp
 private val CategoryIconSize = 24.dp
 private val HeaderButtonSize = 48.dp
@@ -99,9 +100,9 @@ fun LandscapesBottomSheet(
     val selectedRowId = if (isCategories) landscapes.selectedCategoryId else landscapes.selectedLandscapeId
     // Without a selected category the map has nothing to show yet
     var isExpanded by rememberSaveable { mutableStateOf(isCategories && selectedRowId == null) }
-    val sheetHeight by animateDpAsState(
-        if (isExpanded || !sheetHeights.isExpandable) sheetHeights.expanded else sheetHeights.collapsed,
-    )
+    val targetHeight = if (isExpanded || !sheetHeights.isExpandable) sheetHeights.expanded else sheetHeights.collapsed
+    val sheetHeight = remember { SheetHeightState(targetHeight) }
+    LaunchedEffect(targetHeight) { sheetHeight.animateTo(targetHeight) }
     val rows = rememberDestinationGroupItems(landscapes)
     val listState = rememberLazyListState()
     LaunchedEffect(selectedRowId) {
@@ -111,7 +112,7 @@ fun LandscapesBottomSheet(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(sheetHeight)
+            .height(sheetHeight.value)
             .testTagAsResourceId(TestTags.LANDSCAPES_SHEET),
         shape = RoundedCornerShape(topStart = Dimens.ExtraLarge, topEnd = Dimens.ExtraLarge),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -119,7 +120,8 @@ fun LandscapesBottomSheet(
     ) {
         Column(
             modifier = Modifier.sheetHeaderDrag(
-                isExpandable = sheetHeights.isExpandable,
+                sheetHeight = sheetHeight,
+                sheetHeights = sheetHeights,
                 isExpanded = isExpanded,
                 onExpandedChange = { isExpanded = it },
                 onSwipeDown = onSwipeDown,
@@ -174,6 +176,25 @@ fun LandscapesBottomSheet(
     }
 }
 
+@Stable
+private class SheetHeightState(initial: Dp) {
+    private val animatable = Animatable(initial, Dp.VectorConverter)
+    var dragHeight by mutableStateOf<Dp?>(null)
+
+    val value: Dp
+        get() = dragHeight ?: animatable.value
+
+    suspend fun snapTo(height: Dp) {
+        dragHeight = null
+        animatable.snapTo(height)
+    }
+
+    suspend fun animateTo(height: Dp) {
+        dragHeight = null
+        animatable.animateTo(height)
+    }
+}
+
 data class LandscapesSheetHeights(
     val collapsed: Dp,
     val expanded: Dp,
@@ -202,31 +223,46 @@ fun rememberLandscapesSheetHeights(): LandscapesSheetHeights {
 
 @Composable
 private fun Modifier.sheetHeaderDrag(
-    isExpandable: Boolean,
+    sheetHeight: SheetHeightState,
+    sheetHeights: LandscapesSheetHeights,
     isExpanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onSwipeDown: () -> Unit,
 ): Modifier {
-    val thresholdPx = with(LocalDensity.current) { DragThreshold.toPx() }
-    var dragDistance by remember { mutableFloatStateOf(0f) }
+    val density = LocalDensity.current
     val expandLabel = mokoString(SharedRes.strings.a11y_expand_sheet)
     val collapseLabel = mokoString(SharedRes.strings.a11y_collapse_sheet)
     return this
         .draggable(
             orientation = Orientation.Vertical,
-            state = rememberDraggableState { dragDistance += it },
-            onDragStarted = { dragDistance = 0f },
-            onDragStopped = {
-                when {
-                    abs(dragDistance) < thresholdPx -> Unit
-                    dragDistance < 0 -> if (isExpandable) onExpandedChange(true)
-                    isExpanded -> onExpandedChange(false)
-                    else -> onSwipeDown()
+            state = rememberDraggableState { delta ->
+                val height = sheetHeight.value - with(density) { delta.toDp() }
+                sheetHeight.dragHeight = height.coerceIn(sheetHeights.collapsed / 2, sheetHeights.expanded)
+            },
+            onDragStopped = { velocityPx ->
+                val velocity = with(density) { velocityPx.toDp() }
+                val height = sheetHeight.value
+                sheetHeight.snapTo(height)
+                val midpoint = (sheetHeights.collapsed + sheetHeights.expanded) / 2
+                val expand = sheetHeights.isExpandable &&
+                    when {
+                        velocity < -FlingVelocityThreshold -> true
+                        velocity > FlingVelocityThreshold -> false
+                        else -> height > midpoint
+                    }
+                val isDraggedBelowCollapsed = height < sheetHeights.collapsed - DragThreshold
+                val isFlungDown = velocity > FlingVelocityThreshold && !isExpanded
+                val isSwipedDown = !expand && (isDraggedBelowCollapsed || isFlungDown)
+                if (isSwipedDown) {
+                    onSwipeDown()
+                } else {
+                    onExpandedChange(expand)
+                    sheetHeight.animateTo(if (expand) sheetHeights.expanded else sheetHeights.collapsed)
                 }
             },
         )
         .semantics {
-            if (isExpandable) {
+            if (sheetHeights.isExpandable) {
                 customActions = listOf(
                     CustomAccessibilityAction(if (isExpanded) collapseLabel else expandLabel) {
                         onExpandedChange(!isExpanded)

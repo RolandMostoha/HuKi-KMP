@@ -17,8 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,6 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoutePlannerSearchBottomSheet(
+    sheetState: SheetState,
     myLocation: Location?,
     onEvent: (RoutePlannerUiEvents) -> Unit,
     onLocationIqClick: () -> Unit,
@@ -61,8 +62,6 @@ fun RoutePlannerSearchBottomSheet(
     viewModel: PlaceFinderViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     ModalBottomSheet(
         onDismissRequest = { onEvent(RoutePlannerUiEvents.WaypointSearchDismissed) },
         sheetState = sheetState,
