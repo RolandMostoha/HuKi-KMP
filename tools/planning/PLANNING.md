@@ -44,23 +44,27 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ## Backlog
 
-### General / tech tasks
+### General / Design / tech tasks
 
 | Status | Feature                                                                                                                                                                                                |
 |--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                                                |
 | `[x]`  | Android: Prepare for config change AND process death -> state restoration. Map and camera state, My location state, GPX, RoutePlanner, Lansdcapes, OKT should restore the last state (revise the list) |                                                                                       |
-| `[G]`  | Android: Make sure migration from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                             |                                                                                       |
-| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
-| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
-| `[ ]`  | Android: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                              |
+| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                                                      |
 | `[x]`  | Android:  Support multi app language                                                                                                                                                                   |
 | `[x]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                                            |
+| `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                       |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
 | `[G]`  | Separate Mapbox token Android vs iOS, Separate LocationIQ token Android vs iOS. Use some secu tool to make sure tokens are not stolen.                                                                 |
-| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                                                      |
-| `[x]`  | HuKi-KMP: update licencing text and use a more strict licencing agreement. Let's protect the brand, and the collected data for destinations.                                                           |
+| `[G]`  | HuKi-KMP: update licencing text and use a more strict licencing agreement. Let's protect the brand, and the collected data for destinations. Switch from MIT to necessary.                             |
 | `[G]`  | Graphhopper attribution.                                                                                                                                                                               |
-| `[G]`  | Add a POI animation to Place Details                                                                                                                                                                   |
+| `[G]`  | Design: Add a POI animation to Place Details                                                                                                                                                           |
+| `[G]`  | Design: Make the zoom to my location smoother. When the first installs the app the zoom from HU -> my location feels flashy. The same is true for clean app open.                                      |
+| `[x]`  | Design: Revert the Serach sheet so we display 3 recent GPXs                                                                                                                                            |
+| `[G]`  | Design-Settings: make change map titles more prominent (this is one of the most used setting), a dedicated section "Map labels". Also rename "Map" section to "Map controls".                          |
+| `[G]`  | Activity: show when locked (as in HuKi-Android), so after screen off → on the map shows instantly instead of the lock screen, like Google Maps. No permission needed. Toggle at runtime via `setShowWhenLocked()` (`FLAG_SHOW_WHEN_LOCKED` on API 26), not the static manifest attribute, and only while something live runs (my location follow / live compass, opened GPX) — otherwise anyone with the locked phone can browse GPX files and history. Add a Settings toggle for it. No `turnScreenOn`. |
+| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                       |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                              |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                     |
 | `[ ]`  | App store header picture/video (optional)                                                                                                                                                              |
@@ -74,11 +78,12 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | Settings   | Bug: Android. FABs are not aligned with opened GPX, different bottom paddings ![img_5.png](img_5.png)                                                                                                                      |
 | `[x]`  | Settings   | Bug: Android and iOS. Zoom buttons. If GPX is opened, show them regardless of the my location state. Even is users move away the camera, we want to show zoom buttons always for started GPX.                              |
-| `[G]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                      |
+| `[x]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                      |
 | `[G]`  | Search     | Bug: Android. My location issue. There are cases when I click on My location button, following or live compass, then move the camera away, and in 1-4 sec it jumps back to my location suddenly                            |
-| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
+| `[G]`  | Search     | Bug: Android. When the GPX MEnu is closed, there is a weird shadow flash for the eye FAB. ![img_12.png](img_12.png)                                                                                                        |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
+| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 
 ### FEATURE: Analytics
 
@@ -143,11 +148,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Versioning + WhatsNew
 
-| Status | Scope    | Task                                                                                                                  |
-|--------|----------|-----------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Maybe separating the 2 whatsnew is necessary per platform. |
-| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                |
-| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).             |
+| Status | Scope    | Task                                                                                                                                                                                               |
+|--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Separating the 2 whatsnew might be necessary per platform. Also versioning per platform, Android will go live with 2.0, next iOS is 1.5 |
+| `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
+| `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 
 ### FEATURE: GPX
 
@@ -166,11 +171,12 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope         | Task                                                                                                                                                                                                                                                                                                                                                                                   |
 |--------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | GPXCollection | Re-design GPXCollection. Remove GPX stat pills background, so it's inlined with the parent card. Add segmented control and logic to order by date, distance (<5km, 5-10, 10-20, 20+) ![img_11.png](img_11.png), per landscape. ![img_6.png](img_6.png). Add a tag for landscapes (similarily designed like Imported/Route Planner tags). Do not show these tags in per landscape page. |
+| `[x]`  | GPXCollection | Re-design GPXCollection. Remove GPX stat pills background, so it's inlined with the parent card. Add segmented control and logic to order by date, distance (<5km, 5-10, 10-20, 20+) ![img_11.png](img_11.png), per landscape. ![img_6.png](img_6.png). Add a tag for landscapes (similarily designed like Imported/Route Planner tags). Do not show these tags in per landscape page. |
 | `[ ]`  | GPXCollection | Implement rename file                                                                                                                                                                                                                                                                                                                                                                  |
 | `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                                                                                                                                                                                                                                                |
 | `[ ]`  | GPXCollection | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations.                                                                                                                                                                                                                                            |
 | `[ ]`  | GPXCollection | "Mark Completed" GPX files. Updated metadata schema.                                                                                                                                                                                                                                                                                                                                   |
+| `[ ]`  | GPXCollection | Bulk import multiple GPX files: "Import" button in the top bar + empty state, multi-select picker (Android `OpenMultipleDocuments`, iOS `.fileImporter(allowsMultipleSelection: true)`), shared `FilesImported(uris)` event looping `readGpxFile`, keep going on failures, "Imported X of Y" result, count-only analytics. Later: `ACTION_SEND_MULTIPLE` / iOS document types.         |
 
 ### FEATURE: Place Details
 
@@ -190,10 +196,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope        | Task                                                                                                                                                                                                                                                                       |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                      |
-| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
 | `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                       |
 | `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                                                                                                       |
 | `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                                                                                            |
+| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                             |
 | `[?]`  | RoutePlanner | Add support for removing stops from Map during RoutePlan phase. If users click on the wps, there should be a toolbar "Delete Stop" button, which removes the waypoint.                                                                                                     |
 | `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                  |
 | `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                                                                                               |
@@ -210,11 +216,17 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 Goal: a new section in Menu, with 1 page guides of different topics.
 
-| Status | Scope  | Task                                                                                                                                                                   |
-|--------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Guides | Add "Gyorstalpaló" to Guides section with My location - Navigation state, Route Planner, Travel Time calculation logic, Slope calculation (HuKi-Android for reference) |
-| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                                              |
-| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                                                    |
+| Status | Scope  | Task                                                                                                                                            |
+|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Guides | Add "Gyorstalpaló" to Menu-Guides section                                                                                                       |
+| `[G]`  | Guides | Implement "QuickGuide" screen. Add My Location section. 1. Following 2. Live compass / Navigation state (can be done with long click instantly) |
+| `[G]`  | Guides | Add Map section - Map Gestures rotate pinch tilt reset                                                                                          |
+| `[G]`  | Guides | Add Route Planner section - how to start. multi POI, destinations.                                                                              |
+| `[G]`  | Guides | Add Travel Time calculation logic                                                                                                               |
+| `[G]`  | Guides | Add Slope calculation (HuKi-Android for reference)                                                                                              |
+| `[G]`  | Guides | Add GPX section - link GpxGuideScreen                                                                                                           |
+| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                       |
+| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                             |
 
 #### Guides: Report problem on route
 
@@ -234,17 +246,35 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 |--------|---------|---------------------|
 | `[G]`  | Support | Add Support feature |
 
-## Ideas / Experimental features 
+## Ideas / Experimental features
+
+### FEATURE: Favorite POIs
+
+- Mark POIs as favorites (long-tap on map, destinations etc., any POI).
+- Favourites record the geocoded name and optional comment
+- Make grouping possible, e.g. "Kedvenc túráim", "Gomba gyűjtő helyek".
+- Add export to GPX option.
 
 ### FEATURE: Full offline mode with downloaded Mapbox layers + Hiking layer
 
 Hiking layer https://data2.openstreetmap.hu/ - TuraReteg.sqlitedb
 
-### FEATURE: Background location monitoring
-
-Entry service for many related features, e.g. haptic warning for going off the GPX route, route recording
+### FEATURE: Route recording and saving it as GPX file
 
 #### FEATURE: Haptic warning for going off the GPX route
+
+No "Always" / `ACCESS_BACKGROUND_LOCATION` needed: the user starts the session in the foreground, "While Using" carries over.
+
+- Detection (`commonMain`): distance to nearest point on the GPX track, hysteresis (off route > 50 m, back on track < 30 m),
+  skip checks on poor accuracy, match the nearby track part only (loops, out-and-back tracks). Alert only on state change.
+- iOS: `UIBackgroundModes` → `location`, `allowsBackgroundLocationUpdates = true`, `CLBackgroundActivitySession` (iOS 17+).
+  Blue status bar indicator; App Review needs a background mode justification.
+- iOS haptics: `UIFeedbackGenerator` is foreground only → use a local notification (notification permission, system
+  vibration) or a Live Activity alert (`alertConfiguration`). No custom haptic patterns while locked.
+- Android: foreground service, type `location`, started from the foreground. `FOREGROUND_SERVICE` +
+  `FOREGROUND_SERVICE_LOCATION` + `VIBRATE` (install-time), `POST_NOTIFICATIONS` (Android 13+ runtime, service runs even if
+  denied). Any vibration pattern possible. Play Console foreground service type declaration (video).
+- Battery: `distanceFilter` ~10–20 m, skip the check when not moving.
 
 ### FEATURE: Route Planner: Wandering mode
 
@@ -261,6 +291,20 @@ with waypoints only, set a few points and leave the user to decide which route t
 | `[ ]`  | GpxPanel | Distance from End                              |
 | `[ ]`  | GpxPanel | AVG Speed                                      |
 | `[ ]`  | GpxPanel | Expected arrival based on dist/AVG speed       |
+
+### FEATURE: iOS Live Activity (lock screen + Dynamic Island)
+
+iOS counterpart of Android's show-when-locked: iOS can't show the app over the lock screen, so a Live Activity (ActivityKit)
+shows live hike info there instead, like Apple Maps navigation. Depends on Background location monitoring and the GPX Info Panel.
+
+| Status | Scope        | Task                                                                                                                          |
+|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | LiveActivity | Widget extension target + `NSSupportsLiveActivities`, user can disable it in iOS Settings                                     |
+| `[ ]`  | LiveActivity | Start on opened GPX / my location follow, on clear / stop                                                                     |
+| `[ ]`  | LiveActivity | Content: distance left, elapsed time, altitude, next waypoint (no live Mapbox map, `ContentState` ~4 KB, static snapshot max) |
+| `[ ]`  | LiveActivity | Updates while locked need background location mode ('While Using' is enough, no "Always") + App Review justification          |
+| `[ ]`  | LiveActivity | Privacy: shown to anyone on the lock screen, no GPX names / precise places unless the user opts in                            |
+| `[ ]`  | LiveActivity | 8 h active limit (+4 h on lock screen), handle expiry for long hikes                                                          |
 
 ### FEATURE: Camera panel
 
@@ -283,15 +327,6 @@ email, chat). A zipped bundle is plain data, so an Android export imports on iOS
 | `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                      |
 | `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                     |
 | `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`          |
-
-### TECH: iOS Mapbox viewport deprecation (ViewportObserver → `$viewport` binding)
-
-`MapProxy.viewport` (the imperative `ViewportManager`) is deprecated in Mapbox 11.20 →
-`'viewport' is deprecated: Use Map(viewport:) initializer instead.`
-
-| Status | Scope | Task                                                                                                                           |
-|--------|-------|--------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Map   | iOS: replace `ViewportObserver` + `proxy.viewport` observer with `.onChange(of: viewport)`; pan-test before deleting the class |
 
 ### FEATURE: Hike Finder
 

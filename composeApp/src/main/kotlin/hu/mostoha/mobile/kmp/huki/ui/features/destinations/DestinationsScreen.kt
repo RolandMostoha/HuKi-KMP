@@ -1,11 +1,9 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.destinations
 
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -26,8 +23,6 @@ import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -45,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,6 +65,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.ConnectedToggleGroup
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -229,47 +224,19 @@ private data class DestinationPreview(
     val distanceText: String?,
 )
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun DestinationsTabBar(
     selectedTab: DestinationsTab,
     onTabSelected: (DestinationsTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val tabs = DestinationsTab.entries
-    val colors = ToggleButtonDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        checkedContainerColor = MaterialTheme.colorScheme.primary,
-        checkedContentColor = MaterialTheme.colorScheme.onPrimary,
+    ConnectedToggleGroup(
+        options = DestinationsTab.entries,
+        selected = selectedTab,
+        onSelect = onTabSelected,
+        label = { mokoString(it.title) },
+        modifier = modifier.testTag(TestTags.DESTINATIONS_TAB_BAR),
     )
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(TestTags.DESTINATIONS_TAB_BAR),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-    ) {
-        tabs.forEachIndexed { index, tab ->
-            val shapes = when (index) {
-                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                tabs.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-            }
-            ToggleButton(
-                checked = selectedTab == tab,
-                onCheckedChange = { onTabSelected(tab) },
-                shapes = shapes,
-                colors = colors,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = mokoString(tab.title),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-    }
 }
 
 private fun LazyListScope.topSpacing() {

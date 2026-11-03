@@ -25,6 +25,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
+import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeLocator
 import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultOktRepository
@@ -40,6 +41,7 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.HukiRoutingRoutePlannerRepository
+import hu.mostoha.mobile.kmp.huki.repository.LandscapeLocator
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
@@ -66,7 +68,8 @@ import kotlin.time.Clock
 val appModule = module {
     single<GpxStorage> { DefaultGpxStorage() }
     single<GpxMetadataStore> { DefaultGpxMetadataStore(get()) }
-    single<GpxRepository> { DefaultGpxRepository(get(), get(), get(), get()) }
+    single<GpxRepository> { DefaultGpxRepository(get(), get(), get(), get(), get()) }
+    single<LandscapeLocator> { DefaultLandscapeLocator(get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
     single<MapCameraStore> { DefaultMapCameraStore() }
     single<OktRepository> { DefaultOktRepository(get(), get(named(Dispatcher.Default))) }

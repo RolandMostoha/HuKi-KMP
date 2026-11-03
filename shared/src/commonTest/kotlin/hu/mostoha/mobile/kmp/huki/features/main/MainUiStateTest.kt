@@ -10,7 +10,7 @@ import kotlin.test.Test
 class MainUiStateTest {
 
     @Test
-    fun `Given main ui state - When isZoomControlsVisible is read - Then it reflects setting, gpx and live compass`() {
+    fun `Given main ui state - When isZoomControlsVisible is read - Then it reflects setting gpx and live compass`() {
         testCases().forEach { testCase ->
             val actual = testCase.input.isZoomControlsVisible
 

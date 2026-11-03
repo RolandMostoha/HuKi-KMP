@@ -44,28 +44,28 @@ fun RouteStatsRow(
         ),
     ) {
         StatChip(
-            iconResId = R.drawable.ic_clock,
+            iconResId = R.drawable.ic_clock_filled,
             value = travelTime,
             label = mokoString(SharedRes.strings.gpx_details_travel_time),
             style = style,
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = R.drawable.ic_place_circle,
+            iconResId = R.drawable.ic_place_circle_filled,
             value = distance,
             label = mokoString(SharedRes.strings.gpx_details_distance),
             style = style,
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = R.drawable.ic_up_double,
+            iconResId = R.drawable.ic_trending_up,
             value = incline,
             label = mokoString(SharedRes.strings.gpx_details_incline),
             style = style,
             modifier = Modifier.weight(1f),
         )
         StatChip(
-            iconResId = R.drawable.ic_down_double,
+            iconResId = R.drawable.ic_trending_down,
             value = decline,
             label = mokoString(SharedRes.strings.gpx_details_decline),
             style = style,

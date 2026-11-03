@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,21 +18,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.StringResource
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxLandscape
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
+import hu.mostoha.mobile.kmp.huki.util.mokoColor
+import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.maplibre.spatialk.units.extensions.kilometers
 import kotlin.time.Clock
@@ -41,6 +48,7 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun GpxFileCard(
     file: GpxFileItem,
+    landscape: GpxLandscape?,
     onClick: () -> Unit,
     onRenameClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -80,16 +88,12 @@ fun GpxFileCard(
                 if (title != null) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                GpxFileOriginChip(
-                    origin = file.origin,
-                    modifier = Modifier.padding(top = Dimens.ExtraSmall),
-                )
             }
             GpxFileOptionsMenu(
                 onRenameClick = onRenameClick,
@@ -97,34 +101,70 @@ fun GpxFileCard(
                 onDeleteClick = onDeleteClick,
             )
         }
-        GpxFileStatsRow(
-            file = file,
-            modifier = Modifier.padding(top = Dimens.ExtraSmall),
+        GpxFileStatsRow(file = file)
+        GpxFileTagRow(
+            origin = file.origin,
+            landscape = landscape,
+            modifier = Modifier.padding(start = Dimens.ExtraLarge, end = Dimens.Large, top = Dimens.ExtraSmall),
         )
     }
 }
 
 @Composable
-private fun GpxFileOriginChip(origin: GpxOrigin, modifier: Modifier = Modifier) {
+private fun GpxFileTagRow(origin: GpxOrigin, landscape: GpxLandscape?, modifier: Modifier = Modifier) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
+        verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
+    ) {
+        GpxFileTag(
+            icon = ImageVector.vectorResource(origin.iconResId),
+            text = mokoString(origin.label),
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
+        )
+        if (landscape != null) {
+            GpxFileTag(
+                icon = mokoImage(landscape.iconRes),
+                text = mokoString(landscape.nameRes),
+                containerColor = mokoColor(landscape.colorRes),
+                contentColor = Color.White,
+                modifier = Modifier.testTag(TestTags.GPX_COLLECTION_ITEM_LANDSCAPE_TAG),
+            )
+        }
+    }
+}
+
+private val TagIconSize = 14.dp
+
+@Composable
+private fun GpxFileTag(
+    icon: ImageVector,
+    text: String,
+    containerColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(percent = 50))
-            .background(MaterialTheme.colorScheme.secondary)
-            .padding(horizontal = Dimens.Medium, vertical = Dimens.ExtraSmall),
+            .background(containerColor)
+            .padding(horizontal = Dimens.Medium, vertical = Dimens.Small),
         horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(origin.iconResId),
+            imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary,
-            modifier = Modifier.size(Dimens.IconExtraSmall),
+            tint = contentColor,
+            modifier = Modifier.size(TagIconSize),
         )
         Text(
-            text = mokoString(origin.label),
-            style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSecondary,
+            color = contentColor,
+            maxLines = 1,
         )
     }
 }
@@ -149,31 +189,28 @@ private fun GpxFileStatsRow(file: GpxFileItem, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                start = Dimens.Large,
-                end = Dimens.Large,
-            ),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
+            .padding(horizontal = Dimens.ExtraLarge),
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         StatChip(
-            iconResId = R.drawable.ic_clock,
+            iconResId = R.drawable.ic_clock_filled,
             value = mokoString(TravelTimeFormatter.formatTravelTime(file.travelTime)),
-            modifier = Modifier.weight(1f),
+            style = StatChipStyle.Inline,
         )
         StatChip(
-            iconResId = R.drawable.ic_place_circle,
+            iconResId = R.drawable.ic_place_circle_filled,
             value = DistanceFormatter.formatDistance(file.totalDistance),
-            modifier = Modifier.weight(1f),
+            style = StatChipStyle.Inline,
         )
         StatChip(
-            iconResId = R.drawable.ic_up_double,
+            iconResId = R.drawable.ic_trending_up,
             value = DistanceFormatter.formatMeters(file.incline),
-            modifier = Modifier.weight(1f),
+            style = StatChipStyle.Inline,
         )
         StatChip(
-            iconResId = R.drawable.ic_down_double,
+            iconResId = R.drawable.ic_trending_down,
             value = DistanceFormatter.formatMeters(file.decline),
-            modifier = Modifier.weight(1f),
+            style = StatChipStyle.Inline,
         )
     }
 }
@@ -185,6 +222,12 @@ private fun GpxFileCardPreview() {
         Column {
             GpxFileCard(
                 file = previewFile(GpxOrigin.EXTERNAL),
+                landscape = GpxLandscape(
+                    id = "pilis_hegyseg",
+                    nameRes = SharedRes.strings.landscape_pilis_hegyseg,
+                    colorRes = SharedRes.colors.landscapePilisHegyseg,
+                    iconRes = SharedRes.images.ic_landscapes_mountain_medium,
+                ),
                 onClick = {},
                 onRenameClick = {},
                 onShareClick = {},
@@ -192,6 +235,7 @@ private fun GpxFileCardPreview() {
             )
             GpxFileCard(
                 file = previewFile(GpxOrigin.ROUTE_PLANNER),
+                landscape = null,
                 onClick = {},
                 onRenameClick = {},
                 onShareClick = {},

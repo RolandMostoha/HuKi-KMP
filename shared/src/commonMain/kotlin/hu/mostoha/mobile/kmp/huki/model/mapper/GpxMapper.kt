@@ -20,7 +20,12 @@ import kotlin.time.Instant
 fun Document.toJelSymbol(): JelSymbol? =
     tracks.firstNotNullOfOrNull { it.type }?.let { JelSymbol.fromOsmValue(it.trim()) }
 
-fun GpxDetails.toGpxFileItem(trackId: String, lastModified: Instant, lastOpened: Instant?): GpxFileItem =
+fun GpxDetails.toGpxFileItem(
+    trackId: String,
+    lastModified: Instant,
+    lastOpened: Instant?,
+    landscapeId: String? = null,
+): GpxFileItem =
     GpxFileItem(
         fileName = fileName,
         fileUri = fileUri,
@@ -33,6 +38,7 @@ fun GpxDetails.toGpxFileItem(trackId: String, lastModified: Instant, lastOpened:
         lastModified = lastModified,
         lastOpened = lastOpened,
         origin = GpxOrigin.fromPath(fileUri),
+        landscapeId = landscapeId,
     )
 
 fun GpxDetails.toRouteStats(): RouteStats =

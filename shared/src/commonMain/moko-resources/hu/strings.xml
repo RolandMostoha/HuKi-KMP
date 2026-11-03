@@ -205,6 +205,15 @@
     <string name="gpx_collection_subtitle_empty">Még nincs importált útvonalad vagy útvonalterved</string>
     <string name="gpx_collection_date_today">Ma</string>
     <string name="gpx_collection_date_yesterday">Tegnap</string>
+    <string name="gpx_collection_sort_a11y">Útvonalak csoportosítása</string>
+    <string name="gpx_collection_sort_date">Dátum</string>
+    <string name="gpx_collection_sort_distance">Távolság</string>
+    <string name="gpx_collection_sort_landscape">Tájegység</string>
+    <string name="gpx_collection_distance_over_20">20 km felett</string>
+    <string name="gpx_collection_distance_10_20">10–20 km</string>
+    <string name="gpx_collection_distance_5_10">5–10 km</string>
+    <string name="gpx_collection_distance_under_5">5 km alatt</string>
+    <string name="gpx_collection_landscape_other">Egyéb</string>
     <string name="gpx_collection_empty_title">Üres a GPX gyűjteményed</string>
     <string name="gpx_collection_empty_message">Az importált GPX fájljaid és útvonalterveid itt jelennek meg a jövőben. Importálj egy útvonalat a kezdéshez.</string>
     <string name="gpx_collection_empty_action">GPX útmutató megnyitása</string>

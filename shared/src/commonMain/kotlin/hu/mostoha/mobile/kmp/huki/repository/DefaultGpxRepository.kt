@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import co.touchlab.kermit.Logger
 import dev.icerock.moko.resources.FileResource
 import hu.mostoha.mobile.kmp.huki.model.data.GpxFileSource
+import hu.mostoha.mobile.kmp.huki.model.data.GpxLandscapeEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.EmptyGpxContentException
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
@@ -55,6 +56,7 @@ open class DefaultGpxRepository(
     private val metadataStore: GpxMetadataStore,
     private val crashlyticsService: CrashlyticsService,
     private val bundledFileReader: BundledFileReader,
+    private val landscapeLocator: LandscapeLocator,
 ) : GpxRepository {
 
     override suspend fun readGpxFile(uri: String): GpxDetails =
@@ -75,9 +77,14 @@ open class DefaultGpxRepository(
 
     override suspend fun getGpxFiles(): List<GpxFileItem> =
         withContext(Dispatchers.IO) {
-            val entriesByTrackId = metadataStore.getMetadata().gpxFiles.associateBy { it.trackId }
-            val items = gpxStorage.listGpxFiles().mapNotNull { file -> scanGpxFile(file, entriesByTrackId) }
+            val metadata = metadataStore.getMetadata()
+            val entriesByTrackId = metadata.gpxFiles.associateBy { it.trackId }
+            val landscapeScan = LandscapeScan(cached = metadata.landscapes.associateBy { it.trackId })
+            val items = gpxStorage.listGpxFiles().mapNotNull { file ->
+                scanGpxFile(file, entriesByTrackId, landscapeScan)
+            }
 
+            metadataStore.recordLandscapes(landscapeScan.newEntries)
             metadataStore.remove(items.map { it.trackId }.toSet())
 
             items
@@ -152,9 +159,14 @@ open class DefaultGpxRepository(
     }
 
     /**
-     * Parses a sandbox GPX, deleting it when it's unreadable or corrupt.
+     * Parses a sandbox GPX, deleting it when it's unreadable or corrupt. A landscape missing from
+     * [landscapeScan] is looked up and recorded in it.
      */
-    private suspend fun scanGpxFile(file: PlatformFile, entriesByTrackId: Map<String, GpxMetadataEntry>): GpxFileItem? {
+    private suspend fun scanGpxFile(
+        file: PlatformFile,
+        entriesByTrackId: Map<String, GpxMetadataEntry>,
+        landscapeScan: LandscapeScan,
+    ): GpxFileItem? {
         val bytes = runCatching { file.readBytes() }.getOrElse { throwable ->
             Logger.e(throwable) { "Gpx: failed to read ${file.name}, deleting" }
             crashlyticsService.recordException(throwable)
@@ -162,18 +174,55 @@ open class DefaultGpxRepository(
             return null
         }
         val trackId = bytes.toGpxTrackId()
-        return runCatching {
-            parseGpxDetails(file.name, file.path, bytes.decodeToString()).toGpxFileItem(
-                trackId = trackId,
-                lastModified = file.lastModified(),
-                lastOpened = entriesByTrackId[trackId]?.lastOpened?.toInstantFromIsoOffset(),
-            )
+        val details = runCatching {
+            parseGpxDetails(file.name, file.path, bytes.decodeToString())
         }.onFailure { throwable ->
             Logger.e(throwable) { "Gpx: failed to parse ${file.name}, deleting" }
             crashlyticsService.recordException(throwable)
             gpxStorage.delete(file.path)
-        }.getOrNull()
+        }.getOrNull() ?: return null
+
+        return details.toGpxFileItem(
+            trackId = trackId,
+            lastModified = file.lastModified(),
+            lastOpened = entriesByTrackId[trackId]?.lastOpened?.toInstantFromIsoOffset(),
+            landscapeId = when (val cached = landscapeScan.cached[trackId]) {
+                null -> lookUpLandscape(trackId, details, landscapeScan)
+                else -> cached.landscapeId
+            },
+        )
     }
+
+    private suspend fun lookUpLandscape(trackId: String, details: GpxDetails, landscapeScan: LandscapeScan): String? {
+        if (landscapeScan.isFailed) return null
+        val landscapeId = findLandscapeId(details).getOrElse {
+            landscapeScan.isFailed = true
+            return null
+        }
+        landscapeScan.newEntries += GpxLandscapeEntry(trackId = trackId, landscapeId = landscapeId)
+        return landscapeId
+    }
+
+    /**
+     * Landscape lookups of one collection scan. A failed lookup, most likely the outlines failing to load, skips
+     * the rest of the scan instead of retrying and reporting it for every file.
+     */
+    private class LandscapeScan(val cached: Map<String, GpxLandscapeEntry>) {
+        val newEntries = mutableListOf<GpxLandscapeEntry>()
+        var isFailed = false
+    }
+
+    /**
+     * A failed lookup only costs the landscape tag, so it never deletes the file like a parse failure does, and
+     * it isn't cached, so the next scan retries it.
+     */
+    private suspend fun findLandscapeId(details: GpxDetails): Result<String?> =
+        runCatching {
+            landscapeLocator.findLandscapeId(details.locations.ifEmpty { details.waypoints.map { it.location } })
+        }.onFailure { throwable ->
+            Logger.e(throwable) { "Gpx: failed to locate the landscape of ${details.fileName}" }
+            crashlyticsService.recordException(throwable)
+        }
 
     private fun parseGpxDetails(fileName: String, filePath: String, xml: String): GpxDetails =
         mapGpxDetails(fileName, filePath, validateGpx(xml))

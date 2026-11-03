@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
+import hu.mostoha.mobile.kmp.huki.model.data.GpxLandscapeEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
 
@@ -13,6 +14,11 @@ interface GpxMetadataStore {
      * Records a freshly opened track, overwriting any earlier entry with the same trackId.
      */
     suspend fun recordOpened(entry: GpxMetadataEntry)
+
+    /**
+     * Records landscape lookups, overwriting any earlier entry with the same trackId.
+     */
+    suspend fun recordLandscapes(entries: List<GpxLandscapeEntry>)
 
     /**
      * @return the full [GpxMetadataModel] so callers can pick the attributes they need.

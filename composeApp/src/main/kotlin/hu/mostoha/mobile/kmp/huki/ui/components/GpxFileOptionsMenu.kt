@@ -7,6 +7,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,9 @@ fun GpxFileOptionsMenu(
         IconButton(
             modifier = modifier.testTag(TestTags.GPX_COLLECTION_ITEM_OPTIONS_BUTTON),
             onClick = { expanded = true },
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(SharedRes.images.ic_more_vert.drawableResId),

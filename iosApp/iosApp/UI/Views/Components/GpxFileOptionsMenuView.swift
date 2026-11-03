@@ -28,7 +28,8 @@ struct GpxFileOptionsMenuView: View {
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(.primary)
                 .frame(width: 36, height: 36)
-                .contentShape(Rectangle())
+                .background(Circle().fill(Color(.tertiarySystemFill)))
+                .contentShape(Circle())
         }
         .menuStyle(.button)
         .buttonStyle(.plain)

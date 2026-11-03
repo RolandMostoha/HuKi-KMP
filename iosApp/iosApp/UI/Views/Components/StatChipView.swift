@@ -11,26 +11,28 @@ struct StatChipView: View {
 
     var body: some View {
         let isStandard = style == .standard
+        let isInline = style == .inline
+        let isCompact = style == .compact
         let layout: AnyLayout = isStandard
             ? AnyLayout(VStackLayout(spacing: 10))
-            : AnyLayout(HStackLayout(spacing: 3))
+            : AnyLayout(HStackLayout(spacing: isInline ? 6 : 3))
         layout {
             Image(systemName: systemImage)
-                .font(.system(size: isStandard ? 18 : 14, weight: .semibold))
+                .font(.system(size: isStandard ? 18 : (isInline ? 15 : 14), weight: .semibold))
                 .foregroundStyle(primary)
-            Text(UiFormatter.formatStatValue(value, smallFont: .system(size: isStandard ? 12 : 11, weight: .medium)))
-                .font(.system(size: isStandard ? 18 : 14, weight: isStandard ? .bold : .heavy))
+            Text(UiFormatter.formatStatValue(value, smallFont: .system(size: isCompact ? 11 : 12, weight: .medium)))
+                .font(.system(size: isStandard ? 18 : (isInline ? 16 : 14), weight: isCompact ? .heavy : .bold))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
                 .minimumScaleFactor(isStandard ? 1 : 0.6)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, isStandard ? 8 : 4)
-        .padding(.vertical, isStandard ? 16 : 12)
+        .frame(maxWidth: isInline ? nil : .infinity)
+        .padding(.horizontal, isStandard ? 8 : (isInline ? 0 : 4))
+        .padding(.vertical, isStandard ? 16 : (isInline ? 2 : 12))
         .background(
             RoundedRectangle(cornerRadius: isStandard ? 18 : 38, style: .continuous)
-                .fill(Color(.tertiarySystemFill))
+                .fill(isInline ? Color.clear : Color(.tertiarySystemFill))
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label.map { "\($0), \(value)" } ?? value)
@@ -42,6 +44,8 @@ enum StatChipStyle {
     case compact
     /// Standard stacked tile (icon above value), used in detail layouts.
     case standard
+    /// Compact layout without the pill, for rows inside a card.
+    case inline
 }
 
 #Preview {

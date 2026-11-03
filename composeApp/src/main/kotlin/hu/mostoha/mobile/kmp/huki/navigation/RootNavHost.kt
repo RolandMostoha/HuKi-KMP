@@ -1,9 +1,16 @@
 package hu.mostoha.mobile.kmp.huki.navigation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +27,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.trailsymbolsguide.TrailSymbolsGuideScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
 import hu.mostoha.mobile.kmp.huki.util.millis
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -179,6 +187,7 @@ fun RootNavHost() {
         }
         composable(Routes.GPX_COLLECTION) {
             GpxCollectionScreen(
+                isEnterTransitionSettled = rememberIsEnterTransitionSettled(),
                 onBack = { navController.popBackStack() },
                 onOpenTutorial = { navController.navigate(Routes.GPX_GUIDE) },
                 onOpenGpx = { uri ->
@@ -214,4 +223,18 @@ fun RootNavHost() {
             )
         }
     }
+}
+
+/**
+ * Turns `true` once the destination's enter transition has finished, and stays `true` while it exits, so heavy
+ * content can wait for the slide instead of dropping its frames.
+ */
+@Composable
+private fun AnimatedContentScope.rememberIsEnterTransitionSettled(): Boolean {
+    var isSettled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(transition) {
+        snapshotFlow { transition.currentState == EnterExitState.Visible && !transition.isRunning }.first { it }
+        isSettled = true
+    }
+    return isSettled
 }

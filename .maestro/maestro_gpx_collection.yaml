@@ -27,6 +27,24 @@ appId: ${APP_ID}
     id: GPX_COLLECTION_LIST
 - assertVisible: "gpx_test_with_comments.gpx"
 
+# The OKT-15 test track runs in the Pilis, so it carries a landscape tag
+- assertVisible:
+    id: GPX_COLLECTION_ITEM_LANDSCAPE_TAG
+
+# Grouping by distance keeps the tag, grouping by landscape moves it to the section header
+- tapOn:
+    id: GPX_COLLECTION_SORT_DISTANCE
+- assertVisible:
+    id: GPX_COLLECTION_ITEM_LANDSCAPE_TAG
+- tapOn:
+    id: GPX_COLLECTION_SORT_LANDSCAPE
+- assertNotVisible:
+    id: GPX_COLLECTION_ITEM_LANDSCAPE_TAG
+- assertVisible:
+    id: GPX_COLLECTION_SECTION_HEADER
+- tapOn:
+    id: GPX_COLLECTION_SORT_DATE
+
 # Help opens the GPX Tutorial, then back returns to the collection
 - tapOn:
     id: GPX_COLLECTION_HELP_BUTTON

@@ -25,6 +25,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,6 +51,9 @@ class DefaultGpxRepositoryTest {
         DefaultGpxMetadataStore(FakeCrashlyticsService),
         FakeCrashlyticsService,
         bundledFileReader = AndroidBundledFileReader(appContext),
+        landscapeLocator = DefaultLandscapeLocator(
+            DefaultLandscapeRepository(AndroidBundledFileReader(appContext), Dispatchers.Default),
+        ),
     )
 
     @Test
@@ -303,6 +307,31 @@ class DefaultGpxRepositoryTest {
 
             item.lastOpened shouldNotBe null
             item.trackId.length shouldBe 16
+        }
+    }
+
+    @Test
+    fun givenGpxInsideALandscape_whenGetGpxFiles_thenLandscapeIdIsSet() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_comments.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+
+            val item = repository.getGpxFiles().single { it.fileName == gpx.fileName }
+
+            item.landscapeId shouldBe "pilis_hegyseg"
+        }
+    }
+
+    @Test
+    fun givenGpxInsideALandscape_whenGetGpxFiles_thenLandscapeIsCachedInMetadata() {
+        runTest {
+            val uri = saveTestGpx("gpx_test_with_comments.gpx")
+            val gpx = repository.readGpxFile(uri.toString())
+            val item = repository.getGpxFiles().single { it.fileName == gpx.fileName }
+
+            val landscapes = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata().landscapes
+
+            landscapes.single { it.trackId == item.trackId }.landscapeId shouldBe "pilis_hegyseg"
         }
     }
 

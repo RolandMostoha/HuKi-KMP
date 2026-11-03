@@ -50,8 +50,38 @@ struct DistanceInfoWindowView: View {
             .foregroundStyle(Color(.label))
             .multilineTextAlignment(.center)
             .lineLimit(2)
-            .frame(maxWidth: Dimens.infoWindowNameMaxWidth)
-            .fixedSize(horizontal: false, vertical: true)
+            .modifier(WrappingWidth(maxWidth: Dimens.infoWindowNameMaxWidth))
+    }
+}
+
+// Mapbox measures view annotations with an unspecified size, so the text gets a real width to wrap within
+private struct WrappingWidth: ViewModifier {
+    let maxWidth: CGFloat
+
+    func body(content: Content) -> some View {
+        WrappingWidthLayout(maxWidth: maxWidth) { content }
+    }
+}
+
+private struct WrappingWidthLayout: Layout {
+    let maxWidth: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let subview = subviews.first else { return .zero }
+        return subview.sizeThatFits(ProposedViewSize(width: width(of: subview, proposal: proposal), height: nil))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard let subview = subviews.first else { return }
+        subview.place(
+            at: CGPoint(x: bounds.midX, y: bounds.midY),
+            anchor: .center,
+            proposal: ProposedViewSize(width: bounds.width, height: bounds.height)
+        )
+    }
+
+    private func width(of subview: LayoutSubview, proposal: ProposedViewSize) -> CGFloat {
+        min(subview.sizeThatFits(.unspecified).width, proposal.width ?? maxWidth, maxWidth)
     }
 }
 
