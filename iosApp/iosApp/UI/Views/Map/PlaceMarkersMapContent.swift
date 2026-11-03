@@ -14,16 +14,19 @@ struct PlaceMarkersMapContent: MapContent {
 
     var body: some MapContent {
         ForEvery(routeStops, id: \.location.id) { stop in
-            placeMarker(at: stop.location, accessibilityName: stop.toDisplayName()) { onRouteStopClicked(stop) }
+            placeMarker(at: stop.location, accessibilityName: stop.toDisplayName(), animateIn: false) {
+                onRouteStopClicked(stop)
+            }
         }
         if let placeDetails = mapUiState.placeDetails {
-            placeMarker(at: placeDetails.location, accessibilityName: nil, onTap: nil)
+            placeMarker(at: placeDetails.location, accessibilityName: nil, animateIn: true, onTap: nil)
         }
     }
 
     private func placeMarker(
         at location: Shared.Location,
         accessibilityName: String?,
+        animateIn: Bool,
         onTap: (() -> Void)?
     ) -> MapViewAnnotation {
         MapViewAnnotation(coordinate: location.coordinate) {
@@ -31,8 +34,11 @@ struct PlaceMarkersMapContent: MapContent {
                 baseLayer: mapUiState.baseLayer,
                 colorScheme: colorScheme,
                 accessibilityName: accessibilityName,
+                animateIn: animateIn,
                 onTap: onTap
             )
+            // A new place gets a fresh view, so its pop-in animation runs again
+            .id(location.id)
         }
         .variableAnchors([ViewAnnotationAnchorConfig(anchor: .bottom)])
         .allowOverlap(true)
@@ -45,8 +51,11 @@ private struct PlaceMarkerView: View {
     let baseLayer: Shared.BaseLayer
     let colorScheme: ColorScheme
     let accessibilityName: String?
+    let animateIn: Bool
     let onTap: (() -> Void)?
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isShown = false
     private let strings = Strings()
 
     var body: some View {
@@ -57,6 +66,11 @@ private struct PlaceMarkerView: View {
         Image(uiImage: image)
             .resizable()
             .frame(width: image.size.width * scale, height: image.size.height * scale)
+            .scaleEffect(isShown || !animateIn ? 1 : 0, anchor: .bottom)
+            .onAppear {
+                guard animateIn else { return }
+                withAnimation(reduceMotion ? nil : .spring(duration: 0.45, bounce: 0.4)) { isShown = true }
+            }
             .contentShape(Rectangle())
             .onTapGesture { onTap?() }
             .allowsHitTesting(onTap != nil)
