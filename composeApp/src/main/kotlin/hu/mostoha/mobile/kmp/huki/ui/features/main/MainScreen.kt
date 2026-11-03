@@ -88,6 +88,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.navigateToAppSettings
 import hu.mostoha.mobile.kmp.huki.util.navigateToDirections
 import hu.mostoha.mobile.kmp.huki.util.openUrl
+import hu.mostoha.mobile.kmp.huki.util.rememberIsNearlyExpanded
 import hu.mostoha.mobile.kmp.huki.util.shareGpxFile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -635,6 +636,7 @@ private fun MainStandardBottomSheet(
                 LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
             ) {
                 SearchBottomSheet(
+                    isSheetExpanded = sheetState.rememberIsNearlyExpanded(),
                     onCloseClick = {
                         coroutineScope.launch { sheetState.hide() }
                     },

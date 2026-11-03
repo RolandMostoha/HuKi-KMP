@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.NEARBY_DESTINATIONS_MIN_ZOOM
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,9 +68,7 @@ class PlaceFinderViewModel(
     )
 
     init {
-        loadDestinations()
-        loadRecentPlaces()
-        loadRecentGpxFiles()
+        loadDiscoveryContent()
 
         viewModelScope.launch {
             searchQueries.collectLatest { query -> searchLocal(query) }
@@ -94,12 +93,12 @@ class PlaceFinderViewModel(
         viewModelScope.cancel()
     }
 
-    private fun loadDestinations() {
+    private fun loadDiscoveryContent() {
         val cameraPosition = mapCameraStore.cameraPosition
         val isNearby = cameraPosition.zoom >= NEARBY_DESTINATIONS_MIN_ZOOM
 
         viewModelScope.launch {
-            val destinations = withContext(defaultDispatcher) {
+            val destinations = async(defaultDispatcher) {
                 if (isNearby) {
                     destinationRepository.getNearbyDestinations(
                         location = cameraPosition.location,
@@ -109,25 +108,29 @@ class PlaceFinderViewModel(
                     destinationRepository.getTopDestinations(DESTINATIONS_LIMIT)
                 }
             }
+            val recentPlaces = async { placeHistoryRepository.getRecentPlaces(RECENT_PLACES_LIMIT) }
+            val recentGpxFiles = async { gpxRepository.getRecentGpxFiles(RECENT_GPX_LIMIT) }
+            // One update, so the sheet lays out its sections once instead of shifting as each arrives
             _uiState.update { uiState ->
                 uiState.copy(
-                    destinations = destinations,
+                    destinations = destinations.await(),
                     destinationsTitle = if (isNearby) {
                         SharedRes.strings.destinations_section_nearby_title
                     } else {
                         SharedRes.strings.destinations_section_title
                     },
+                    recentPlaces = recentPlaces.await(),
+                    recentGpxFiles = recentGpxFiles.await(),
                 )
             }
+            addRecentPlaceDistances()
         }
     }
 
-    private fun loadRecentPlaces() {
-        viewModelScope.launch {
-            val places = placeHistoryRepository.getRecentPlaces(RECENT_PLACES_LIMIT)
-            val userLocation = lastKnownLocation()
-            val recentPlaces = places.map { it.withDistanceFrom(userLocation) }
-            _uiState.update { uiState -> uiState.copy(recentPlaces = recentPlaces) }
+    private suspend fun addRecentPlaceDistances() {
+        val userLocation = lastKnownLocation() ?: return
+        _uiState.update { uiState ->
+            uiState.copy(recentPlaces = uiState.recentPlaces.map { it.withDistanceFrom(userLocation) })
         }
     }
 
@@ -135,13 +138,6 @@ class PlaceFinderViewModel(
         withTimeoutOrNull(AUTOCOMPLETE_LOCATION_TIMEOUT) {
             locationMonitoringService.lastKnownLocation()
         }
-
-    private fun loadRecentGpxFiles() {
-        viewModelScope.launch {
-            val recentGpxFiles = gpxRepository.getRecentGpxFiles(RECENT_GPX_LIMIT)
-            _uiState.update { uiState -> uiState.copy(recentGpxFiles = recentGpxFiles) }
-        }
-    }
 
     private fun onSearchTextChanged(searchText: String) {
         if (searchText == _uiState.value.searchText) return

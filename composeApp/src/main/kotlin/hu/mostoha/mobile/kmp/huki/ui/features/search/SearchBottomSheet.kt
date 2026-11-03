@@ -1,5 +1,10 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.search
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -55,6 +63,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SearchBottomSheet(
+    isSheetExpanded: Boolean,
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
     onRecentPlaceSelected: (Place) -> Unit,
@@ -70,10 +79,16 @@ fun SearchBottomSheet(
     viewModel: PlaceFinderViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var showContent by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(isSheetExpanded) {
+        if (isSheetExpanded) showContent = true
+    }
 
     SearchBottomSheetContent(
         modifier = modifier,
         uiState = uiState,
+        showContent = showContent,
         onCloseClick = onCloseClick,
         onPlaceSelected = onPlaceSelected,
         onRecentPlaceSelected = onRecentPlaceSelected,
@@ -92,6 +107,7 @@ fun SearchBottomSheet(
 @Composable
 private fun SearchBottomSheetContent(
     uiState: PlaceFinderUiState,
+    showContent: Boolean,
     onEvent: (PlaceFinderUiEvents) -> Unit,
     onCloseClick: () -> Unit,
     onPlaceSelected: (Place) -> Unit,
@@ -108,16 +124,12 @@ private fun SearchBottomSheetContent(
 ) {
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
-    val errorInfo = uiState.error
-    val hasDiscoveryContent = uiState.destinations.isNotEmpty() ||
-        uiState.recentPlaces.isNotEmpty() ||
-        uiState.recentGpxFiles.isNotEmpty()
     val navigationBarBottomPadding = with(density) {
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(showContent) {
+        if (showContent) focusRequester.requestFocus()
     }
 
     Card(
@@ -163,43 +175,68 @@ private fun SearchBottomSheetContent(
                 )
             }
             Spacer(modifier = Modifier.width(Dimens.Small))
-            val isSearching = uiState.searchText.isNotEmpty()
-            val hasLocalMatches = uiState.searchRecentPlaces.isNotEmpty() ||
-                uiState.searchDestinations.isNotEmpty()
-            val hasAnyResults = hasLocalMatches || uiState.places.isNotEmpty()
-            val scrollModifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
             val bottomPadding = Dimens.ExtraLarge + navigationBarBottomPadding
-            val hasOnlineActivity = uiState.isLoading || errorInfo != null
-            if (isSearching && (hasAnyResults || hasOnlineActivity)) {
-                SearchResultsContent(
-                    uiState = uiState,
-                    onPlaceSelected = onPlaceSelected,
-                    onSearchPlaceHistorySelected = onSearchPlaceHistorySelected,
-                    onSearchDestinationSelected = onSearchDestinationSelected,
-                    onRetryClicked = { onEvent(PlaceFinderUiEvents.RetryClicked) },
-                    onLocationIqClicked = onLocationIqClicked,
-                    bottomPadding = bottomPadding,
-                    modifier = scrollModifier,
-                )
-            } else if (!isSearching && hasDiscoveryContent) {
-                SearchDiscoveryContent(
-                    uiState = uiState,
-                    onRecentPlaceSelected = onRecentPlaceSelected,
-                    onDestinationSelected = onDestinationSelected,
-                    onGpxFileSelected = onGpxFileSelected,
-                    onSeeAllGpxClicked = onSeeAllGpxClicked,
-                    onSeeAllPlacesClicked = onSeeAllPlacesClicked,
-                    onSeeAllDestinationsClicked = onSeeAllDestinationsClicked,
-                    bottomPadding = bottomPadding,
-                    modifier = scrollModifier,
-                )
-            } else {
-                Spacer(modifier = Modifier.weight(1f, fill = true))
+            val contentType = if (showContent) uiState.toContentType() else SearchContentType.EMPTY
+            AnimatedContent(
+                targetState = contentType to uiState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                transitionSpec = {
+                    fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith
+                        fadeOut(tween(durationMillis = 90))
+                },
+                contentKey = { (type, _) -> type },
+                label = "searchContent",
+            ) { (targetContentType, contentUiState) ->
+                val scrollModifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                when (targetContentType) {
+                    SearchContentType.RESULTS -> SearchResultsContent(
+                        uiState = contentUiState,
+                        onPlaceSelected = onPlaceSelected,
+                        onSearchPlaceHistorySelected = onSearchPlaceHistorySelected,
+                        onSearchDestinationSelected = onSearchDestinationSelected,
+                        onRetryClicked = { onEvent(PlaceFinderUiEvents.RetryClicked) },
+                        onLocationIqClicked = onLocationIqClicked,
+                        bottomPadding = bottomPadding,
+                        modifier = scrollModifier,
+                    )
+                    SearchContentType.DISCOVERY -> SearchDiscoveryContent(
+                        uiState = contentUiState,
+                        onRecentPlaceSelected = onRecentPlaceSelected,
+                        onDestinationSelected = onDestinationSelected,
+                        onGpxFileSelected = onGpxFileSelected,
+                        onSeeAllGpxClicked = onSeeAllGpxClicked,
+                        onSeeAllPlacesClicked = onSeeAllPlacesClicked,
+                        onSeeAllDestinationsClicked = onSeeAllDestinationsClicked,
+                        bottomPadding = bottomPadding,
+                        modifier = scrollModifier,
+                    )
+                    SearchContentType.EMPTY -> Spacer(modifier = Modifier.fillMaxSize())
+                }
             }
         }
+    }
+}
+
+private enum class SearchContentType { EMPTY, DISCOVERY, RESULTS }
+
+private fun PlaceFinderUiState.toContentType(): SearchContentType {
+    val isSearching = searchText.isNotEmpty()
+    val hasResults = searchRecentPlaces.isNotEmpty() ||
+        searchDestinations.isNotEmpty() ||
+        places.isNotEmpty() ||
+        isLoading ||
+        error != null
+    val hasDiscoveryContent = destinations.isNotEmpty() ||
+        recentPlaces.isNotEmpty() ||
+        recentGpxFiles.isNotEmpty()
+    return when {
+        isSearching && hasResults -> SearchContentType.RESULTS
+        !isSearching && hasDiscoveryContent -> SearchContentType.DISCOVERY
+        else -> SearchContentType.EMPTY
     }
 }
 
@@ -329,6 +366,7 @@ private fun SearchBottomSheetContentPreview() {
                     ),
                 ),
             ),
+            showContent = true,
             onCloseClick = {},
             onPlaceSelected = {},
             onRecentPlaceSelected = {},
@@ -354,6 +392,7 @@ private fun SearchBottomSheetErrorStatePreview() {
                 searchText = "Arden",
                 error = NetworkError.NO_INTERNET.toInfoViewData(),
             ),
+            showContent = true,
             onCloseClick = {},
             onPlaceSelected = {},
             onRecentPlaceSelected = {},
@@ -406,6 +445,7 @@ private fun SearchBottomSheetDestinationsStatePreview() {
                     ),
                 ),
             ),
+            showContent = true,
             onCloseClick = {},
             onPlaceSelected = {},
             onRecentPlaceSelected = {},
@@ -431,6 +471,7 @@ private fun SearchBottomSheetLoadingStatePreview() {
                 searchText = "Arden",
                 isLoading = true,
             ),
+            showContent = true,
             onCloseClick = {},
             onPlaceSelected = {},
             onRecentPlaceSelected = {},

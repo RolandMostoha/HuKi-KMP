@@ -206,6 +206,41 @@ class PlaceFinderViewModelTest {
         }
     }
 
+    @Test
+    fun `Given last location never returns - When view model init - Then recent places show at once without distance`() {
+        runTest {
+            val recentPlace = Place(
+                osmId = "1",
+                name = "Szeged",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                address = "Hungary",
+                location = Location(46.2530, 20.1414),
+                osmType = OsmType.NODE,
+            )
+            val recentGpxFiles = listOf(gpxFileItem("okt15.gpx"))
+            everySuspend { placeHistoryRepository.getRecentPlaces(any()) } returns listOf(recentPlace)
+            everySuspend { gpxRepository.getRecentGpxFiles(any()) } returns recentGpxFiles
+            every { destinationRepository.getTopDestinations(any()) } returns listOf(kekesteto)
+
+            val viewModel = PlaceFinderViewModel(
+                geocodingRepository = geocodingRepository,
+                locationMonitoringService = hangingLocationMonitoringService(),
+                destinationRepository = destinationRepository,
+                gpxRepository = gpxRepository,
+                placeHistoryRepository = placeHistoryRepository,
+                mapCameraStore = mapCameraStore,
+                analyticsService = analyticsService,
+                defaultDispatcher = testDispatcher,
+            )
+            testDispatcher.scheduler.runCurrent()
+
+            val uiState = viewModel.uiState.value
+            uiState.recentPlaces shouldBe listOf(recentPlace)
+            uiState.recentGpxFiles shouldBe recentGpxFiles
+            uiState.destinations shouldBe listOf(kekesteto)
+        }
+    }
+
     private fun createViewModel(analyticsService: FakeAnalyticsService = this.analyticsService) =
         PlaceFinderViewModel(
             geocodingRepository = geocodingRepository,
