@@ -185,12 +185,14 @@
     <string name="settings_theme_light">Világos</string>
     <string name="settings_theme_dark">Sötét</string>
     <string name="settings_a11y_theme_picker">Téma kiválasztása</string>
-    <string name="settings_section_map">Térkép</string>
+    <string name="settings_section_map_labels">Térkép feliratok</string>
+    <string name="settings_section_map_controls">Térkép vezérlése</string>
     <string name="settings_zoom_controls_title">Zoom gombok</string>
     <string name="settings_zoom_controls_description">Mindig mutasd a + / − gombokat térképen</string>
     <string name="settings_map_rotation_title">Térkép forgatása</string>
     <string name="settings_map_rotation_description">Két ujjas térkép forgatás engedélyezése</string>
     <string name="map_label_scale_title">Térkép feliratok nagyítása</string>
+    <string name="settings_map_label_scale_description">Településnevek, helységek, csúcsok feliratainak mérete</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">A beállításnál figyeljünk rá, hogy tényleg csak a szükséges szintig nagyítsuk. Túlzott nagyítás esetén a térkép elrejthet feliratokat, ha úgy érzékeli, hogy azok egymásra csúsznának.</string>
     <string name="settings_section_gpx">GPX</string>

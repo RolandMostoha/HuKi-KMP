@@ -32,7 +32,10 @@ appId: ${APP_ID}
 - assertVisible: "Appearance"
 - assertVisible:
     id: SETTINGS_THEME_PICKER
-- assertVisible: "Map"
+- assertVisible: "Map labels"
+- assertVisible:
+    id: SETTINGS_MAP_LABEL_SCALE_ROW
+- assertVisible: "Map controls"
 - assertVisible: "Zoom controls"
 - assertVisible: "Map rotation"
 

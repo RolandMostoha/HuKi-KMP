@@ -185,12 +185,14 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_a11y_theme_picker">Theme selection</string>
-    <string name="settings_section_map">Map</string>
+    <string name="settings_section_map_labels">Map labels</string>
+    <string name="settings_section_map_controls">Map controls</string>
     <string name="settings_zoom_controls_title">Zoom controls</string>
     <string name="settings_zoom_controls_description">Always Show + / − buttons on the map</string>
     <string name="settings_map_rotation_title">Map rotation</string>
     <string name="settings_map_rotation_description">Rotate the map with two fingers</string>
     <string name="map_label_scale_title">Map text size</string>
+    <string name="settings_map_label_scale_description">Size of place names and peak labels</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">Only enlarge the labels as much as you really need. If they get too large, the map may hide labels it detects would overlap each other.</string>
     <string name="settings_section_gpx">GPX</string>

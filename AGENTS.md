@@ -137,6 +137,7 @@ commit-message convention.
 
 - **Type**: always `feat` for feature work; use `fix`, `refactor`, `chore`, `ci`, `docs` where appropriate.
 - **Scope**: PascalCase, matching the feature or module name (e.g. `GPXDetails`, `Search`, `CI`, `Logger`).
+  - Platform-only change: append `-Android` / `-iOS` to the scope, e.g. `fix(Map-Android)`.
 - **Description**: lowercase, imperative mood, no trailing period.
 - **Release commits** are the one exception: type `release`, scope is the version — `release(v1.1)`.
 - Examples:

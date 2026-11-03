@@ -1,12 +1,18 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.settings
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
@@ -128,10 +135,12 @@ private fun SettingsContent(
                     )
                 }
             }
-            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_map))
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_map_labels))
             SettingsCard {
                 SettingsNavigationItem(
                     title = mokoString(SharedRes.strings.map_label_scale_title),
+                    description = mokoString(SharedRes.strings.settings_map_label_scale_description),
+                    iconResId = R.drawable.ic_format_size,
                     value = mokoString(
                         SharedRes.strings.map_label_scale_percent,
                         uiState.mapLabelScale.effectivePercent(LocalConfiguration.current.fontScale),
@@ -139,6 +148,9 @@ private fun SettingsContent(
                     testTag = TestTags.SETTINGS_MAP_LABEL_SCALE_ROW,
                     onClick = { onEvent(SettingsUiEvents.MapLabelScaleClicked) },
                 )
+            }
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_map_controls))
+            SettingsCard {
                 SettingsSwitchItem(
                     title = mokoString(SharedRes.strings.settings_zoom_controls_title),
                     description = mokoString(SharedRes.strings.settings_zoom_controls_description),
@@ -227,6 +239,8 @@ private fun SettingsPickerItem(title: String, content: @Composable () -> Unit) {
 @Composable
 private fun SettingsNavigationItem(
     title: String,
+    description: String,
+    @DrawableRes iconResId: Int,
     value: String,
     testTag: String,
     onClick: () -> Unit,
@@ -236,26 +250,51 @@ private fun SettingsNavigationItem(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .testTag(testTag)
-            .padding(horizontal = Dimens.Large, vertical = Dimens.MediumLarge),
+            .padding(horizontal = Dimens.Large, vertical = Dimens.Large),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = Dimens.Large),
-        )
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Box(
+            modifier = Modifier
+                .size(Dimens.IconContainer)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(iconResId),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Light,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Dimens.ExtraSmall),
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

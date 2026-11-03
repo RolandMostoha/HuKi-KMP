@@ -31,25 +31,15 @@ struct SettingsView: View {
                         )
                     }
                 }
-                Section(strings.get(id: SharedRes.strings().settings_section_map)) {
-                    Button(
-                        action: { viewModel.onEvent(event: SettingsUiEventsMapLabelScaleClicked.shared) },
-                        label: {
-                            HStack {
-                                LabeledContent(
-                                    strings.get(id: SharedRes.strings().map_label_scale_title),
-                                    value: mapLabelScaleValue(uiState.mapLabelScale)
-                                )
-                                Image(systemName: "chevron.forward")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.tertiary)
-                                    .accessibilityHidden(true)
-                            }
-                            .contentShape(Rectangle())
-                        }
+                Section(strings.get(id: SharedRes.strings().settings_section_map_labels)) {
+                    SettingsMapLabelScaleRow(
+                        title: strings.get(id: SharedRes.strings().map_label_scale_title),
+                        description: strings.get(id: SharedRes.strings().settings_map_label_scale_description),
+                        value: mapLabelScaleValue(uiState.mapLabelScale),
+                        onClick: { viewModel.onEvent(event: SettingsUiEventsMapLabelScaleClicked.shared) }
                     )
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier(TestTags.shared.SETTINGS_MAP_LABEL_SCALE_ROW)
+                }
+                Section(strings.get(id: SharedRes.strings().settings_section_map_controls)) {
                     SettingsToggleRow(
                         title: strings.get(id: SharedRes.strings().settings_zoom_controls_title),
                         description: strings.get(id: SharedRes.strings().settings_zoom_controls_description),
