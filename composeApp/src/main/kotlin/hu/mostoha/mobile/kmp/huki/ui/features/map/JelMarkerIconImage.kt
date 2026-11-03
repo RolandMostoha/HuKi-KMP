@@ -5,20 +5,21 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import com.mapbox.maps.extension.compose.annotation.IconImage
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import dev.icerock.moko.resources.ImageResource
 import hu.mostoha.mobile.kmp.huki.model.domain.JelSymbol
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 
 @Composable
 fun rememberJelMarkerIconImage(background: ImageResource, jelSymbol: JelSymbol): IconImage =
     rememberIconImage(
-        key = background to jelSymbol,
+        key = Triple(background, jelSymbol, LocalIsDarkTheme.current),
         painter = JelMarkerPainter(
-            background = painterResource(background.drawableResId),
-            symbol = painterResource(jelSymbol.icon.drawableResId),
+            background = mokoPainter(background),
+            symbol = mokoPainter(jelSymbol.icon),
         ),
     )
 

@@ -64,6 +64,7 @@ import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 private const val BASE_LAYER_ID = "okt_base_layer"
@@ -229,7 +230,7 @@ fun OktMarkerView(type: OktMarkerType, isSelected: Boolean, modifier: Modifier =
                 modifier = Modifier.size(stampIconSize),
             )
             OktMarkerType.START, OktMarkerType.END -> Image(
-                painter = painterResource(SharedRes.images.ic_okt_symbol.drawableResId),
+                painter = mokoPainter(SharedRes.images.ic_okt_symbol),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
             )

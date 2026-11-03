@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import dev.icerock.moko.resources.ColorResource
@@ -28,6 +30,12 @@ fun mokoImage(id: ImageResource): ImageVector {
     val context = LocalThemedContext.current ?: LocalContext.current
     return remember(context, id) { ImageVector.vectorResource(context.theme, context.resources, id.drawableResId) }
 }
+
+/**
+ * Painter of a moko image resolved in the in-app theme's night mode, for map markers with `-dark` variants.
+ */
+@Composable
+fun mokoPainter(id: ImageResource): Painter = rememberVectorPainter(mokoImage(id))
 
 fun ColorResource.toComposeColor(context: Context): Color = Color(this.getColor(context))
 
