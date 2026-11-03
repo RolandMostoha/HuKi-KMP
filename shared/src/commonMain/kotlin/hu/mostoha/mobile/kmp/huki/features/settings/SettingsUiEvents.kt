@@ -11,4 +11,5 @@ sealed interface SettingsUiEvents {
     data class ThemeModeSelected(val themeMode: ThemeMode) : SettingsUiEvents
     data class GpxDistancesToggled(val visible: Boolean) : SettingsUiEvents
     data class GpxSlopeColorsToggled(val visible: Boolean) : SettingsUiEvents
+    data class ShowOnLockScreenToggled(val enabled: Boolean) : SettingsUiEvents
 }

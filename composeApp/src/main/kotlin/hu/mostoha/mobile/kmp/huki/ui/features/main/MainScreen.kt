@@ -66,6 +66,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.isModal
 import hu.mostoha.mobile.kmp.huki.model.domain.isStandard
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.ShowOnLockScreenEffect
 import hu.mostoha.mobile.kmp.huki.ui.features.discover.DiscoverBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.gpx.GpxDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesBottomSheet
@@ -121,6 +122,7 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     BindEffect(viewModel.permissionsController)
+    ShowOnLockScreenEffect()
 
     LaunchedEffect(openGpxUri) {
         openGpxUri?.let {

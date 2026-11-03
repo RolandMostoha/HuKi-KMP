@@ -68,4 +68,10 @@ class DefaultSettingsRepository(private val dataStore: DataStore<Preferences>) :
             preferences[SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE] = visible
         }
     }
+
+    override suspend fun setShowOnLockScreen(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SettingsPreferenceKeys.SHOW_ON_LOCK_SCREEN] = enabled
+        }
+    }
 }

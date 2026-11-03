@@ -190,6 +190,32 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `Given stored show on lock screen flag - When observed - Then uiState reflects the flag`() {
+        runTest {
+            every { settingsRepository.settings } returns
+                flowOf(UserPreferences.DEFAULTS.copy(showOnLockScreen = false))
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.uiState.value.showOnLockScreen shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given default state - When ShowOnLockScreenToggled event - Then repository stores the flag`() {
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onEvent(SettingsUiEvents.ShowOnLockScreenToggled(enabled = false))
+            advanceUntilIdle()
+
+            verifySuspend { settingsRepository.setShowOnLockScreen(false) }
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SettingsShowOnLockScreenToggled(enabled = false))
+        }
+    }
+
+    @Test
     fun `Given default state - When BackClicked event - Then NavigateBack effect is emitted`() {
         runTest {
             val viewModel = createViewModel()

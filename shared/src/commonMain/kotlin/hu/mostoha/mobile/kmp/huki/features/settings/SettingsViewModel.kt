@@ -49,6 +49,7 @@ class SettingsViewModel(
             is SettingsUiEvents.ThemeModeSelected -> selectThemeMode(event.themeMode)
             is SettingsUiEvents.GpxDistancesToggled -> toggleGpxDistances(event.visible)
             is SettingsUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors(event.visible)
+            is SettingsUiEvents.ShowOnLockScreenToggled -> toggleShowOnLockScreen(event.enabled)
         }
     }
 
@@ -92,6 +93,13 @@ class SettingsViewModel(
         }
     }
 
+    private fun toggleShowOnLockScreen(enabled: Boolean) {
+        analyticsService.logEvent(AnalyticsEvent.SettingsShowOnLockScreenToggled(enabled))
+        viewModelScope.launch {
+            settingsRepository.setShowOnLockScreen(enabled)
+        }
+    }
+
     private fun observeSettings() {
         settingsRepository.settings
             .onEach { settings ->
@@ -103,6 +111,7 @@ class SettingsViewModel(
                         themeMode = settings.themeMode,
                         gpxDistancesVisible = settings.gpxDistancesVisible,
                         gpxSlopeColorsVisible = settings.gpxSlopeColorsVisible,
+                        showOnLockScreen = settings.showOnLockScreen,
                     )
                 }
             }

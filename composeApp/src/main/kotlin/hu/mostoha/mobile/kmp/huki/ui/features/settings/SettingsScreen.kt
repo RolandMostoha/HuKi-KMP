@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
@@ -119,12 +122,17 @@ private fun SettingsContent(
             )
         },
     ) { innerPadding ->
+        val layoutDirection = LocalLayoutDirection.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(
+                    start = innerPadding.calculateStartPadding(layoutDirection),
+                    top = innerPadding.calculateTopPadding(),
+                    end = innerPadding.calculateEndPadding(layoutDirection),
+                )
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = Dimens.ExtraLarge),
+                .padding(bottom = innerPadding.calculateBottomPadding() + Dimens.ExtraLarge),
         ) {
             SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_appearance))
             SettingsCard {
@@ -181,6 +189,16 @@ private fun SettingsContent(
                     checked = uiState.gpxSlopeColorsVisible,
                     testTag = TestTags.SETTINGS_GPX_SLOPE_COLORS_TOGGLE,
                     onCheckedChange = { onEvent(SettingsUiEvents.GpxSlopeColorsToggled(it)) },
+                )
+            }
+            SettingsSectionHeader(text = mokoString(SharedRes.strings.settings_section_lock_screen))
+            SettingsCard {
+                SettingsSwitchItem(
+                    title = mokoString(SharedRes.strings.settings_show_on_lock_screen_title),
+                    description = mokoString(SharedRes.strings.settings_show_on_lock_screen_description),
+                    checked = uiState.showOnLockScreen,
+                    testTag = TestTags.SETTINGS_SHOW_ON_LOCK_SCREEN_TOGGLE,
+                    onCheckedChange = { onEvent(SettingsUiEvents.ShowOnLockScreenToggled(it)) },
                 )
             }
         }

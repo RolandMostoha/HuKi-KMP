@@ -357,6 +357,10 @@ sealed interface AnalyticsEvent {
         override val name = "settings_gpx_slope_colors_toggled"
     }
 
+    data class SettingsShowOnLockScreenToggled(val enabled: Boolean) : AnalyticsEvent {
+        override val name = "settings_show_on_lock_screen_${if (enabled) "enabled" else "disabled"}"
+    }
+
     data class SettingsThemeSelected(val theme: Theme) : AnalyticsEvent {
         override val name = "settings_theme_selected_${theme.value}"
     }

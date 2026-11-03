@@ -11,6 +11,7 @@ data class SettingsUiState(
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
     val gpxDistancesVisible: Boolean = UserPreferences.DEFAULTS.gpxDistancesVisible,
     val gpxSlopeColorsVisible: Boolean = UserPreferences.DEFAULTS.gpxSlopeColorsVisible,
+    val showOnLockScreen: Boolean = UserPreferences.DEFAULTS.showOnLockScreen,
 ) {
     companion object {
         val Default = SettingsUiState()

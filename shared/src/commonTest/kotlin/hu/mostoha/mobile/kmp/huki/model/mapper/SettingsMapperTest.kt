@@ -58,6 +58,15 @@ class SettingsMapperTest {
     }
 
     @Test
+    fun `Given stored show on lock screen flag - When toUserPreferences - Then the flag is returned`() {
+        val preferences = preferencesOf(SettingsPreferenceKeys.SHOW_ON_LOCK_SCREEN to false)
+
+        val actual = preferences.toUserPreferences()
+
+        actual.showOnLockScreen shouldBe false
+    }
+
+    @Test
     fun `Given stored theme mode - When toUserPreferences - Then the theme mode is returned`() {
         testCases().forEach { testCase ->
             val preferences = if (testCase.input != null) {

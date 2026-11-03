@@ -21,4 +21,6 @@ interface SettingsRepository {
     suspend fun setGpxDistancesVisible(visible: Boolean)
 
     suspend fun setGpxSlopeColorsVisible(visible: Boolean)
+
+    suspend fun setShowOnLockScreen(enabled: Boolean)
 }

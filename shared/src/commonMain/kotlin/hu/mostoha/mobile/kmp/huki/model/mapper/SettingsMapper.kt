@@ -25,6 +25,8 @@ fun Preferences.toUserPreferences(): UserPreferences =
             ?: UserPreferences.DEFAULTS.gpxDistancesVisible,
         gpxSlopeColorsVisible = this[SettingsPreferenceKeys.GPX_SLOPE_COLORS_VISIBLE]
             ?: UserPreferences.DEFAULTS.gpxSlopeColorsVisible,
+        showOnLockScreen = this[SettingsPreferenceKeys.SHOW_ON_LOCK_SCREEN]
+            ?: UserPreferences.DEFAULTS.showOnLockScreen,
     )
 
 fun String?.toThemeMode(): ThemeMode =

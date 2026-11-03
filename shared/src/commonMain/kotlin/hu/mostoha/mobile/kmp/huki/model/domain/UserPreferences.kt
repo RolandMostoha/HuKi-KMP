@@ -8,6 +8,7 @@ data class UserPreferences(
     val mapLabelScale: MapLabelScale,
     val gpxDistancesVisible: Boolean,
     val gpxSlopeColorsVisible: Boolean,
+    val showOnLockScreen: Boolean,
 ) {
     companion object {
         val DEFAULTS = UserPreferences(
@@ -18,6 +19,7 @@ data class UserPreferences(
             mapLabelScale = MapLabelScale.DEFAULT,
             gpxDistancesVisible = true,
             gpxSlopeColorsVisible = true,
+            showOnLockScreen = true,
         )
     }
 }

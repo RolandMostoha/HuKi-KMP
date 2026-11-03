@@ -195,11 +195,14 @@
     <string name="settings_map_label_scale_description">Size of place names and peak labels</string>
     <string name="map_label_scale_percent">%d%%</string>
     <string name="map_label_scale_info">Only enlarge the labels as much as you really need. If they get too large, the map may hide labels it detects would overlap each other.</string>
-    <string name="settings_section_gpx">GPX</string>
+    <string name="settings_section_gpx">GPX routes</string>
     <string name="settings_gpx_distances_title">Waypoint distances</string>
     <string name="settings_gpx_distances_description">Show distance and travel time to waypoints when opening a GPX</string>
     <string name="settings_gpx_slope_colors_title">Slope colors</string>
     <string name="settings_gpx_slope_colors_description">Color GPX tracks by the steepness of climbs and descents</string>
+    <string name="settings_section_lock_screen">Lock screen</string>
+    <string name="settings_show_on_lock_screen_title">Show on lock screen</string>
+    <string name="settings_show_on_lock_screen_description">Keep the map in front of the lock screen</string>
 
     <string name="gpx_collection_title">GPX Collection</string>
     <string name="gpx_collection_subtitle_pattern">%d tracks</string>

@@ -13,5 +13,6 @@ internal object SettingsPreferenceKeys {
     val MAP_LABEL_SCALE_FACTOR = floatPreferencesKey("map_label_scale_factor")
     val GPX_DISTANCES_VISIBLE = booleanPreferencesKey("gpx_distances_visible")
     val GPX_SLOPE_COLORS_VISIBLE = booleanPreferencesKey("gpx_slope_colors_visible")
+    val SHOW_ON_LOCK_SCREEN = booleanPreferencesKey("show_on_lock_screen")
     val WHATS_NEW_LAST_SEEN_VERSION = stringPreferencesKey("whats_new_last_seen_version")
 }
