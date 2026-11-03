@@ -7,11 +7,13 @@ import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.MapAnimationOwnerRegistry
+import com.mapbox.maps.plugin.viewport.ViewportPlugin
 import com.mapbox.maps.plugin.viewport.ViewportStatus
 import com.mapbox.maps.plugin.viewport.data.DefaultViewportTransitionOptions
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
 import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
 import com.mapbox.maps.plugin.viewport.data.OverviewViewportStateOptions
+import com.mapbox.maps.plugin.viewport.data.ViewportStatusChangeReason
 import com.mapbox.maps.plugin.viewport.state.FollowPuckViewportState
 import com.mapbox.maps.plugin.viewport.state.OverviewViewportState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
@@ -36,6 +38,16 @@ fun ViewportStatus.isFollow(): Boolean = followPuckStateOrNull() != null
 fun ViewportStatus.isOverview(): Boolean =
     (this as? ViewportStatus.State)?.state is OverviewViewportState ||
         (this as? ViewportStatus.Transition)?.toState is OverviewViewportState
+
+/**
+ * Flushes the observer a finished follow-puck transition leaves behind until the next location update,
+ * which would then set the camera back to the puck even if the user has panned away since.
+ */
+fun ViewportPlugin.releaseFinishedFollowTransition(to: ViewportStatus, reason: ViewportStatusChangeReason) {
+    if (reason != ViewportStatusChangeReason.TRANSITION_SUCCEEDED || status != to) return
+    val followState = (to as? ViewportStatus.State)?.state as? FollowPuckViewportState ?: return
+    followState.options = followState.options
+}
 
 fun Boolean.toDuration(duration: Duration): Long = if (this) duration.inWholeMilliseconds else 0
 

@@ -79,7 +79,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[x]`  | Settings   | Bug: Android. FABs are not aligned with opened GPX, different bottom paddings ![img_5.png](img_5.png)                                                                                                                      |
 | `[x]`  | Settings   | Bug: Android and iOS. Zoom buttons. If GPX is opened, show them regardless of the my location state. Even is users move away the camera, we want to show zoom buttons always for started GPX.                              |
 | `[x]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                      |
-| `[G]`  | Search     | Bug: Android. My location issue. There are cases when I click on My location button, following or live compass, then move the camera away, and in 1-4 sec it jumps back to my location suddenly                            |
+| `[x]`  | Search     | Bug: Android. My location issue. There are cases when I click on My location button, following or live compass, then move the camera away, and in 1-4 sec it jumps back to my location suddenly                            |
 | `[G]`  | Search     | Bug: Android. When the GPX MEnu is closed, there is a weird shadow flash for the eye FAB. ![img_12.png](img_12.png)                                                                                                        |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
@@ -223,7 +223,7 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 | `[G]`  | Guides | Add Map section - Map Gestures rotate pinch tilt reset                                                                                          |
 | `[G]`  | Guides | Add Route Planner section - how to start. multi POI, destinations.                                                                              |
 | `[G]`  | Guides | Add Travel Time calculation logic                                                                                                               |
-| `[G]`  | Guides | Add Slope calculation (HuKi-Android for reference)                                                                                              |
+| `[G]`  | Guides | Add Slope calculation (-25%, +25% with reference) (HuKi-Android for reference)                                                                  |
 | `[G]`  | Guides | Add GPX section - link GpxGuideScreen                                                                                                           |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                       |
 | `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                             |

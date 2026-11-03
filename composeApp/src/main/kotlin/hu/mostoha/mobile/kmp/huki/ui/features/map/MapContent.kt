@@ -78,6 +78,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.isFollow
 import hu.mostoha.mobile.kmp.huki.model.mapper.isIdle
 import hu.mostoha.mobile.kmp.huki.model.mapper.isOverview
 import hu.mostoha.mobile.kmp.huki.model.mapper.moveCamera
+import hu.mostoha.mobile.kmp.huki.model.mapper.releaseFinishedFollowTransition
 import hu.mostoha.mobile.kmp.huki.model.mapper.resetBearing
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraOptions
 import hu.mostoha.mobile.kmp.huki.model.mapper.toCameraPosition
@@ -278,6 +279,7 @@ fun MapContent(
                     if (from.isFollow() && (to.isIdle() || to.isOverview())) {
                         onEvent(MainUiEvents.FollowingDisabled)
                     }
+                    mapView.viewport.releaseFinishedFollowTransition(to, reason)
                 }
             }
             MapEffect(mapUiState.labelScale) { mapView ->
