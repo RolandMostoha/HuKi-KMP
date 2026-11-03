@@ -39,31 +39,59 @@ fun StatChip(
     style: StatChipStyle = StatChipStyle.Compact,
 ) {
     val isLarge = style == StatChipStyle.Large
+    val isInline = style == StatChipStyle.Inline
     val statContentDescription = if (label != null) "$label, $value" else value
     val containerModifier = modifier
-        .clip(RoundedCornerShape(if (isLarge) 18.dp else Dimens.Large))
-        .background(MaterialTheme.colorScheme.surfaceVariant)
+        .then(
+            if (isInline) {
+                Modifier
+            } else {
+                Modifier
+                    .clip(RoundedCornerShape(if (isLarge) 18.dp else Dimens.Large))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            },
+        )
         .semantics(mergeDescendants = true) { contentDescription = statContentDescription }
         .padding(
-            horizontal = if (isLarge) Dimens.ExtraSmall else Dimens.Small,
-            vertical = if (isLarge) 12.dp else Dimens.Medium,
+            horizontal = when (style) {
+                StatChipStyle.Large -> Dimens.ExtraSmall
+                StatChipStyle.Compact -> Dimens.Small
+                StatChipStyle.Inline -> 0.dp
+            },
+            vertical = when (style) {
+                StatChipStyle.Large -> 12.dp
+                StatChipStyle.Compact -> Dimens.Medium
+                StatChipStyle.Inline -> Dimens.ExtraSmall
+            },
         )
     val icon: @Composable () -> Unit = {
         Icon(
             imageVector = ImageVector.vectorResource(iconResId),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(if (isLarge) Dimens.IconSmall else 16.dp),
+            modifier = Modifier.size(
+                when (style) {
+                    StatChipStyle.Large -> Dimens.IconSmall
+                    StatChipStyle.Compact -> 16.dp
+                    StatChipStyle.Inline -> 18.dp
+                },
+            ),
         )
     }
     val text: @Composable () -> Unit = {
         Text(
             text = UiFormatter.formatStatValue(
                 value = value,
-                smallSpanStyle = SpanStyle(fontSize = 9.sp, fontWeight = FontWeight.Medium),
+                smallSpanStyle = SpanStyle(fontSize = if (isInline) 11.sp else 9.sp, fontWeight = FontWeight.Medium),
             ),
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = if (isLarge) 16.sp else 13.sp),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontSize = when (style) {
+                    StatChipStyle.Large -> 16.sp
+                    StatChipStyle.Compact -> 13.sp
+                    StatChipStyle.Inline -> 15.sp
+                },
+            ),
             fontWeight = FontWeight.ExtraBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -92,9 +120,10 @@ fun StatChip(
 
 /**
  * Rounded pill showing an icon next to a formatted stat value.
- * [StatChipStyle.Compact] lays icon and value out horizontally; [StatChipStyle.Large] stacks them.
+ * [StatChipStyle.Compact] lays icon and value out horizontally; [StatChipStyle.Large] stacks them;
+ * [StatChipStyle.Inline] is the compact layout without the pill, for rows inside a card.
  */
-enum class StatChipStyle { Compact, Large }
+enum class StatChipStyle { Compact, Large, Inline }
 
 @Preview
 @Composable
@@ -102,11 +131,11 @@ private fun StatChipPreview() {
     HuKiTheme {
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Small)) {
             StatChip(
-                iconResId = R.drawable.ic_place_circle,
+                iconResId = R.drawable.ic_place_circle_filled,
                 value = "22.6 km",
             )
             StatChip(
-                iconResId = R.drawable.ic_up_double,
+                iconResId = R.drawable.ic_trending_up,
                 value = "1986 m",
                 label = "Incline",
                 style = StatChipStyle.Large,

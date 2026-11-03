@@ -16,4 +16,5 @@ data class GpxFileItem(
     val lastModified: Instant,
     val lastOpened: Instant?,
     val origin: GpxOrigin,
+    val landscapeId: String? = null,
 )

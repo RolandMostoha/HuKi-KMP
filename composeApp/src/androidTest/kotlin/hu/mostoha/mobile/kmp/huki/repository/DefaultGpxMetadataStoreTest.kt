@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import hu.mostoha.mobile.kmp.huki.TestContext.appContext
+import hu.mostoha.mobile.kmp.huki.model.data.GpxLandscapeEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import io.kotest.matchers.collections.shouldHaveSize
@@ -88,6 +89,53 @@ class DefaultGpxMetadataStoreTest {
             val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
             metadata.gpxFiles shouldHaveSize 1
             metadata.gpxFiles.first().trackId shouldBe "track-2"
+        }
+    }
+
+    @Test
+    fun givenRecordedLandscapes_whenReadByNewStore_thenLandscapesPersistedWithOutsideOnes() {
+        runTest {
+            val landscapes = listOf(
+                GpxLandscapeEntry(trackId = "track-1", landscapeId = "pilis_hegyseg"),
+                GpxLandscapeEntry(trackId = "track-2", landscapeId = null),
+            )
+            DefaultGpxMetadataStore(FakeCrashlyticsService).recordLandscapes(landscapes)
+
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
+
+            metadata.landscapes shouldBe landscapes
+        }
+    }
+
+    @Test
+    fun givenRecordedLandscape_whenRecordedAgain_thenOverwritten() {
+        runTest {
+            val store = DefaultGpxMetadataStore(FakeCrashlyticsService)
+            store.recordLandscapes(listOf(GpxLandscapeEntry(trackId = "track-1", landscapeId = "matra")))
+
+            store.recordLandscapes(listOf(GpxLandscapeEntry(trackId = "track-1", landscapeId = "bukk")))
+
+            store.getMetadata().landscapes shouldBe listOf(GpxLandscapeEntry(trackId = "track-1", landscapeId = "bukk"))
+        }
+    }
+
+    @Test
+    fun givenRecordedLandscapes_whenRemoveAndRemoveByTrackId_thenStaleLandscapesRemoved() {
+        runTest {
+            val store = DefaultGpxMetadataStore(FakeCrashlyticsService)
+            store.recordLandscapes(
+                listOf(
+                    GpxLandscapeEntry(trackId = "track-1", landscapeId = "matra"),
+                    GpxLandscapeEntry(trackId = "track-2", landscapeId = "bukk"),
+                    GpxLandscapeEntry(trackId = "track-3", landscapeId = null),
+                ),
+            )
+
+            store.remove(setOf("track-1", "track-2"))
+            store.removeByTrackId("track-2")
+
+            val metadata = DefaultGpxMetadataStore(FakeCrashlyticsService).getMetadata()
+            metadata.landscapes shouldBe listOf(GpxLandscapeEntry(trackId = "track-1", landscapeId = "matra"))
         }
     }
 

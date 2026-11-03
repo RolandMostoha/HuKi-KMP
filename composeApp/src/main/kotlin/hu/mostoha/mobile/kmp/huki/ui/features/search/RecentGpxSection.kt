@@ -129,19 +129,19 @@ private fun RecentGpxItem(file: GpxFileItem, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 GpxStat(
-                    iconResId = R.drawable.ic_clock,
+                    iconResId = R.drawable.ic_clock_filled,
                     value = mokoString(TravelTimeFormatter.formatTravelTime(file.travelTime)),
                 )
                 GpxStat(
-                    iconResId = R.drawable.ic_place_circle,
+                    iconResId = R.drawable.ic_place_circle_filled,
                     value = DistanceFormatter.formatDistance(file.totalDistance),
                 )
                 GpxStat(
-                    iconResId = R.drawable.ic_up_double,
+                    iconResId = R.drawable.ic_trending_up,
                     value = DistanceFormatter.formatMeters(file.incline),
                 )
                 GpxStat(
-                    iconResId = R.drawable.ic_down_double,
+                    iconResId = R.drawable.ic_trending_down,
                     value = DistanceFormatter.formatMeters(file.decline),
                 )
             }

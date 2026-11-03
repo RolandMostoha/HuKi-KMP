@@ -9,9 +9,11 @@ import dev.mokkery.verifySuspend
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxDistanceRange
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileDay
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
-import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
@@ -41,6 +43,9 @@ class GpxCollectionViewModelTest {
     private val analyticsService = FakeAnalyticsService()
 
     private val now = Clock.System.now()
+    private val clock = object : Clock {
+        override fun now(): Instant = now
+    }
 
     @BeforeTest
     fun setup() {
@@ -53,7 +58,7 @@ class GpxCollectionViewModelTest {
     }
 
     private fun createViewModel(): GpxCollectionViewModel {
-        val viewModel = GpxCollectionViewModel(gpxRepository, analyticsService)
+        val viewModel = GpxCollectionViewModel(gpxRepository, analyticsService, clock)
         testDispatcher.scheduler.runCurrent()
         return viewModel
     }
@@ -107,10 +112,16 @@ class GpxCollectionViewModelTest {
                 .replace('-', '.')
 
             uiState.fileCount shouldBe 3
-            uiState.sections shouldBe listOf(
-                GpxFileSection(GpxFileHeader.Today, listOf(todayFile)),
-                GpxFileSection(GpxFileHeader.Yesterday, listOf(yesterdayFile)),
-                GpxFileSection(GpxFileHeader.Date(olderLabel), listOf(olderFile)),
+            uiState.sortMode shouldBe GpxCollectionSortMode.DATE
+            uiState.sections.map { it.header } shouldBe listOf(
+                GpxFileHeader.Day(GpxFileDay.Today),
+                GpxFileHeader.Day(GpxFileDay.Yesterday),
+                GpxFileHeader.Day(GpxFileDay.Date(olderLabel)),
+            )
+            uiState.sections.map { section -> section.items.map { it.file } } shouldBe listOf(
+                listOf(todayFile),
+                listOf(yesterdayFile),
+                listOf(olderFile),
             )
         }
     }
@@ -127,8 +138,66 @@ class GpxCollectionViewModelTest {
 
             val todaySection = viewModel.uiState.value.sections.single()
 
-            todaySection.header shouldBe GpxFileHeader.Today
-            todaySection.files shouldBe listOf(later, earlier)
+            todaySection.header shouldBe GpxFileHeader.Day(GpxFileDay.Today)
+            todaySection.items.map { it.file } shouldBe listOf(later, earlier)
+        }
+    }
+
+    @Test
+    fun `Given files - When SortModeSelected event - Then sections are regrouped and analytics is logged`() {
+        val short = gpxFileItem("short.gpx", now).copy(totalDistance = 3.kilometers)
+        val long = gpxFileItem("long.gpx", now).copy(totalDistance = 25.kilometers)
+        everySuspend { gpxRepository.getGpxFiles() } returns listOf(short, long)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(GpxCollectionUiEvents.SortModeSelected(GpxCollectionSortMode.DISTANCE))
+
+            val uiState = viewModel.uiState.value
+            uiState.sortMode shouldBe GpxCollectionSortMode.DISTANCE
+            uiState.sections.map { it.header } shouldBe listOf(
+                GpxFileHeader.Distance(GpxDistanceRange.OVER_20),
+                GpxFileHeader.Distance(GpxDistanceRange.UNDER_5),
+            )
+            analyticsService.loggedEvents shouldBe listOf(
+                AnalyticsEvent.GpxCollectionSorted(GpxCollectionSortMode.DISTANCE),
+            )
+        }
+    }
+
+    @Test
+    fun `Given the date sort mode - When SortModeSelected event with the same mode - Then nothing is logged`() {
+        everySuspend { gpxRepository.getGpxFiles() } returns listOf(gpxFileItem("today.gpx", now))
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(GpxCollectionUiEvents.SortModeSelected(GpxCollectionSortMode.DATE))
+
+            analyticsService.loggedEvents shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given the distance sort mode - When a file is deleted - Then the refreshed list keeps the sort mode`() {
+        val file = gpxFileItem("today.gpx", now)
+        var files = listOf(file, gpxFileItem("other.gpx", now))
+        everySuspend { gpxRepository.getGpxFiles() } returnsBy { files }
+        everySuspend { gpxRepository.deleteGpxFile("uri/today.gpx", "track-today.gpx") } returns Unit
+
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(GpxCollectionUiEvents.SortModeSelected(GpxCollectionSortMode.DISTANCE))
+            viewModel.onEvent(GpxCollectionUiEvents.DeleteClicked(file))
+            files = files.drop(1)
+
+            viewModel.onEvent(GpxCollectionUiEvents.DeleteConfirmed)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val uiState = viewModel.uiState.value
+            uiState.sortMode shouldBe GpxCollectionSortMode.DISTANCE
+            uiState.sections.single().header shouldBe GpxFileHeader.Distance(GpxDistanceRange.FROM_10_TO_20)
         }
     }
 

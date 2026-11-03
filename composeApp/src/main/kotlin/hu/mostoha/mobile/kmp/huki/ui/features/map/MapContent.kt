@@ -98,6 +98,7 @@ import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
@@ -425,7 +426,8 @@ private fun GpxLayer(
         val waypointIconImage = if (jelSymbol != null) {
             rememberJelMarkerIconImage(MarkerIcons.jelMarkerFrame(isDarkMode, mapUiState.baseLayer), jelSymbol)
         } else {
-            rememberIconImage(MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer).drawableResId)
+            val symbol = MarkerIcons.waypointSymbol(waypoint.type, isDarkMode, mapUiState.baseLayer)
+            rememberIconImage(key = symbol to isDarkMode, painter = mokoPainter(symbol))
         }
         PointAnnotation(waypoint.location.toPoint()) {
             interactionsState.onClicked {

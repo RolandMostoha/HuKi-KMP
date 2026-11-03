@@ -224,10 +224,10 @@ private fun OktSectionHeader(
 @Composable
 private fun OktSectionStats(routeStats: RouteStats) {
     val stats = listOf(
-        R.drawable.ic_clock to TravelTimeFormatter.formatTravelTimeCompact(routeStats.travelTime),
-        R.drawable.ic_place_circle to DistanceFormatter.formatDistance(routeStats.distance),
-        R.drawable.ic_up_double to DistanceFormatter.formatElevation(routeStats.incline),
-        R.drawable.ic_down_double to DistanceFormatter.formatElevation(routeStats.decline),
+        R.drawable.ic_clock_filled to TravelTimeFormatter.formatTravelTimeCompact(routeStats.travelTime),
+        R.drawable.ic_place_circle_filled to DistanceFormatter.formatDistance(routeStats.distance),
+        R.drawable.ic_trending_up to DistanceFormatter.formatElevation(routeStats.incline),
+        R.drawable.ic_trending_down to DistanceFormatter.formatElevation(routeStats.decline),
     )
     val text = buildAnnotatedString {
         stats.forEachIndexed { index, (iconResId, value) ->

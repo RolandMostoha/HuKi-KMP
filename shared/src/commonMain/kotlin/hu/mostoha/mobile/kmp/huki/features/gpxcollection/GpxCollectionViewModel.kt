@@ -7,7 +7,7 @@ import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
-import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileHeader
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileSection
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -23,17 +23,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
 class GpxCollectionViewModel(
     private val gpxRepository: GpxRepository,
     private val analyticsService: AnalyticsService,
+    private val clock: Clock,
 ) : ViewModel() {
+
+    private var files: List<GpxFileItem> = emptyList()
 
     private val _uiState = MutableStateFlow(GpxCollectionUiState.Default)
     val uiState: StateFlow<GpxCollectionUiState> = _uiState.asStateFlow()
@@ -52,6 +51,7 @@ class GpxCollectionViewModel(
             GpxCollectionUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.GPX_HISTORY)
             GpxCollectionUiEvents.BackClicked -> sendEffect(GpxCollectionUiEffects.NavigateBack)
             GpxCollectionUiEvents.HelpClicked -> openTutorial()
+            is GpxCollectionUiEvents.SortModeSelected -> selectSortMode(event.sortMode)
             is GpxCollectionUiEvents.FileClicked -> sendEffect(GpxCollectionUiEffects.OpenGpx(event.file.fileUri))
             is GpxCollectionUiEvents.ShareClicked -> shareGpx(event.file)
             is GpxCollectionUiEvents.DeleteClicked -> _uiState.update { it.copy(pendingDelete = event.file) }
@@ -63,6 +63,15 @@ class GpxCollectionViewModel(
     private fun shareGpx(file: GpxFileItem) {
         analyticsService.logEvent(AnalyticsEvent.GpxShared(GpxShareSource.COLLECTION))
         sendEffect(GpxCollectionUiEffects.ShareGpx(fileUri = file.fileUri, fileName = file.fileName))
+    }
+
+    private fun selectSortMode(sortMode: GpxCollectionSortMode) {
+        if (sortMode == _uiState.value.sortMode) return
+
+        analyticsService.logEvent(AnalyticsEvent.GpxCollectionSorted(sortMode))
+        _uiState.update { uiState ->
+            uiState.copy(sortMode = sortMode, sections = files.toSections(sortMode))
+        }
     }
 
     private fun openTutorial() {
@@ -83,36 +92,19 @@ class GpxCollectionViewModel(
     }
 
     private suspend fun refreshFiles() {
-        val files = gpxRepository.getGpxFiles()
+        files = gpxRepository.getGpxFiles()
         _uiState.update { uiState ->
             uiState.copy(
                 isLoading = false,
                 fileCount = files.size,
-                sections = files.groupIntoSections(),
+                sections = files.toSections(uiState.sortMode),
                 pendingDelete = null,
             )
         }
     }
 
-    private fun List<GpxFileItem>.groupIntoSections(): List<GpxFileSection> {
-        val timeZone = TimeZone.currentSystemDefault()
-        val today = Clock.System.now().toLocalDateTime(timeZone).date
-        val yesterday = today.minus(DatePeriod(days = 1))
-
-        return this
-            .sortedByDescending { it.lastOpened ?: it.lastModified }
-            .groupBy { (it.lastOpened ?: it.lastModified).toLocalDateTime(timeZone).date }
-            .map { (date, files) ->
-                val header = when (date) {
-                    today -> GpxFileHeader.Today
-                    yesterday -> GpxFileHeader.Yesterday
-                    else -> GpxFileHeader.Date(date.formatAsLabel())
-                }
-                GpxFileSection(header = header, files = files)
-            }
-    }
-
-    private fun LocalDate.formatAsLabel(): String = toString().replace('-', '.')
+    private fun List<GpxFileItem>.toSections(sortMode: GpxCollectionSortMode): List<GpxFileSection> =
+        toGpxFileSections(sortMode = sortMode, now = clock.now(), timeZone = TimeZone.currentSystemDefault())
 
     private fun sendEffect(uiEffect: GpxCollectionUiEffects) {
         viewModelScope.launch {

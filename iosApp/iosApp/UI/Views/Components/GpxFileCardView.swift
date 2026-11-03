@@ -4,6 +4,7 @@ import SwiftUI
 struct GpxFileCardView: View {
     let strings: Strings
     let file: GpxFileItem
+    let landscape: GpxLandscape?
     let onOpen: () -> Void
     let onRename: () -> Void
     let onShare: () -> Void
@@ -13,18 +14,17 @@ struct GpxFileCardView: View {
         Button(action: onOpen) {
             VStack(spacing: 8) {
                 HStack(alignment: .center, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(file.fileName)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
                         if let title = file.title {
                             Text(title)
-                                .font(.system(size: 12))
+                                .font(.system(size: 14))
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
                         }
-                        originChip
                     }
                     Spacer(minLength: 0)
                     GpxFileOptionsMenuView(
@@ -35,10 +35,13 @@ struct GpxFileCardView: View {
                     )
                 }
                 .padding(.leading, 16)
-                .padding(.trailing, 6)
+                .padding(.trailing, 12)
                 statsRow
                     .padding(.horizontal, 16)
-                    .padding(.top, 4)
+                tagRow
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 2)
             }
             .padding(.vertical, 14)
             .contentShape(Rectangle())
@@ -47,19 +50,46 @@ struct GpxFileCardView: View {
         .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_ITEM)
     }
 
-    private var originChip: some View {
-        HStack(spacing: 4) {
-            Image(systemName: originSystemImage)
-                .font(.system(size: 11, weight: .semibold))
-            Text(strings.get(id: originLabel))
-                .font(.system(size: 12, weight: .semibold))
+    private var tagRow: some View {
+        HStack(spacing: 6) {
+            tag(
+                icon: Image(systemName: originSystemImage).font(.system(size: 13, weight: .semibold)),
+                text: strings.get(id: originLabel),
+                foreground: Color(SharedRes.colors().onSecondary.getUIColor()),
+                background: Color(SharedRes.colors().secondary.getUIColor())
+            )
+            if let landscape {
+                tag(
+                    icon: Image(uiImage: landscape.iconRes.toUIImage()!)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 15, height: 15),
+                    text: strings.get(id: landscape.nameRes),
+                    foreground: .white,
+                    background: Color(landscape.colorRes.getUIColor())
+                )
+                .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_ITEM_LANDSCAPE_TAG)
+            }
         }
-        .foregroundStyle(Color(SharedRes.colors().onSecondary.getUIColor()))
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
-        .background(
-            Capsule().fill(Color(SharedRes.colors().secondary.getUIColor()))
-        )
+    }
+
+    private func tag(
+        icon: some View,
+        text: String,
+        foreground: SwiftUI.Color,
+        background: SwiftUI.Color
+    ) -> some View {
+        HStack(spacing: 5) {
+            icon
+            Text(text)
+                .font(.system(size: 14, weight: .semibold))
+                .lineLimit(1)
+        }
+        .foregroundStyle(foreground)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(background))
     }
 
     private var originSystemImage: String {
@@ -79,22 +109,29 @@ struct GpxFileCardView: View {
     }
 
     private var statsRow: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 0) {
             StatChipView(
                 systemImage: "clock.fill",
-                value: strings.get(desc: TravelTimeFormatter.shared.formatTravelTime(duration: file.travelTime))
+                value: strings.get(desc: TravelTimeFormatter.shared.formatTravelTime(duration: file.travelTime)),
+                style: .inline
             )
+            Spacer(minLength: 8)
             StatChipView(
                 systemImage: "location.fill",
-                value: DistanceFormatter.shared.formatDistance(distance: file.totalDistance)
+                value: DistanceFormatter.shared.formatDistance(distance: file.totalDistance),
+                style: .inline
             )
+            Spacer(minLength: 8)
             StatChipView(
                 systemImage: "chart.line.uptrend.xyaxis",
-                value: DistanceFormatter.shared.formatMeters(meters: file.incline)
+                value: DistanceFormatter.shared.formatMeters(meters: file.incline),
+                style: .inline
             )
+            Spacer(minLength: 8)
             StatChipView(
                 systemImage: "chart.line.downtrend.xyaxis",
-                value: DistanceFormatter.shared.formatMeters(meters: file.decline)
+                value: DistanceFormatter.shared.formatMeters(meters: file.decline),
+                style: .inline
             )
         }
     }

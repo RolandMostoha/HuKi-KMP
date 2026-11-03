@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import co.touchlab.kermit.Logger
+import hu.mostoha.mobile.kmp.huki.model.data.GpxLandscapeEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataModel
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
@@ -41,6 +42,21 @@ class DefaultGpxMetadataStore(private val crashlyticsService: CrashlyticsService
         }
     }
 
+    override suspend fun recordLandscapes(entries: List<GpxLandscapeEntry>) {
+        if (entries.isEmpty()) return
+        withContext(Dispatchers.IO) {
+            mutex.withLock {
+                val model = loadLocked()
+                val trackIds = entries.map { it.trackId }.toSet()
+                val landscapes = model.landscapes
+                    .filterNot { it.trackId in trackIds }
+                    .plus(entries)
+
+                persistLocked(model.copy(landscapes = landscapes))
+            }
+        }
+    }
+
     override suspend fun getMetadata(): GpxMetadataModel =
         withContext(Dispatchers.IO) {
             mutex.withLock {
@@ -52,9 +68,12 @@ class DefaultGpxMetadataStore(private val crashlyticsService: CrashlyticsService
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 val model = loadLocked()
-                val gpxFiles = model.gpxFiles.filter { it.trackId in trackIds }
-                if (gpxFiles.size != model.gpxFiles.size) {
-                    persistLocked(model.copy(gpxFiles = gpxFiles))
+                val pruned = model.copy(
+                    gpxFiles = model.gpxFiles.filter { it.trackId in trackIds },
+                    landscapes = model.landscapes.filter { it.trackId in trackIds },
+                )
+                if (pruned != model) {
+                    persistLocked(pruned)
                 }
             }
         }
@@ -64,9 +83,12 @@ class DefaultGpxMetadataStore(private val crashlyticsService: CrashlyticsService
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 val model = loadLocked()
-                val gpxFiles = model.gpxFiles.filterNot { it.trackId == trackId }
-                if (gpxFiles.size != model.gpxFiles.size) {
-                    persistLocked(model.copy(gpxFiles = gpxFiles))
+                val pruned = model.copy(
+                    gpxFiles = model.gpxFiles.filterNot { it.trackId == trackId },
+                    landscapes = model.landscapes.filterNot { it.trackId == trackId },
+                )
+                if (pruned != model) {
+                    persistLocked(pruned)
                 }
             }
         }

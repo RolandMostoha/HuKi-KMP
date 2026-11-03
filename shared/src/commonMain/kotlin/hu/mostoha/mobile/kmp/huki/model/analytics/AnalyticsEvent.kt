@@ -1,5 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.model.analytics
 
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
+
 /**
  * Analytics event, following the Google Analytics way of sending a [name] and optional [params].
  *
@@ -144,6 +146,10 @@ sealed interface AnalyticsEvent {
 
     data class GpxShared(val source: GpxShareSource) : AnalyticsEvent {
         override val name = "gpx_shared_${source.value}"
+    }
+
+    data class GpxCollectionSorted(val sortMode: GpxCollectionSortMode) : AnalyticsEvent {
+        override val name = "gpx_collection_sorted_${sortMode.value}"
     }
 
     data class PlaceDetailsOpened(val source: PlaceDetailsSource) : AnalyticsEvent {

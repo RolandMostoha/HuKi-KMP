@@ -181,7 +181,7 @@ private fun PlaceHistoryEmptyView(modifier: Modifier = Modifier) {
         InfoView(
             infoViewData = InfoViewData(
                 infoViewType = InfoViewType.INFO,
-                icon = ImageResource(R.drawable.ic_place_circle),
+                icon = ImageResource(R.drawable.ic_place_circle_filled),
                 title = SharedRes.strings.place_history_empty_title,
                 message = SharedRes.strings.place_history_empty_message,
             ),

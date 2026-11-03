@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import com.mapbox.maps.AnnotatedFeature
 import com.mapbox.maps.ViewAnnotationOptions
@@ -24,6 +23,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLineString
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 
 private const val ROUTE_PLAN_LAYER_ID = "route_plan"
 
@@ -80,7 +80,7 @@ private fun RoutePlanMarkerAnnotation(waypoint: GpxWaypoint) {
     ) {
         Image(
             modifier = Modifier.size(width = markerSize.first, height = markerSize.second),
-            painter = painterResource(id = iconResId),
+            painter = mokoPainter(waypoint.type.icon),
             contentDescription = null,
         )
     }

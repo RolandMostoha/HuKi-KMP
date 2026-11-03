@@ -205,6 +205,15 @@
     <string name="gpx_collection_subtitle_empty">No imported tracks or route plans yet</string>
     <string name="gpx_collection_date_today">Today</string>
     <string name="gpx_collection_date_yesterday">Yesterday</string>
+    <string name="gpx_collection_sort_a11y">Group tracks by</string>
+    <string name="gpx_collection_sort_date">Date</string>
+    <string name="gpx_collection_sort_distance">Distance</string>
+    <string name="gpx_collection_sort_landscape">Landscape</string>
+    <string name="gpx_collection_distance_over_20">Over 20 km</string>
+    <string name="gpx_collection_distance_10_20">10–20 km</string>
+    <string name="gpx_collection_distance_5_10">5–10 km</string>
+    <string name="gpx_collection_distance_under_5">Under 5 km</string>
+    <string name="gpx_collection_landscape_other">Other</string>
     <string name="gpx_collection_empty_title">Your GPX collection is empty</string>
     <string name="gpx_collection_empty_message">Your imported GPX files and Route Plans will appear here. Import a track to get started.</string>
     <string name="gpx_collection_empty_action">Show GPX Tutorial</string>

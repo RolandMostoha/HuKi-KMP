@@ -84,8 +84,8 @@ fun OktInfoWindow(info: OktInfoWindowData, onPlaceDetailsClick: () -> Unit, modi
                         modifier = Modifier.padding(top = 2.dp),
                         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
                     ) {
-                        OktInfoPill(iconResId = R.drawable.ic_place_circle, text = distance)
-                        OktInfoPill(iconResId = R.drawable.ic_clock, text = mokoString(travelTime))
+                        OktInfoPill(iconResId = R.drawable.ic_place_circle_filled, text = distance)
+                        OktInfoPill(iconResId = R.drawable.ic_clock_filled, text = mokoString(travelTime))
                     }
                 }
             }

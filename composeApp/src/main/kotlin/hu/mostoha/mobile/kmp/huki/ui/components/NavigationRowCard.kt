@@ -92,7 +92,7 @@ fun NavigationRowCard(
 private fun NavigationRowCardPreview() {
     HuKiTheme {
         NavigationRowCard(
-            iconResId = R.drawable.ic_place_circle,
+            iconResId = R.drawable.ic_place_circle_filled,
             title = mokoString(SharedRes.strings.discover_browse_destinations),
             subtitle = mokoString(SharedRes.strings.menu_item_discover_description),
             onClick = {},

@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -29,6 +28,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
@@ -68,7 +68,7 @@ private fun PlaceMarkerAnnotation(
     accessibilityLabel: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val painter = painterResource(id = MarkerIcons.placeSymbol(isDarkMode, baseLayer).drawableResId)
+    val painter = mokoPainter(MarkerIcons.placeSymbol(isDarkMode, baseLayer))
     val markerSize =
         with(LocalDensity.current) { (painter.intrinsicSize * SharedDimens.PLACE_MARKER_SCALE.toFloat()).toDpSize() }
     ViewAnnotation(

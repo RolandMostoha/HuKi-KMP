@@ -18,20 +18,33 @@ struct GpxCollectionView: View {
             Group {
                 if !uiState.isLoading && uiState.sections.isEmpty {
                     emptyView(fileCount: uiState.fileCount)
+                        .transition(.opacity)
                 } else {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 0) {
-                            header(fileCount: uiState.fileCount)
-                            ForEach(uiState.sections, id: \.stableId) { section in
-                                sectionView(section)
+                            header(fileCount: uiState.fileCount, isLoading: uiState.isLoading)
+                            sortModePicker(selected: uiState.sortMode)
+                            if uiState.isLoading {
+                                loadingView
+                                    .transition(.opacity)
+                            }
+                            ForEach(displayedSections(uiState), id: \.header.key) { section in
+                                GpxFileSectionView(
+                                    strings: strings,
+                                    section: section,
+                                    onEvent: { viewModel.onEvent(event: $0) }
+                                )
+                                .transition(.opacity)
                             }
                         }
                         .padding(.bottom, 24)
                         .readableWidth()
                     .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_LIST)
                     }
+                    .transition(.opacity)
                 }
             }
+            .animation(.easeInOut, value: uiState.isLoading)
             .background(Color(.systemGroupedBackground))
             .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_SCREEN_ROOT)
             .navigationBarTitleDisplayMode(.inline)
@@ -71,6 +84,13 @@ struct GpxCollectionView: View {
         }
     }
 
+    private var loadingView: some View {
+        ProgressView()
+            .controlSize(.large)
+            .frame(maxWidth: .infinity, minHeight: 320)
+            .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_LOADING)
+    }
+
     private func emptyView(fileCount: Int32) -> some View {
         VStack(spacing: 0) {
             header(fileCount: fileCount)
@@ -96,7 +116,7 @@ struct GpxCollectionView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
-    private func header(fileCount: Int32) -> some View {
+    private func header(fileCount: Int32, isLoading: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(strings.get(id: SharedRes.strings().gpx_collection_title))
                 .font(.largeTitle.weight(.bold))
@@ -104,6 +124,7 @@ struct GpxCollectionView: View {
             Text(subtitle(fileCount: fileCount))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .opacity(isLoading ? 0 : 1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
@@ -121,53 +142,31 @@ struct GpxCollectionView: View {
         return strings.get(id: res, args: [fileCount])
     }
 
-    private func sectionView(_ section: GpxFileSection) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            sectionHeader(section.header)
-            VStack(spacing: 0) {
-                ForEach(Array(section.files.enumerated()), id: \.element.fileName) { index, file in
-                    GpxFileCardView(
-                        strings: strings,
-                        file: file,
-                        onOpen: {
-                            viewModel.onEvent(event: GpxCollectionUiEventsFileClicked(file: file))
-                        },
-                        onRename: {},
-                        onShare: {
-                            viewModel.onEvent(event: GpxCollectionUiEventsShareClicked(file: file))
-                        },
-                        onDelete: {
-                            viewModel.onEvent(event: GpxCollectionUiEventsDeleteClicked(file: file))
-                        }
-                    )
-                    if index != section.files.count - 1 {
-                        Divider().padding(.leading, 16)
-                    }
-                }
+    private func displayedSections(_ uiState: GpxCollectionUiState) -> [GpxFileSection] {
+        uiState.sortMode == .landscape ? uiState.sections.sortedByLandscapeName(strings: strings) : uiState.sections
+    }
+
+    private func sortModePicker(selected: GpxCollectionSortMode) -> some View {
+        Picker(
+            strings.get(id: SharedRes.strings().gpx_collection_sort_a11y),
+            selection: Binding(
+                get: { selected },
+                set: { viewModel.onEvent(event: GpxCollectionUiEventsSortModeSelected(sortMode: $0)) }
+            )
+        ) {
+            ForEach(sortModes, id: \.self) { sortMode in
+                Text(strings.get(id: sortMode.label))
+                    .tag(sortMode)
+                    .accessibilityIdentifier(sortMode.testTag)
             }
-            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
+        .pickerStyle(.segmented)
         .padding(.horizontal, 16)
-        .padding(.top, 12)
+        .padding(.vertical, 8)
     }
 
-    private func sectionHeader(_ header: GpxFileHeader) -> some View {
-        Text(headerText(header))
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .textCase(.uppercase)
-            .padding(.leading, 4)
-    }
-
-    private func headerText(_ header: GpxFileHeader) -> String {
-        switch onEnum(of: header) {
-        case .today:
-            return strings.get(id: SharedRes.strings().gpx_collection_date_today)
-        case .yesterday:
-            return strings.get(id: SharedRes.strings().gpx_collection_date_yesterday)
-        case .date(let date):
-            return date.label
-        }
+    private var sortModes: [GpxCollectionSortMode] {
+        [.date, .distance, .landscape]
     }
 
     private var backButton: some View {
@@ -216,12 +215,20 @@ struct GpxCollectionView: View {
     }
 }
 
-private extension GpxFileSection {
-    var stableId: String {
-        switch onEnum(of: header) {
-        case .today: return "today"
-        case .yesterday: return "yesterday"
-        case .date(let date): return "date_\(date.label)"
+private extension GpxCollectionSortMode {
+    var label: StringResource {
+        switch self {
+        case .date: return SharedRes.strings().gpx_collection_sort_date
+        case .distance: return SharedRes.strings().gpx_collection_sort_distance
+        case .landscape: return SharedRes.strings().gpx_collection_sort_landscape
+        }
+    }
+
+    var testTag: String {
+        switch self {
+        case .date: return TestTags.shared.GPX_COLLECTION_SORT_DATE
+        case .distance: return TestTags.shared.GPX_COLLECTION_SORT_DISTANCE
+        case .landscape: return TestTags.shared.GPX_COLLECTION_SORT_LANDSCAPE
         }
     }
 }
