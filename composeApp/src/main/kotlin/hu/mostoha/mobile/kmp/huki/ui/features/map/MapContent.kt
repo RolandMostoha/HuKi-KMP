@@ -135,7 +135,7 @@ fun MapContent(
         setCameraOptions(MapConstants.HUNGARY_CAMERA_POSITION.toCameraOptions())
     }
     val mapState = rememberMapState()
-    val mapLoaded = remember { CompletableDeferred<Unit>() }
+    val styleLoaded = remember { CompletableDeferred<Unit>() }
     var isCameraPanelVisible by remember { mutableStateOf(true) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
@@ -153,8 +153,7 @@ fun MapContent(
     }
 
     LaunchedEffect(mapUiEffects) {
-        // suspend until map is ready
-        mapLoaded.await()
+        styleLoaded.await()
         mapUiEffects.collect { effect ->
             if (effect is MapUiEffects.UpdateCamera && effect.contentPadding == ContentPadding.MAP_ROUTE_PLANNER) {
                 lastRoutePlannerCamera = effect
@@ -259,7 +258,8 @@ fun MapContent(
             val accuracyRingColor = mokoColor(SharedRes.colors.accuracyRing)
 
             MapEffect(Unit) { mapView ->
-                mapView.mapboxMap.subscribeMapLoaded { mapLoaded.complete(Unit) }
+                mapView.mapboxMap.subscribeStyleLoaded { styleLoaded.complete(Unit) }
+                if (mapView.mapboxMap.isStyleLoaded()) styleLoaded.complete(Unit)
                 mapView.location.updateSettings {
                     enabled = true
                     puckBearingEnabled = true
