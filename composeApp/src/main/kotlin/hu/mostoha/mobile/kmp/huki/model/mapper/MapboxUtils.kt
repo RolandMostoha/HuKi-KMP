@@ -22,7 +22,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
-import kotlin.time.Duration
 
 fun ViewportStatus.isIdle(): Boolean = this is ViewportStatus.Idle
 
@@ -48,8 +47,6 @@ fun ViewportPlugin.releaseFinishedFollowTransition(to: ViewportStatus, reason: V
     val followState = (to as? ViewportStatus.State)?.state as? FollowPuckViewportState ?: return
     followState.options = followState.options
 }
-
-fun Boolean.toDuration(duration: Duration): Long = if (this) duration.inWholeMilliseconds else 0
 
 /**
  * Zooms the map in or out by one step, clamped to the min/max zoom.
@@ -85,7 +82,7 @@ internal fun MapViewportState.zoom(zoomIn: Boolean) {
  * Transitions the camera to follow the location puck for the given status (north-up or live compass).
  * Preserves the current zoom while already following, otherwise applies at least the default follow zoom.
  */
-internal fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus, animated: Boolean) {
+internal fun MapViewportState.followLocation(effect: MapUiEffects.ShowMyLocation) {
     val alreadyFollowing = mapViewportStatus?.isFollow() == true
     val currentZoom = cameraState?.zoom ?: MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL
     val zoom = if (alreadyFollowing) {
@@ -94,9 +91,9 @@ internal fun MapViewportState.followLocation(myLocationStatus: MyLocationStatus,
         currentZoom.coerceAtLeast(MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL)
     }
     val transitionOptions = DefaultViewportTransitionOptions.Builder()
-        .maxDurationMs(animated.toDuration(MAP_FOLLOW_ANIM_DURATION))
+        .maxDurationMs(effect.maxDurationMs)
         .build()
-    when (myLocationStatus) {
+    when (effect.myLocationStatus) {
         MyLocationStatus.Following -> {
             this.transitionToFollowPuckState(
                 followPuckViewportStateOptions = FollowPuckViewportStateOptions.Builder()

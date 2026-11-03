@@ -75,6 +75,7 @@ import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -103,6 +104,11 @@ import kotlin.time.Duration.Companion.hours
 class MainViewModelTest {
 
     private companion object {
+        /**
+         * A fresh start flies in from the Hungary overview, a zoom change long enough for the max duration.
+         */
+        private val FLY_IN_DURATION_MS = MyLocationCameraAnimation.MAX_DURATION.inWholeMilliseconds
+        private val FOLLOW_DURATION_MS = MyLocationCameraAnimation.MIN_DURATION.inWholeMilliseconds
         private val TEST_DESTINATION = Destination(
             id = "1",
             name = "Kékestető",
@@ -316,6 +322,30 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given camera away from my location - When MyLocationClicked - Then ShowMyLocation has the max duration`() {
+        runTest {
+            val updates = MutableSharedFlow<Location>()
+            val service = locationMonitoringService(lastKnownLocation = null, updates = updates)
+            val viewModel = createViewModel(grantedPermission = true, locationMonitoringService = service)
+            val myLocation = Location(latitude = 47.5316, longitude = 21.6273)
+            val camera = CameraPosition(location = Location(47.7181, 18.8948), zoom = 16.0, bearing = 0.0, pitch = 0.0)
+            advanceUntilIdle()
+            updates.emit(myLocation)
+            viewModel.onEvent(MainUiEvents.FollowingDisabled)
+            viewModel.onEvent(MainUiEvents.MapCameraChanged(camera))
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem()
+                viewModel.onEvent(MainUiEvents.MyLocationClicked)
+
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
     fun `Given location with altitude - When location updates - Then uiState has rounded altitude`() {
         runTest {
             val updates = MutableSharedFlow<Location>()
@@ -413,13 +443,16 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
                 viewModel.onEvent(MainUiEvents.MyLocationClicked)
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(
+                    MyLocationStatus.FollowingLiveCompass,
+                    FOLLOW_DURATION_MS,
+                )
 
                 viewModel.onEvent(MainUiEvents.CompassClicked)
 
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = true)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FOLLOW_DURATION_MS)
                 ensureAllEventsConsumed()
             }
         }
@@ -451,7 +484,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
                 viewModel.onEvent(MainUiEvents.FollowingDisabled)
 
                 viewModel.onEvent(MainUiEvents.CompassClicked)
@@ -469,7 +502,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
                 viewModel.onEvent(MainUiEvents.ZoomInClicked)
 
@@ -486,9 +519,12 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
                 viewModel.onEvent(MainUiEvents.MyLocationClicked)
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = true)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(
+                    MyLocationStatus.FollowingLiveCompass,
+                    FOLLOW_DURATION_MS,
+                )
 
                 viewModel.onEvent(MainUiEvents.ZoomOutClicked)
 
@@ -505,7 +541,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
                 viewModel.onEvent(MainUiEvents.FollowingDisabled)
 
                 viewModel.onEvent(MainUiEvents.ZoomInClicked)
@@ -533,13 +569,13 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given granted location permission - When init - Then uiEffect is ShowMyLocation`() {
+    fun `Given granted location permission - When init - Then uiEffect is animated ShowMyLocation`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
                 ensureAllEventsConsumed()
             }
         }
@@ -554,14 +590,14 @@ class MainViewModelTest {
             viewModel.mapUiEffects.test {
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(
                     MyLocationStatus.Following,
-                    animated = false,
+                    maxDurationMs = FLY_IN_DURATION_MS,
                 )
 
                 viewModel.onEvent(MainUiEvents.MyLocationClicked)
 
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(
                     MyLocationStatus.FollowingLiveCompass,
-                    animated = true,
+                    maxDurationMs = FOLLOW_DURATION_MS,
                 )
                 ensureAllEventsConsumed()
             }
@@ -1845,7 +1881,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
                 viewModel.onEvent(MainUiEvents.SearchDestinationSelected(TEST_DESTINATION))
 
@@ -1865,7 +1901,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
                 viewModel.onEvent(MainUiEvents.DestinationSelected(TEST_DESTINATION.id))
 
@@ -1886,7 +1922,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
                 viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE))
 
@@ -1905,7 +1941,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
-                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false)
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
                 viewModel.onEvent(MainUiEvents.SearchPlaceSelected(TEST_PLACE_WITH_BOUNDING_BOX))
 

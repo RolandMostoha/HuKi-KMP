@@ -379,7 +379,7 @@ private extension MapView {
             effect.myLocationStatus,
             cameraZoom: proxy.map?.cameraState.zoom
         ) else { return }
-        let duration = effect.animated ? AnimationConstants.shared.MAP_FOLLOW_ANIM_DURATION_S : 0
+        let duration = Double(effect.maxDurationMs) / 1000
         appliedCameraPadding = SwiftUI.EdgeInsets()
         withViewportAnimation(.default(maxDuration: duration)) {
             viewport = target

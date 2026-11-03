@@ -95,6 +95,7 @@ import hu.mostoha.mobile.kmp.huki.util.DistanceInfoWindowConfig
 import hu.mostoha.mobile.kmp.huki.util.GpxDistanceTracker
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
+import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
@@ -134,6 +135,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.maplibre.spatialk.units.extensions.inMeters
 import org.maplibre.spatialk.units.extensions.meters
 import kotlin.math.roundToInt
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
@@ -172,6 +174,7 @@ class MainViewModel(
      * The map keeps the padding of the last camera move while panning, so the saved center is only valid with it.
      */
     private var cameraPadding: ContentPadding? = null
+    private var myLocation: Location? = null
 
     private var oktTrail: OktTrail? = null
     private var oktJob: Job? = null
@@ -186,7 +189,7 @@ class MainViewModel(
         val restoredSession = initSession()
         initMyLocation(restoredSession)
         initDistanceMonitoring()
-        initAltitudeMonitoring()
+        initMyLocationMonitoring()
         initWhatsNew(restoredSession)
         initLaunchArgGpx()
         observeSettings()
@@ -630,6 +633,7 @@ class MainViewModel(
     private fun enableMyLocation(targetStatus: MyLocationStatus? = null) {
         viewModelScope.launch {
             withLocationPermission {
+                val wasFollowing = uiState.value.myLocationState.myLocationStatus.isFollowing
                 val newStatus = targetStatus ?: when (uiState.value.myLocationState.myLocationStatus) {
                     MyLocationStatus.Default -> MyLocationStatus.Following
                     MyLocationStatus.Following -> MyLocationStatus.FollowingLiveCompass
@@ -648,9 +652,18 @@ class MainViewModel(
                         isMyLocationLoading = !uiState.myLocationState.hasLocationFix,
                     )
                 }
-                sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+                showMyLocation(newStatus, animated = true, alreadyFollowing = wasFollowing)
             }
         }
+    }
+
+    private suspend fun showMyLocation(status: MyLocationStatus, animated: Boolean, alreadyFollowing: Boolean) {
+        val maxDuration = if (animated) {
+            MyLocationCameraAnimation.maxDuration(mapCameraStore.cameraPosition, myLocation, alreadyFollowing)
+        } else {
+            Duration.ZERO
+        }
+        sendEffect(MapUiEffects.ShowMyLocation(status, maxDurationMs = maxDuration.inWholeMilliseconds))
     }
 
     private fun updateMyLocation() {
@@ -680,7 +693,7 @@ class MainViewModel(
                 MyLocationStatus.Following, MyLocationStatus.FollowingLiveCompass -> {
                     val newStatus = MyLocationStatus.Following
                     _uiState.updateMyLocationState { it.copy(myLocationStatus = newStatus) }
-                    sendEffect(MapUiEffects.ShowMyLocation(newStatus, animated = true))
+                    showMyLocation(newStatus, animated = true, alreadyFollowing = true)
                 }
                 MyLocationStatus.Default, MyLocationStatus.NotAvailable -> sendEffect(MapUiEffects.ResetBearing)
             }
@@ -717,7 +730,8 @@ class MainViewModel(
                     ),
                 )
             } else {
-                sendEffect(MapUiEffects.ShowMyLocation(myLocationStatus, animated = false))
+                // A fresh start flies in from the Hungary overview, a restored session keeps its place
+                showMyLocation(myLocationStatus, animated = restoredSession == null, alreadyFollowing = false)
             }
         }
     }
@@ -833,8 +847,9 @@ class MainViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun initAltitudeMonitoring() {
+    private fun initMyLocationMonitoring() {
         locationMonitoringService.locations()
+            .onEach { myLocation = it }
             .map { it.altitude?.roundToInt() }
             .distinctUntilChanged()
             .onEach { altitude -> _uiState.updateMyLocationState { it.copy(altitude = altitude) } }
@@ -920,6 +935,7 @@ class MainViewModel(
         viewModelScope.launch {
             hideSheet()
             withLocationPermission {
+                val wasFollowing = uiState.value.myLocationState.myLocationStatus.isFollowing
                 val targetStatus = MyLocationStatus.FollowingLiveCompass
                 _uiState.update {
                     it.copy(
@@ -930,7 +946,7 @@ class MainViewModel(
                         isMyLocationLoading = !it.myLocationState.hasLocationFix,
                     )
                 }
-                sendEffect(MapUiEffects.ShowMyLocation(targetStatus, animated = true))
+                showMyLocation(targetStatus, animated = true, alreadyFollowing = wasFollowing)
             }
         }
     }

@@ -373,7 +373,7 @@ private fun MapViewportState.handleMapEffect(
             routePlannerBottomInset,
             listSheetHeight,
         )
-        is MapUiEffects.ShowMyLocation -> followLocation(effect.myLocationStatus, effect.animated)
+        is MapUiEffects.ShowMyLocation -> followLocation(effect)
         is MapUiEffects.Zoom -> zoom(effect.zoomIn)
         is MapUiEffects.ResetBearing -> resetBearing()
     }

@@ -43,6 +43,7 @@ import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
+import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
 import hu.mostoha.mobile.kmp.huki.util.mainSessionSavedStateHandle
 import hu.mostoha.mobile.kmp.huki.util.reversed
 import io.kotest.matchers.collections.shouldContain
@@ -278,7 +279,7 @@ class MainViewModelSessionTest {
 
             restored.uiState.value.myLocationState.myLocationStatus shouldBe MyLocationStatus.FollowingLiveCompass
             restored.emittedMapEffects() shouldBe listOf(
-                MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, animated = false),
+                MapUiEffects.ShowMyLocation(MyLocationStatus.FollowingLiveCompass, 0),
             )
         }
     }
@@ -353,7 +354,7 @@ class MainViewModelSessionTest {
             viewModel.uiState.value.myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
             analyticsService.loggedEvents.filterIsInstance<AnalyticsEvent.SessionRestored>() shouldBe emptyList()
             viewModel.emittedMapEffects() shouldBe listOf(
-                MapUiEffects.ShowMyLocation(MyLocationStatus.Following, animated = false),
+                MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS),
             )
         }
     }
@@ -374,3 +375,5 @@ class MainViewModelSessionTest {
         }
     }
 }
+
+private val FLY_IN_DURATION_MS = MyLocationCameraAnimation.MAX_DURATION.inWholeMilliseconds
