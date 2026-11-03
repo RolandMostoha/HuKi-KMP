@@ -1,17 +1,11 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
@@ -23,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults
+import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -110,30 +105,22 @@ fun GpxControlMenu(
             onClearClicked = onClearClicked,
         )
         // Anchored above the menu button, not stacked on the menu, whose height animates while it collapses
-        AnimatedVisibility(
-            modifier = Modifier.layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
-                layout(placeable.width, placeable.height) {
-                    val anchor = menuButtonOrigin?.minus(menuOrigin) ?: return@layout
-                    val shadowInset = Dimens.Small.roundToPx()
-                    placeable.place(
-                        x = anchor.x.roundToInt() - shadowInset,
-                        y = anchor.y.roundToInt() - Dimens.FloatingActionSpacing.roundToPx() -
-                            placeable.height + shadowInset,
-                    )
+        GpxRouteVisibilityFab(
+            modifier = Modifier
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
+                    layout(placeable.width, placeable.height) {
+                        val anchor = menuButtonOrigin?.minus(menuOrigin) ?: return@layout
+                        placeable.place(
+                            x = anchor.x.roundToInt(),
+                            y = anchor.y.roundToInt() - Dimens.FloatingActionSpacing.roundToPx() - placeable.height,
+                        )
+                    }
                 }
-            },
-            visible = !expanded,
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut() + scaleOut(),
-        ) {
-            // Room for the shadow, which the animation layer would otherwise clip to a rectangle
-            GpxRouteVisibilityFab(
-                modifier = Modifier.padding(Dimens.Small),
-                isRouteVisible = isRouteVisible,
-                onClick = onToggleLineClicked,
-            )
-        }
+                .animateFloatingActionButton(visible = !expanded, alignment = Alignment.BottomCenter),
+            isRouteVisible = isRouteVisible,
+            onClick = onToggleLineClicked,
+        )
     }
 }
 
