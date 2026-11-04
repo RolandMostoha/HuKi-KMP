@@ -111,6 +111,19 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state - When SupportClicked event - Then NavigateToSupport effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.SupportClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToSupport
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When TrailSymbolsGuideClicked event - Then NavigateToTrailSymbolsGuide effect is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

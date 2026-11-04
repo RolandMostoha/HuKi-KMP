@@ -94,7 +94,7 @@ private fun WhatsNewHeader(version: String, releaseDate: LocalDate, onCloseClick
     val monthYear = remember(releaseDate) { LocalizedDateFormatter().formatMonthYear(releaseDate) }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
-            painter = painterResource(SharedRes.images.ic_app_icon.drawableResId),
+            painter = painterResource(SharedRes.images.ic_app_icon_android.drawableResId),
             contentDescription = mokoString(SharedRes.strings.whats_new_a11y_app_icon),
             modifier = Modifier
                 .size(Dimens.IconHero * 0.6f)

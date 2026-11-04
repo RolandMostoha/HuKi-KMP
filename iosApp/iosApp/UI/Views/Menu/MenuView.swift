@@ -15,6 +15,7 @@ struct MenuView: View {
     let onQuickGuideClicked: () -> Void
     let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
+    let onSupportClicked: () -> Void
 
     @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getMenuViewModel)
     var viewModel: MenuViewModel { holder.viewModel }
@@ -34,6 +35,7 @@ struct MenuView: View {
                     hero(versionName: uiState.versionName)
                     Spacer().frame(height: 10)
                     mainFeaturesSection
+                    supportSection
                     guidesSection
                     contactSection
                     legalSection
@@ -76,7 +78,7 @@ struct MenuView: View {
 
     private func hero(versionName: String) -> some View {
         VStack(spacing: 0) {
-            Image(uiImage: SharedRes.images().ic_app_icon.toUIImage()!)
+            Image(uiImage: SharedRes.images().ic_app_icon_ios.toUIImage()!)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 96, height: 96)
@@ -103,7 +105,7 @@ struct MenuView: View {
             Circle()
                 .fill(primary)
                 .frame(width: 6, height: 6)
-            Text(strings.get(id: SharedRes.strings().menu_version_pattern, args: [versionName]))
+            Text(strings.get(id: SharedRes.strings().menu_version_pattern_ios, args: [versionName]))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(primary)
         }
@@ -120,8 +122,8 @@ private extension MenuView {
         case .openUrl(let openUrl):
             openExternalUrl(strings.get(id: openUrl.urlRes))
         case .sendEmail(let sendEmail):
-            composeEmail(
-                email: strings.get(id: sendEmail.emailRes),
+            EmailNavigator.composeEmail(
+                to: strings.get(id: sendEmail.emailRes),
                 subject: strings.get(id: SharedRes.strings().menu_email_subject_ios)
             )
         default:
@@ -137,6 +139,7 @@ private extension MenuView {
         case .navigateToTrailSymbolsGuide: return onTrailSymbolsGuideClicked
         case .navigateToQuickGuide: return onQuickGuideClicked
         case .navigateToLocationIq: return onLocationIqClicked
+        case .navigateToSupport: return onSupportClicked
         case .openUrl, .sendEmail: return nil
         default: return featureNavigationAction(for: effect)
         }
@@ -154,13 +157,6 @@ private extension MenuView {
 
     func openExternalUrl(_ urlString: String) {
         if let url = URL(string: urlString) {
-            UIApplication.shared.open(url)
-        }
-    }
-
-    func composeEmail(email: String, subject: String) {
-        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        if let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)") {
             UIApplication.shared.open(url)
         }
     }

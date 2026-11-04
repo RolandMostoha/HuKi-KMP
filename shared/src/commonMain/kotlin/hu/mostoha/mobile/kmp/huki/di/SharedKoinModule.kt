@@ -18,6 +18,7 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.quickguide.QuickGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.features.support.SupportViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutingMode
@@ -35,6 +36,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultRoutingQuotaStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultSettingsRepository
+import hu.mostoha.mobile.kmp.huki.repository.DefaultSupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultWhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FallbackRoutePlannerRepository
@@ -55,13 +57,16 @@ import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.RoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.RoutingQuotaStore
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -92,6 +97,13 @@ val appModule = module {
     single<PlaceHistoryRepository> { DefaultPlaceHistoryRepository(get(), get()) }
     single<SettingsRepository> { DefaultSettingsRepository(get()) }
     single<WhatsNewRepository> { DefaultWhatsNewRepository(get()) }
+    single<SupporterRepository>(createdAtStart = true) {
+        DefaultSupporterRepository(
+            billingService = get(),
+            dataStore = get(),
+            scope = CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.Main))),
+        )
+    }
     single<Clock> { Clock.System }
     single<CoroutineDispatcher>(named(Dispatcher.Default)) { Dispatchers.Default }
     single<CoroutineDispatcher>(named(Dispatcher.IO)) { Dispatchers.IO }
@@ -130,6 +142,7 @@ val viewModelModule = module {
         )
     }
     viewModelOf(::SettingsViewModel)
+    viewModelOf(::SupportViewModel)
     viewModel {
         DestinationsViewModel(get(), get(), get(named(Dispatcher.Default)), get(), get())
     }

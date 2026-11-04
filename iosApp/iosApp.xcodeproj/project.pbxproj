@@ -16,6 +16,7 @@
 /* Begin PBXFileReference section */
 		1A9A712AB036D9037ECB1140 /* HuKi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HuKi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		300988F23069547300316D3B /* huki_icon_composer.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = huki_icon_composer.icon; sourceTree = "<group>"; };
+		30313ACF3097B71300B7CE16 /* HuKi.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = HuKi.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -95,6 +96,7 @@
 		CA50BA94F37EE1A1ABF50FF7 = {
 			isa = PBXGroup;
 			children = (
+				30313ACF3097B71300B7CE16 /* HuKi.storekit */,
 				305BDE9F2F11585000A60BF0 /* Scripts */,
 				A8795A49EAC062F4C5704EFF /* Configuration */,
 				30FA57E12F4A100000A60BF0 /* fastlane */,

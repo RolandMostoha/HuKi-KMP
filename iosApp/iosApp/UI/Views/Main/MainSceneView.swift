@@ -11,7 +11,11 @@ struct MainSceneView: View {
         let viewModel = viewModelHolder.resolve(session: session)
         MainView(viewModel: viewModel)
             .onChange(of: scenePhase) { _, phase in
-                guard phase != .active else { return }
+                guard phase != .active else {
+                    // Picks up purchases completed in the background, e.g. an approved Ask to Buy
+                    Task { try? await KoinRepositoryProvider.shared.supporterRepository.refresh() }
+                    return
+                }
                 session = viewModel.sessionSnapshot()
             }
             .task {

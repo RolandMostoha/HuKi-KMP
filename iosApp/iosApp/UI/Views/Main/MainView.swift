@@ -272,6 +272,9 @@ private extension MainView {
             .navigationDestination(for: QuickGuideRoute.self) { _ in
                 QuickGuideView(onGpxGuideClicked: { navigationPath.append(GpxGuideRoute.gpxGuide) })
             }
+            .navigationDestination(for: SupportRoute.self) { _ in
+                SupportView()
+            }
     }
 
     func openMapLabelScaleSheet() {
@@ -295,7 +298,8 @@ private extension MainView {
             onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },
             onQuickGuideClicked: { navigationPath.append(QuickGuideRoute.quickGuide) },
             onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
-            onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+            onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) },
+            onSupportClicked: { navigationPath.append(SupportRoute.support) }
         )
     }
 

@@ -33,7 +33,11 @@ struct HukiApp: App {
             )
         }
         #endif
-        doInitKoin(analyticsService: IosAnalyticsService(), crashlyticsService: IosCrashlyticsService())
+        doInitKoin(
+            analyticsService: IosAnalyticsService(),
+            crashlyticsService: IosCrashlyticsService(),
+            billingService: IosBillingService()
+        )
     }
 
     var body: some Scene {

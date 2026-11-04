@@ -26,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.menu.MenuScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.placehistory.PlaceHistoryScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.quickguide.QuickGuideScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.support.SupportScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.trailsymbolsguide.TrailSymbolsGuideScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
 import hu.mostoha.mobile.kmp.huki.util.millis
@@ -46,6 +47,7 @@ private object Routes {
     const val QUICK_GUIDE = "quick_guide"
     const val PLACE_HISTORY = "place_history"
     const val LOCATION_IQ = "location_iq"
+    const val SUPPORT = "support"
     const val EXTRA_OPEN_ROUTE_PLANNER_KEY = "extra_open_route_planner"
     const val EXTRA_OPEN_DISCOVER_KEY = "extra_open_discover"
     const val EXTRA_OPEN_MAP_LABEL_SCALE_KEY = "extra_open_map_label_scale"
@@ -168,6 +170,7 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 onQuickGuideClicked = { navController.navigate(Routes.QUICK_GUIDE) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
+                onSupportClicked = { navController.navigate(Routes.SUPPORT) },
             )
         }
         composable(Routes.SETTINGS) {
@@ -235,6 +238,11 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
         }
         composable(Routes.LOCATION_IQ) {
             LocationIqScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.SUPPORT) {
+            SupportScreen(
                 onBack = { navController.popBackStack() },
             )
         }

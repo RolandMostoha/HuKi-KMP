@@ -1,0 +1,260 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "D4EB49AD",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6828568422",
+      "localizations" : [
+        {
+          "description" : "\"Hedgehog\" one-time support package",
+          "displayName" : "Hedgehog",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "\"Sün\" alkalmi támogatói csomag",
+          "displayName" : "Sün",
+          "locale" : "hu"
+        }
+      ],
+      "productID" : "huki_support_one_time_level_0",
+      "referenceName" : "Hedgehog",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6828567822",
+      "localizations" : [
+        {
+          "description" : "\"Bagoly\" alkalmi támogatói csomag",
+          "displayName" : "Bagoly",
+          "locale" : "hu"
+        },
+        {
+          "description" : "\"Owl\" one-time support package",
+          "displayName" : "Owl",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "huki_support_one_time_level_1",
+      "referenceName" : "Owl",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "6828565184",
+      "localizations" : [
+        {
+          "description" : "\"Mókus\" alkalmi támogatói csomag",
+          "displayName" : "Mókus",
+          "locale" : "hu"
+        },
+        {
+          "description" : "\"Squirrel\" one-time support package",
+          "displayName" : "Squirrel",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "huki_support_one_time_level_2",
+      "referenceName" : "Squirrel",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6794327609",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_compatibilityTimeRate" : {
+      "3" : 6
+    },
+    "_developerTeamID" : "8PF8GK99M6",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 815249179.28566504,
+    "_locale" : "hu",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 15
+  },
+  "subscriptionBundleGroups" : [
+
+  ],
+  "subscriptionGroups" : [
+    {
+      "id" : "22528372",
+      "localizations" : [
+        {
+          "description" : "",
+          "displayName" : "HuKi Supporter",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "",
+          "displayName" : "HuKi támogató",
+          "locale" : "hu"
+        }
+      ],
+      "name" : "HuKi Supporter",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "2.99",
+              "displayPrice" : "2.99",
+              "internalID" : "6828759096_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6828759096",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "\"Bear\" monthly support package",
+              "displayName" : "Bear",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "\"Medve\" havi támogatói csomag",
+              "displayName" : "Medve",
+              "locale" : "hu"
+            }
+          ],
+          "productID" : "huki_support_recurring_level_0",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Bear",
+          "subscriptionGroupID" : "22528372",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "1.99",
+              "displayPrice" : "1.99",
+              "internalID" : "6828760224_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6828760224",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "\"Boar\" monthly support package",
+              "displayName" : "Boar",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "\"Vaddisznó\" havi támogatói csomag",
+              "displayName" : "Vaddisznó",
+              "locale" : "hu"
+            }
+          ],
+          "productID" : "huki_support_recurring_level_1",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Boar",
+          "subscriptionGroupID" : "22528372",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "0.99",
+              "displayPrice" : "0.99",
+              "internalID" : "6828760982_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6828760982",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "\"Deer\" monthly support package",
+              "displayName" : "Deer",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "\"Szarvas\" havi támogatói csomag",
+              "displayName" : "Szarvas",
+              "locale" : "hu"
+            }
+          ],
+          "productID" : "huki_support_recurring_level_2",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Deer",
+          "subscriptionGroupID" : "22528372",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "subscriptionSuiteGroups" : [
+
+  ],
+  "version" : {
+    "major" : 6,
+    "minor" : 3
+  }
+}

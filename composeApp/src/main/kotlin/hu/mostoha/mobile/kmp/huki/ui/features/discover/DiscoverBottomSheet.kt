@@ -122,7 +122,7 @@ fun DiscoverContent(
     ) {
         DiscoverHeader(onCloseClick = onCloseClicked)
         Column(
-            modifier = Modifier.padding(top = Dimens.SectionSpacing),
+            modifier = Modifier.padding(top = Dimens.Medium),
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {
             SectionHeader(

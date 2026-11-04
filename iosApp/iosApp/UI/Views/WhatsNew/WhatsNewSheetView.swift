@@ -49,7 +49,7 @@ struct WhatsNewSheetView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 13) {
-            Image(uiImage: SharedRes.images().ic_app_icon.toUIImage()!)
+            Image(uiImage: SharedRes.images().ic_app_icon_ios.toUIImage()!)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 58, height: 58)

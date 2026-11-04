@@ -26,12 +26,15 @@ import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
 import hu.mostoha.mobile.kmp.huki.features.quickguide.QuickGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
+import hu.mostoha.mobile.kmp.huki.features.support.SupportViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.IosBundledFileReader
+import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
+import hu.mostoha.mobile.kmp.huki.service.BillingService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.IosLocationMonitoringService
@@ -65,10 +68,15 @@ val iosPlatformModule = module {
     }
 }
 
-fun initKoin(analyticsService: AnalyticsService, crashlyticsService: CrashlyticsService) {
+fun initKoin(
+    analyticsService: AnalyticsService,
+    crashlyticsService: CrashlyticsService,
+    billingService: BillingService,
+) {
     initKoin {
         modules(iosPlatformModule)
         modules(module { single { crashlyticsService } })
+        modules(module { single { billingService } })
         modules(
             module {
                 single<AnalyticsService> {
@@ -77,6 +85,11 @@ fun initKoin(analyticsService: AnalyticsService, crashlyticsService: Crashlytics
             },
         )
     }
+}
+
+object KoinRepositoryProvider : KoinComponent {
+    val supporterRepository: SupporterRepository
+        get() = get()
 }
 
 object KoinViewModelProvider : KoinComponent {
@@ -99,6 +112,7 @@ object KoinViewModelProvider : KoinComponent {
     ): RoutePlannerViewModel = owner.resolve { parametersOf(stops, restored) }
     fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
     fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
+    fun getSupportViewModel(owner: IosViewModelStoreOwner): SupportViewModel = owner.resolve()
 
     private inline fun <reified T : ViewModel> ViewModelStoreOwner.resolve(
         noinline parameters: ParametersDefinition? = null,

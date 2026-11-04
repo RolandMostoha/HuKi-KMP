@@ -50,6 +50,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
             MenuUiEvents.GraphhopperClicked -> openGraphhopper()
+            MenuUiEvents.SupportClicked -> sendEffect(MenuUiEffects.NavigateToSupport)
         }
     }
 
