@@ -208,8 +208,8 @@ UI → UiEvent → ViewModel → UiState
   - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
 
 ### Incoming links
-- Android `MainActivity` (`singleTask`) turns `geo:` VIEW intents into an `IncomingLink` and pushes it to `IncomingLinkStore`.
-- `MainViewModel` consumes it: `LocationLinkParser` reads the `geo:` URI, `DefaultLocationLinkResolver` searches name-only links with LocationIQ, then Place Details opens. `RootNavHost` pops back to the map.
+- Android `MainActivity` (`singleTask`) turns `geo:` VIEW intents and `https://huki.hu/place` App Links into an `IncomingLink` and pushes it to `IncomingLinkStore`.
+- `MainViewModel` consumes it: `LocationLinkParser` reads `geo:` and HuKi links, `DefaultLocationLinkResolver` searches name-only links with LocationIQ, then Place Details opens. `RootNavHost` pops back to the map.
 - A launch link wins over session restore, What's New and the my location fly-in.
 - E2E: `maestro_location_link.yaml` (Android only).
 

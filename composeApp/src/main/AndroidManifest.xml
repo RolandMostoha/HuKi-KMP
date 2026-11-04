@@ -34,6 +34,18 @@
 
                 <data android:scheme="geo" />
             </intent-filter>
+
+            <!-- HuKi place links, verified by huki.hu/.well-known/assetlinks.json -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="huki.hu" />
+                <data android:pathPrefix="/place" />
+            </intent-filter>
         </activity>
 
         <provider

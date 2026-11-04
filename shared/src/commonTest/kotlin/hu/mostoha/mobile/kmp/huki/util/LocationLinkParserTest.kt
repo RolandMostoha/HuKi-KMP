@@ -38,6 +38,11 @@ class LocationLinkParserTest {
                 TestCase("geo:91,18.4507", null),
                 TestCase("geo:47.7136,181", null),
                 TestCase("geo:abc", null),
+                // HuKi links
+                TestCase("https://huki.hu/place?lat=47.7136&lon=18.4507", LocationLink.Coordinates(SUTTO)),
+                TestCase("https://www.huki.hu/place/?lat=47.7136&lon=18.4507", LocationLink.Coordinates(SUTTO)),
+                TestCase("https://huki.hu/landscape?id=pilis", null),
+                TestCase("https://huki.hu/place?lat=47.7136", null),
                 // Malformed or unusual encodings from other apps
                 TestCase("geo:0,0?q=50%", null),
                 TestCase("geo:0,0?q=Rév utca 1, Tihany", LocationLink.PlaceName("Rév utca 1, Tihany")),

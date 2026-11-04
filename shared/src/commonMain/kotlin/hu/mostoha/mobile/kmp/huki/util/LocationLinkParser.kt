@@ -4,17 +4,22 @@ import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.LocationLink
 import io.ktor.http.URLDecodeException
+import io.ktor.http.Url
 import io.ktor.http.decodeURLQueryComponent
+import io.ktor.http.parseUrl
 
 /**
- * Reads a location from `geo:` URIs, including ones embedded in shared text.
+ * Reads a location from `geo:` URIs and HuKi links, including ones embedded in shared text.
  */
 object LocationLinkParser {
     private const val MAX_LATITUDE = 90.0
     private const val MAX_LONGITUDE = 180.0
     private const val GEO_SCHEME = "geo:"
+    private const val HUKI_PLACE_PATH = "/place"
 
-    private val LINK = Regex("""(?i)geo:\S+""")
+    private val HUKI_HOSTS = setOf("huki.hu", "www.huki.hu")
+
+    private val LINK = Regex("""(?i)(geo:|https?://)\S+""")
     private val COORDINATES = Regex("""^\s*(-?\d+(?:\.\d+)?)\s*,\s*\+?\s*(-?\d+(?:\.\d+)?)""")
 
     fun parse(text: String): LocationLink? {
@@ -36,7 +41,11 @@ object LocationLinkParser {
         }
 
     private fun parseSupportedLink(link: String): LocationLink? =
-        if (link.startsWith(GEO_SCHEME, ignoreCase = true)) parseGeoUri(link.drop(GEO_SCHEME.length)) else null
+        if (link.startsWith(GEO_SCHEME, ignoreCase = true)) {
+            parseGeoUri(link.drop(GEO_SCHEME.length))
+        } else {
+            parseUrl(link)?.let(::parseWebUrl)
+        }
 
     /**
      * RFC 5870 `geo:lat,lon[,alt][;params][?q=...]`, where a `q` holding coordinates or a name wins over `0,0`.
@@ -52,6 +61,16 @@ object LocationLinkParser {
         return q?.let(::parseCoordinates)?.let(LocationLink::Coordinates)
             ?: parseCoordinates(coordinatePart)?.let(LocationLink::Coordinates)
             ?: q?.substringBefore('(')?.trim()?.takeIf { it.isNotEmpty() }?.let(LocationLink::PlaceName)
+    }
+
+    private fun parseWebUrl(url: Url): LocationLink? =
+        if (url.host.lowercase() in HUKI_HOSTS) parseHukiUrl(url) else null
+
+    private fun parseHukiUrl(url: Url): LocationLink? {
+        if (url.encodedPath.trimEnd('/') != HUKI_PLACE_PATH) return null
+        val latitude = url.parameters["lat"]?.toDoubleOrNull() ?: return null
+        val longitude = url.parameters["lon"]?.toDoubleOrNull() ?: return null
+        return toLocation(latitude, longitude)?.let(LocationLink::Coordinates)
     }
 
     private fun parseCoordinates(value: String): Location? = COORDINATES.find(value)?.toLocation()

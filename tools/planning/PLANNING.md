@@ -185,6 +185,8 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope        | Task                                                                                                                                               |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | PlaceDetails | Support opening lat,lon locations Intent from other apps. E.g. Google Photos -> Location -> Share. ![img_1.png](img_1.png) ![img_2.png](img_2.png) |
+| `[x]`  | Deeplink     | Open `huki.hu/place` App Links in Place Details                                                                                                    |
+| `[ ]`  | Landscapes   | `huki.hu/landscape?id=` (and legacy `osmId=`) App Link opens the landscape, as in HuKi-Android                                                    |
 | `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                  |
 
 ### FEATURE: PlaceHistory
