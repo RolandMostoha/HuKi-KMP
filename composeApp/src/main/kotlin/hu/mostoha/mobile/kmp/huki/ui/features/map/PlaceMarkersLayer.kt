@@ -82,10 +82,6 @@ private fun PlaceMarkerAnnotation(
     val painter = mokoPainter(MarkerIcons.placeSymbol(isDarkMode, baseLayer))
     val markerSize =
         with(LocalDensity.current) { (painter.intrinsicSize * SharedDimens.PLACE_MARKER_SCALE.toFloat()).toDpSize() }
-    val scale = remember { Animatable(if (animateIn) 0f else 1f) }
-    LaunchedEffect(Unit) {
-        scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMediumLow))
-    }
     // The annotation view clips its content, so the spring overshoot needs room above and beside the pin
     val overshootInset = if (animateIn) markerSize.width * PLACE_MARKER_OVERSHOOT_INSET else 0.dp
     ViewAnnotation(
@@ -94,20 +90,25 @@ private fun PlaceMarkerAnnotation(
             .variableAnchors(listOf(ViewAnnotationAnchorConfig.Builder().anchor(ViewAnnotationAnchor.BOTTOM).build()))
             .allowOverlap(true)
             .allowOverlapWithPuck(true)
+            .ignoreCameraPadding(true)
             .priority(MapConstants.PLACE_MARKER_PRIORITY.toLong())
             .build(),
     ) {
+        val scale = remember { Animatable(if (animateIn) 0f else 1f) }
+        LaunchedEffect(Unit) {
+            scale.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessMediumLow))
+        }
         Image(
             painter = painter,
             contentDescription = null,
             modifier = Modifier
                 .padding(start = overshootInset, top = overshootInset, end = overshootInset)
                 .size(markerSize)
-                .graphicsLayer {
-                    transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
-                    scaleX = scale.value
-                    scaleY = scale.value
-                }
+                .graphicsLayer(
+                    scaleX = scale.value,
+                    scaleY = scale.value,
+                    transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f),
+                )
                 .then(
                     if (onClick != null && accessibilityLabel != null) {
                         Modifier
@@ -118,7 +119,7 @@ private fun PlaceMarkerAnnotation(
                             }
                             .testTagAsResourceId(TestTags.MAP_ROUTE_STOP_MARKER)
                     } else {
-                        Modifier
+                        Modifier.testTagAsResourceId(TestTags.MAP_PLACE_MARKER)
                     },
                 ),
         )

@@ -83,6 +83,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[x]`  | Search     | Bug: Android. My location issue. There are cases when I click on My location button, following or live compass, then move the camera away, and in 1-4 sec it jumps back to my location suddenly                            |
 | `[x]`  | Search     | Bug: Android. When the GPX MEnu is closed, there is a weird shadow flash for the eye FAB. ![img_12.png](img_12.png)                                                                                                        |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
+| `[x]`  | MyLocation | Bug: Android. Sometimes if I multi long tap Place Details on the map, the markers are disappearing randomly.                                                                                                               |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
 | `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 

@@ -43,6 +43,7 @@ struct PlaceMarkersMapContent: MapContent {
         .variableAnchors([ViewAnnotationAnchorConfig(anchor: .bottom)])
         .allowOverlap(true)
         .allowOverlapWithPuck(true)
+        .ignoreCameraPadding(true)
         .priority(Int(MapConstants.shared.PLACE_MARKER_PRIORITY))
     }
 }
