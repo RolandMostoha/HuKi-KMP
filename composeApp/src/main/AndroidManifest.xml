@@ -35,6 +35,15 @@
                 <data android:scheme="geo" />
             </intent-filter>
 
+            <!-- Shared text, e.g. a Google Maps place shared as a link -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
             <!-- HuKi place links, verified by huki.hu/.well-known/assetlinks.json -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

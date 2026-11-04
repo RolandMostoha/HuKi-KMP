@@ -9,4 +9,9 @@ sealed interface LocationLink {
     data class Coordinates(val location: Location) : LocationLink
 
     data class PlaceName(val name: String) : LocationLink
+
+    /**
+     * Shortened link (e.g. `maps.app.goo.gl`), only its redirect target tells the location.
+     */
+    data class ShortUrl(val url: String) : LocationLink
 }

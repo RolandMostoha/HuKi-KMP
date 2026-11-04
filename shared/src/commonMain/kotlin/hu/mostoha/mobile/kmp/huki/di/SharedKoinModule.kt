@@ -136,7 +136,7 @@ val viewModelModule = module {
 val networkModule = module {
     single<HttpClient> { createHttpClient(get()) }
     single<GeocodingRepository> { LocationIqGeocodingRepository(get(), get()) }
-    single<LocationLinkResolver> { DefaultLocationLinkResolver(get()) }
+    single<LocationLinkResolver> { DefaultLocationLinkResolver(get(), get(), get()) }
     single<RoutingQuotaStore> { DefaultRoutingQuotaStore(get()) }
     single { GraphhopperRoutePlannerRepository(get(), get(), get(), get(), get()) }
     single { HukiRoutingRoutePlannerRepository(get(), get()) }
