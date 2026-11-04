@@ -35,9 +35,11 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toDestinationCategory
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -184,6 +186,8 @@ class MainViewModelLandscapesTest {
             },
             oktRepository = FakeOktRepository(),
             landscapeRepository = landscapeRepository,
+            incomingLinkStore = DefaultIncomingLinkStore(),
+            locationLinkResolver = FakeLocationLinkResolver(),
             analyticsService = analyticsService,
             crashlyticsService = FakeCrashlyticsService(),
             defaultDispatcher = testDispatcher,

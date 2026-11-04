@@ -99,6 +99,8 @@
     <string name="place_details_route_plan_count">Útvonaltervezés (%d)</string>
     <string name="map_a11y_route_stop">Útvonal megálló: %s</string>
     <string name="place_details_maps_navigation">Maps navigáció</string>
+    <string name="location_link_unsupported_title">A hely nem található</string>
+    <string name="location_link_unsupported_message">A HuKi nem talált helyet ebben a hivatkozásban.</string>
 
     <string name="gpx_distance_info_window_start">Kezdőpont</string>
     <string name="gpx_distance_info_window_end">Végpont</string>

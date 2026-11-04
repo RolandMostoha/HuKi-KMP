@@ -30,9 +30,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
@@ -73,6 +75,8 @@ class MainViewModelSessionTest {
     private val testDispatcher = StandardTestDispatcher()
     private val analyticsService = FakeAnalyticsService()
     private val crashlyticsService = FakeCrashlyticsService()
+    private val incomingLinkStore = DefaultIncomingLinkStore()
+    private val locationLinkResolver = FakeLocationLinkResolver()
     private val gpxRepository = mock<GpxRepository> {
         everySuspend { readGpxFile(TEST_GPX_DETAILS.fileUri) } returns TEST_GPX_DETAILS
     }
@@ -123,6 +127,8 @@ class MainViewModelSessionTest {
             },
             oktRepository = FakeOktRepository(),
             landscapeRepository = FakeLandscapeRepository(),
+            incomingLinkStore = incomingLinkStore,
+            locationLinkResolver = locationLinkResolver,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,

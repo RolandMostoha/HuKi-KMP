@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+---
+# Location links (Android only, iOS Photos always opens Apple Maps): a geo: URI from another app,
+# e.g. Google Photos "Open in Maps", opens Place Details there, even with another screen on top of the map.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp:
+          clearState: true
+          arguments:
+            skipWhatsNew: true
+          permissions: { all: allow }
+      - extendedWaitUntil:
+          visible:
+            id: MAP_MAPBOX
+          timeout: 10000
+      - tapOn: "Menu"
+      - assertVisible:
+          id: MENU_SCREEN_ROOT
+
+      - openLink: "geo:0,0?q=47.7136,18.4507(S%C3%BCtt%C5%91)"
+      - runFlow:
+          file: subflows/maestro_flow_open_link_with_huki.yaml
+      - extendedWaitUntil:
+          visible:
+            id: PLACE_DETAILS_SHEET
+          timeout: 10000
+      - assertNotVisible:
+          id: MENU_SCREEN_ROOT
+      - extendedWaitUntil:
+          visible:
+            id: PLACE_DETAILS_TITLE
+          timeout: 15000
+      - assertVisible: ".*Süttő.*"
+
+      # A link without a location explains itself instead of failing silently.
+      - openLink: "geo:0,0"
+      - runFlow:
+          file: subflows/maestro_flow_open_link_with_huki.yaml
+      - assertVisible: "Location not found"
+      - tapOn: "Got it"
+      - assertNotVisible: "Location not found"

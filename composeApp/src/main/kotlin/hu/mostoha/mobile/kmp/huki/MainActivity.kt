@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,15 +15,20 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.navigation.RootNavHost
+import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.copyTestGpxToCache
 import hu.mostoha.mobile.kmp.huki.util.isDebugBuild
+import hu.mostoha.mobile.kmp.huki.util.toIncomingLink
 import kotlinx.coroutines.flow.map
+import org.koin.android.ext.android.inject
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
+    private val incomingLinkStore: IncomingLinkStore by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge()
@@ -32,6 +38,8 @@ class MainActivity : ComponentActivity() {
         if (isDebugBuild && intent.getBooleanExtra(AppLaunchConfig.ARG_IMPORT_GPX, false)) {
             AppLaunchConfig.importGpxPath = copyTestGpxToCache()
         }
+        // A recreated activity still holds its launch intent, which was already opened
+        if (savedInstanceState == null) openIncomingLink(intent)
 
         setContent {
             val settingsRepository = koinInject<SettingsRepository>()
@@ -43,5 +51,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openIncomingLink(intent)
+    }
+
+    private fun openIncomingLink(intent: Intent) {
+        intent.toIncomingLink()?.let(incomingLinkStore::push)
     }
 }

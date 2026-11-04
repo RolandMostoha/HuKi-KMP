@@ -226,15 +226,19 @@ private fun MainContent(
     )
 
     LaunchedEffect(Unit) {
+        // Only a shown to hidden change is a swipe, the initial Hidden is a sheet that was not shown yet
+        var previousValue: SheetValue? = null
         snapshotFlow { standardSheetScaffoldState.bottomSheetState.currentValue }
             .distinctUntilChanged()
             .collect { value ->
+                val previous = previousValue
+                previousValue = value
                 val sheet = currentSheet ?: return@collect
                 if (!sheet.isStandard() || sheet is Sheet.RoutePlanner) return@collect
                 val dismissed = if (sheet.isPeeking()) {
-                    value == SheetValue.Hidden
+                    previous != null && previous != SheetValue.Hidden && value == SheetValue.Hidden
                 } else {
-                    value == SheetValue.PartiallyExpanded || value == SheetValue.Hidden
+                    previous == SheetValue.Expanded && value != SheetValue.Expanded
                 }
                 if (dismissed) {
                     onEvent(MainUiEvents.SheetSwipeDismissed(sheet))

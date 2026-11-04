@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.ui.features.destinations.DestinationsScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.gpxcollection.GpxCollectionScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.gpxguide.GpxGuideScreen
@@ -29,6 +30,7 @@ import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_
 import hu.mostoha.mobile.kmp.huki.util.millis
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 
 @Serializable
 private data object Main
@@ -53,8 +55,13 @@ private object Routes {
 }
 
 @Composable
-fun RootNavHost() {
+fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
     val navController = rememberNavController()
+    LaunchedEffect(navController) {
+        incomingLinkStore.linkOpened.collect {
+            navController.popBackStack(route = Main, inclusive = false)
+        }
+    }
     NavHost(
         navController = navController,
         startDestination = Main,

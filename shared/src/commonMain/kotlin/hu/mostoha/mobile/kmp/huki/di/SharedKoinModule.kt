@@ -25,8 +25,10 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
+import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeLocator
 import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeRepository
+import hu.mostoha.mobile.kmp.huki.repository.DefaultLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultPlaceHistoryRepository
@@ -41,9 +43,11 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.HukiRoutingRoutePlannerRepository
+import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeLocator
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationIqGeocodingRepository
+import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
@@ -72,6 +76,7 @@ val appModule = module {
     single<LandscapeLocator> { DefaultLandscapeLocator(get()) }
     single<DestinationRepository> { DefaultDestinationRepository() }
     single<MapCameraStore> { DefaultMapCameraStore() }
+    single<IncomingLinkStore> { DefaultIncomingLinkStore() }
     single<OktRepository> { DefaultOktRepository(get(), get(named(Dispatcher.Default))) }
     single<LandscapeRepository> { DefaultLandscapeRepository(get(), get(named(Dispatcher.Default))) }
     single {
@@ -95,7 +100,7 @@ val appModule = module {
 val viewModelModule = module {
     viewModel { params ->
         MainViewModel(
-            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
             defaultDispatcher = get(named(Dispatcher.Default)),
             savedStateHandle = params.getOrNull() ?: get(),
         )
@@ -131,6 +136,7 @@ val viewModelModule = module {
 val networkModule = module {
     single<HttpClient> { createHttpClient(get()) }
     single<GeocodingRepository> { LocationIqGeocodingRepository(get(), get()) }
+    single<LocationLinkResolver> { DefaultLocationLinkResolver(get()) }
     single<RoutingQuotaStore> { DefaultRoutingQuotaStore(get()) }
     single { GraphhopperRoutePlannerRepository(get(), get(), get(), get(), get()) }
     single { HukiRoutingRoutePlannerRepository(get(), get()) }

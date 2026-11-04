@@ -29,6 +29,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
+import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
@@ -39,6 +40,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.IncomingLink
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
@@ -61,12 +63,15 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.network.LocationIqPlace
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
+import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResult
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
@@ -80,6 +85,7 @@ import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -125,6 +131,7 @@ class MainViewModelTest {
             placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
         )
         private val TEST_LONG_TAP_LOCATION = Location(47.7181, 18.8948)
+        private const val TEST_GEO_LINK = "geo:47.7181,18.8948"
         private val TEST_LOCATION_IQ_PLACE = LocationIqPlace(
             placeId = "1",
             osmId = "2",
@@ -170,6 +177,8 @@ class MainViewModelTest {
     }
     private val analyticsService = FakeAnalyticsService()
     private val crashlyticsService = FakeCrashlyticsService()
+    private val incomingLinkStore = DefaultIncomingLinkStore()
+    private val locationLinkResolver = FakeLocationLinkResolver()
     private var reverseGeocodeResult: NetworkResult<LocationIqPlace?> = NetworkResult.Success(TEST_LOCATION_IQ_PLACE)
     private val geocodingRepository = object : GeocodingRepository {
         override suspend fun autocomplete(searchText: String) = NetworkResult.Success(emptyList<LocationIqPlace>())
@@ -185,6 +194,149 @@ class MainViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given following my location - When location link arrives - Then PlaceDetails opens there and following stops`() {
+        runTest {
+            locationLinkResolver.result = LocationLinkResult.Coordinates(TEST_LONG_TAP_LOCATION)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
+
+                incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+                advanceUntilIdle()
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(TEST_LONG_TAP_LOCATION, zoom = PLACE_DEFAULT_CAMERA_ZOOM),
+                )
+                ensureAllEventsConsumed()
+            }
+            with(viewModel.uiState.value) {
+                sheet shouldBe Sheet.PlaceDetails
+                mapUiState.placeDetails?.location shouldBe TEST_LONG_TAP_LOCATION
+                myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
+            }
+            incomingLinkStore.pendingLink.value shouldBe null
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.PlaceDetailsOpened(PlaceDetailsSource.LOCATION_LINK)
+        }
+    }
+
+    @Test
+    fun `Given app launched from a location link - When view model init - Then the camera goes to the link instead of my location`() {
+        runTest {
+            locationLinkResolver.result = LocationLinkResult.Coordinates(TEST_LONG_TAP_LOCATION)
+            incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(TEST_LONG_TAP_LOCATION, zoom = PLACE_DEFAULT_CAMERA_ZOOM),
+                )
+                ensureAllEventsConsumed()
+            }
+            viewModel.uiState.value.myLocationState.myLocationStatus shouldBe MyLocationStatus.Default
+            viewModel.uiState.value.sheet shouldBe Sheet.PlaceDetails
+        }
+    }
+
+    @Test
+    fun `Given app launched with text without a location link - When view model init - Then it flies to my location`() {
+        runTest {
+            incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
+                ensureAllEventsConsumed()
+            }
+            viewModel.uiState.value.alert?.title shouldBe SharedRes.strings.location_link_unsupported_title
+        }
+    }
+
+    @Test
+    fun `Given location links - When they resolve - Then only the found location brings the map to the front`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.linkOpened.test {
+                locationLinkResolver.result = LocationLinkResult.Unsupported
+                incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+                advanceUntilIdle()
+                expectNoEvents()
+
+                locationLinkResolver.result = LocationLinkResult.Coordinates(TEST_LONG_TAP_LOCATION)
+                incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+                advanceUntilIdle()
+                awaitItem()
+            }
+            viewModel.uiState.value.sheet shouldBe Sheet.PlaceDetails
+        }
+    }
+
+    @Test
+    fun `Given link to a named place - When location link arrives - Then the found place opens in PlaceDetails`() {
+        runTest {
+            val place = Place(
+                osmId = "42",
+                name = "Dobogókő",
+                placeSource = PlaceSource.SEARCH_AUTOCOMPLETE,
+                address = "Pilisszentkereszt",
+                location = TEST_LONG_TAP_LOCATION,
+            )
+            locationLinkResolver.result = LocationLinkResult.PlaceFound(place)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.push(IncomingLink("https://maps.app.goo.gl/AbC"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.sheet shouldBe Sheet.PlaceDetails
+            viewModel.uiState.value.mapUiState.placeDetails shouldBe PlaceDetails.PlaceLoaded(place)
+        }
+    }
+
+    @Test
+    fun `Given link without a location - When location link arrives - Then an alert is shown and logged`() {
+        runTest {
+            locationLinkResolver.result = LocationLinkResult.Unsupported
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.alert shouldBe Alert(
+                title = SharedRes.strings.location_link_unsupported_title,
+                message = SharedRes.strings.location_link_unsupported_message,
+            )
+            viewModel.uiState.value.sheet shouldBe null
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.LocationLinkUnsupported
+        }
+    }
+
+    @Test
+    fun `Given no internet - When short location link arrives - Then the network error alert is shown`() {
+        runTest {
+            locationLinkResolver.result = LocationLinkResult.Failed(NetworkError.NO_INTERNET)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.push(IncomingLink("https://maps.app.goo.gl/AbC"))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.alert shouldBe Alert(
+                title = SharedRes.strings.network_error_no_internet_title,
+                message = SharedRes.strings.network_error_no_internet_message,
+            )
+        }
     }
 
     private fun createViewModel(
@@ -209,6 +361,8 @@ class MainViewModelTest {
             whatsNewRepository = whatsNewRepository,
             oktRepository = FakeOktRepository(),
             landscapeRepository = FakeLandscapeRepository(),
+            incomingLinkStore = incomingLinkStore,
+            locationLinkResolver = locationLinkResolver,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,

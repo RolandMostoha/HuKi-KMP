@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+# Reusable subflow (NOT an e2e test): picks HuKi in the system "Open with" chooser after an openLink.
+# The chooser only shows up when another app (e.g. Google Maps) handles the link too, and it offers the
+# last picked app on top once one was chosen "Just once".
+- runFlow:
+    when:
+      visible: "Open with HuKi"
+    commands:
+      - tapOn: "Just once"
+- runFlow:
+    when:
+      visible:
+        id: "android:id/text1"
+        text: "HuKi"
+    commands:
+      - tapOn:
+          id: "android:id/text1"
+          text: "HuKi"
+      - tapOn: "Just once"

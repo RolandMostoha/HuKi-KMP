@@ -160,6 +160,10 @@ sealed interface AnalyticsEvent {
         override val name = "place_details_unresolved"
     }
 
+    data object LocationLinkUnsupported : AnalyticsEvent {
+        override val name = "location_link_unsupported"
+    }
+
     data object PlaceDetailsClosed : AnalyticsEvent {
         override val name = "place_details_closed"
     }

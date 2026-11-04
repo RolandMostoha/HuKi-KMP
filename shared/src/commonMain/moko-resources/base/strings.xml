@@ -99,6 +99,8 @@
     <string name="place_details_route_plan_count">Route plan (%d)</string>
     <string name="map_a11y_route_stop">Route stop: %s</string>
     <string name="place_details_maps_navigation">Maps navigation</string>
+    <string name="location_link_unsupported_title">Location not found</string>
+    <string name="location_link_unsupported_message">HuKi couldn't find a location in this link.</string>
 
     <string name="gpx_distance_info_window_start">Start</string>
     <string name="gpx_distance_info_window_end">End</string>

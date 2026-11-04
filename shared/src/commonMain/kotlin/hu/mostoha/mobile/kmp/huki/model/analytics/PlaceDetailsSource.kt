@@ -8,4 +8,5 @@ enum class PlaceDetailsSource(val value: String) {
     OKT_STAMP("okt_stamp"),
     LANDSCAPES("landscapes"),
     ROUTE_STOP("route_stop"),
+    LOCATION_LINK("location_link"),
 }

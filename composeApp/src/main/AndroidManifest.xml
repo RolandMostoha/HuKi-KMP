@@ -16,12 +16,23 @@
 
         <activity
             android:exported="true"
+            android:launchMode="singleTask"
             android:name="hu.mostoha.mobile.kmp.huki.MainActivity"
             android:theme="@style/Theme.HuKi.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Location links: "Open in Maps" from other apps, e.g. Google Photos -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="geo" />
             </intent-filter>
         </activity>
 

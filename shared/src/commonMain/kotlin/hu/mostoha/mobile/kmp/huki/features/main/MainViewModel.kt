@@ -36,6 +36,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.IncomingLink
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeOutlines
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MainSession
@@ -59,6 +60,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toBlueTrail
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
+import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toInfoWindowTitle
 import hu.mostoha.mobile.kmp.huki.model.mapper.toLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMainSession
@@ -79,7 +81,10 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
+import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResolver
+import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResult
 import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
@@ -93,6 +98,7 @@ import hu.mostoha.mobile.kmp.huki.service.locationsWithLastKnown
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.DistanceInfoWindowConfig
 import hu.mostoha.mobile.kmp.huki.util.GpxDistanceTracker
+import hu.mostoha.mobile.kmp.huki.util.LocationLinkParser
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
@@ -115,9 +121,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -150,6 +158,8 @@ class MainViewModel(
     private val whatsNewRepository: WhatsNewRepository,
     private val oktRepository: OktRepository,
     private val landscapeRepository: LandscapeRepository,
+    private val incomingLinkStore: IncomingLinkStore,
+    private val locationLinkResolver: LocationLinkResolver,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
@@ -186,14 +196,16 @@ class MainViewModel(
 
     init {
         initLogging()
-        val restoredSession = initSession()
-        initMyLocation(restoredSession)
+        val hasLaunchLink = incomingLinkStore.pendingLink.value?.let { LocationLinkParser.parse(it.text) } != null
+        val restoredSession = initSession(hasLaunchLink)
+        initMyLocation(restoredSession, hasLaunchLink)
         initDistanceMonitoring()
         initMyLocationMonitoring()
-        initWhatsNew(restoredSession)
+        initWhatsNew(restoredSession, hasLaunchLink)
         initLaunchArgGpx()
         observeSettings()
         observeSheetViews()
+        observeIncomingLinks()
     }
 
     fun sessionSnapshot(): String =
@@ -700,11 +712,12 @@ class MainViewModel(
         }
     }
 
-    private fun initMyLocation(restoredSession: MainSession?) {
+    private fun initMyLocation(restoredSession: MainSession?, hasLaunchLink: Boolean) {
         viewModelScope.launch {
             val permissionState = permissionsController.getPermissionState(Permission.LOCATION)
             val myLocationStatus = when {
                 permissionState != PermissionState.Granted -> MyLocationStatus.NotAvailable
+                hasLaunchLink -> MyLocationStatus.Default
                 restoredSession == null -> MyLocationStatus.Following
                 restoredSession.myLocationStatus == MyLocationStatus.NotAvailable -> MyLocationStatus.Default
                 else -> restoredSession.myLocationStatus
@@ -718,6 +731,8 @@ class MainViewModel(
                     isMyLocationLoading = myLocationStatus.isFollowing && !uiState.myLocationState.hasLocationFix,
                 )
             }
+            // The linked location moves the camera instead of the fly-in to my location
+            if (hasLaunchLink) return@launch
             if (restoredSession != null && !myLocationStatus.isFollowing) {
                 val camera = restoredSession.camera
                 sendEffect(
@@ -736,9 +751,9 @@ class MainViewModel(
         }
     }
 
-    private fun initSession(): MainSession? {
+    private fun initSession(hasLaunchLink: Boolean): MainSession? {
         savedStateHandle.registerMainSession(::sessionSnapshot)
-        if (AppLaunchConfig.importGpxPath != null) return null
+        if (AppLaunchConfig.importGpxPath != null || hasLaunchLink) return null
         val session = savedStateHandle.restoreMainSession() ?: return null
         restoreSession(session)
         return session
@@ -776,15 +791,68 @@ class MainViewModel(
         onSessionRestored(FeatureSession.RoutePlanner(session))
     }
 
-    private fun initWhatsNew(restoredSession: MainSession?) {
-        // Waits for a fresh launch instead of replacing the restored sheet
-        if (restoredSession?.feature != null) return
+    private fun initWhatsNew(restoredSession: MainSession?, hasLaunchLink: Boolean) {
+        // Waits for a fresh launch instead of replacing the restored sheet or the linked place
+        if (restoredSession?.feature != null || hasLaunchLink) return
         viewModelScope.launch {
             if (whatsNewRepository.shouldShowWhatsNew()) {
                 showSheet(Sheet.WhatsNew(whatsNewRepository.currentWhatsNew))
                 whatsNewRepository.markCurrentWhatsNewSeen()
             }
         }
+    }
+
+    private fun observeIncomingLinks() {
+        viewModelScope.launch {
+            // A newer link wins over one still waiting for its short link redirect
+            incomingLinkStore.pendingLink
+                .filterNotNull()
+                .collectLatest { link ->
+                    incomingLinkStore.consume()
+                    openLocationLink(link)
+                }
+        }
+    }
+
+    private suspend fun openLocationLink(link: IncomingLink) {
+        when (val result = locationLinkResolver.resolve(link)) {
+            is LocationLinkResult.Coordinates -> showLinkedLocation(result.location)
+            is LocationLinkResult.PlaceFound -> showLinkedPlace(result.place)
+            LocationLinkResult.Unsupported -> onLocationLinkUnsupported()
+            is LocationLinkResult.Failed -> showAlert(result.error.toInfoViewData().let { Alert(it.title, it.message) })
+        }
+    }
+
+    private suspend fun showLinkedLocation(location: Location) {
+        incomingLinkStore.markOpened()
+        stopFollowing()
+        showPlaceDetails(location, PlaceDetailsSource.LOCATION_LINK)
+        sendEffect(MapUiEffects.UpdateCamera(target = CameraTarget.Center(location, zoom = PLACE_DEFAULT_CAMERA_ZOOM)))
+    }
+
+    private fun showLinkedPlace(place: Place) {
+        incomingLinkStore.markOpened()
+        stopFollowing()
+        showPlace(place, PlaceDetailsSource.LOCATION_LINK)
+    }
+
+    private fun stopFollowing() {
+        if (_uiState.value.myLocationState.myLocationStatus.isFollowing) disableFollowing()
+    }
+
+    private fun onLocationLinkUnsupported() {
+        analyticsService.logEvent(AnalyticsEvent.LocationLinkUnsupported)
+        crashlyticsService.log("LocationLink: unsupported link")
+        showAlert(
+            Alert(
+                title = SharedRes.strings.location_link_unsupported_title,
+                message = SharedRes.strings.location_link_unsupported_message,
+            ),
+        )
+    }
+
+    private fun showAlert(alert: Alert) {
+        _uiState.update { it.copy(alert = alert) }
     }
 
     private fun initLaunchArgGpx() {

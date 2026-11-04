@@ -207,6 +207,12 @@ UI → UiEvent → ViewModel → UiState
   - Android: Jetpack `androidx.navigation.compose` — single `NavHost` hosted by `RootNavHost`.
   - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
 
+### Incoming links
+- Android `MainActivity` (`singleTask`) turns `geo:` VIEW intents into an `IncomingLink` and pushes it to `IncomingLinkStore`.
+- `MainViewModel` consumes it: `LocationLinkParser` reads the `geo:` URI, `DefaultLocationLinkResolver` searches name-only links with LocationIQ, then Place Details opens. `RootNavHost` pops back to the map.
+- A launch link wins over session restore, What's New and the my location fly-in.
+- E2E: `maestro_location_link.yaml` (Android only).
+
 ### State restoration
 - Restore after the OS kills the app in the background; a user swipe-away / force-quit starts fresh.
 - `MainViewModel` owns the session: restores it in `init`, builds it in `sessionSnapshot()`.
