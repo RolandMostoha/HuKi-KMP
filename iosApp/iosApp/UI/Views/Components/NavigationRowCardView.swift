@@ -33,7 +33,7 @@ struct NavigationRowCardView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(PressFeedbackButtonStyle())
@@ -50,5 +50,5 @@ struct NavigationRowCardView: View {
         onClick: {}
     )
     .padding()
-    .background(Color(.systemGray6))
+    .background(Color(.systemGroupedBackground))
 }

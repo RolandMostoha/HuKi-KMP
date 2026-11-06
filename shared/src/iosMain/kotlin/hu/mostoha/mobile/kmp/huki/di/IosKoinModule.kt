@@ -23,6 +23,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
+import hu.mostoha.mobile.kmp.huki.features.quickguide.QuickGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
@@ -88,6 +89,7 @@ object KoinViewModelProvider : KoinComponent {
     fun getGpxCollectionViewModel(owner: IosViewModelStoreOwner): GpxCollectionViewModel = owner.resolve()
     fun getGpxGuideViewModel(owner: IosViewModelStoreOwner): GpxGuideViewModel = owner.resolve()
     fun getTrailSymbolsGuideViewModel(owner: IosViewModelStoreOwner): TrailSymbolsGuideViewModel = owner.resolve()
+    fun getQuickGuideViewModel(owner: IosViewModelStoreOwner): QuickGuideViewModel = owner.resolve()
     fun getLocationIqViewModel(owner: IosViewModelStoreOwner): LocationIqViewModel = owner.resolve()
     fun getPlaceHistoryViewModel(owner: IosViewModelStoreOwner): PlaceHistoryViewModel = owner.resolve()
     fun getRoutePlannerViewModel(

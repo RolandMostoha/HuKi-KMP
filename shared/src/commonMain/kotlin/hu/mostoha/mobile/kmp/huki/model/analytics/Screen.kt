@@ -13,6 +13,7 @@ enum class Screen(val value: String) {
     GPX_HISTORY("gpx_history"),
     GPX_GUIDE("gpx_guide"),
     TRAIL_SYMBOLS_GUIDE("trail_symbols_guide"),
+    QUICK_GUIDE("quick_guide"),
     PLACE_HISTORY("place_history"),
     LOCATION_IQ("location_iq"),
     ROUTE_PLANNER("route_planner"),

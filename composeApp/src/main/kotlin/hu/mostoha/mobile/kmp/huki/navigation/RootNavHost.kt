@@ -24,6 +24,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.locationiq.LocationIqScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.main.MainScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.menu.MenuScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.placehistory.PlaceHistoryScreen
+import hu.mostoha.mobile.kmp.huki.ui.features.quickguide.QuickGuideScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.settings.SettingsScreen
 import hu.mostoha.mobile.kmp.huki.ui.features.trailsymbolsguide.TrailSymbolsGuideScreen
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.NAVIGATION_TRANSITION_DURATION
@@ -42,6 +43,7 @@ private object Routes {
     const val GPX_COLLECTION = "gpx_collection"
     const val GPX_GUIDE = "gpx_guide"
     const val TRAIL_SYMBOLS_GUIDE = "trail_symbols_guide"
+    const val QUICK_GUIDE = "quick_guide"
     const val PLACE_HISTORY = "place_history"
     const val LOCATION_IQ = "location_iq"
     const val EXTRA_OPEN_ROUTE_PLANNER_KEY = "extra_open_route_planner"
@@ -163,6 +165,7 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
                 onTrailSymbolsGuideClicked = { navController.navigate(Routes.TRAIL_SYMBOLS_GUIDE) },
+                onQuickGuideClicked = { navController.navigate(Routes.QUICK_GUIDE) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
             )
@@ -217,6 +220,12 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
         composable(Routes.GPX_GUIDE) {
             GpxGuideScreen(
                 onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.QUICK_GUIDE) {
+            QuickGuideScreen(
+                onBack = { navController.popBackStack() },
+                onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
             )
         }
         composable(Routes.TRAIL_SYMBOLS_GUIDE) {

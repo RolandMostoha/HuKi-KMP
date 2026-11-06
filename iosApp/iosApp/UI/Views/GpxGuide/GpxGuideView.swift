@@ -88,56 +88,35 @@ struct GpxGuideView: View {
     }
 
     private var stepsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            sectionHeader(strings.get(id: SharedRes.strings().gpx_guide_steps_section))
-            VStack(spacing: 0) {
-                browseStep
-                stepDivider
-                step(
-                    number: 2,
-                    title: strings.get(id: SharedRes.strings().gpx_guide_step_2_title),
-                    message: strings.get(id: SharedRes.strings().gpx_guide_step_2_message)
-                )
-                stepDivider
-                step(
-                    number: 3,
-                    title: strings.get(id: SharedRes.strings().gpx_guide_step_3_title),
-                    message: strings.get(id: SharedRes.strings().gpx_guide_step_3_message)
-                )
-                stepDivider
-                step(
-                    number: 4,
-                    title: strings.get(id: SharedRes.strings().gpx_guide_step_4_title),
-                    message: strings.get(id: SharedRes.strings().gpx_guide_step_4_message)
-                )
-            }
-            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        GuideSectionView(title: strings.get(id: SharedRes.strings().gpx_guide_steps_section)) {
+            GuideStepView(
+                title: strings.get(id: SharedRes.strings().gpx_guide_step_1_title),
+                message: strings.get(id: SharedRes.strings().gpx_guide_step_1_message),
+                leading: { GuideStepBadgeView(number: 1) },
+                content: {
+                    recommendationsRow
+                        .padding(.top, 8)
+                }
+            )
+            GuideStepDividerView()
+            GuideStepView(
+                title: strings.get(id: SharedRes.strings().gpx_guide_step_2_title),
+                message: strings.get(id: SharedRes.strings().gpx_guide_step_2_message),
+                leading: { GuideStepBadgeView(number: 2) }
+            )
+            GuideStepDividerView()
+            GuideStepView(
+                title: strings.get(id: SharedRes.strings().gpx_guide_step_3_title),
+                message: strings.get(id: SharedRes.strings().gpx_guide_step_3_message),
+                leading: { GuideStepBadgeView(number: 3) }
+            )
+            GuideStepDividerView()
+            GuideStepView(
+                title: strings.get(id: SharedRes.strings().gpx_guide_step_4_title),
+                message: strings.get(id: SharedRes.strings().gpx_guide_step_4_message),
+                leading: { GuideStepBadgeView(number: 4) }
+            )
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 20)
-    }
-
-    private var stepDivider: some View {
-        Divider().padding(.leading, 50)
-    }
-
-    private var browseStep: some View {
-        HStack(alignment: .top, spacing: 12) {
-            stepBadge(1)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(strings.get(id: SharedRes.strings().gpx_guide_step_1_title))
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text(strings.get(id: SharedRes.strings().gpx_guide_step_1_message))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                recommendationsRow
-                    .padding(.top, 8)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.vertical, 14)
-        .padding(.leading, 14)
     }
 
     private var recommendationsRow: some View {
@@ -150,43 +129,6 @@ struct GpxGuideView: View {
                 )
             }
         }
-    }
-
-    private func step(number: Int, title: String, message: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            stepBadge(number)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text(message)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(14)
-    }
-
-    private func stepBadge(_ number: Int) -> some View {
-        ZStack {
-            Circle()
-                .fill(primary)
-                .frame(width: 24, height: 24)
-            Text("\(number)")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white)
-        }
-    }
-
-    private func sectionHeader(_ text: String) -> some View {
-        Text(text.uppercased())
-            .font(.caption.weight(.bold))
-            .tracking(0.8)
-            .foregroundStyle(.primary.opacity(0.4))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 4)
-            .padding(.bottom, 2)
     }
 
     private func open(_ urlString: String) {

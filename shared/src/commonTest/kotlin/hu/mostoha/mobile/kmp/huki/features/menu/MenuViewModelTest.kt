@@ -124,6 +124,19 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state - When QuickGuideClicked event - Then NavigateToQuickGuide effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.QuickGuideClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToQuickGuide
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When EmailClicked event - Then SendEmail effect with email is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

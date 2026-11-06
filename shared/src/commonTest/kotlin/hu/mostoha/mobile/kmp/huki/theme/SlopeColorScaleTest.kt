@@ -23,6 +23,22 @@ class SlopeColorScaleTest {
         actual shouldBe "#136313"
     }
 
+    @Test
+    fun `Given flat color - When gradientStops - Then knots are placed on the 0 to 1 axis`() {
+        val scale = SlopeColorScale(flatColor = 0xFF136313.toInt())
+
+        val actual = scale.gradientStops()
+
+        actual shouldBe listOf(
+            SlopeGradientStop(fraction = 0f, rgb = 0x063D68),
+            SlopeGradientStop(fraction = 0.3f, rgb = 0x2096F3),
+            SlopeGradientStop(fraction = 0.44f, rgb = 0x136313),
+            SlopeGradientStop(fraction = 0.56f, rgb = 0x136313),
+            SlopeGradientStop(fraction = 0.7f, rgb = 0xF0B800),
+            SlopeGradientStop(fraction = 1f, rgb = 0xD50001),
+        )
+    }
+
     companion object {
         private const val FLAT_COLOR = "#136313"
 

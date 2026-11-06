@@ -75,6 +75,7 @@ fun MenuScreen(
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
     onTrailSymbolsGuideClicked: () -> Unit,
+    onQuickGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     viewModel: MenuViewModel = koinViewModel(),
@@ -92,6 +93,7 @@ fun MenuScreen(
         onGpxCollectionClicked = onGpxCollectionClicked,
         onGpxGuideClicked = onGpxGuideClicked,
         onTrailSymbolsGuideClicked = onTrailSymbolsGuideClicked,
+        onQuickGuideClicked = onQuickGuideClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
         onLocationIqClicked = onLocationIqClicked,
     )
@@ -110,6 +112,7 @@ private fun MenuContent(
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
     onTrailSymbolsGuideClicked: () -> Unit,
+    onQuickGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
 ) {
@@ -125,6 +128,7 @@ private fun MenuContent(
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
                 MenuUiEffects.NavigateToGpxGuide -> onGpxGuideClicked()
                 MenuUiEffects.NavigateToTrailSymbolsGuide -> onTrailSymbolsGuideClicked()
+                MenuUiEffects.NavigateToQuickGuide -> onQuickGuideClicked()
                 MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
                 is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
                 is MenuUiEffects.SendEmail -> context.sendEmail(
@@ -246,6 +250,21 @@ private fun MenuContent(
             }
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_guides))
             MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_quick_guide),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_quick_guide),
+                    testTag = TestTags.MENU_ROW_QUICK_GUIDE,
+                    onClick = { onEvent(MenuUiEvents.QuickGuideClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_quick_guide_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.secondary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_school,
+                        tint = mokoColor(SharedRes.colors.onSecondary),
+                    )
+                }
+                MenuRowDivider()
                 MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_trail_symbols_guide),
                     valueText = null,
@@ -524,6 +543,7 @@ private fun MenuContentPreview() {
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},
             onTrailSymbolsGuideClicked = {},
+            onQuickGuideClicked = {},
             onPlaceHistoryClicked = {},
             onLocationIqClicked = {},
         )

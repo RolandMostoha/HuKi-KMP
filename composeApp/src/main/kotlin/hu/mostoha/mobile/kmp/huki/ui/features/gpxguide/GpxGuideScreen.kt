@@ -11,16 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -35,7 +32,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideUiEvents
@@ -43,7 +39,10 @@ import hu.mostoha.mobile.kmp.huki.features.gpxguide.GpxGuideViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
-import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.GuideSection
+import hu.mostoha.mobile.kmp.huki.ui.components.GuideStep
+import hu.mostoha.mobile.kmp.huki.ui.components.GuideStepBadge
+import hu.mostoha.mobile.kmp.huki.ui.components.GuideStepDivider
 import hu.mostoha.mobile.kmp.huki.ui.components.HikeRecommendationCard
 import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -163,73 +162,36 @@ private fun IconChip() {
 
 @Composable
 private fun StepsSection(onOpenUrl: (String) -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = Dimens.Large)
-            .padding(top = Dimens.ExtraLarge),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
-    ) {
-        Text(
-            text = mokoString(SharedRes.strings.gpx_guide_steps_section).uppercase(),
-            style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 0.8.sp),
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = Dimens.ExtraSmall, bottom = Dimens.ExtraSmall),
-        )
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                    shape = RoundedCornerShape(Dimens.Large),
-                ),
-            shape = RoundedCornerShape(Dimens.Large),
-            color = MaterialTheme.colorScheme.surface,
+    GuideSection(title = mokoString(SharedRes.strings.gpx_guide_steps_section)) {
+        GuideStep(
+            title = mokoString(SharedRes.strings.gpx_guide_step_1_title),
+            message = mokoString(SharedRes.strings.gpx_guide_step_1_message),
+            leading = { GuideStepBadge(number = 1) },
         ) {
-            Column {
-                Step(
-                    number = 1,
-                    title = mokoString(SharedRes.strings.gpx_guide_step_1_title),
-                    message = mokoString(SharedRes.strings.gpx_guide_step_1_message),
-                ) {
-                    RecommendationsRow(
-                        onOpenUrl = onOpenUrl,
-                        modifier = Modifier.padding(top = Dimens.Small, end = Dimens.MediumLarge),
-                    )
-                }
-                StepDivider()
-                Step(
-                    number = 2,
-                    title = mokoString(SharedRes.strings.gpx_guide_step_2_title),
-                    message = mokoString(SharedRes.strings.gpx_guide_step_2_message),
-                )
-                StepDivider()
-                Step(
-                    number = 3,
-                    title = mokoString(SharedRes.strings.gpx_guide_step_3_title),
-                    message = mokoString(SharedRes.strings.gpx_guide_step_3_message),
-                )
-                StepDivider()
-                Step(
-                    number = 4,
-                    title = mokoString(SharedRes.strings.gpx_guide_step_4_title),
-                    message = mokoString(SharedRes.strings.gpx_guide_step_4_message),
-                )
-            }
+            RecommendationsRow(
+                onOpenUrl = onOpenUrl,
+                modifier = Modifier.padding(top = Dimens.Small, end = Dimens.MediumLarge),
+            )
         }
+        GuideStepDivider()
+        GuideStep(
+            title = mokoString(SharedRes.strings.gpx_guide_step_2_title),
+            message = mokoString(SharedRes.strings.gpx_guide_step_2_message),
+            leading = { GuideStepBadge(number = 2) },
+        )
+        GuideStepDivider()
+        GuideStep(
+            title = mokoString(SharedRes.strings.gpx_guide_step_3_title),
+            message = mokoString(SharedRes.strings.gpx_guide_step_3_message),
+            leading = { GuideStepBadge(number = 3) },
+        )
+        GuideStepDivider()
+        GuideStep(
+            title = mokoString(SharedRes.strings.gpx_guide_step_4_title),
+            message = mokoString(SharedRes.strings.gpx_guide_step_4_message),
+            leading = { GuideStepBadge(number = 4) },
+        )
     }
-}
-
-@Composable
-private fun StepDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(start = 50.dp),
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.dividerColor,
-    )
 }
 
 @Composable
@@ -245,54 +207,6 @@ private fun RecommendationsRow(onOpenUrl: (String) -> Unit, modifier: Modifier =
                 modifier = Modifier.weight(1f),
             )
         }
-    }
-}
-
-@Composable
-private fun Step(
-    number: Int,
-    title: String,
-    message: String,
-    content: @Composable () -> Unit = {},
-) {
-    Row(
-        modifier = Modifier.padding(Dimens.MediumLarge),
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-        verticalAlignment = Alignment.Top,
-    ) {
-        StepBadge(number)
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            content()
-        }
-    }
-}
-
-@Composable
-private fun StepBadge(number: Int) {
-    Box(
-        modifier = Modifier
-            .size(24.dp)
-            .clip(CircleShape)
-            .background(mokoColor(SharedRes.colors.primary)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = mokoColor(SharedRes.colors.onPrimary),
-        )
     }
 }
 

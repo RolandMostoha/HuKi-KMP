@@ -23,17 +23,36 @@ class SlopeColorScale(flatColor: Int) {
      * Returns a `#RRGGBB` color linearly blended between the neighbouring knots, clamped beyond the steepest ones.
      */
     fun colorHex(slopePercent: Double): String {
+        val hex = colorRgb(slopePercent).toString(radix = HEX_RADIX).padStart(length = HEX_LENGTH, padChar = '0')
+        return "#${hex.uppercase()}"
+    }
+
+    /**
+     * Returns the `0xRRGGBB` color of [colorHex].
+     */
+    fun colorRgb(slopePercent: Double): Int {
         val slope = slopePercent.coerceIn(knots.first().first, knots.last().first)
         val upperIndex = knots.indexOfFirst { (knotSlope, _) -> slope <= knotSlope }.coerceAtLeast(1)
         val (lowerSlope, lowerColor) = knots[upperIndex - 1]
         val (upperSlope, upperColor) = knots[upperIndex]
         val fraction = (slope - lowerSlope) / (upperSlope - lowerSlope)
 
-        return RGB_CHANNEL_SHIFTS.joinToString(separator = "", prefix = "#") { shift ->
+        return RGB_CHANNEL_SHIFTS.fold(0) { rgb, shift ->
             val lower = lowerColor shr shift and CHANNEL_MASK
             val upper = upperColor shr shift and CHANNEL_MASK
             val channel = (lower + (upper - lower) * fraction).roundToInt()
-            channel.toString(radix = HEX_RADIX).padStart(length = 2, padChar = '0').uppercase()
+            rgb or (channel shl shift)
+        }
+    }
+
+    /**
+     * The knots placed on a `0..1` axis from -[HIGH_SLOPE_PERCENT] to +[HIGH_SLOPE_PERCENT], so a linear gradient
+     * through them matches [colorRgb].
+     */
+    fun gradientStops(): List<SlopeGradientStop> {
+        val range = knots.last().first - knots.first().first
+        return knots.map { (slope, color) ->
+            SlopeGradientStop(fraction = ((slope - knots.first().first) / range).toFloat(), rgb = color)
         }
     }
 
@@ -41,6 +60,7 @@ class SlopeColorScale(flatColor: Int) {
         const val RGB_MASK = 0xFFFFFF
         const val CHANNEL_MASK = 0xFF
         const val HEX_RADIX = 16
+        const val HEX_LENGTH = 6
         val RGB_CHANNEL_SHIFTS = listOf(16, 8, 0)
 
         const val DESCENT_HIGH_COLOR = 0x063D68
@@ -49,3 +69,8 @@ class SlopeColorScale(flatColor: Int) {
         const val ASCENT_HIGH_COLOR = 0xD50001
     }
 }
+
+data class SlopeGradientStop(
+    val fraction: Float,
+    val rgb: Int,
+)

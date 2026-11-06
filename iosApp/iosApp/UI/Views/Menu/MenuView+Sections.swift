@@ -66,6 +66,18 @@ extension MenuView {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_guides))
             VStack(spacing: 0) {
                 MenuItemView(
+                    icon: Image(systemName: "graduationcap.fill")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(onSecondary),
+                    title: strings.get(id: SharedRes.strings().menu_item_quick_guide),
+                    description: strings.get(id: SharedRes.strings().menu_item_quick_guide_description),
+                    iconBackgroundColor: secondary,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_quick_guide),
+                    testTag: TestTags.shared.MENU_ROW_QUICK_GUIDE,
+                    action: { viewModel.onEvent(event: MenuUiEventsQuickGuideClicked.shared) }
+                )
+                divider
+                MenuItemView(
                     icon: tintedIcon(SharedRes.images().ic_place_category_guidepost.toUIImage()!, color: onSecondary),
                     title: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide),
                     description: strings.get(id: SharedRes.strings().menu_item_trail_symbols_guide_description),

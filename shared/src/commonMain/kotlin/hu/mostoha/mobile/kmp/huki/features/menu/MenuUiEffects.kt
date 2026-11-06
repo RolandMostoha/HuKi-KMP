@@ -12,6 +12,7 @@ sealed interface MenuUiEffects : UiEffect {
     data object NavigateToGpxCollection : MenuUiEffects
     data object NavigateToGpxGuide : MenuUiEffects
     data object NavigateToTrailSymbolsGuide : MenuUiEffects
+    data object NavigateToQuickGuide : MenuUiEffects
     data object NavigateToLocationIq : MenuUiEffects
     data class OpenUrl(val urlRes: StringResource) : MenuUiEffects
     data class SendEmail(val emailRes: StringResource) : MenuUiEffects

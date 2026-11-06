@@ -15,6 +15,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.placehistory.PlaceHistoryViewModel
+import hu.mostoha.mobile.kmp.huki.features.quickguide.QuickGuideViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
@@ -112,6 +113,7 @@ val viewModelModule = module {
     viewModelOf(::GpxCollectionViewModel)
     viewModelOf(::GpxGuideViewModel)
     viewModelOf(::TrailSymbolsGuideViewModel)
+    viewModelOf(::QuickGuideViewModel)
     viewModelOf(::LocationIqViewModel)
     viewModelOf(::PlaceHistoryViewModel)
     viewModel { params ->

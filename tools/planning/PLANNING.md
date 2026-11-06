@@ -86,6 +86,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[x]`  | MyLocation | Bug: Android. Sometimes if I multi long tap Place Details on the map, the markers are disappearing randomly.                                                                                                               |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
 | `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
+| `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
 
 ### FEATURE: Analytics
 
@@ -224,13 +225,12 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 | Status | Scope  | Task                                                                                                                                              |
 |--------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Guides | Add "Gyorstalpaló" to Menu-Guides section                                                                                                         |
-| `[G]`  | Guides | Implement "QuickGuide" screen. Add My Location section. 1. Following - single click 2. Navigation (Live compass) - clicking 2 times or long press |
-| `[G]`  | Guides | Add Map section - Map Gestures rotate pinch tilt reset                                                                                            |
-| `[G]`  | Guides | Add Route Planner section - how to start -> long tap on Map, (multi POIs possible). Destinations or OKT waypoints connecting.                     |
-| `[G]`  | Guides | Add Travel Time calculation logic                                                                                                                 |
-| `[G]`  | Guides | Add Slope calculation (-25%, +25% with reference) (HuKi-Android for reference)                                                                    |
-| `[G]`  | Guides | Add GPX section - link GpxGuideScreen                                                                                                             |
+| `[x]`  | Guides | Add "Gyorstalpaló" to Menu-Guides section                                                                                                         |
+| `[x]`  | Guides | Implement "QuickGuide" screen. Add My Location section. 1. Following - single click 2. Navigation (Live compass) - clicking 2 times or long press |
+| `[x]`  | Guides | Add Route Planner section - how to start -> long tap on Map, (multi POIs possible). Destinations or OKT waypoints connecting.                     |
+| `[x]`  | Guides | Add Travel Time calculation logic                                                                                                                 |
+| `[x]`  | Guides | Add Slope calculation (-25%, +25% with reference) (HuKi-Android for reference)                                                                    |
+| `[x]`  | Guides | Add GPX section - link GpxGuideScreen                                                                                                             |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                         |
 | `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                               |
 

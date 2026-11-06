@@ -6,6 +6,7 @@ struct StatChipView: View {
     let value: String
     var label: String?
     var style: StatChipStyle = .compact
+    var backgroundColor = Color(.tertiarySystemFill)
 
     private let primary = Color(SharedRes.colors().primary.getUIColor())
 
@@ -32,7 +33,7 @@ struct StatChipView: View {
         .padding(.vertical, isStandard ? 16 : (isInline ? 2 : 12))
         .background(
             RoundedRectangle(cornerRadius: isStandard ? 18 : 38, style: .continuous)
-                .fill(isInline ? Color.clear : Color(.tertiarySystemFill))
+                .fill(isInline ? Color.clear : backgroundColor)
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label.map { "\($0), \(value)" } ?? value)

@@ -120,13 +120,3 @@ private enum RouteDirectionArrow {
         }
     }()
 }
-
-private extension UIColor {
-    var rgb: Int32 {
-        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        return [red, green, blue].reduce(Int32(0)) { rgb, channel in
-            rgb << 8 | Int32(min(max((channel * 255).rounded(), 0), 255))
-        }
-    }
-}

@@ -386,6 +386,21 @@ appId: ${APP_ID}
 - tapOn:
     id: GPX_GUIDE_BACK_BUTTON
 
+# Quick Guide screen
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_QUICK_GUIDE
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: MENU_ROW_QUICK_GUIDE
+- extendedWaitUntil:
+    visible:
+      id: QUICK_GUIDE_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: QUICK_GUIDE_BACK_BUTTON
+
 # Trail Symbols Guide screen
 - scrollUntilVisible:
     element:

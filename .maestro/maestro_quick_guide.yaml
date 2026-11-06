@@ -1,0 +1,59 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Quick Guide from the Guides section
+- tapOn: "Menu"
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_QUICK_GUIDE
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: MENU_ROW_QUICK_GUIDE
+- extendedWaitUntil:
+    visible:
+      id: QUICK_GUIDE_SCREEN_ROOT
+    timeout: 15000
+
+# Sections
+- assertVisible: "Following mode: tap once"
+- assertVisible: "Navigation mode: tap twice or long-press"
+- scrollUntilVisible:
+    element:
+      text: "Without any stops"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: "Steep climb"
+    direction: DOWN
+
+# GPX Guide link
+- scrollUntilVisible:
+    element:
+      id: QUICK_GUIDE_GPX_GUIDE_ROW
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: QUICK_GUIDE_GPX_GUIDE_ROW
+- extendedWaitUntil:
+    visible:
+      id: GPX_GUIDE_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: GPX_GUIDE_BACK_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: QUICK_GUIDE_SCREEN_ROOT
+    timeout: 15000
+- tapOn:
+    id: QUICK_GUIDE_BACK_BUTTON
+- assertVisible:
+    id: MENU_ROW_QUICK_GUIDE

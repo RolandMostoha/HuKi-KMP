@@ -12,6 +12,7 @@ struct MenuView: View {
     let onGpxCollectionClicked: () -> Void
     let onGpxGuideClicked: () -> Void
     let onTrailSymbolsGuideClicked: () -> Void
+    let onQuickGuideClicked: () -> Void
     let onPlaceHistoryClicked: () -> Void
     let onLocationIqClicked: () -> Void
 
@@ -134,6 +135,7 @@ private extension MenuView {
         case .navigateToSettings: return onSettingsClicked
         case .navigateToGpxGuide: return onGpxGuideClicked
         case .navigateToTrailSymbolsGuide: return onTrailSymbolsGuideClicked
+        case .navigateToQuickGuide: return onQuickGuideClicked
         case .navigateToLocationIq: return onLocationIqClicked
         case .openUrl, .sendEmail: return nil
         default: return featureNavigationAction(for: effect)

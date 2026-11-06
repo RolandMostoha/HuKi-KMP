@@ -148,6 +148,9 @@
     <string name="menu_item_gpx_collection_description">Your route plans and imported routes</string>
     <string name="menu_a11y_open_gpx_collection">Open GPX Collection</string>
     <string name="menu_section_guides">Guides</string>
+    <string name="menu_item_quick_guide">Quick Guide</string>
+    <string name="menu_item_quick_guide_description">The basics of HuKi in a few minutes</string>
+    <string name="menu_a11y_open_quick_guide">Open Quick Guide</string>
     <string name="menu_item_gpx_guide">GPX Guide</string>
     <string name="menu_item_gpx_guide_description">How to import and use GPX tracks</string>
     <string name="menu_a11y_open_gpx_guide">Open GPX Guide</string>
@@ -261,6 +264,37 @@
     <string name="gpx_guide_step_4_title">Open the file with HuKi</string>
     <string name="gpx_guide_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.</string>
     <string name="gpx_guide_a11y_open_collection">Open %s</string>
+
+    <string name="quick_guide_title">Quick Guide</string>
+    <string name="quick_guide_a11y_back">Back</string>
+    <string name="quick_guide_my_location_section">My location</string>
+    <string name="quick_guide_my_location_following_title">Following mode: tap once</string>
+    <string name="quick_guide_my_location_following_message">The map follows you while you walk. North always points up.</string>
+    <string name="quick_guide_my_location_navigation_title">Navigation mode: tap twice or long-press</string>
+    <string name="quick_guide_my_location_navigation_message">In Navigation mode, the map turns with the direction you are facing, like a compass.</string>
+    <string name="quick_guide_route_planner_section">Route planner</string>
+    <string name="quick_guide_route_planner_step_1_title">Long-tap on the map</string>
+    <string name="quick_guide_route_planner_step_1_message">The details of that place open at the bottom of the screen.</string>
+    <string name="quick_guide_route_planner_step_2_title">Collect more places</string>
+    <string name="quick_guide_route_planner_step_2_message">Long-tap more spots on the map, or open the route planner right away.</string>
+    <string name="quick_guide_route_planner_step_3_title">Tap Route plan</string>
+    <string name="quick_guide_route_planner_step_3_message">The number on the button shows how many places it will connect:</string>
+    <string name="quick_guide_travel_time_section">Travel time</string>
+    <string name="quick_guide_travel_time_time_title">Travel time calculation</string>
+    <string name="quick_guide_travel_time_time_message">The travel time of a route is calculated with Naismith’s rule: 4 km/h on flat ground, plus 1 hour for every 600 m of climb.</string>
+    <string name="quick_guide_travel_time_no_stops_title">Without any stops</string>
+    <string name="quick_guide_travel_time_no_stops_message">The time is for an active, fit hiker who keeps moving. On a real hike we stop to take photos, eat and rest, so add that time to the travel time.</string>
+    <string name="quick_guide_slope_section">Slope</string>
+    <string name="quick_guide_slope_coloring_title">Slope coloring</string>
+    <string name="quick_guide_slope_message">Slope coloring gives you a hint of how hard the section ahead of you is. A %1$d%% slope means the terrain rises %1$d m over 100 m.</string>
+    <string name="quick_guide_slope_level_column">Level</string>
+    <string name="quick_guide_slope_difficulty_column">Difficulty</string>
+    <string name="quick_guide_gpx_section">GPX routes</string>
+    <string name="slope_legend_descent_steep">Steep descent</string>
+    <string name="slope_legend_descent_moderate">Moderate descent</string>
+    <string name="slope_legend_flat">Near flat</string>
+    <string name="slope_legend_climb_moderate">Moderate climb</string>
+    <string name="slope_legend_climb_steep">Steep climb</string>
 
     <string name="trail_symbols_guide_title">Trail Symbols</string>
     <string name="trail_symbols_guide_a11y_back">Back</string>
