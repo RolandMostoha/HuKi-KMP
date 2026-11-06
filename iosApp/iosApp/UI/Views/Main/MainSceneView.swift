@@ -2,7 +2,7 @@ import Shared
 import SwiftUI
 
 struct MainSceneView: View {
-    // The system discards SceneStorage when the user force-quits, so only an OS kill restores the session
+    // iOS keeps SceneStorage across both an OS kill and a swipe-away in the app switcher
     @SceneStorage("huki.main_session") private var session = ""
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModelHolder = MainViewModelHolder()

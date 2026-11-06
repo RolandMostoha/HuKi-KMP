@@ -214,7 +214,7 @@ UI → UiEvent → ViewModel → UiState
 - E2E: `maestro_location_link.yaml` (Android only).
 
 ### State restoration
-- Restore after the OS kills the app in the background; a user swipe-away / force-quit starts fresh.
+- Restore after the OS kills the app in the background. Android: a user swipe-away starts fresh; iOS keeps `@SceneStorage` after a swipe-away too, so it restores.
 - `MainViewModel` owns the session: restores it in `init`, builds it in `sessionSnapshot()`.
 - `MainSession`: what is restored — camera, my-location mode, one GPX / OKT / Landscapes / Route Planner feature (references and flags, never geometry).
 - `MainSessionSnapshot`: its `@Serializable` JSON form, mapped in `SessionMapper.kt`.

@@ -77,7 +77,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Bug                                                                                                                                                                                                                        |
 |--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Settings   | Bug: iOS state restoration. Selected Landcape is shown even after i remove the app from app manager. It shows even after I click on X. ![img_16.png](img_16.png)                                                           |
 | `[G]`  | Settings   | Bug: Android. Tap ouside should only close the tooltip ![img_13.png](img_13.png)                                                                                                                                           |
 | `[G]`  | Settings   | Bug: Android. Avoid multi line for RPDDK base ![img_14.png](img_14.png)                                                                                                                                                    |
 | `[x]`  | Settings   | Bug: Android. FABs are not aligned with opened GPX, different bottom paddings ![img_5.png](img_5.png)                                                                                                                      |
