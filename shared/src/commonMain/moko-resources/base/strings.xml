@@ -155,7 +155,7 @@
     <string name="menu_item_gpx_guide_description">How to import and use GPX tracks</string>
     <string name="menu_a11y_open_gpx_guide">Open GPX Guide</string>
     <string name="menu_item_trail_symbols_guide">Trail Symbols</string>
-    <string name="menu_item_trail_symbols_guide_description">Understand Hungarian trail markings</string>
+    <string name="menu_item_trail_symbols_guide_description">Trail markings and their colors</string>
     <string name="menu_a11y_open_trail_symbols_guide">Open Trail Symbols</string>
     <string name="menu_section_contact">Contact</string>
     <string name="menu_section_legal">Legal</string>
@@ -299,6 +299,7 @@
     <string name="trail_symbols_guide_title">Trail Symbols</string>
     <string name="trail_symbols_guide_a11y_back">Back</string>
     <string name="trail_symbols_main_section_title">Route trail markings</string>
+    <string name="trail_symbols_colors_section_title">Colors</string>
     <string name="trail_symbols_branch_section_title">Destination trail markings</string>
     <string name="trail_symbols_blue_title">Blue stripe</string>
     <string name="trail_symbols_blue_description">Marks the most important, nationally significant routes, and the main route of certain regions.</string>
@@ -308,6 +309,8 @@
     <string name="trail_symbols_yellow_description">Marks locally important backbone network routes.</string>
     <string name="trail_symbols_green_title">Green stripe</string>
     <string name="trail_symbols_green_description">Marks minor, local routes.</string>
+    <string name="trail_symbols_stripe_colors_title">Colors</string>
+    <string name="trail_symbols_stripe_colors_description">The trail marking colors show the type of the route (national, regional, local). For a destination marking, the color shows which route it branches off from.</string>
     <string name="trail_symbols_cross_title">Cross</string>
     <string name="trail_symbols_cross_description">A crossing point in the connections between blue, red, yellow or green stripes.</string>
     <string name="trail_symbols_round_tour_title">Round tour</string>

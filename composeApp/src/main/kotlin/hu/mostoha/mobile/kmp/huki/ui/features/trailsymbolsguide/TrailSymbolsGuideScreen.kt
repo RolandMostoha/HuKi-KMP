@@ -106,6 +106,10 @@ private fun TrailSymbolsGuideContent(onBack: () -> Unit, modifier: Modifier = Mo
                 symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.ROUTE },
             )
             SymbolSection(
+                title = mokoString(SharedRes.strings.trail_symbols_colors_section_title),
+                symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.COLORS },
+            )
+            SymbolSection(
                 title = mokoString(SharedRes.strings.trail_symbols_branch_section_title),
                 symbols = TrailSymbol.entries.filter { it.section == TrailSymbolSection.TARGET },
             )

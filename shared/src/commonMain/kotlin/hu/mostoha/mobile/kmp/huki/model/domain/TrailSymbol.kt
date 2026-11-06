@@ -6,6 +6,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 
 enum class TrailSymbolSection {
     ROUTE,
+    COLORS,
     TARGET,
 }
 
@@ -38,6 +39,12 @@ enum class TrailSymbol(
         title = SharedRes.strings.trail_symbols_green_title,
         descriptionRes = SharedRes.strings.trail_symbols_green_description,
         iconRes = SharedRes.images.symbol_z,
+    ),
+    STRIPE_COLORS(
+        section = TrailSymbolSection.COLORS,
+        title = SharedRes.strings.trail_symbols_stripe_colors_title,
+        descriptionRes = SharedRes.strings.trail_symbols_stripe_colors_description,
+        iconRes = SharedRes.images.symbol_stripe_colors,
     ),
     CROSS(
         section = TrailSymbolSection.ROUTE,

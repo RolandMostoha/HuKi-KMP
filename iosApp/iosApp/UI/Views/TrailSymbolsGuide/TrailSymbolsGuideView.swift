@@ -20,6 +20,10 @@ struct TrailSymbolsGuideView: View {
                     symbols: TrailSymbol.allCases.filter { $0.section == .route }
                 )
                 symbolSection(
+                    title: strings.get(id: SharedRes.strings().trail_symbols_colors_section_title),
+                    symbols: TrailSymbol.allCases.filter { $0.section == .colors }
+                )
+                symbolSection(
                     title: strings.get(id: SharedRes.strings().trail_symbols_branch_section_title),
                     symbols: TrailSymbol.allCases.filter { $0.section == .target }
                 )

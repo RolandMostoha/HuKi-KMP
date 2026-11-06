@@ -155,7 +155,7 @@
     <string name="menu_item_gpx_guide_description">GPX útvonalak importálása és használata</string>
     <string name="menu_a11y_open_gpx_guide">GPX útmutató megnyitása</string>
     <string name="menu_item_trail_symbols_guide">Turistajelzések</string>
-    <string name="menu_item_trail_symbols_guide_description">Ismerd meg a turistajelzéseket</string>
+    <string name="menu_item_trail_symbols_guide_description">Túraútvonal jelzések és színezések</string>
     <string name="menu_a11y_open_trail_symbols_guide">Turistajelzések megnyitása</string>
     <string name="menu_section_contact">Kapcsolat</string>
     <string name="menu_section_legal">Jogi információk</string>
@@ -299,6 +299,7 @@
     <string name="trail_symbols_guide_title">Turistajelzések</string>
     <string name="trail_symbols_guide_a11y_back">Vissza</string>
     <string name="trail_symbols_main_section_title">Útvonal turistajelzések</string>
+    <string name="trail_symbols_colors_section_title">Színezések</string>
     <string name="trail_symbols_branch_section_title">Célpont turistajelzések</string>
     <string name="trail_symbols_blue_title">Kék sáv</string>
     <string name="trail_symbols_blue_description">Legfőbb, országos jelentőségű útvonalak jelölése, és egyes tájegységek főútvonalának jelzése.</string>
@@ -308,6 +309,8 @@
     <string name="trail_symbols_yellow_description">Helyi fontosságú gerinchálózati útvonalak jelölése.</string>
     <string name="trail_symbols_green_title">Zöld sáv</string>
     <string name="trail_symbols_green_description">Kisebb jelentőségű, helyi útvonalak jelölése.</string>
+    <string name="trail_symbols_stripe_colors_title">Színezések</string>
+    <string name="trail_symbols_stripe_colors_description">A túrajelzések színei az útvonal típusát jelzik (országos, regionális, helyi). Célpont esetén azt mutatja, hogy milyen útvonalról ágazik le.</string>
     <string name="trail_symbols_cross_title">Kereszt</string>
     <string name="trail_symbols_cross_description">Kereszteződési pont kék, piros, sárga vagy zöld sávok összeköttetéseiben.</string>
     <string name="trail_symbols_round_tour_title">Körtúra</string>
