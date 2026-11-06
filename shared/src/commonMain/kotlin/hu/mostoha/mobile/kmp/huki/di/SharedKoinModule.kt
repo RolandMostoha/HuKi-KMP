@@ -101,6 +101,7 @@ val appModule = module {
         DefaultSupporterRepository(
             billingService = get(),
             dataStore = get(),
+            analyticsService = get(),
             scope = CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.Main))),
         )
     }

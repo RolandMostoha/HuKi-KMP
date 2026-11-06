@@ -7,8 +7,8 @@ sealed interface UserProperty {
     val name: String
     val value: String?
 
-    data class Supporter(val isSupporter: Boolean) : UserProperty {
+    data class Supporter(val level: SupporterLevel) : UserProperty {
         override val name = "supporter"
-        override val value = isSupporter.toString()
+        override val value = level.name.lowercase()
     }
 }

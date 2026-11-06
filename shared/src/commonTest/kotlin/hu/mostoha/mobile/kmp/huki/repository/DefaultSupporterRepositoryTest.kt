@@ -1,12 +1,15 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import hu.mostoha.mobile.kmp.huki.model.analytics.SupporterLevel
+import hu.mostoha.mobile.kmp.huki.model.analytics.UserProperty
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
+import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeBillingService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.first
@@ -22,9 +25,10 @@ class DefaultSupporterRepositoryTest {
 
     private val billingService = FakeBillingService()
     private val dataStore = FakeDataStore()
+    private val analyticsService = FakeAnalyticsService()
 
     private suspend fun TestScope.createRepository(): DefaultSupporterRepository {
-        val repository = DefaultSupporterRepository(billingService, dataStore, backgroundScope)
+        val repository = DefaultSupporterRepository(billingService, dataStore, analyticsService, backgroundScope)
         repository.refresh()
         runCurrent()
         return repository
@@ -41,6 +45,43 @@ class DefaultSupporterRepositoryTest {
                 activeSubscriptions = setOf(SupportAnimal.DEER),
                 oneTimePurchaseCounts = mapOf(SupportAnimal.OWL to 1),
                 lastPurchaseTimes = mapOf(SupportAnimal.OWL to PURCHASE_INSTANT, SupportAnimal.DEER to PURCHASE_INSTANT),
+            )
+        }
+
+    @Test
+    fun `Given store entitlements - When refreshed - Then the supporter level is set`() =
+        runTest {
+            billingService.entitlements = listOf(purchase(SupportAnimal.DEER), purchase(SupportAnimal.OWL))
+
+            createRepository()
+
+            analyticsService.userProperties shouldBe listOf(UserProperty.Supporter(SupporterLevel.RECURRING))
+        }
+
+    @Test
+    fun `Given failed entitlements fetch - When refreshed - Then the supporter level is not set`() =
+        runTest {
+            billingService.entitlementsErrorMessage = "The Internet connection appears to be offline."
+
+            createRepository()
+
+            analyticsService.userProperties shouldBe emptyList()
+        }
+
+    @Test
+    fun `Given one-time supporter - When a subscription is purchased - Then the supporter level changes`() =
+        runTest {
+            billingService.entitlements = listOf(purchase(SupportAnimal.OWL))
+            val repository = createRepository()
+            billingService.entitlements = listOf(purchase(SupportAnimal.OWL), purchase(SupportAnimal.DEER))
+            billingService.purchaseResult = BillingPurchaseResult.Success(purchase(SupportAnimal.DEER))
+
+            repository.purchase(SupportAnimal.DEER)
+            runCurrent()
+
+            analyticsService.userProperties shouldBe listOf(
+                UserProperty.Supporter(SupporterLevel.ONE_TIME),
+                UserProperty.Supporter(SupporterLevel.RECURRING),
             )
         }
 

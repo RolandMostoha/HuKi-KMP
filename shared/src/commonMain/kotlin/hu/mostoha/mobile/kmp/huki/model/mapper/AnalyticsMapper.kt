@@ -7,6 +7,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.MyLocationMode
 import hu.mostoha.mobile.kmp.huki.model.analytics.RestoredFeature
 import hu.mostoha.mobile.kmp.huki.model.analytics.RouteProfile
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.analytics.SupporterLevel
 import hu.mostoha.mobile.kmp.huki.model.analytics.Theme
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
@@ -15,6 +16,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 
 fun BaseLayer.toLayer(): Layer =
@@ -81,4 +83,11 @@ fun FeatureSession?.toRestoredFeature(): RestoredFeature =
         is FeatureSession.Landscapes -> RestoredFeature.LANDSCAPES
         is FeatureSession.RoutePlanner -> RestoredFeature.ROUTE_PLANNER
         null -> RestoredFeature.MAP
+    }
+
+fun SupporterState.toSupporterLevel(): SupporterLevel =
+    when {
+        activeSubscriptions.isNotEmpty() -> SupporterLevel.RECURRING
+        oneTimePurchaseCounts.isNotEmpty() -> SupporterLevel.ONE_TIME
+        else -> SupporterLevel.NONE
     }

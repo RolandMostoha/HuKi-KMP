@@ -73,6 +73,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
 import hu.mostoha.mobile.kmp.huki.model.domain.ProductPrice
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
@@ -107,12 +108,6 @@ private val PricesUnavailableInfo = InfoViewData(
     message = SharedRes.strings.support_prices_unavailable,
 )
 
-private val reasons = listOf(
-    SharedRes.strings.support_reason_spending_title to SharedRes.strings.support_reason_spending_message,
-    SharedRes.strings.support_reason_why_title to SharedRes.strings.support_reason_why_message,
-    SharedRes.strings.support_reason_rewards_title to SharedRes.strings.support_reason_rewards_message,
-)
-
 @Composable
 fun SupportScreen(onBack: () -> Unit, viewModel: SupportViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -144,6 +139,9 @@ private fun SupportContent(uiState: SupportUiState, onEvent: (SupportUiEvents) -
     val isSupporter = header != null
     var expandedReasons by rememberSaveable { mutableStateOf(emptyList<Int>()) }
     val onReasonExpandedChange = { index: Int, isExpanded: Boolean ->
+        if (isExpanded && index !in expandedReasons) {
+            onEvent(SupportUiEvents.SectionOpened(SupportSection.entries[index]))
+        }
         expandedReasons = if (isExpanded) expandedReasons + index else expandedReasons - index
     }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -364,10 +362,10 @@ private fun Reasons(
     onReasonExpandedChange: (Int, Boolean) -> Unit,
     showFirstDivider: Boolean = true,
 ) {
-    reasons.forEachIndexed { index, (title, message) ->
+    SupportSection.entries.forEachIndexed { index, section ->
         SupportReason(
-            title = mokoString(title),
-            message = mokoString(message),
+            title = mokoString(section.title),
+            message = mokoString(section.message),
             isExpanded = index in expandedReasons,
             onExpandedChange = { isExpanded -> onReasonExpandedChange(index, isExpanded) },
             showDivider = showFirstDivider || index > 0,

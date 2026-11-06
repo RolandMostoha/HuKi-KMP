@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingProduct
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
@@ -56,6 +57,7 @@ class SupportViewModel(
         Logger.d { "SupportEvent: $event" }
         when (event) {
             SupportUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.SUPPORT)
+            is SupportUiEvents.SectionOpened -> onSectionOpened(event.section)
             SupportUiEvents.RetryClicked -> loadPrices()
             is SupportUiEvents.TierClicked -> onTierClicked(event.animal)
             SupportUiEvents.PurchaseMessageDismissed -> _uiState.update { it.copy(purchaseMessage = null) }
@@ -64,6 +66,10 @@ class SupportViewModel(
             is SupportUiEvents.SupporterAnimalChosen -> onSupporterAnimalChosen(event.animal)
             SupportUiEvents.ManageSubscriptionsClicked -> onManageSubscriptionsClicked()
         }
+    }
+
+    private fun onSectionOpened(section: SupportSection) {
+        analyticsService.logEvent(AnalyticsEvent.SupportSectionOpened(section))
     }
 
     private fun loadPrices() {
@@ -75,6 +81,9 @@ class SupportViewModel(
             } catch (exception: BillingException) {
                 Logger.w(exception) { "Billing: Failed to fetch support products." }
                 _uiState.update { it.copy(pricesState = SupportPricesState.UNAVAILABLE) }
+            }
+            if (_uiState.value.pricesState == SupportPricesState.UNAVAILABLE) {
+                analyticsService.logEvent(AnalyticsEvent.SupportPricesUnavailable)
             }
         }
     }
@@ -129,7 +138,7 @@ class SupportViewModel(
                 }
             }
             BillingPurchaseResult.Cancelled -> {
-                analyticsService.logEvent(AnalyticsEvent.SupportPurchaseCancelled)
+                analyticsService.logEvent(AnalyticsEvent.SupportPurchaseCancelled(animal))
                 _uiState.update { it.copy(purchasingAnimal = null) }
             }
             BillingPurchaseResult.Pending -> {
@@ -193,7 +202,6 @@ class SupportViewModel(
         if (animal == _uiState.value.supporterAnimal) {
             return
         }
-        analyticsService.logEvent(AnalyticsEvent.SupportAnimalChosen(animal))
         viewModelScope.launch { supporterRepository.chooseAnimal(animal) }
     }
 

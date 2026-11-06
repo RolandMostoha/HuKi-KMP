@@ -19,23 +19,6 @@ struct SupportView: View {
     private let strings = Strings()
     private let cardColor = SwiftUI.Color(.secondarySystemGroupedBackground)
 
-    private var reasons: [(title: String, message: String)] {
-        [
-            (
-                strings.get(id: SharedRes.strings().support_reason_spending_title),
-                strings.get(id: SharedRes.strings().support_reason_spending_message)
-            ),
-            (
-                strings.get(id: SharedRes.strings().support_reason_why_title),
-                strings.get(id: SharedRes.strings().support_reason_why_message)
-            ),
-            (
-                strings.get(id: SharedRes.strings().support_reason_rewards_title),
-                strings.get(id: SharedRes.strings().support_reason_rewards_message)
-            )
-        ]
-    }
-
     var body: some View {
         Observing(viewModel.uiState) { uiState in
             ScrollViewReader { proxy in
@@ -216,11 +199,11 @@ struct SupportView: View {
     }
 
     private func reasonList(showFirstDivider: Bool) -> some View {
-        ForEach(Array(reasons.enumerated()), id: \.offset) { index, reason in
+        ForEach(Array(SupportSection.allCases.enumerated()), id: \.offset) { index, section in
             SupportReasonView(
-                title: reason.title,
-                message: reason.message,
-                isExpanded: reasonExpandedBinding(index),
+                title: strings.get(id: section.title),
+                message: strings.get(id: section.message),
+                isExpanded: reasonExpandedBinding(index, section: section),
                 showDivider: showFirstDivider || index > 0
             )
             .accessibilityIdentifier(TestTags.shared.supportReason(index: Int32(index)))
@@ -235,12 +218,14 @@ struct SupportView: View {
         viewModel.onEvent(event: SupportUiEventsTierClicked(animal: animal))
     }
 
-    private func reasonExpandedBinding(_ index: Int) -> Binding<Bool> {
+    private func reasonExpandedBinding(_ index: Int, section: SupportSection) -> Binding<Bool> {
         Binding(
             get: { expandedReasons.contains(index) },
             set: { isExpanded in
                 if isExpanded {
-                    expandedReasons.insert(index)
+                    if expandedReasons.insert(index).inserted {
+                        viewModel.onEvent(event: SupportUiEventsSectionOpened(section: section))
+                    }
                 } else {
                     expandedReasons.remove(index)
                 }

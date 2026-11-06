@@ -1,9 +1,12 @@
 package hu.mostoha.mobile.kmp.huki.features.support
 
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 
 sealed interface SupportUiEvents {
     data object ScreenViewed : SupportUiEvents
+
+    data class SectionOpened(val section: SupportSection) : SupportUiEvents
 
     data object RetryClicked : SupportUiEvents
 

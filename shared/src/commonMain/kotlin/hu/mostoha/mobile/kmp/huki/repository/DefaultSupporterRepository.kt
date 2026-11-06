@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.datastore.SupportPreferenceKeys
+import hu.mostoha.mobile.kmp.huki.model.analytics.SupporterLevel
+import hu.mostoha.mobile.kmp.huki.model.analytics.UserProperty
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingEntitlements
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
@@ -18,7 +20,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDataStoreEntries
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOneTimePurchaseRecords
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScheduledSubscription
+import hu.mostoha.mobile.kmp.huki.model.mapper.toSupporterLevel
 import hu.mostoha.mobile.kmp.huki.model.mapper.toSupporterState
+import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.BillingException
 import hu.mostoha.mobile.kmp.huki.service.BillingService
 import hu.mostoha.mobile.kmp.huki.service.fetchEntitlements
@@ -30,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -42,6 +47,7 @@ import kotlin.time.Instant
 class DefaultSupporterRepository(
     private val billingService: BillingService,
     private val dataStore: DataStore<Preferences>,
+    private val analyticsService: AnalyticsService,
     private val scope: CoroutineScope,
 ) : SupporterRepository {
     /**
@@ -49,6 +55,12 @@ class DefaultSupporterRepository(
      */
     private val activeSubscriptions = MutableStateFlow<Map<SupportAnimal, Instant>>(emptyMap())
     private val scheduledSubscription = MutableStateFlow<ScheduledSubscription?>(null)
+
+    /**
+     * Subscriptions are known only after a fetch, until then a recurring supporter looks like a one-time one.
+     */
+    private var isEntitlementsFetched = false
+    private var reportedSupporterLevel: SupporterLevel? = null
 
     /**
      * Fetches run one at a time, so an older result can't overwrite a newer one.
@@ -115,6 +127,7 @@ class DefaultSupporterRepository(
             SupportType.RECURRING -> recordSubscription(purchase)
             null -> Logger.w { "Billing: Unknown product purchased: ${purchase.productId}" }
         }
+        reportSupporterLevel()
     }
 
     /**
@@ -145,6 +158,27 @@ class DefaultSupporterRepository(
         scheduledSubscription.value = entitlements.scheduledSubscription
             ?.toScheduledSubscription()
             ?.takeUnless { it.animal in activeSubscriptions.value.keys }
+        isEntitlementsFetched = true
+        reportSupporterLevel()
+    }
+
+    /**
+     * Read from the stored data, as the state flow can still lag behind a write that just completed.
+     */
+    private suspend fun reportSupporterLevel() {
+        if (!isEntitlementsFetched) return
+        val preferences = try {
+            dataStore.data.first()
+        } catch (exception: IOException) {
+            Logger.w(exception) { "Support: Failed to read the supporter level." }
+            return
+        }
+        val level = preferences.toSupporterState()
+            .copy(activeSubscriptions = activeSubscriptions.value.keys)
+            .toSupporterLevel()
+        if (level == reportedSupporterLevel) return
+        reportedSupporterLevel = level
+        analyticsService.setUserProperty(UserProperty.Supporter(level))
     }
 
     /**

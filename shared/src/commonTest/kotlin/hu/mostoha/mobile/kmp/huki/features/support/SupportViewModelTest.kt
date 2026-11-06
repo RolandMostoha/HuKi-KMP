@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.ProductPrice
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
@@ -101,6 +102,33 @@ class SupportViewModelTest {
         }
 
     @Test
+    fun `Given no store products - When created - Then unavailable prices are logged`() {
+        billingService.products = emptyList()
+
+        createViewModel()
+
+        analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SupportPricesUnavailable)
+    }
+
+    @Test
+    fun `Given a store error - When created - Then unavailable prices are logged`() {
+        billingService.errorMessage = "The Internet connection appears to be offline."
+
+        createViewModel()
+
+        analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SupportPricesUnavailable)
+    }
+
+    @Test
+    fun `Given store products - When created - Then nothing is logged`() {
+        billingService.products = listOf(BillingProduct(SupportAnimal.OWL.productId, OWL_PRICE))
+
+        createViewModel()
+
+        analyticsService.loggedEvents shouldBe emptyList()
+    }
+
+    @Test
     fun `Given a store error - When created - Then prices are unavailable`() =
         runTest {
             billingService.errorMessage = "The Internet connection appears to be offline."
@@ -154,6 +182,7 @@ class SupportViewModelTest {
 
     @Test
     fun `Given successful purchase - When tier clicked - Then the purchased animal becomes the supporter animal`() {
+        billingService.products = listOf(BillingProduct(SupportAnimal.OWL.productId, OWL_PRICE))
         supporterRepository.supporterState.value = SupporterState(activeSubscriptions = setOf(SupportAnimal.BEAR))
         supporterRepository.purchaseResult = BillingPurchaseResult.Success(OWL_PURCHASE)
         val viewModel = createViewModel()
@@ -184,7 +213,7 @@ class SupportViewModelTest {
         uiState.supporterAnimal shouldBe null
         uiState.purchasingAnimal shouldBe null
         uiState.purchaseMessage shouldBe null
-        analyticsService.loggedEvents.last() shouldBe AnalyticsEvent.SupportPurchaseCancelled
+        analyticsService.loggedEvents.last() shouldBe AnalyticsEvent.SupportPurchaseCancelled(SupportAnimal.OWL)
     }
 
     @Test
@@ -492,11 +521,11 @@ class SupportViewModelTest {
 
         viewModel.uiState.value.supporterAnimal shouldBe SupportAnimal.OWL
         viewModel.uiState.value.celebrationId shouldBe 0
-        analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SupportAnimalChosen(SupportAnimal.OWL))
+        supporterRepository.chosenAnimals shouldBe listOf(SupportAnimal.OWL)
     }
 
     @Test
-    fun `Given supporter animal - When it is chosen again - Then nothing is stored or logged`() {
+    fun `Given supporter animal - When it is chosen again - Then nothing is stored`() {
         supporterRepository.supporterState.value = SupporterState(activeSubscriptions = setOf(SupportAnimal.BOAR))
         val viewModel = createViewModel()
 
@@ -504,7 +533,19 @@ class SupportViewModelTest {
         testDispatcher.scheduler.runCurrent()
 
         supporterRepository.chosenAnimals shouldBe emptyList()
-        analyticsService.loggedEvents shouldBe emptyList()
+    }
+
+    @Test
+    fun `Given support sections - When opened - Then each opened section is logged`() {
+        val viewModel = createViewModel()
+
+        SupportSection.entries.forEach { viewModel.onEvent(SupportUiEvents.SectionOpened(it)) }
+
+        analyticsService.loggedEvents.takeLast(3) shouldBe listOf(
+            AnalyticsEvent.SupportSectionOpened(SupportSection.SPENDING),
+            AnalyticsEvent.SupportSectionOpened(SupportSection.WHY),
+            AnalyticsEvent.SupportSectionOpened(SupportSection.REWARDS),
+        )
     }
 
     @Test

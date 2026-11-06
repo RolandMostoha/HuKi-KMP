@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.model.analytics
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
 
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 
 /**
  * Analytics event, following the Google Analytics way of sending a [name] and optional [params].
@@ -395,8 +396,8 @@ sealed interface AnalyticsEvent {
         override val name = "support_purchase_scheduled_${animal.name.lowercase()}"
     }
 
-    data object SupportPurchaseCancelled : AnalyticsEvent {
-        override val name = "support_purchase_cancelled"
+    data class SupportPurchaseCancelled(val animal: SupportAnimal) : AnalyticsEvent {
+        override val name = "support_purchase_cancelled_${animal.name.lowercase()}"
     }
 
     data object SupportPurchasePending : AnalyticsEvent {
@@ -407,8 +408,12 @@ sealed interface AnalyticsEvent {
         override val name = "support_purchase_failed"
     }
 
-    data class SupportAnimalChosen(val animal: SupportAnimal) : AnalyticsEvent {
-        override val name = "support_animal_chosen_${animal.name.lowercase()}"
+    data class SupportSectionOpened(val section: SupportSection) : AnalyticsEvent {
+        override val name = "support_section_opened_${section.name.lowercase()}"
+    }
+
+    data object SupportPricesUnavailable : AnalyticsEvent {
+        override val name = "support_prices_unavailable"
     }
 
     data object SupportManageSubscriptionsClicked : AnalyticsEvent {
