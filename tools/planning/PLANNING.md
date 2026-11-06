@@ -124,7 +124,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
-| `[G]`  | MyLocation | Show compass directions in the compass icon,  É, D, K, Ny, ![img_15.png](img_15.png). Add a section to quick guide explaining it.                                                                                                                                     |
+| `[x]`  | MyLocation | Show compass directions in the compass icon,  É, D, K, Ny, ![img_15.png](img_15.png).                                                                                                                                     |
 | `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
@@ -190,10 +190,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope        | Task                                                                                                                                               |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | PlaceDetails | Support opening lat,lon locations Intent from other apps. E.g. Google Photos -> Location -> Share. ![img_1.png](img_1.png) ![img_2.png](img_2.png) |
-| `[x]`  | PlaceDetails | Open shared Google Maps places (incl. `maps.app.goo.gl` short links) in Place Details                                                    |
+| `[x]`  | PlaceDetails | Open shared Google Maps places (incl. `maps.app.goo.gl` short links) in Place Details                                                              |
 | `[x]`  | Deeplink     | Open `huki.hu/place` App Links in Place Details                                                                                                    |
-| `[ ]`  | PlaceDetails | iOS: open shared locations via a Share Extension (Google Maps / Apple Maps links), iOS Photos always opens Apple Maps                             |
-| `[ ]`  | Landscapes   | `huki.hu/landscape?id=` (and legacy `osmId=`) App Link opens the landscape, as in HuKi-Android                                                    |
+| `[ ]`  | PlaceDetails | iOS: open shared locations via a Share Extension (Google Maps / Apple Maps links), iOS Photos always opens Apple Maps                              |
+| `[ ]`  | Landscapes   | `huki.hu/landscape?id=` (and legacy `osmId=`) App Link opens the landscape, as in HuKi-Android                                                     |
 | `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                  |
 
 ### FEATURE: PlaceHistory

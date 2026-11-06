@@ -2,16 +2,12 @@ package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import android.content.Context
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
@@ -98,9 +93,7 @@ import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
-import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoPainter
-import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -110,7 +103,6 @@ import kotlinx.coroutines.flow.filterNotNull
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
 private val ALTITUDE_TOP_PADDING = 32.dp
-private val COMPASS_SIZE = 58.dp
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
 private const val SLOPE_LAYER_SUFFIX = "_slope"
 
@@ -221,13 +213,9 @@ fun MapContent(
                     contentPadding = insetPadding,
                     resetToNorthUponClick = false,
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .size(COMPASS_SIZE)
-                            .clip(CircleShape)
-                            .clickable { onEvent(MainUiEvents.CompassClicked) },
-                        imageVector = mokoImage(SharedRes.images.ic_my_location_compass),
-                        contentDescription = mokoString(SharedRes.strings.my_location_a11y_compass),
+                    MapCompass(
+                        cameraBearing = mapViewportState::compassBearing,
+                        onClick = { onEvent(MainUiEvents.CompassClicked) },
                     )
                 }
             },
@@ -461,6 +449,8 @@ private fun GpxLayer(
  */
 private fun Context.toImageHolder(image: ImageResource): ImageHolder =
     ImageHolder.from(requireNotNull(ContextCompat.getDrawable(this, image.drawableResId)).toBitmap())
+
+private fun MapViewportState.compassBearing(): Float = cameraState?.bearing?.toFloat() ?: 0f
 
 @Preview
 @Composable

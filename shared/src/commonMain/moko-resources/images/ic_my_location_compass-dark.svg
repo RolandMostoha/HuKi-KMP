@@ -2,7 +2,7 @@
     <!-- background circle -->
     <circle cx="32" cy="32" r="28" fill="#2D2D2D" />
     <!-- top (red) - isosceles triangle -->
-    <path d="M32 14 L40 32 L24 32 Z" fill="#E53935" />
+    <path d="M32 19 L36.5 32 L27.5 32 Z" fill="#E53935" />
     <!-- bottom (grey) - isosceles triangle -->
-    <path d="M32 50 L40 32 L24 32 Z" fill="#B0B0B0" />
+    <path d="M32 45 L36.5 32 L27.5 32 Z" fill="#B0B0B0" />
 </svg>

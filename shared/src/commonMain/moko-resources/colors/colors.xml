@@ -212,6 +212,10 @@
         <light>#286FBF</light>
         <dark>#286FBF</dark>
     </color>
+    <color name="compassNorth">
+        <light>#E53935</light>
+        <dark>#E53935</dark>
+    </color>
     <color name="colorPlaceCategoryNationalPark">
         <light>#408A44</light>
         <dark>#408A44</dark>
