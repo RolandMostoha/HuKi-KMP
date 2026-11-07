@@ -72,6 +72,7 @@
     <string name="gpx_details_share">GPX fájl megosztása</string>
 
     <string name="route_planner_title">Útvonaltervező</string>
+    <string name="route_planner_a11y_open_graphhopper">A GraphHopper segítségével. GraphHopper weboldal megnyitása</string>
     <string name="route_planner_profile_on_trails">Túraútvonalakon</string>
     <string name="route_planner_profile_shortest_route">Legrövidebb úton</string>
     <string name="route_planner_profile_bike">Kerékpár</string>

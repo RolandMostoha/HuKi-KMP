@@ -84,11 +84,23 @@ struct RoutePlannerContentView: View {
 
     private var header: some View {
         HStack(spacing: 14) {
-            Text(strings.get(id: SharedRes.strings().route_planner_title))
-                .font(.system(size: 24, weight: .bold))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_TITLE)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(strings.get(id: SharedRes.strings().route_planner_title))
+                    .font(.system(size: 24, weight: .bold))
+                    .lineLimit(1)
+                    .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_TITLE)
+                PoweredByAttributionView(
+                    strings: strings,
+                    logo: SharedRes.images().img_graphhopper_logo.toUIImage()!,
+                    logoHeight: 10,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().route_planner_a11y_open_graphhopper),
+                    font: .caption2,
+                    tintsLogo: true,
+                    action: { onEvent(RoutePlannerUiEventsGraphhopperAttributionClicked.shared) }
+                )
+                .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             CloseButton(
                 action: { onEvent(RoutePlannerUiEventsCloseClicked.shared) },
                 accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_CLOSE_BUTTON

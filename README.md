@@ -74,6 +74,20 @@ Services Used:
 
 Website link: https://locationiq.com/
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="tools/assets/graphhopper_logo_dark.svg">
+  <img src="shared/src/commonMain/moko-resources/images/img_graphhopper_logo.svg" alt="GraphHopper" width="200"/>
+</picture>
+
+GraphHopper gives HuKi a very generous free plan to its Routing API.
+
+The Routing API calculates hiking routes between up to 10 stops, with a custom model that prefers Hungarian marked trails, the
+shortest walking route and bike routes, all with elevation data for the distance, ascent and descent stats.
+
+Kudos to the GraphHopper team, I appreciate it!
+
+Website link: https://www.graphhopper.com/
+
 ## Integration & Delivery
 
 The project uses `GitHub Actions` to ensure code quality.
@@ -199,6 +213,7 @@ Token hardening in the LocationIQ dashboard: one token per platform, daily reque
 - Hungarian Hiking Layer (turistautak.openstreetmap.hu) - https://data2.openstreetmap.hu/
 - Turistautak - https://turistautak.openstreetmap.hu/
 - Location IQ - Search engine -  https://locationiq.com/
+- GraphHopper - Route planner API - https://www.graphhopper.com/
 
 ## Project License
 

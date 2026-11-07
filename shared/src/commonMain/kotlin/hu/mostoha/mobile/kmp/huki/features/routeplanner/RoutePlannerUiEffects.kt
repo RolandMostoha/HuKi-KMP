@@ -6,4 +6,5 @@ sealed interface RoutePlannerUiEffects {
     data object MinimizeSheet : RoutePlannerUiEffects
     data object ExpandSheet : RoutePlannerUiEffects
     data object Close : RoutePlannerUiEffects
+    data class OpenUrl(val url: String) : RoutePlannerUiEffects
 }

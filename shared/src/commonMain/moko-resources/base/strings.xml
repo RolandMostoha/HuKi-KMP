@@ -72,6 +72,7 @@
     <string name="gpx_details_share">Share GPX file</string>
 
     <string name="route_planner_title">Route planner</string>
+    <string name="route_planner_a11y_open_graphhopper">Powered by GraphHopper. Open GraphHopper website</string>
     <string name="route_planner_profile_on_trails">On Trails</string>
     <string name="route_planner_profile_shortest_route">Shortest route</string>
     <string name="route_planner_profile_bike">Bike</string>

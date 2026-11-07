@@ -1215,6 +1215,20 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
+    fun `Given the planner - When the GraphHopper attribution is clicked - Then the GraphHopper website opens`() {
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked)
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                expectMostRecentItem() shouldBe RoutePlannerUiEffects.OpenUrl(RoutePlanConstants.GRAPHHOPPER_URL)
+            }
+        }
+    }
+
+    @Test
     fun `Given a restored session - When the planner is opened - Then its exact stops and profile come back and the route is requested`() {
         runTest {
             val waypoints = listOf(place("Dobogókő", FAR_PLACE_LOCATION), place("Ram-hegy"))

@@ -164,6 +164,10 @@ struct RoutePlannerSheetView: View {
             onExpandAfterPickRequest()
         case .close:
             onDismissRequest()
+        case .openUrl(let effect):
+            if let url = URL(string: effect.url) {
+                UIApplication.shared.open(url)
+            }
         }
     }
 }

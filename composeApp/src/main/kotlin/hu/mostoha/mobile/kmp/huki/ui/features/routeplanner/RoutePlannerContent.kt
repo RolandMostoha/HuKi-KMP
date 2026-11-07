@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,6 +59,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
+import hu.mostoha.mobile.kmp.huki.ui.components.PoweredByAttribution
 import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -118,7 +121,10 @@ fun RoutePlannerContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 verticalPadding = Dimens.SmallMedium,
             )
-            RoutePlannerHeader(onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) })
+            RoutePlannerHeader(
+                onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
+                onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
+            )
             if (!isMinimized) {
                 Column(
                     modifier = Modifier
@@ -226,23 +232,37 @@ private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true):
     if (isFullScreen) Modifier.weight(weight = 1f, fill = fill) else Modifier
 
 @Composable
-private fun RoutePlannerHeader(onCloseClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun RoutePlannerHeader(
+    onCloseClick: () -> Unit,
+    onGraphhopperClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = Dimens.ExtraLarge, end = Dimens.Large),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = mokoString(SharedRes.strings.route_planner_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f)
-                .testTag(TestTags.ROUTE_PLANNER_TITLE),
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = mokoString(SharedRes.strings.route_planner_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_TITLE),
+            )
+            PoweredByAttribution(
+                logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
+                logoHeight = 12.dp,
+                logoTint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
+                onClick = onGraphhopperClick,
+                modifier = Modifier
+                    .offset(x = -Dimens.ExtraSmall)
+                    .testTag(TestTags.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION),
+            )
+        }
         IconButton(
             onClick = onCloseClick,
             colors = IconButtonDefaults.iconButtonColors(

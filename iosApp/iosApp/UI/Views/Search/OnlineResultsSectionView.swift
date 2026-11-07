@@ -59,19 +59,13 @@ struct OnlineResultsSectionView: View {
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
-            Button(action: onLocationIqClicked) {
-                HStack(spacing: 8) {
-                    Text(strings.get(id: SharedRes.strings().search_powered_by))
-                        .font(.caption)
-                        .foregroundStyle(Color(.secondaryLabel))
-                    Image(uiImage: SharedRes.images().ic_location_iq_logo.toUIImage()!)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 16)
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(strings.get(id: SharedRes.strings().menu_a11y_open_location_iq))
+            PoweredByAttributionView(
+                strings: strings,
+                logo: SharedRes.images().ic_location_iq_logo.toUIImage()!,
+                logoHeight: 16,
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_location_iq),
+                action: onLocationIqClicked
+            )
         }
         .padding(.horizontal, 16)
     }

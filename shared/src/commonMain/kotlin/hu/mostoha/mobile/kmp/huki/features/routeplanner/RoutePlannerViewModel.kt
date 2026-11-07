@@ -108,7 +108,12 @@ class RoutePlannerViewModel(
             RoutePlannerUiEvents.RetryClicked -> retryRoutePlan()
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
+            RoutePlannerUiEvents.GraphhopperAttributionClicked -> openGraphhopper()
         }
+    }
+
+    private fun openGraphhopper() {
+        sendEffect(RoutePlannerUiEffects.OpenUrl(RoutePlanConstants.GRAPHHOPPER_URL))
     }
 
     private fun restoreSession(session: RoutePlannerSession) {

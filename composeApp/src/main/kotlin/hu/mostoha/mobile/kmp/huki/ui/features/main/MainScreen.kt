@@ -496,6 +496,7 @@ private fun RoutePlannerSheetOverlay(
     onMinimizedHeightMeasured: (Dp) -> Unit,
     onExpandedHeightMeasured: (Dp) -> Unit,
 ) {
+    val context = LocalContext.current
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
     ) {
@@ -528,6 +529,7 @@ private fun RoutePlannerSheetOverlay(
                         RoutePlannerUiEffects.ExpandSheet -> onDetentChange(RoutePlannerDetent.EXPANDED)
                         RoutePlannerUiEffects.Close -> onEvent(MainUiEvents.SheetDismissed)
                         RoutePlannerUiEffects.RoutePlanSaveFailed -> Unit
+                        is RoutePlannerUiEffects.OpenUrl -> context.openUrl(effect.url)
                     }
                 },
             )
