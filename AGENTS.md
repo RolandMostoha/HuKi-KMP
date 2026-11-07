@@ -175,7 +175,7 @@ commit-message convention.
     - Allowed: names / IDs from HuKi's bundled static data (destinations, landscapes, OKT sections). This is a fixed set that doesn't depend on the user, so it can't reveal where they are
 - Firebase Crashlytics: crash + non-fatal reporting, wired natively per platform like Analytics.
 - Ktor: Networking, Rest APIs.
-- **Routing**: GraphHopper hosted API (`https://graphhopper.com/api/1/route`, `GRAPHHOPPER_API_KEY` in `secrets.properties`) — used by the Route Planner.
+- **Routing**: GraphHopper hosted API (`https://graphhopper.com/api/1/route`, `GRAPHHOPPER_API_KEY_ANDROID` / `_IOS` in `secrets.properties`) — used by the Route Planner.
   - **HuKi-Routing** fallback: self-hosted GraphHopper for Hungary only (`HUKI_ROUTING_API_KEY` in `secrets.properties`, sent as the `X-HuKi-Key` header, never as a query param). `FallbackRoutePlannerRepository` is a client-side circuit breaker: GraphHopper first, routes with all waypoints inside `RoutePlanConstants.HUKI_ROUTING_BOUNDING_BOX` move to HuKi-Routing once GraphHopper's daily credits drop below the reserve or hit 429 (`RoutingQuotaStore`, DataStore, until `X-RateLimit-Reset`).
   - Debug: `FeatureFlags.DEBUG_ROUTING_MODE` forces `GRAPHHOPPER_ONLY` / `HUKI_ROUTING_ONLY` (keep `AUTO` on commit).
 - kotlin-serialization: Serialization. 
@@ -336,9 +336,10 @@ val [actual] = operation(X)
 ## Secrets
 - Always check `.aiexclude`
 - Secrets live in `secrets.properties` at the repo root (gitignored, `.aiexclude`d).
-- `GenerateSecretsTask` pastes property values verbatim into a generated `Secrets.kt` `object` as `const val` declarations.
-- **Convention**: values in `secrets.properties` MUST be valid Kotlin string literals, e.g: `LOCATION_IQ_API_KEY="pk.abc123"`.
-- Unquoted values will produce a `Secrets.kt` that fails to compile.
+- `GenerateSecretsTask` generates an `expect object Secrets` with XOR-masked `actual` values per platform.
+- Platform keys use an `_ANDROID` / `_IOS` suffix (`MAPBOX_ACCESS_TOKEN_*`, `LOCATION_IQ_API_KEY_*`, `GRAPHHOPPER_API_KEY_*`), exposed without it and compiled into their own platform only. Unsuffixed keys are shared.
+- **Convention**: quote values in `secrets.properties`, e.g: `LOCATION_IQ_API_KEY_IOS="pk.abc123"`.
+- Mapbox token is set in code (`MapboxOptions.accessToken`), never via `mapbox_access_token.xml` / `MBXAccessToken`.
 
 ### Firebase config
 - `composeApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` are gitignored and `.aiexclude`d

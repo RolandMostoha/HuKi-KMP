@@ -1,14 +1,14 @@
 name: "Checkout with secrets"
 description: "Checkout the repository with secrets"
 inputs:
-  MAPBOX_ACCESS_TOKEN:
-    description: "MapBox Access Token"
+  MAPBOX_ACCESS_TOKEN_IOS:
+    description: "MapBox Access Token (iOS)"
     required: true
-  LOCATION_IQ_API_KEY:
-    description: "LocationIQ API Key"
+  LOCATION_IQ_API_KEY_IOS:
+    description: "LocationIQ API Key (iOS)"
     required: true
-  GRAPHHOPPER_API_KEY:
-    description: "GraphHopper API Key"
+  GRAPHHOPPER_API_KEY_IOS:
+    description: "GraphHopper API Key (iOS)"
     required: true
   HUKI_ROUTING_API_KEY:
     description: "HuKi-Routing API Key"
@@ -25,20 +25,17 @@ runs:
       with:
         fetch-depth: 0
 
-    - name: Create Secrets.xcconfig
+    - name: Copy MAPBOX_ACCESS_TOKEN_IOS to secrets.properties
       shell: bash
-      run: |
-        cat > iosApp/Configuration/Secrets.xcconfig <<EOF
-        MAPBOX_ACCESS_TOKEN = ${{ inputs.MAPBOX_ACCESS_TOKEN }}
-        EOF
+      run: echo "MAPBOX_ACCESS_TOKEN_IOS=\"${{ inputs.MAPBOX_ACCESS_TOKEN_IOS }}\"" >> ./secrets.properties
 
-    - name: Copy LOCATION_IQ_API_KEY to secrets.properties
+    - name: Copy LOCATION_IQ_API_KEY_IOS to secrets.properties
       shell: bash
-      run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties
+      run: echo "LOCATION_IQ_API_KEY_IOS=\"${{ inputs.LOCATION_IQ_API_KEY_IOS }}\"" >> ./secrets.properties
 
-    - name: Copy GRAPHHOPPER_API_KEY to secrets.properties
+    - name: Copy GRAPHHOPPER_API_KEY_IOS to secrets.properties
       shell: bash
-      run: echo "GRAPHHOPPER_API_KEY=\"${{ inputs.GRAPHHOPPER_API_KEY }}\"" >> ./secrets.properties
+      run: echo "GRAPHHOPPER_API_KEY_IOS=\"${{ inputs.GRAPHHOPPER_API_KEY_IOS }}\"" >> ./secrets.properties
 
     - name: Copy HUKI_ROUTING_API_KEY to secrets.properties
       shell: bash

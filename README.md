@@ -153,43 +153,44 @@ maestro test
 
 ## Security
 
-### Shared secrets
+### Secrets
 
-Shared API keys live in `secrets.properties` at the repo root (gitignored).
-
-The `GenerateSecretsTask` Gradle task pastes property into a generated `Secrets.kt` object as `const val` declarations.
-
-**Convention**: values in `secrets.properties` MUST be valid Kotlin string literals. E.g.:
+API keys live in `secrets.properties` at the repo root (gitignored). Values MUST be quoted:
 
 ```
-LOCATION_IQ_API_KEY="pk.abc123"
+MAPBOX_ACCESS_TOKEN_ANDROID="pk.abc123"
+MAPBOX_ACCESS_TOKEN_IOS="pk.def456"
+LOCATION_IQ_API_KEY_ANDROID="pk.abc123"
+LOCATION_IQ_API_KEY_IOS="pk.def456"
+GRAPHHOPPER_API_KEY_ANDROID="abc123"
+GRAPHHOPPER_API_KEY_IOS="def456"
+HUKI_ROUTING_API_KEY="abc123"
 ```
 
-Unquoted values will produce a `Secrets.kt` that fails to compile.
+The `GenerateSecretsTask` Gradle task turns them into an `expect object Secrets` with an `actual` per platform:
+
+- Keys ending in `_ANDROID` / `_IOS` are exposed without the suffix (`Secrets.MAPBOX_ACCESS_TOKEN`) and compiled
+  into their own platform only, so an APK never carries the iOS key and vice versa.
+- Every value is XOR-masked with a random key, so it doesn't show up in `strings` / decompiler output.
+  This is obfuscation, not encryption: keep the provider-side restrictions below in place too.
+- A platform key missing for the platform being built fails the build (`generateSecretsAndroid` / `generateSecretsIos`),
+  and so does an unsuffixed key next to its platform variants.
+
+GitHub Actions writes `secrets.properties` from the repo secrets of the same name.
 
 ### MapBox
 
-Personal `MapBox` access token is required to test the app's map related features.
+Personal `MapBox` public tokens (`pk.`) are required for the map, one per platform. The token is set in code
+(`MapboxOptions.accessToken`) on both platforms, never via `mapbox_access_token.xml` or `MBXAccessToken`.
 
-The key is stored in an XML under `composeApp/src/main/res/values/mapbox_access_token.xml`.
-
-The XML token is converted to GitHub secret with:
-
-```shell
-cat composeApp/src/main/res/values/mapbox_access_token.xml | base64
-```
+Token hardening in the Mapbox dashboard: public scopes only (no secret `sk.` scopes), one token per platform,
+usage alerts on the account.
 
 ### Location IQ
 
-Personal `LocationIQ` token is required to test the app's geocoding related features.
+Personal `LocationIQ` tokens are required for geocoding, one per platform: https://locationiq.com
 
-To get a personal token visit: https://locationiq.com
-
-E.g.:
-
-```
-LOCATION_IQ_API_KEY="pk.abc123"
-```
+Token hardening in the LocationIQ dashboard: one token per platform, daily request limit per token, usage alerts.
 
 ## Licence resources
 

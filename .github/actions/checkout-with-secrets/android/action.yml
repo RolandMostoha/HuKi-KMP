@@ -1,14 +1,14 @@
 name: "Checkout with secrets"
 description: "Checkout the repository with secrets"
 inputs:
-  MAPBOX_ACCESS_TOKEN_XML_BASE64:
-    description: "MapBox Access Token XML as Base64 string"
+  MAPBOX_ACCESS_TOKEN_ANDROID:
+    description: "MapBox Access Token (Android)"
     required: true
-  LOCATION_IQ_API_KEY:
-    description: "LocationIQ API Key"
+  LOCATION_IQ_API_KEY_ANDROID:
+    description: "LocationIQ API Key (Android)"
     required: true
-  GRAPHHOPPER_API_KEY:
-    description: "GraphHopper API Key"
+  GRAPHHOPPER_API_KEY_ANDROID:
+    description: "GraphHopper API Key (Android)"
     required: true
   HUKI_ROUTING_API_KEY:
     description: "HuKi-Routing API Key"
@@ -31,17 +31,17 @@ runs:
         java-version: 21
         distribution: "temurin"
 
-    - name: Copy MapBox Access Token XML to res/values
+    - name: Copy MAPBOX_ACCESS_TOKEN_ANDROID to secrets.properties
       shell: bash
-      run: echo "${{ inputs.MAPBOX_ACCESS_TOKEN_XML_BASE64 }}" | base64 --decode > composeApp/src/main/res/values/mapbox_access_token.xml
+      run: echo "MAPBOX_ACCESS_TOKEN_ANDROID=\"${{ inputs.MAPBOX_ACCESS_TOKEN_ANDROID }}\"" >> ./secrets.properties
 
-    - name: Copy LOCATION_IQ_API_KEY to secrets.properties
+    - name: Copy LOCATION_IQ_API_KEY_ANDROID to secrets.properties
       shell: bash
-      run: echo "LOCATION_IQ_API_KEY=\"${{ inputs.LOCATION_IQ_API_KEY }}\"" >> ./secrets.properties
+      run: echo "LOCATION_IQ_API_KEY_ANDROID=\"${{ inputs.LOCATION_IQ_API_KEY_ANDROID }}\"" >> ./secrets.properties
 
-    - name: Copy GRAPHHOPPER_API_KEY to secrets.properties
+    - name: Copy GRAPHHOPPER_API_KEY_ANDROID to secrets.properties
       shell: bash
-      run: echo "GRAPHHOPPER_API_KEY=\"${{ inputs.GRAPHHOPPER_API_KEY }}\"" >> ./secrets.properties
+      run: echo "GRAPHHOPPER_API_KEY_ANDROID=\"${{ inputs.GRAPHHOPPER_API_KEY_ANDROID }}\"" >> ./secrets.properties
 
     - name: Copy HUKI_ROUTING_API_KEY to secrets.properties
       shell: bash

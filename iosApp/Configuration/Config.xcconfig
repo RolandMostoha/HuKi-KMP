@@ -1,4 +1,3 @@
-#include "Secrets.xcconfig"
 #include? "Version.xcconfig"
 
 TEAM_ID=

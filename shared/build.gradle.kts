@@ -11,9 +11,20 @@ plugins {
     alias(libs.plugins.room)
 }
 
+val secretsProperties = rootProject.layout.projectDirectory.file("secrets.properties")
 val generateSecrets = tasks.register<GenerateSecretsTask>("generateSecrets") {
-    secretsFile.set(rootProject.layout.projectDirectory.file("secrets.properties"))
-    outputDirectory.set(layout.buildDirectory.dir("generated/secrets"))
+    secretsFile.set(secretsProperties)
+    outputDirectory.set(layout.buildDirectory.dir("generated/secrets/commonMain"))
+}
+val generateSecretsAndroid = tasks.register<GenerateSecretsTask>("generateSecretsAndroid") {
+    secretsFile.set(secretsProperties)
+    platformSuffix.set("_ANDROID")
+    outputDirectory.set(layout.buildDirectory.dir("generated/secrets/androidMain"))
+}
+val generateSecretsIos = tasks.register<GenerateSecretsTask>("generateSecretsIos") {
+    secretsFile.set(secretsProperties)
+    platformSuffix.set("_IOS")
+    outputDirectory.set(layout.buildDirectory.dir("generated/secrets/iosMain"))
 }
 
 val generateVersionXcconfig = tasks.register<GenerateVersionXcconfigTask>("generateVersionXcconfig") {
@@ -115,6 +126,12 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.mapbox.android)
         }
+        androidMain {
+            kotlin.srcDir(generateSecretsAndroid.flatMap { it.outputDirectory })
+        }
+        iosMain {
+            kotlin.srcDir(generateSecretsIos.flatMap { it.outputDirectory })
+        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
@@ -150,7 +167,7 @@ skie {
 }
 
 tasks.matching { it.name == "prepareKotlinIdeaImport" }.configureEach {
-    dependsOn(generateSecrets)
+    dependsOn(generateSecrets, generateSecretsAndroid, generateSecretsIos)
     dependsOn(generateWhatsNew)
 }
 

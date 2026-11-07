@@ -1,6 +1,7 @@
 import Shared
 import SwiftUI
 import FirebaseCore
+import MapboxMaps
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -17,6 +18,7 @@ struct HukiApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     init() {
+        MapboxOptions.accessToken = Secrets.shared.MAPBOX_ACCESS_TOKEN
         // Maestro launch arguments
         let args = ProcessInfo.processInfo.arguments
         if let index = args.firstIndex(of: "skipWhatsNew"), index + 1 < args.count {

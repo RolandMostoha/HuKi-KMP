@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki
 
 import android.app.Application
+import com.mapbox.common.MapboxOptions
 import hu.mostoha.mobile.android.huki.BuildConfig
 import hu.mostoha.mobile.kmp.huki.analytics.AndroidAnalyticsService
 import hu.mostoha.mobile.kmp.huki.analytics.AndroidCrashlyticsService
@@ -18,6 +19,7 @@ class HuKiApplication : Application() {
         super.onCreate()
 
         setDebugBuild(BuildConfig.DEBUG)
+        MapboxOptions.accessToken = Secrets.MAPBOX_ACCESS_TOKEN
 
         initKoin {
             androidContext(this@HuKiApplication)
