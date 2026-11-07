@@ -10,6 +10,15 @@ inputs:
   GRAPHHOPPER_API_KEY_IOS:
     description: "GraphHopper API Key (iOS)"
     required: true
+  MAPBOX_ACCESS_TOKEN_ANDROID:
+    description: "MapBox Access Token (Android)"
+    required: true
+  LOCATION_IQ_API_KEY_ANDROID:
+    description: "LocationIQ API Key (Android)"
+    required: true
+  GRAPHHOPPER_API_KEY_ANDROID:
+    description: "GraphHopper API Key (Android)"
+    required: true
   HUKI_ROUTING_API_KEY:
     description: "HuKi-Routing API Key"
     required: true
@@ -36,6 +45,18 @@ runs:
     - name: Copy GRAPHHOPPER_API_KEY_IOS to secrets.properties
       shell: bash
       run: echo "GRAPHHOPPER_API_KEY_IOS=\"${{ inputs.GRAPHHOPPER_API_KEY_IOS }}\"" >> ./secrets.properties
+
+    - name: Copy MAPBOX_ACCESS_TOKEN_ANDROID to secrets.properties
+      shell: bash
+      run: echo "MAPBOX_ACCESS_TOKEN_ANDROID=\"${{ inputs.MAPBOX_ACCESS_TOKEN_ANDROID }}\"" >> ./secrets.properties
+
+    - name: Copy LOCATION_IQ_API_KEY_ANDROID to secrets.properties
+      shell: bash
+      run: echo "LOCATION_IQ_API_KEY_ANDROID=\"${{ inputs.LOCATION_IQ_API_KEY_ANDROID }}\"" >> ./secrets.properties
+
+    - name: Copy GRAPHHOPPER_API_KEY_ANDROID to secrets.properties
+      shell: bash
+      run: echo "GRAPHHOPPER_API_KEY_ANDROID=\"${{ inputs.GRAPHHOPPER_API_KEY_ANDROID }}\"" >> ./secrets.properties
 
     - name: Copy HUKI_ROUTING_API_KEY to secrets.properties
       shell: bash
