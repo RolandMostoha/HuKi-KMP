@@ -18,7 +18,11 @@ object SlopeLegend {
             SharedRes.strings.slope_legend_descent_moderate,
         ),
         SlopeLegendRow(0.0, "±${FLAT_SLOPE_PERCENT.toInt()}%", SharedRes.strings.slope_legend_flat),
-        SlopeLegendRow(MID_SLOPE_PERCENT, "+${MID_SLOPE_PERCENT.toInt()}%", SharedRes.strings.slope_legend_climb_moderate),
+        SlopeLegendRow(
+            MID_SLOPE_PERCENT,
+            "+${MID_SLOPE_PERCENT.toInt()}%",
+            SharedRes.strings.slope_legend_climb_moderate,
+        ),
         SlopeLegendRow(HIGH_SLOPE_PERCENT, maxLabel, SharedRes.strings.slope_legend_climb_steep),
     )
 }
