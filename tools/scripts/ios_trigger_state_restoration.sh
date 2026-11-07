@@ -1,5 +1,5 @@
 #!/bin/bash
-# Simulates the OS killing HuKi in the background, then reopens it so the SceneStorage session is restored.
+# Simulates the OS killing HuKi in the background, then reopens it so the saved session is restored.
 # Usage: ios_trigger_state_restoration.sh [simulator-udid]
 # Defaults to the booted simulator.
 
@@ -18,7 +18,7 @@ if [[ -z "$OLD_PID" || "$OLD_PID" == "-" ]]; then
   exit 1
 fi
 
-# Moving to the background writes the session to SceneStorage, a force-quit from the app switcher would discard it
+# Moving to the background saves the session with the latest camera position
 echo "Sending $APP_BUNDLE_ID to the background..."
 xcrun simctl launch "$DEVICE" com.apple.Preferences > /dev/null
 sleep 2

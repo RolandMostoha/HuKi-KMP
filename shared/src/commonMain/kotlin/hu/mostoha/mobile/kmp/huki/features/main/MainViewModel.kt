@@ -178,7 +178,18 @@ class MainViewModel(
 
     private var placeDetailsJob: Job? = null
     private var framedRouteStopLocations: List<Location> = emptyList()
-    private var routePlannerSession: RoutePlannerSession? = null
+    private val routePlannerSession = MutableStateFlow<RoutePlannerSession?>(null)
+
+    /**
+     * Emits a fresh snapshot whenever the restorable state changes, except camera moves, so iOS can save it while the
+     * app is still in the foreground: a foreground termination skips the background save.
+     */
+    val sessionSnapshots: Flow<String> = combine(_uiState, routePlannerSession) { uiState, routePlanner ->
+        val session = uiState.toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlanner)
+        Triple(session.myLocationStatus, session.hikingLayerVisible, session.feature)
+    }
+        .distinctUntilChanged()
+        .map { sessionSnapshot() }
 
     /**
      * The map keeps the padding of the last camera move while panning, so the saved center is only valid with it.
@@ -210,7 +221,7 @@ class MainViewModel(
 
     fun sessionSnapshot(): String =
         _uiState.value
-            .toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlannerSession)
+            .toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlannerSession.value)
             .encodeSession()
 
     fun onEvent(event: MainUiEvents) {
@@ -250,7 +261,7 @@ class MainViewModel(
             // Route Planner events
             MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
             is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers, event.isAwaitingRoutePlan)
-            is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession = event.session
+            is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession.value = event.session
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -582,7 +593,7 @@ class MainViewModel(
     }
 
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
-        routePlannerSession = null
+        routePlannerSession.value = null
         selectedWaypoint.value = null
         framedRouteStopLocations = emptyList()
         cancelPlaceDetailsLoad()
@@ -786,7 +797,7 @@ class MainViewModel(
     }
 
     private fun restoreRoutePlanner(session: RoutePlannerSession) {
-        routePlannerSession = session
+        routePlannerSession.value = session
         _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session)) }
         onSessionRestored(FeatureSession.RoutePlanner(session))
     }

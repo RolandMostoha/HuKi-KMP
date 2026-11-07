@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.RestoredFeature
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
+import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
@@ -46,6 +47,7 @@ import hu.mostoha.mobile.kmp.huki.service.FakeCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.AppLaunchConfig
 import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
+import hu.mostoha.mobile.kmp.huki.util.decodeSession
 import hu.mostoha.mobile.kmp.huki.util.mainSessionSavedStateHandle
 import hu.mostoha.mobile.kmp.huki.util.reversed
 import io.kotest.matchers.collections.shouldContain
@@ -270,6 +272,33 @@ class MainViewModelSessionTest {
             val restored = restoreViewModel(viewModel.sessionSnapshot())
 
             restored.uiState.value.sheet shouldBe Sheet.RoutePlanner(restored = routePlannerSession)
+        }
+    }
+
+    @Test
+    fun `Given an open Route Planner - When it is closed - Then a fresh snapshot without the planner is emitted`() {
+        runTest {
+            val routePlannerSession = RoutePlannerSession(
+                routeProfile = RoutePlannerProfile.BIKE,
+                waypoints = listOf(
+                    Location(47.76, 18.96).toRoutePlannerWaypoint(),
+                    Location(47.70, 18.80).toRoutePlannerWaypoint(),
+                ),
+            )
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.sessionSnapshots.test {
+                viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+                viewModel.onEvent(MainUiEvents.RoutePlannerStateChanged(routePlannerSession))
+                advanceUntilIdle()
+                decodeSession(expectMostRecentItem())?.feature shouldBe FeatureSession.RoutePlanner(routePlannerSession)
+
+                viewModel.onEvent(MainUiEvents.SheetDismissed)
+                advanceUntilIdle()
+
+                decodeSession(expectMostRecentItem())?.feature shouldBe null
+            }
         }
     }
 

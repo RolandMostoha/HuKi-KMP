@@ -214,11 +214,11 @@ UI → UiEvent → ViewModel → UiState
 - E2E: `maestro_location_link.yaml` (Android only).
 
 ### State restoration
-- Restore after the OS kills the app in the background. Android: a user swipe-away starts fresh; iOS keeps `@SceneStorage` after a swipe-away too, so it restores.
+- Restore after the OS kills the app in the background. Android: a user swipe-away starts fresh; iOS keeps the session after a swipe-away too, so it restores.
 - `MainViewModel` owns the session: restores it in `init`, builds it in `sessionSnapshot()`.
 - `MainSession`: what is restored — camera, my-location mode, one GPX / OKT / Landscapes / Route Planner feature (references and flags, never geometry).
 - `MainSessionSnapshot`: its `@Serializable` JSON form, mapped in `SessionMapper.kt`.
-- `SessionSavedState.kt`: stores the JSON in Android's `SavedStateHandle`; iOS `MainSceneView` keeps it in `@SceneStorage`.
+- `SessionSavedState.kt`: stores the JSON in Android's `SavedStateHandle`; iOS `MainSceneView` keeps it in `@AppStorage` (UserDefaults), written on every `sessionSnapshots` change because `@SceneStorage` only persists on backgrounding.
 - E2E: `maestro_state_restoration.yaml`.
 
 ## Coding Rules & Constraints
@@ -359,7 +359,7 @@ val [actual] = operation(X)
 - `ios_toggle_language.sh` — toggle the booted simulator's **global** language between Hungarian (`hu-HU`) and English (`en-US`) by writing `AppleLanguages`/`AppleLocale` to `NSGlobalDomain` (persists across app reinstalls / Xcode runs), then relaunching the app. Use for: "switch language (iOS)", "toggle language on iOS".
 - `ios_toggle_dark_mode.sh` — toggle the booted simulator's appearance between Dark and Light mode. Use for: "toggle dark mode (iOS)".
 - `ios_toggle_demo_mode.sh` — toggle a clean "demo" status bar (9:41, full Wi-Fi/cellular, 100% battery) on the booted simulator via `simctl status_bar`. Use for: "demo mode (iOS)", clean status bar for App Store screenshots.
-- `ios_trigger_state_restoration.sh [simulator-udid]` — background the running app (opens Settings), terminate it like the OS would, then relaunch it so the `@SceneStorage` session is restored. Use for: "trigger state restoration (iOS)", "simulate process death (iOS)".
+- `ios_trigger_state_restoration.sh [simulator-udid]` — background the running app (opens Settings), terminate it like the OS would, then relaunch it so the saved session is restored. Use for: "trigger state restoration (iOS)", "simulate process death (iOS)".
 - `ios_run_on_device.sh [device-name]` — build, install and launch the app on a connected physical iPhone via `xcodebuild` + `devicectl`
 
 ### Android

@@ -2,8 +2,8 @@ import Shared
 import SwiftUI
 
 struct MainSceneView: View {
-    // iOS keeps SceneStorage across both an OS kill and a swipe-away in the app switcher
-    @SceneStorage("huki.main_session") private var session = ""
+    // AppStorage writes to UserDefaults right away, SceneStorage only on backgrounding, which a foreground kill skips
+    @AppStorage("huki.main_session") private var session = ""
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModelHolder = MainViewModelHolder()
 
@@ -14,10 +14,15 @@ struct MainSceneView: View {
                 guard phase != .active else { return }
                 session = viewModel.sessionSnapshot()
             }
+            .task {
+                for await snapshot in viewModel.sessionSnapshots {
+                    session = snapshot
+                }
+            }
     }
 }
 
-// Creates the view model in the first body pass, when SceneStorage is already readable, and keeps it after that
+// Creates the view model in the first body pass with the saved session, and keeps it after that
 private final class MainViewModelHolder {
     private var viewModel: MainViewModel?
 
