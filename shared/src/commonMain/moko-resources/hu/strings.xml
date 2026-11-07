@@ -169,7 +169,7 @@
     <string name="menu_item_facebook">Facebook</string>
     <string name="menu_item_facebook_description">Csatlakozz hírekért és tippekért</string>
     <string name="menu_item_github">GitHub repository</string>
-    <string name="menu_item_github_description">A HuKi nyílt forráskódú szoftver</string>
+    <string name="menu_item_github_description">A HuKi nyílt forráskódú (GPLv3)</string>
     <string name="menu_item_location_iq">Location IQ</string>
     <string name="menu_item_location_iq_description">A LocationIQ egy kibővített ingyenes geocoding csomaggal támogatja az appot.</string>
     <string name="menu_a11y_app_icon">HuKi alkalmazás ikon</string>
