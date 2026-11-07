@@ -139,6 +139,7 @@ commit-message convention.
 - **Scope**: PascalCase, matching the feature or module name (e.g. `GPXDetails`, `Search`, `CI`, `Logger`).
   - Platform-only change: append `-Android` / `-iOS` to the scope, e.g. `fix(Map-Android)`.
 - **Description**: lowercase, imperative mood, no trailing period.
+- **Fixes**: `fix <symptom> by <solution>`, e.g. `fix(PlaceDetails): fix disappearing POIs by ignoring camera padding`.
 - **Release commits** are the one exception: type `release`, scope is the version — `release(v1.1)`.
 - Examples:
     - `feat(Search): add LocationIQ autocomplete with Ktor`

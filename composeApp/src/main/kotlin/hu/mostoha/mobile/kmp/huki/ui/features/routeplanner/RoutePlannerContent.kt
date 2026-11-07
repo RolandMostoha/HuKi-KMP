@@ -254,7 +254,7 @@ private fun RoutePlannerHeader(
             )
             PoweredByAttribution(
                 logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
-                logoHeight = 12.dp,
+                logoHeight = 10.dp,
                 logoTint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
                 onClick = onGraphhopperClick,

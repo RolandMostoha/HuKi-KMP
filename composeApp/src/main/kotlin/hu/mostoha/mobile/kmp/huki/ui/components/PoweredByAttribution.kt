@@ -65,7 +65,7 @@ private fun PoweredByAttributionPreview() {
     HuKiTheme {
         PoweredByAttribution(
             logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
-            logoHeight = 12.dp,
+            logoHeight = 10.dp,
             logoTint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "",
             onClick = {},
