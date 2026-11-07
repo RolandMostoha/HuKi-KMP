@@ -89,6 +89,7 @@ import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
 import hu.mostoha.mobile.kmp.huki.theme.SlopeColorScale
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -113,6 +114,7 @@ fun MapContent(
     onEvent: (MainUiEvents) -> Unit,
     modifier: Modifier = Modifier,
     routePlannerBottomInset: Dp? = null,
+    routePlannerDetent: RoutePlannerDetent? = null,
     listSheetHeight: Dp? = null,
     altitude: Int? = null,
 ) {
@@ -166,10 +168,11 @@ fun MapContent(
         }
     }
 
-    LaunchedEffect(routePlannerBottomInset) {
+    // The sheet height changes several times while its content loads, refitting on each would restart the camera
+    LaunchedEffect(routePlannerDetent) {
         val effect = lastRoutePlannerCamera ?: return@LaunchedEffect
-        if (routePlannerBottomInset == null) return@LaunchedEffect
-        mapViewportState.moveCamera(density, effect, isLandscape, routePlannerBottomInset)
+        val inset = currentRoutePlannerInset ?: return@LaunchedEffect
+        mapViewportState.moveCamera(density, effect, isLandscape, inset)
     }
 
     Box(modifier = modifier.fillMaxSize()) {

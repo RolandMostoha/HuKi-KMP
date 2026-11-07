@@ -307,6 +307,7 @@ private fun MainContent(
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
                 ),
+                routePlannerDetent = routePlannerDetent.takeIf { uiState.sheet is Sheet.RoutePlanner },
                 listSheetHeight = if (uiState.mapUiState.landscapes != null) {
                     landscapesSheetHeights.collapsed
                 } else {
