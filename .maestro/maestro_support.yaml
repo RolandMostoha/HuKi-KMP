@@ -75,6 +75,14 @@ appId: ${APP_ID}
     direction: DOWN
 - assertVisible: "huki.app@gmail.com"
 
+# Legal links
+- scrollUntilVisible:
+    element:
+      id: SUPPORT_PRIVACY_POLICY
+    direction: DOWN
+- assertVisible:
+    id: SUPPORT_TERMS_OF_USE
+
 # Back to Menu
 - tapOn:
     id: SUPPORT_BACK_BUTTON

@@ -55,7 +55,7 @@ Consumables aren't restored by default → add `SKIncludeConsumableInAppPurchase
 
 ### 4. App Review requirements
 - [ ] **3.1.1**: tips via IAP, wording makes it clear **nothing is unlocked**
-- [ ] **3.1.2**: purchase UI shows **price, period, auto-renewal**, links **Terms of Use (EULA)** + **Privacy Policy** on the Support screen
+- [x] **3.1.2**: purchase UI shows **price, period, auto-renewal**, links **Terms of Use (EULA)** + **Privacy Policy** on the Support screen
 - [ ] EULA in *App Information → License Agreement* (or Apple standard EULA link in the description)
 - [ ] Clear review note for the "supporter" subscriptions (unlocking nothing is a review risk)
 - [ ] **Restore Purchases** button
@@ -123,7 +123,7 @@ try await AppStore.sync()
 - [ ] **Offline**: `Product.products` fails without network → disabled tiles + "Prices unavailable offline" note, retry when back online. `currentEntitlements` is cached by StoreKit and works offline → supporter badge still shows
 - [ ] **Analytics**: `Analytics.logTransaction(transaction)` after verified purchase (Firebase doesn't auto-log StoreKit 2) + events like `support_tier_selected_squirrel`, `support_purchase_cancelled`
 - [ ] **Crashlytics**: non-fatals for product load failures and unverified transactions
-- [ ] **Privacy**: App Privacy label (Purchases → Purchase History, if sent to Firebase) + Privacy Policy
+- [x] **Privacy**: App Privacy label (Purchases → Purchase History, if sent to Firebase) + Privacy Policy
 - [ ] **Maestro**: purchase sheet is system UI → E2E stops at tapping the tile; with the StoreKit config file the simulator shows real product data
 - [ ] **Docs**: AGENTS.md (billing section) + README
 

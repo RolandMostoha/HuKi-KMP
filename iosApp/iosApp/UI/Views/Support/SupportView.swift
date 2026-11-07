@@ -99,6 +99,7 @@ struct SupportView: View {
                                 .transition(.opacity)
                         }
                         SupportContactView(cardColor: cardColor)
+                        SupportLegalLinksView()
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 6)

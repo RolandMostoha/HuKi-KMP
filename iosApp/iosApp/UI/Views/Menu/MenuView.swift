@@ -35,8 +35,8 @@ struct MenuView: View {
                     hero(versionName: uiState.versionName)
                     Spacer().frame(height: 10)
                     mainFeaturesSection
-                    supportSection
                     guidesSection
+                    supportSection
                     contactSection
                     legalSection
                     supportersSection

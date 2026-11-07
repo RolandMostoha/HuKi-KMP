@@ -11,9 +11,8 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toOneTimePurchaseRecords
  * Moves the one-time support purchases of the legacy HuKi-Android app, which this app updates in place.
  * An unreadable legacy file is skipped for good, so it can never block reading the settings.
  */
-class LegacySupportMigration(
-    private val readLegacyPreferences: suspend () -> Preferences?,
-) : DataMigration<Preferences> {
+class LegacySupportMigration(private val readLegacyPreferences: suspend () -> Preferences?) :
+    DataMigration<Preferences> {
 
     override suspend fun shouldMigrate(currentData: Preferences): Boolean =
         currentData[SupportPreferenceKeys.LEGACY_MIGRATED] != true

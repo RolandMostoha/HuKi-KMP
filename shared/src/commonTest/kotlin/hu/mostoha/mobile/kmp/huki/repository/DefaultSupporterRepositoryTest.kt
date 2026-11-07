@@ -405,8 +405,7 @@ class DefaultSupporterRepositoryTest {
             billingService.consumedPurchaseTokens shouldBe emptyList()
         }
 
-    private suspend fun FakeDataStore.storedOneTimeEntries(): Set<String>? =
-        data.first()[stringSetPreferencesKey("support_purchased_one_time_products")]
+    private suspend fun FakeDataStore.storedOneTimeEntries(): Set<String>? = data.first()[stringSetPreferencesKey("support_purchased_one_time_products")]
 
     private fun purchase(animal: SupportAnimal, token: String = "token_${animal.name}", quantity: Int = 1) =
         BillingPurchase(

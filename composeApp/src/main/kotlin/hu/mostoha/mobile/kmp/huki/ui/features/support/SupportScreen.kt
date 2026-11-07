@@ -252,6 +252,7 @@ private fun SupportContent(uiState: SupportUiState, onEvent: (SupportUiEvents) -
                 AboutSection(expandedReasons = expandedReasons, onReasonExpandedChange = onReasonExpandedChange)
             }
             ContactSection()
+            LegalLinks()
         }
     }
     uiState.alreadyPurchasedAnimal?.let { animal ->
@@ -564,6 +565,36 @@ private fun ContactSection() {
                     modifier = Modifier.size(Dimens.IconExtraSmall),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun LegalLinks() {
+    val context = LocalContext.current
+    val termsLabel = mokoString(SharedRes.strings.support_a11y_open_terms_of_use)
+    val privacyLabel = mokoString(SharedRes.strings.menu_a11y_open_privacy_policy)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Dimens.Large),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        TextButton(
+            onClick = { context.openUrl(context.resolveMoko(SharedRes.strings.support_terms_url_android)) },
+            modifier = Modifier
+                .testTag(TestTags.SUPPORT_TERMS_OF_USE)
+                .semantics { contentDescription = termsLabel },
+        ) {
+            Text(text = mokoString(SharedRes.strings.support_terms_of_use))
+        }
+        TextButton(
+            onClick = { context.openUrl(context.resolveMoko(SharedRes.strings.menu_privacy_policy_url)) },
+            modifier = Modifier
+                .testTag(TestTags.SUPPORT_PRIVACY_POLICY)
+                .semantics { contentDescription = privacyLabel },
+        ) {
+            Text(text = mokoString(SharedRes.strings.menu_item_privacy_policy))
         }
     }
 }

@@ -104,7 +104,10 @@ class DefaultSupporterRepository(
                 return@async result
             }
             recordPurchase(result.purchase)
-            val scheduled = scheduledSubscription.value?.takeIf { it.animal == animal && animal !in activeSubscriptions.value.keys }
+            val scheduled = scheduledSubscription.value?.takeIf {
+                it.animal == animal &&
+                    animal !in activeSubscriptions.value.keys
+            }
             if (scheduled != null) {
                 BillingPurchaseResult.Scheduled(scheduled.startTime)
             } else {
@@ -141,7 +144,10 @@ class DefaultSupporterRepository(
             } catch (exception: BillingException) {
                 Logger.w(exception) { "Billing: Failed to fetch entitlements after a subscription purchase." }
                 SupportAnimal.fromProductId(purchase.productId)?.let { animal ->
-                    activeSubscriptions.update { it + (animal to Instant.fromEpochMilliseconds(purchase.purchaseTimeMillis)) }
+                    activeSubscriptions.update {
+                        it +
+                            (animal to Instant.fromEpochMilliseconds(purchase.purchaseTimeMillis))
+                    }
                 }
             }
         }
@@ -152,7 +158,10 @@ class DefaultSupporterRepository(
         oneTimePurchases.forEach { recordOneTimePurchase(it) }
         activeSubscriptions.value = subscriptions
             .mapNotNull { purchase ->
-                SupportAnimal.fromProductId(purchase.productId)?.let { it to Instant.fromEpochMilliseconds(purchase.purchaseTimeMillis) }
+                SupportAnimal.fromProductId(purchase.productId)?.let {
+                    it to
+                        Instant.fromEpochMilliseconds(purchase.purchaseTimeMillis)
+                }
             }
             .toMap()
         scheduledSubscription.value = entitlements.scheduledSubscription
@@ -199,7 +208,9 @@ class DefaultSupporterRepository(
     private suspend fun storeOneTimePurchase(purchase: BillingPurchase) {
         dataStore.edit { preferences ->
             if (!preferences.markPurchaseTokenRecorded(purchase.purchaseToken)) return@edit
-            val records = preferences[SupportPreferenceKeys.PURCHASED_ONE_TIME_PRODUCTS].orEmpty().toOneTimePurchaseRecords()
+            val records = preferences[SupportPreferenceKeys.PURCHASED_ONE_TIME_PRODUCTS]
+                .orEmpty()
+                .toOneTimePurchaseRecords()
             val previous = records.firstOrNull { it.productId == purchase.productId }
             val updated = OneTimePurchaseRecord(
                 productId = purchase.productId,

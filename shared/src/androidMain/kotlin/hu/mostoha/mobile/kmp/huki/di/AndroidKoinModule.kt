@@ -44,7 +44,13 @@ val androidPlatformModule = module {
         createDataStore(
             migrations = listOf(
                 LegacySupportMigration {
-                    if (legacyFile.exists()) PreferencesSerializer.readFrom(Buffer().write(legacyFile.readBytes())) else null
+                    if (legacyFile.exists()) {
+                        PreferencesSerializer.readFrom(
+                            Buffer().write(legacyFile.readBytes()),
+                        )
+                    } else {
+                        null
+                    }
                 },
             ),
         ) { context.filesDir.resolve(SETTINGS_DATA_STORE_FILE_NAME).absolutePath }

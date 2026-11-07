@@ -61,7 +61,9 @@ class SupportViewModel(
             SupportUiEvents.RetryClicked -> loadPrices()
             is SupportUiEvents.TierClicked -> onTierClicked(event.animal)
             SupportUiEvents.PurchaseMessageDismissed -> _uiState.update { it.copy(purchaseMessage = null) }
-            SupportUiEvents.AlreadyPurchasedDialogDismissed -> _uiState.update { it.copy(alreadyPurchasedAnimal = null) }
+            SupportUiEvents.AlreadyPurchasedDialogDismissed -> _uiState.update {
+                it.copy(alreadyPurchasedAnimal = null)
+            }
             SupportUiEvents.ScheduledDialogDismissed -> _uiState.update { it.copy(scheduledDialogStartTime = null) }
             is SupportUiEvents.SupporterAnimalChosen -> onSupporterAnimalChosen(event.animal)
             SupportUiEvents.ManageSubscriptionsClicked -> onManageSubscriptionsClicked()
@@ -179,9 +181,13 @@ class SupportViewModel(
 
     private fun completeScheduledSubscription(supporterState: SupporterState) {
         val animal = scheduledAnimal
-        scheduledAnimal = supporterState.scheduledSubscription?.animal?.takeUnless { it in supporterState.activeSubscriptions }
+        scheduledAnimal =
+            supporterState.scheduledSubscription?.animal?.takeUnless { it in supporterState.activeSubscriptions }
         // A purchase in progress celebrates through its own result
-        if (animal == null || animal !in supporterState.activeSubscriptions || _uiState.value.purchasingAnimal != null) {
+        if (animal == null ||
+            animal !in supporterState.activeSubscriptions ||
+            _uiState.value.purchasingAnimal != null
+        ) {
             return
         }
         _uiState.update { uiState ->
@@ -217,7 +223,9 @@ class SupportViewModel(
         val tiers = tiers.map { tier ->
             tier.copy(
                 isActive = tier.animal in supporterState.activeSubscriptions,
-                scheduledStartTime = supporterState.scheduledSubscription?.takeIf { it.animal == tier.animal }?.startTime,
+                scheduledStartTime = supporterState.scheduledSubscription?.takeIf {
+                    it.animal == tier.animal
+                }?.startTime,
             )
         }
         // Held during a purchase, its result shows the new animal and choices together with the celebration
@@ -227,7 +235,9 @@ class SupportViewModel(
         return copy(
             tiers = tiers,
             supporterAnimal = supporterState.supporterAnimal,
-            supporterChoices = supporterState.ownedAnimals.sortedByDescending { supporterState.lastPurchaseTimes[it] }.map { animal ->
+            supporterChoices = supporterState.ownedAnimals.sortedByDescending {
+                supporterState.lastPurchaseTimes[it]
+            }.map { animal ->
                 SupporterChoice(animal = animal, purchaseCount = supporterState.oneTimePurchaseCounts[animal] ?: 1)
             },
         )

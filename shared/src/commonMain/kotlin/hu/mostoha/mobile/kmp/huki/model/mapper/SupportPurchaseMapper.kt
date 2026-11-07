@@ -10,7 +10,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import kotlin.time.Instant
 
 /**
- * Same format as the legacy HuKi-Android app ("productId;count;lastPurchaseTimeMillis"), so its records can be migrated.
+ * Same format as the legacy HuKi-Android app ("productId;count;lastPurchaseTimeMillis"),
+ * so its records can be migrated.
  */
 private const val ENTRY_SEPARATOR = ";"
 

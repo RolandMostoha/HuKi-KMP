@@ -259,15 +259,6 @@ private fun MenuContent(
                     )
                 }
             }
-            MenuSupportCard(
-                title = mokoString(SharedRes.strings.menu_item_support),
-                message = mokoString(SharedRes.strings.menu_item_support_description),
-                buttonText = mokoString(SharedRes.strings.menu_item_support_button),
-                buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
-                testTag = TestTags.MENU_ROW_SUPPORT,
-                onClick = { onEvent(MenuUiEvents.SupportClicked) },
-                modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
-            )
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_guides))
             MenuCard {
                 MenuRow(
@@ -315,6 +306,15 @@ private fun MenuContent(
                     )
                 }
             }
+            MenuSupportCard(
+                title = mokoString(SharedRes.strings.menu_item_support),
+                message = mokoString(SharedRes.strings.menu_item_support_description),
+                buttonText = mokoString(SharedRes.strings.menu_item_support_button),
+                buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
+                testTag = TestTags.MENU_ROW_SUPPORT,
+                onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
+            )
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_contact))
             MenuCard {
                 MenuRow(
