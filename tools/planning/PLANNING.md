@@ -46,30 +46,32 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / Design / tech tasks
 
-| Status | Feature                                                                                                                                                                                                |
-|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                       |                                                                                       |
-| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
-| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
-| `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup.                                                                                                        |
-| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                       |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                              |
-| `[ ]`  | App store preview video (optional)                                                                                                                                                                     |
-| `[ ]`  | App store header picture/video (optional)                                                                                                                                                              |
-| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                       |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                         |
-| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                        |
+| Status | Feature                                                                                                                                                                                              |
+|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                     |                                                                                       |
+| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                               |
+| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                |
+| `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup. Bump `androidBuildNumber` above the legacy versionCode (688), e.g. 1000, or Play rejects the upload. |
+| `[G]`  | Android: Prepare for CD with Google Play, check HuKi-Android for reference                                                                                                                           |
+| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                     |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                            |
+| `[ ]`  | App store preview video (optional)                                                                                                                                                                   |
+| `[ ]`  | App store header picture/video (optional)                                                                                                                                                            |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                     |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                       |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                      |
 
 ### Bugs
 
-| Status | Scope      | Bug                                                                                                                                                                                                                        |
-|--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Settings   | Bug: Android. Tap ouside should only close the tooltip ![img_13.png](img_13.png)                                                                                                                                           |
-| `[x]`  | Settings   | Bug: Android. Avoid multi line for RPDDK base ![img_14.png](img_14.png)                                                                                                                                                    |
-| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
-| `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
-| `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
-| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
+| Status | Scope        | Bug                                                                                                                                                                                                                        |
+|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | Settings     | Bug: Android. Tap ouside should only close the tooltip ![img_13.png](img_13.png)                                                                                                                                           |
+| `[x]`  | Settings     | Bug: Android. Avoid multi line for RPDDK base ![img_14.png](img_14.png)                                                                                                                                                    |
+| `[G]`  | RoutePlanner | Bug: Android. Route Planner when opened is still doing wrong animations, pulling the camera back and forth.                                                                                                                |
+| `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
+| `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
+| `[ ]`  | GPX          | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
+| `[?]`  | Settings     | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 
 ### FEATURE: Analytics
 
@@ -135,7 +137,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                                                                                                                                                               |
 |--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Separating the 2 whatsnew might be necessary per platform. Also versioning per platform, Android will go live with 2.0, next iOS is 1.5 |
+| `[x]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Separating the 2 whatsnew might be necessary per platform. Also versioning per platform, Android will go live with 2.0, next iOS is 1.5 |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 
@@ -185,11 +187,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                                                                                                         |
 
 
-### FEATURE: Settings
+### FEATURE: Menu & Settings
 
-| Status | Scope    | Task |
-|--------|----------|------|
-| `[ ]`  | Settings |      |
+| Status | Scope    | Task                                                      |
+|--------|----------|-----------------------------------------------------------|
+| `[ ]`  | Settings | Add a Graphhopper section to "Supporters" section In Menu |
 
 ### FEATURE: Menu - Guides
 

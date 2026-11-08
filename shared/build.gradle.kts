@@ -35,7 +35,9 @@ val generateVersionXcconfig = tasks.register<GenerateVersionXcconfigTask>("gener
 val generateWhatsNew = tasks.register<GenerateWhatsNewTask>("generateWhatsNew") {
     versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
     whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew"))
-    kotlinOutputDir.set(layout.buildDirectory.dir("generated/whatsnew"))
+    commonKotlinOutputDir.set(layout.buildDirectory.dir("generated/whatsnew/commonMain"))
+    androidKotlinOutputDir.set(layout.buildDirectory.dir("generated/whatsnew/androidMain"))
+    iosKotlinOutputDir.set(layout.buildDirectory.dir("generated/whatsnew/iosMain"))
     baseStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/base/strings_whatsnew.xml"))
     huStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/hu/strings_whatsnew.xml"))
 }
@@ -43,7 +45,7 @@ val generateWhatsNew = tasks.register<GenerateWhatsNewTask>("generateWhatsNew") 
 // Not wired into compilation: only `fastlane deliver` consumes these files.
 tasks.register<GenerateStoreReleaseNotesTask>("generateStoreReleaseNotes") {
     versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
-    whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew"))
+    whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew/ios"))
     enReleaseNotesFile.set(
         rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/en-US/release_notes.txt"),
     )
@@ -85,7 +87,7 @@ kotlin {
     sourceSets {
         commonMain {
             kotlin.srcDir(generateSecrets.flatMap { it.outputDirectory })
-            kotlin.srcDir(generateWhatsNew.flatMap { it.kotlinOutputDir })
+            kotlin.srcDir(generateWhatsNew.flatMap { it.commonKotlinOutputDir })
         }
         commonMain.dependencies {
             api(libs.androidx.lifecycle.viewmodel)
@@ -128,9 +130,11 @@ kotlin {
         }
         androidMain {
             kotlin.srcDir(generateSecretsAndroid.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateWhatsNew.flatMap { it.androidKotlinOutputDir })
         }
         iosMain {
             kotlin.srcDir(generateSecretsIos.flatMap { it.outputDirectory })
+            kotlin.srcDir(generateWhatsNew.flatMap { it.iosKotlinOutputDir })
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

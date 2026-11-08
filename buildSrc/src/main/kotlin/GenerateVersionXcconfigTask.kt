@@ -18,7 +18,8 @@ abstract class GenerateVersionXcconfigTask : DefaultTask() {
             versionFile.get().asFile.inputStream().use { load(it) }
         }
 
-        val appVersion = versionProperties.getProperty("appVersion")
+        val appVersion = versionProperties.getProperty("iosAppVersion")
+            ?: error("Version: 'iosAppVersion' missing from ${versionFile.get().asFile.path}")
         val iosBuildNumber = versionProperties.getProperty("iosBuildNumber")
 
         val file = outputFile.get().asFile

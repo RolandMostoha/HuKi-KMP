@@ -32,7 +32,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = versionProp("androidBuildNumber").toInt()
-        versionName = versionProp("appVersion")
+        versionName = versionProp("androidAppVersion")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     androidResources {

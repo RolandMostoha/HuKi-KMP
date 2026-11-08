@@ -30,12 +30,12 @@ abstract class GenerateStoreReleaseNotesTask : DefaultTask() {
         val versionProperties = Properties().apply {
             versionFile.get().asFile.inputStream().use { load(it) }
         }
-        val appVersion = versionProperties.getProperty("appVersion")
-            ?: error("StoreReleaseNotes: 'appVersion' missing from ${versionFile.get().asFile.path}")
+        val appVersion = versionProperties.getProperty("iosAppVersion")
+            ?: error("StoreReleaseNotes: 'iosAppVersion' missing from ${versionFile.get().asFile.path}")
 
         val versionDir = whatsNewRootDir.get().asFile.resolve("v$appVersion")
         require(versionDir.isDirectory) {
-            "StoreReleaseNotes: no changelog dir for appVersion=$appVersion (expected ${versionDir.path})"
+            "StoreReleaseNotes: no changelog dir for iosAppVersion=$appVersion (expected ${versionDir.path})"
         }
 
         write(versionDir, EN_LOCALE, enReleaseNotesFile.get().asFile, required = true)

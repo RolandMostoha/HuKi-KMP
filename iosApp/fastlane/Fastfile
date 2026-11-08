@@ -8,7 +8,7 @@ XCODE_PROJECT = File.join(IOS_DIR, "iosApp.xcodeproj")
 DERIVED_DATA = File.join(IOS_DIR, "build/DerivedData")
 OUTPUT_DIR = File.join(IOS_DIR, "build")
 VERSION_FILE = File.join(REPO_ROOT, "version.properties")
-WHATSNEW_DIR = File.join(REPO_ROOT, "tools/release/whatsnew")
+WHATSNEW_DIR = File.join(REPO_ROOT, "tools/release/whatsnew/ios")
 UPLOAD_SYMBOLS = File.join(DERIVED_DATA, "SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols")
 GOOGLE_SERVICE_PLIST = File.join(IOS_DIR, "iosApp/GoogleService-Info.plist")
 SCHEME = "iosApp"
@@ -46,7 +46,7 @@ platform :ios do
       api_key: connect_api_key,
       # Pin the build version.properties describes; deliver would otherwise submit "the latest".
       build_number: version_property("iosBuildNumber"),
-      app_version: version_property("appVersion"),
+      app_version: version_property("iosAppVersion"),
       skip_binary_upload: true,
       overwrite_screenshots: true,
       force: true,
@@ -70,9 +70,9 @@ end
 
 # Fail before a 20-minute archive if the release notes the What's New sheet needs are missing.
 def ensure_whatsnew_exists
-  version = version_property("appVersion")
+  version = version_property("iosAppVersion")
   directory = File.join(WHATSNEW_DIR, "v#{version}")
-  UI.user_error!("No What's New content for appVersion=#{version} (expected #{directory})") unless Dir.exist?(directory)
+  UI.user_error!("No What's New content for iosAppVersion=#{version} (expected #{directory})") unless Dir.exist?(directory)
 end
 
 # Locally the distribution identity is already in the login keychain; CI gets it from the secret.
@@ -95,14 +95,14 @@ end
 # version.properties is the source of truth. Both mistakes App Store Connect would reject are caught
 # here in seconds instead of after a ~6 minute archive.
 def preflight_version(api_key)
-  version = version_property("appVersion")
+  version = version_property("iosAppVersion")
   build = version_property("iosBuildNumber").to_i
 
   live = live_app_store_version(api_key)
   if live && Gem::Version.new(version) <= Gem::Version.new(live)
     UI.user_error!(
-      "version.properties: appVersion #{version} is not higher than the released App Store version #{live}. " \
-      "Bump appVersion (and add tools/release/whatsnew/v<version>/)."
+      "version.properties: iosAppVersion #{version} is not higher than the released App Store version #{live}. " \
+      "Bump iosAppVersion (and add tools/release/whatsnew/ios/v<version>/)."
     )
   end
 

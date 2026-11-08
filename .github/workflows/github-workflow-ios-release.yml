@@ -36,10 +36,10 @@ jobs:
           GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
 
       # A mistagged commit or a stray manual run fails here in seconds, before any build cost.
-      # Tag format: ios/v<appVersion>, e.g. ios/v1.1 — move the tag to re-release the same version.
+      # Tag format: ios/v<iosAppVersion>, e.g. ios/v1.1 — move the tag to re-release the same version.
       - name: Verify release ref
         run: |
-          APP_VERSION="$(grep '^appVersion=' version.properties | cut -d= -f2)"
+          APP_VERSION="$(grep '^iosAppVersion=' version.properties | cut -d= -f2)"
           APP_BUILD="$(grep '^iosBuildNumber=' version.properties | cut -d= -f2)"
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             if [[ ! "$GITHUB_REF_NAME" =~ ^ios/v([0-9]+(\.[0-9]+)*)$ ]]; then
@@ -47,7 +47,7 @@ jobs:
               exit 1
             fi
             if [ "${BASH_REMATCH[1]}" != "$APP_VERSION" ]; then
-              echo "::error::Tag $GITHUB_REF_NAME does not match appVersion=$APP_VERSION in version.properties"
+              echo "::error::Tag $GITHUB_REF_NAME does not match iosAppVersion=$APP_VERSION in version.properties"
               exit 1
             fi
           elif [ "$GITHUB_REF_NAME" != "main" ]; then
@@ -55,7 +55,7 @@ jobs:
             echo "::error::Manual runs are only allowed from main (got $GITHUB_REF_NAME)"
             exit 1
           fi
-          echo "Releasing $GITHUB_REF_NAME (appVersion=$APP_VERSION, iosBuildNumber=$APP_BUILD)"
+          echo "Releasing $GITHUB_REF_NAME (iosAppVersion=$APP_VERSION, iosBuildNumber=$APP_BUILD)"
 
       - name: Select Xcode 26.5
         uses: maxim-lobanov/setup-xcode@v1
