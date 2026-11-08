@@ -593,16 +593,17 @@ class MainViewModel(
     }
 
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
+        val waypoints = stops.map { it.toRoutePlannerWaypoint() }
         routePlannerSession.value = null
         selectedWaypoint.value = null
-        framedRouteStopLocations = emptyList()
+        framedRouteStopLocations = waypoints.mapNotNull { it.location }
         cancelPlaceDetailsLoad()
         cancelOktJobs()
         oktTrail = null
         cancelLandscapesJob()
         _uiState.update { uiState ->
             uiState.copy(
-                sheet = Sheet.RoutePlanner(stops.map { it.toRoutePlannerWaypoint() }),
+                sheet = Sheet.RoutePlanner(waypoints),
                 isOktLoading = false,
                 mapUiState = uiState.mapUiState
                     .withoutGpx()

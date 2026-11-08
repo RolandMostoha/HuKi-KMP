@@ -1683,6 +1683,32 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given a place - When the planner opens before my location loads - Then the camera only frames the plan`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+            val placeStop = GpxWaypoint(TEST_LONG_TAP_LOCATION, WaypointType.END)
+
+            viewModel.mapUiEffects.test {
+                expectMostRecentItem()
+
+                viewModel.onEvent(MainUiEvents.PlaceDetailsRoutePlanClicked)
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, listOf(placeStop), isAwaitingRoutePlan = false))
+                viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, listOf(placeStop)))
+                advanceUntilIdle()
+
+                awaitItem() shouldBe MapUiEffects.UpdateCamera(
+                    CameraTarget.Bounds(TEST_ROUTE_PLAN.locations + TEST_ROUTE_PLAN.waypoints),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
     fun `Given a route plan that could not be planned - When it stops waiting - Then the camera frames the stops`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
