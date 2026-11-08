@@ -48,23 +48,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Feature                                                                                                                                                                                                |
 |--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Android Splash screen with Tree animation, similarly as in HuKi-Android                                                                                                                                |
-| `[x]`  | Android: Prepare for config change AND process death -> state restoration. Map and camera state, My location state, GPX, RoutePlanner, Lansdcapes, OKT should restore the last state (revise the list) |                                                                                       |
-| `[x]`  | Android: My location marker is not recolored in dark mode ![img_4.png](img_4.png)                                                                                                                      |
-| `[x]`  | Android:  Support multi app language                                                                                                                                                                   |
-| `[x]`  | Compass is not colored based on light - dark mode ![img_10.png](img_10.png)                                                                                                                            |
-| `[x]`  | Design: Revert the Serach sheet so we display 3 recent GPXs                                                                                                                                            |
-| `[x]`  | Design: Add a POI animation to Place Details                                                                                                                                                           |
-| `[x]`  | Design-Settings: make change map titles more prominent (this is one of the most used setting), a dedicated section "Map labels". Also rename "Map" section to "Map controls".                          |
-| `[x]`  | Design: Make the zoom to my location smoother. When the first installs the app the zoom from HU -> my location feels flashy. The same is true for clean app open.                                      |
-| `[x]`  | Activity: show when locked (as in HuKi-Android), so after screen off → on the map shows instantly instead of the lock screen, like Google Maps.                                                        |
-| `[x]`  | Design: Search bar opening is not smooth, UI elements are lagging and not animating. Maybe thebig list of Destinations are causing this.                                                               |
 | `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                       |                                                                                       |
 | `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                                 |
 | `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                  |
-| `[x]`  | Separate Mapbox token Android vs iOS, Separate LocationIQ token Android vs iOS. Use some secu tool to make sure tokens are not stolen.                                                                 |
-| `[x]`  | HuKi-KMP: update licencing text and use a more strict licencing agreement. Let's protect the brand, and the collected data for destinations. Switch from MIT to necessary.                             |
-| `[x]`  | Graphhopper attribution.                                                                                                                                                                               |
+| `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup.                                                                                                        |
 | `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                       |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                              |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                     |
@@ -79,16 +66,10 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | Settings   | Bug: Android. Tap ouside should only close the tooltip ![img_13.png](img_13.png)                                                                                                                                           |
 | `[G]`  | Settings   | Bug: Android. Avoid multi line for RPDDK base ![img_14.png](img_14.png)                                                                                                                                                    |
-| `[x]`  | Settings   | Bug: Android. FABs are not aligned with opened GPX, different bottom paddings ![img_5.png](img_5.png)                                                                                                                      |
-| `[x]`  | Settings   | Bug: Android and iOS. Zoom buttons. If GPX is opened, show them regardless of the my location state. Even is users move away the camera, we want to show zoom buttons always for started GPX.                              |
-| `[x]`  | Search     | Bug: Android. Sheets closing animations dont work clicing on X, it just flashes down.                                                                                                                                      |
-| `[x]`  | Search     | Bug: Android. My location issue. There are cases when I click on My location button, following or live compass, then move the camera away, and in 1-4 sec it jumps back to my location suddenly                            |
-| `[x]`  | Search     | Bug: Android. When the GPX MEnu is closed, there is a weird shadow flash for the eye FAB. ![img_12.png](img_12.png)                                                                                                        |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
-| `[x]`  | MyLocation | Bug: Android. Sometimes if I multi long tap Place Details on the map, the markers are disappearing randomly.                                                                                                               |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
-| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 | `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
+| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 
 ### FEATURE: Analytics
 
@@ -102,9 +83,9 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Map
 
-| Status | Scope  | Task                                                                                                                                                                                                                                                                                                                                                        |
-|--------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Map    | Is there any optimization strategy for raster layers? HuKi-hiking trails                                                                                                                                                                                                                                                                                    |
+| Status | Scope | Task                                                                                                                                                               |
+|--------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking, when trails are loading, they often show weird pixelated PNGs everywhere. Can we make smoother? |
 
 ### FEATURE: Landscape orientation
 
@@ -113,17 +94,15 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | Android: Add Previews to Landscape / Tablet view                                                                               |
 | `[ ]`  | iOS-Landscape: Mapbox scale bar should be less wide (Android works fine, Mapbox had a built-in option)                         |
 | `[ ]`  | iOS-Landscape: Mode, use Glass Panel for Layers Sheets instead of full screen sheet.                                           |
-| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                   |
 | `[ ]`  | iOS-iPad: Use overlay side panels instead of Sheets -> they show up in the center of the screen covering lots of usable space  |
 | `[ ]`  | Add extra padding to floating action in iPad mode, there is a lot of space                                                     |
 | `[ ]`  | Landscapes/Categories sheet: proper landscape support on both platforms (rotation while open, detents/heights, camera padding) |
+| `[?]`  | iOS-Landscape: Move the sheet to left to match Apple Maps behavior, so Map is more visible in the right side                   |
 
 ### FEATURE: My Location
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | MyLocation | Show altitude somewhere                                                                                                                                                                                                                                               |
-| `[x]`  | MyLocation | Show compass directions in the compass icon,  É, D, K, Ny, ![img_15.png](img_15.png).                                                                                                                                     |
 | `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
@@ -164,20 +143,13 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope | Task                                                                                                                                 |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | GPX   | Display waypoint name in the info window (above distance and travel time). By default "show distances" should be turned on for GPXs. |
-| `[x]`  | GPX   | GPX close info windows to my location should be hidden e.g. Starting waypoint showing 0m 0min doesnt make sense.                     |
-| `[x]`  | GPX   | There should be a global Settings to by default show / hide gpx distance + estimation in opened GPX files. Toggle is ON by default.  |
-| `[x]`  | GPX   | Display direction arrows. Add an option to toggle (reverse) direction in GpxMenu. Add the option to GpxDetails as well.              |
-| `[x]`  | GPX   | Colored GPX based on altitude / incline / decline. Check HuKi-Android logic how we color the GPX lines. Improve if necessary.        |
-| `[x]`  | GPX   | Add a dedicated FAB button above GPX menu, to show/hide GPX route without entering to GPX Menu.                                      |
-| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                     |
 | `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                     |
 
 ### FEATURE: GPX Collection
 
 | Status | Scope         | Task                                                                                                                                                                                                                                                                                                                                                                                   |
 |--------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | GPXCollection | Re-design GPXCollection. Remove GPX stat pills background, so it's inlined with the parent card. Add segmented control and logic to order by date, distance (<5km, 5-10, 10-20, 20+) ![img_11.png](img_11.png), per landscape. ![img_6.png](img_6.png). Add a tag for landscapes (similarily designed like Imported/Route Planner tags). Do not show these tags in per landscape page. |
 | `[ ]`  | GPXCollection | Implement rename file                                                                                                                                                                                                                                                                                                                                                                  |
 | `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                                                                                                                                                                                                                                                |
 | `[ ]`  | GPXCollection | Gpx Edit function -> reloads all waypoints in route planner. Only for HuKi plans should work, other GPX might be under licence obligations.                                                                                                                                                                                                                                            |
@@ -188,9 +160,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope        | Task                                                                                                                                               |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | PlaceDetails | Support opening lat,lon locations Intent from other apps. E.g. Google Photos -> Location -> Share. ![img_1.png](img_1.png) ![img_2.png](img_2.png) |
-| `[x]`  | PlaceDetails | Open shared Google Maps places (incl. `maps.app.goo.gl` short links) in Place Details                                                              |
-| `[x]`  | Deeplink     | Open `huki.hu/place` App Links in Place Details                                                                                                    |
 | `[ ]`  | PlaceDetails | iOS: open shared locations via a Share Extension (Google Maps / Apple Maps links), iOS Photos always opens Apple Maps                              |
 | `[ ]`  | Landscapes   | `huki.hu/landscape?id=` (and legacy `osmId=`) App Link opens the landscape, as in HuKi-Android                                                     |
 | `[ ]`  | PlaceDetails | Allow dragging the marker to refine the pick (re-geocode on drop)                                                                                  |
@@ -228,12 +197,6 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 
 | Status | Scope  | Task                                                                                                                                              |
 |--------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Guides | Add "Gyorstalpaló" to Menu-Guides section                                                                                                         |
-| `[x]`  | Guides | Implement "QuickGuide" screen. Add My Location section. 1. Following - single click 2. Navigation (Live compass) - clicking 2 times or long press |
-| `[x]`  | Guides | Add Route Planner section - how to start -> long tap on Map, (multi POIs possible). Destinations or OKT waypoints connecting.                     |
-| `[x]`  | Guides | Add Travel Time calculation logic                                                                                                                 |
-| `[x]`  | Guides | Add Slope calculation (-25%, +25% with reference) (HuKi-Android for reference)                                                                    |
-| `[x]`  | Guides | Add GPX section - link GpxGuideScreen                                                                                                             |
 | `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                         |
 | `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                               |
 
