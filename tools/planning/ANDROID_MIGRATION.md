@@ -40,7 +40,7 @@ Their legacy files are deleted by the cleanup step, so the data is lost on upgra
 
 ### 2. Release build `[G]`
 
-- [ ] Add `proguard-rules.pro` to `:composeApp` (release already has `isMinifyEnabled` and `isShrinkResources`).
+- [x] Add `proguard-rules.pro` to `:composeApp` (release already has `isMinifyEnabled` and `isShrinkResources`).
   - Use HuKi-Android's `app/proguard-rules.pro` as the reference. Keep rules for kotlinx-serialization, Ktor, Koin,
     Room, Mapbox, Firebase.
 - [ ] Build `bundleRelease` locally and smoke-test the minified build: map, search, GPX import, route planner, billing.
