@@ -273,6 +273,8 @@ private fun HikeRecommendationsInfoButton(onClick: () -> Unit, onGpxGuideClicked
             }
         },
         state = tooltipState,
+        focusable = true,
+        hasAction = true,
     ) {
         IconButton(
             onClick = {
@@ -315,6 +317,8 @@ private fun OktInfoButton(onClick: () -> Unit) {
             }
         },
         state = tooltipState,
+        focusable = true,
+        hasAction = true,
     ) {
         IconButton(
             onClick = {
