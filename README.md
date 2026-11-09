@@ -59,6 +59,20 @@ Refer to [AGENTS.md](AGENTS.md). It's the best place for humans too.
 
 ## Supporters
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="tools/assets/graphhopper_logo_dark.svg">
+  <img src="tools/assets/graphhopper_logo_light.svg" alt="GraphHopper" width="200"/>
+</picture>
+
+GraphHopper gives HuKi a very generous free plan to its Routing API.
+
+The Routing API calculates hiking routes between up to 10 stops, with a custom model that prefers Hungarian marked trails, the
+shortest walking route and bike routes, all with elevation data for the distance, ascent and descent stats.
+
+Kudos to the GraphHopper team, I appreciate it!
+
+Website link: https://www.graphhopper.com/
+
 <img src="shared/src/commonMain/moko-resources/images/ic_location_iq_logo%403x.png" alt="LocationIQ" width="200"/>
 
 LocationIQ gives HuKi a very generous free plan to its Autocomplete and Geocoding APIs.
@@ -73,20 +87,6 @@ Services Used:
 - Reverse Geocoding API – Powers features where converting coordinates into place information is necessary.
 
 Website link: https://locationiq.com/
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="tools/assets/graphhopper_logo_dark.svg">
-  <img src="shared/src/commonMain/moko-resources/images/img_graphhopper_logo.svg" alt="GraphHopper" width="200"/>
-</picture>
-
-GraphHopper gives HuKi a very generous free plan to its Routing API.
-
-The Routing API calculates hiking routes between up to 10 stops, with a custom model that prefers Hungarian marked trails, the
-shortest walking route and bike routes, all with elevation data for the distance, ascent and descent stats.
-
-Kudos to the GraphHopper team, I appreciate it!
-
-Website link: https://www.graphhopper.com/
 
 ## Integration & Delivery
 

@@ -160,6 +160,19 @@ extension MenuView {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_supporters))
             VStack(spacing: 0) {
                 MenuItemView(
+                    icon: Image(uiImage: SharedRes.images().ic_graphhopper_circle.toUIImage()!)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40),
+                    title: strings.get(id: SharedRes.strings().menu_item_graphhopper),
+                    description: strings.get(id: SharedRes.strings().menu_item_graphhopper_description),
+                    showIconBackground: false,
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_graphhopper),
+                    testTag: TestTags.shared.MENU_ROW_GRAPHHOPPER,
+                    action: { viewModel.onEvent(event: MenuUiEventsGraphhopperClicked.shared) }
+                )
+                divider
+                MenuItemView(
                     icon: Image(uiImage: SharedRes.images().ic_location_iq_circle.toUIImage()!)
                         .resizable()
                         .scaledToFit()

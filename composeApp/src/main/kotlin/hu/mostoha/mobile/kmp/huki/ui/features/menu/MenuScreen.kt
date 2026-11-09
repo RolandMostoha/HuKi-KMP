@@ -344,6 +344,22 @@ private fun MenuContent(
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_supporters))
             MenuCard {
                 MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_graphhopper),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_graphhopper),
+                    testTag = TestTags.MENU_ROW_GRAPHHOPPER,
+                    onClick = { onEvent(MenuUiEvents.GraphhopperClicked) },
+                    showIconBackground = false,
+                    description = mokoString(SharedRes.strings.menu_item_graphhopper_description),
+                ) {
+                    Image(
+                        painter = painterResource(SharedRes.images.ic_graphhopper_circle.drawableResId),
+                        contentDescription = null,
+                        modifier = Modifier.size(Dimens.IconContainer),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_location_iq),
                     valueText = null,
                     contentDescription = mokoString(SharedRes.strings.menu_a11y_open_location_iq),

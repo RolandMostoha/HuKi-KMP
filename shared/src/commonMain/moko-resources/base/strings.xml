@@ -164,7 +164,7 @@
     <string name="menu_a11y_open_trail_symbols_guide">Open Trail Symbols</string>
     <string name="menu_section_contact">Contact</string>
     <string name="menu_section_legal">Legal</string>
-    <string name="menu_section_supporters">Supporters</string>
+    <string name="menu_section_supporters">Services</string>
     <string name="menu_item_email">Email</string>
     <string name="menu_item_privacy_policy">Privacy Policy</string>
     <string name="menu_item_facebook">Facebook</string>
@@ -173,12 +173,15 @@
     <string name="menu_item_github_description">HuKi is open source (GPLv3)</string>
     <string name="menu_item_location_iq">Location IQ</string>
     <string name="menu_item_location_iq_description">LocationIQ supports HuKi with a generous free plan for its geocoding services.</string>
+    <string name="menu_item_graphhopper">GraphHopper</string>
+    <string name="menu_item_graphhopper_description">GraphHopper supports HuKi with a free plan for its routing service.</string>
     <string name="menu_a11y_app_icon">HuKi app icon</string>
     <string name="menu_a11y_open_email">Send email</string>
     <string name="menu_a11y_open_privacy_policy">Open Privacy Policy</string>
     <string name="menu_a11y_open_facebook">Open Facebook page</string>
     <string name="menu_a11y_open_github">Open GitHub repository</string>
     <string name="menu_a11y_open_location_iq">Open Location IQ website</string>
+    <string name="menu_a11y_open_graphhopper">Open GraphHopper website</string>
     <string name="menu_contact_email">huki.app@gmail.com</string>
     <string name="menu_email_subject_android">[HuKi-Android]</string>
     <string name="menu_email_subject_ios">[HuKi-iOS]</string>
@@ -186,6 +189,7 @@
     <string name="menu_facebook_url">https://www.facebook.com/profile.php?id=61572010721841</string>
     <string name="menu_github_url">https://github.com/RolandMostoha/HuKi-KMP</string>
     <string name="menu_location_iq_url">https://locationiq.com/</string>
+    <string name="menu_graphhopper_url">https://www.graphhopper.com/</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_a11y_back">Back</string>

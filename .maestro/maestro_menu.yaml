@@ -44,11 +44,17 @@ appId: ${APP_ID}
 - assertVisible:
     id: MENU_ROW_PRIVACY_POLICY
 
-# Supporters section — scroll into view if the screen is short
+# Services section — scroll into view if the screen is short
 - scrollUntilVisible:
     element:
-      text: "Supporters"
+      text: "Services"
     direction: DOWN
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_GRAPHHOPPER
+    direction: DOWN
+    centerElement: true
+- assertVisible: "GraphHopper"
 - scrollUntilVisible:
     element:
       id: MENU_ROW_LOCATION_IQ

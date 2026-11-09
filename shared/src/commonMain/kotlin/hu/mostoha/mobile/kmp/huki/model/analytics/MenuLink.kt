@@ -4,5 +4,6 @@ enum class MenuLink(val value: String) {
     EMAIL("email"),
     FACEBOOK("facebook"),
     GITHUB("github"),
+    GRAPHHOPPER("graphhopper"),
     PRIVACY_POLICY("privacy_policy"),
 }

@@ -179,6 +179,20 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state - When GraphhopperClicked event - Then OpenUrl effect with GraphHopper url is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.GraphhopperClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_graphhopper_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.GRAPHHOPPER))
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When PrivacyPolicyClicked event - Then OpenUrl effect with privacy policy url is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

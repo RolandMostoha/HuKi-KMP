@@ -191,7 +191,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                      |
 |--------|----------|-----------------------------------------------------------|
-| `[ ]`  | Settings | Add a Graphhopper section to "Supporters" section In Menu |
+| `[x]`  | Settings | Add a Graphhopper section to "Supporters" section In Menu |
 
 ### FEATURE: Menu - Guides
 

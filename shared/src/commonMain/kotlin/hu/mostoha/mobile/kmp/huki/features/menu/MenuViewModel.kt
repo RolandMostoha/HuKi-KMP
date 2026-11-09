@@ -49,6 +49,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             MenuUiEvents.GithubClicked -> openGithub()
             MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
+            MenuUiEvents.GraphhopperClicked -> openGraphhopper()
         }
     }
 
@@ -70,6 +71,11 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
     private fun openGithub() {
         analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB))
         sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url))
+    }
+
+    private fun openGraphhopper() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GRAPHHOPPER))
+        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_graphhopper_url))
     }
 
     private fun openPrivacyPolicy() {
