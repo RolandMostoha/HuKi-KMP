@@ -2,18 +2,18 @@ package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -22,38 +22,57 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 private val COMPASS_SIZE = 64.dp
+private val DISC_SIZE = 56.dp
 private val LETTER_SIZE = 9.dp
-private val LETTER_INSET = 8.dp
+private val LETTER_INSET = 4.dp
 
 @Composable
 fun MapCompass(cameraBearing: () -> Float, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val a11yLabel = mokoString(SharedRes.strings.my_location_a11y_compass)
     Box(
-        modifier = modifier
-            .size(COMPASS_SIZE)
-            .clip(CircleShape)
-            .clickable(onClick = onClick, role = Role.Button)
-            .clearAndSetSemantics { contentDescription = a11yLabel },
+        modifier = modifier.size(COMPASS_SIZE),
+        contentAlignment = Alignment.Center,
     ) {
-        Image(
-            imageVector = mokoImage(SharedRes.images.ic_my_location_compass),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-        )
-        CompassLetters(
-            cameraBearing = cameraBearing,
-            modifier = Modifier.fillMaxSize(),
-        )
+        Surface(
+            onClick = onClick,
+            modifier = Modifier
+                .size(DISC_SIZE)
+                .semantics {
+                    contentDescription = a11yLabel
+                    role = Role.Button
+                },
+            shape = CircleShape,
+            color = Color.Transparent,
+            shadowElevation = Dimens.FloatingActionElevation,
+        ) {
+            Box(
+                modifier = Modifier.clearAndSetSemantics {},
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    imageVector = mokoImage(SharedRes.images.ic_my_location_compass),
+                    contentDescription = null,
+                    modifier = Modifier.requiredSize(COMPASS_SIZE),
+                )
+                CompassLetters(
+                    cameraBearing = cameraBearing,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
     }
 }
 
