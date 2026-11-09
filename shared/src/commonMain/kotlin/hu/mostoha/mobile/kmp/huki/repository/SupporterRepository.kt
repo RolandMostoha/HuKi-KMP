@@ -3,7 +3,10 @@ package hu.mostoha.mobile.kmp.huki.repository
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 interface SupporterRepository {
     val supporterState: StateFlow<SupporterState>
@@ -20,3 +23,6 @@ interface SupporterRepository {
 
     suspend fun chooseAnimal(animal: SupportAnimal)
 }
+
+val SupporterRepository.supporterAnimal: Flow<SupportAnimal?>
+    get() = supporterState.map { it.supporterAnimal }.distinctUntilChanged()

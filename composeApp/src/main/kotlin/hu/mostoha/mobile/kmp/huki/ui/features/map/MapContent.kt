@@ -324,7 +324,7 @@ fun MapContent(
         MapCameraDebugPanel(
             enabled = FeatureFlags.DEBUG_CAMERA_PANEL_ENABLED,
             visible = isCameraPanelVisible,
-            cameraState = if (FeatureFlags.DEBUG_CAMERA_PANEL_ENABLED) mapViewportState.cameraState else null,
+            cameraState = if (isCameraPanelVisible) mapViewportState.cameraState else null,
             onMoveCamera = { position -> mapViewportState.setCameraOptions(position.toCameraOptions()) },
             onOpen = { isCameraPanelVisible = true },
             onClose = { isCameraPanelVisible = false },

@@ -114,14 +114,27 @@ appId: ${APP_ID}
       id: ROUTE_PLANNER_STATS
     timeout: 20000
 
-# A force-quit (stopApp) discards the saved state, the app starts on the plain map.
+# A force-quit (stopApp) discards the saved state on Android, iOS keeps the session and restores it.
 - launchApp:
     stopApp: true
     arguments:
       skipWhatsNew: true
-- extendedWaitUntil:
-    visible:
-      id: MAIN_SEARCH_BAR
-    timeout: 15000
-- assertNotVisible:
-    id: ROUTE_PLANNER_SHEET
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: MAIN_SEARCH_BAR
+          timeout: 15000
+      - assertNotVisible:
+          id: ROUTE_PLANNER_SHEET
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: ROUTE_PLANNER_SHEET
+          timeout: 15000
+      - assertVisible: "Rám-szakadék"

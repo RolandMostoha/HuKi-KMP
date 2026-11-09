@@ -50,6 +50,11 @@ class PlayBillingService(application: Application) : BillingService {
     private val activityTracker = ResumedActivityTracker().also { application.registerActivityLifecycleCallbacks(it) }
     private val productDetailsById = mutableMapOf<String, ProductDetails>()
     private var purchaseFlow: PurchaseFlow? = null
+
+    /**
+     * Set before the first suspension, so a second purchase can't start while the flow is being prepared.
+     */
+    private var isPurchaseStarting = false
     private var purchaseListener: ((BillingPurchase) -> Unit)? = null
 
     private val billingClient = BillingClient.newBuilder(application)
@@ -77,10 +82,11 @@ class PlayBillingService(application: Application) : BillingService {
 
     override fun purchase(productId: String, onResult: (BillingPurchaseResult) -> Unit) {
         scope.launch {
-            if (purchaseFlow != null) {
+            if (purchaseFlow != null || isPurchaseStarting) {
                 onResult(BillingPurchaseResult.Failed("Play Billing: Another purchase is in progress"))
                 return@launch
             }
+            isPurchaseStarting = true
             try {
                 connect()
                 val productDetails = productDetailsById[productId]
@@ -103,6 +109,8 @@ class PlayBillingService(application: Application) : BillingService {
                 }
             } catch (exception: BillingException) {
                 onResult(BillingPurchaseResult.Failed(exception.message.orEmpty()))
+            } finally {
+                isPurchaseStarting = false
             }
         }
     }
@@ -203,8 +211,10 @@ class PlayBillingService(application: Application) : BillingService {
     private suspend fun queryOwnedPurchases(): List<BillingPurchase> =
         queryPurchases().mapNotNull { processPurchase(it) }
 
-    private suspend fun queryPurchases(): List<Purchase> =
-        listOf(BillingClient.ProductType.SUBS, BillingClient.ProductType.INAPP).flatMap { productType ->
+    private suspend fun queryPurchases(
+        productTypes: List<String> = listOf(BillingClient.ProductType.SUBS, BillingClient.ProductType.INAPP),
+    ): List<Purchase> =
+        productTypes.flatMap { productType ->
             val params = QueryPurchasesParams.newBuilder().setProductType(productType).build()
             val result = billingClient.queryPurchasesAsync(params)
             result.billingResult.throwIfFailed()
@@ -215,17 +225,13 @@ class PlayBillingService(application: Application) : BillingService {
      * A new subscription replaces the current one instead of running in parallel. Legacy users can own
      * several, the highest one is replaced.
      */
-    private suspend fun queryReplacedSubscription(productId: String): Purchase? {
-        val params = QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build()
-        val result = billingClient.queryPurchasesAsync(params)
-        result.billingResult.throwIfFailed()
-        return result.purchasesList
+    private suspend fun queryReplacedSubscription(productId: String): Purchase? =
+        queryPurchases(listOf(BillingClient.ProductType.SUBS))
             .filter { it.purchaseState == Purchase.PurchaseState.PURCHASED && productId !in it.products }
             .minByOrNull { purchase ->
                 purchase.products.firstNotNullOfOrNull { SupportAnimal.fromProductId(it)?.supportLevel }
                     ?: Int.MAX_VALUE
             }
-    }
 
     /**
      * Unacknowledged purchases are refunded by Play after 3 days. One-time purchases are consumed only once

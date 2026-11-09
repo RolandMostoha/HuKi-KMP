@@ -141,19 +141,27 @@ class SupportViewModel(
             }
             BillingPurchaseResult.Cancelled -> {
                 analyticsService.logEvent(AnalyticsEvent.SupportPurchaseCancelled(animal))
-                _uiState.update { it.copy(purchasingAnimal = null) }
+                _uiState.update {
+                    it.copy(purchasingAnimal = null).withSupporterState(supporterRepository.supporterState.value)
+                }
             }
             BillingPurchaseResult.Pending -> {
                 val purchaseCount = supporterRepository.supporterState.value.oneTimePurchaseCounts[animal] ?: 0
                 pendingPurchase = PendingPurchase(animal, purchaseCount)
                 analyticsService.logEvent(AnalyticsEvent.SupportPurchasePending)
-                _uiState.update { it.copy(purchasingAnimal = null, purchaseMessage = SupportPurchaseMessage.PENDING) }
+                _uiState.update {
+                    it.copy(purchasingAnimal = null, purchaseMessage = SupportPurchaseMessage.PENDING)
+                        .withSupporterState(supporterRepository.supporterState.value)
+                }
             }
             is BillingPurchaseResult.Failed -> {
                 Logger.w { "Billing: Purchase failed: ${result.message}" }
                 crashlyticsService.recordException(BillingException(result.message))
                 analyticsService.logEvent(AnalyticsEvent.SupportPurchaseFailed)
-                _uiState.update { it.copy(purchasingAnimal = null, purchaseMessage = SupportPurchaseMessage.FAILED) }
+                _uiState.update {
+                    it.copy(purchasingAnimal = null, purchaseMessage = SupportPurchaseMessage.FAILED)
+                        .withSupporterState(supporterRepository.supporterState.value)
+                }
             }
         }
     }

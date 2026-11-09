@@ -91,6 +91,7 @@ import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
 import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
+import hu.mostoha.mobile.kmp.huki.repository.supporterAnimal
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
@@ -915,9 +916,7 @@ class MainViewModel(
     }
 
     private fun observeSupporter() {
-        supporterRepository.supporterState
-            .map { it.supporterAnimal }
-            .distinctUntilChanged()
+        supporterRepository.supporterAnimal
             .onEach { animal -> _uiState.update { it.copy(supporterAnimal = animal) } }
             .launchIn(viewModelScope)
     }

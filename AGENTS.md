@@ -148,6 +148,11 @@ commit-message convention.
     - `ci(CI): cancel previous in-progress GitHub workflows`
     - `release(v1.1): update store content, versioning`
 
+### Planning files in commits
+- `tools/planning/` changes (`PLANNING.md`, its images, other planning docs) go into any commit as they are,
+  even when they are unrelated to the commit's change.
+- Before committing, tick the `PLANNING.md` rows the commit completes (`[x]`).
+
 ### KMP multiplatform libraries 
 - SKIE - Swift - Kotlin interop tools
   - SwiftUI Observing pattern to eliminate ViewModel wrappers.

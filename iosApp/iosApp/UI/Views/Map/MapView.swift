@@ -201,8 +201,6 @@ struct MapView: View {
                 }
                 .task(id: proxy.map != nil) {
                     guard let map = proxy.map else { return }
-                    cameraZoom = map.cameraState.zoom
-                    cameraCenter = map.cameraState.center
                     let cameraChanges = AsyncStream<CameraState> { continuation in
                         let cancelable = map.onCameraChanged.observe { event in
                             continuation.yield(event.cameraState)
@@ -211,10 +209,15 @@ struct MapView: View {
                     }
                     for await state in cameraChanges {
                         onMapCameraChanged(state.cameraPosition)
-                        guard FeatureFlags.shared.DEBUG_CAMERA_PANEL_ENABLED else { continue }
+                        guard isDebugCameraPanelVisible else { continue }
                         cameraZoom = state.zoom
                         cameraCenter = state.center
                     }
+                }
+                .onChange(of: isDebugCameraPanelVisible) { _, isVisible in
+                    guard isVisible, let cameraState = proxy.map?.cameraState else { return }
+                    cameraZoom = cameraState.zoom
+                    cameraCenter = cameraState.center
                 }
                 .mapLabelScale(uiState.mapUiState.labelScale, map: proxy.map)
                 .task(id: [isBaseLabelsHidden, proxy.map != nil]) {

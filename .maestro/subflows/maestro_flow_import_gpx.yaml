@@ -7,6 +7,14 @@ appId: ${APP_ID}
     visible:
       id: MAP_MAPBOX
     timeout: 10000
+# iOS restores the session after a swipe-away, so a GPX left open by a previous test hides the Layers button
+- runFlow:
+    when:
+      visible:
+        id: GPX_DETAILS_CLOSE_BUTTON
+    commands:
+      - tapOn:
+          id: GPX_DETAILS_CLOSE_BUTTON
 - tapOn: "Layers"
 - tapOn: "Gpx Layer"
 

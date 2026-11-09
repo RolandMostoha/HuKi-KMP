@@ -15,8 +15,9 @@ appId: ${APP_ID}
 - assertVisible:
     id: WHATS_NEW_RELEASE_NOTES
 
-# Personal message card
-- assertVisible: "BEFORE YOU BEGIN"
+# Personal message card, its text changes with every release
+- assertVisible:
+    id: WHATS_NEW_MESSAGE_CARD
 
 # Close the sheet → back to the map
 - tapOn: "Close"

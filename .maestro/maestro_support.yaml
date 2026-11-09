@@ -22,7 +22,7 @@ appId: ${APP_ID}
 - assertVisible:
     id: SUPPORT_SCREEN_ROOT
 - assertVisible: "Support"
-- assertVisible: "Dear Reader!"
+- assertVisible: "Dear Hiker!"
 
 # Reasons are collapsed by default and expand on tap
 - assertNotVisible: "I develop the app as a hobby.*"

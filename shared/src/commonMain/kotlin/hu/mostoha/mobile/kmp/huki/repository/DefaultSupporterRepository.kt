@@ -1,7 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -126,7 +125,7 @@ class DefaultSupporterRepository(
 
     private suspend fun recordPurchase(purchase: BillingPurchase) {
         when (purchase.type) {
-            SupportType.ONE_TIME -> recordOneTimePurchase(purchase)
+            SupportType.ONE_TIME -> recordOneTimePurchases(listOf(purchase))
             SupportType.RECURRING -> recordSubscription(purchase)
             null -> Logger.w { "Billing: Unknown product purchased: ${purchase.productId}" }
         }
@@ -155,7 +154,7 @@ class DefaultSupporterRepository(
 
     private suspend fun storeEntitlements(entitlements: BillingEntitlements) {
         val (subscriptions, oneTimePurchases) = entitlements.purchases.partition { it.type == SupportType.RECURRING }
-        oneTimePurchases.forEach { recordOneTimePurchase(it) }
+        recordOneTimePurchases(oneTimePurchases)
         activeSubscriptions.value = subscriptions
             .mapNotNull { purchase ->
                 SupportAnimal.fromProductId(purchase.productId)?.let {
@@ -195,38 +194,45 @@ class DefaultSupporterRepository(
      * purchase flow and a later refresh, but must count only once. Consumed only once stored, until
      * then the store keeps reporting it, so a failed write is retried with the next refresh.
      */
-    private suspend fun recordOneTimePurchase(purchase: BillingPurchase) {
+    private suspend fun recordOneTimePurchases(purchases: List<BillingPurchase>) {
+        if (purchases.isEmpty()) return
         try {
-            storeOneTimePurchase(purchase)
+            storeOneTimePurchases(purchases)
         } catch (exception: IOException) {
-            Logger.e(exception) { "Support: Failed to store a one-time purchase." }
+            Logger.e(exception) { "Support: Failed to store one-time purchases." }
             return
         }
-        billingService.consumePurchase(purchase.purchaseToken)
+        purchases.forEach { billingService.consumePurchase(it.purchaseToken) }
     }
 
-    private suspend fun storeOneTimePurchase(purchase: BillingPurchase) {
+    /**
+     * Skips recorded tokens before editing, as iOS reports the whole consumable history on every refresh.
+     */
+    private suspend fun storeOneTimePurchases(purchases: List<BillingPurchase>) {
+        val recordedTokens = dataStore.data.first()[SupportPreferenceKeys.RECORDED_PURCHASE_TOKENS].orEmpty()
+        if (purchases.all { it.purchaseToken in recordedTokens }) return
         dataStore.edit { preferences ->
-            if (!preferences.markPurchaseTokenRecorded(purchase.purchaseToken)) return@edit
+            val tokens = preferences[SupportPreferenceKeys.RECORDED_PURCHASE_TOKENS].orEmpty().toMutableSet()
             val records = preferences[SupportPreferenceKeys.PURCHASED_ONE_TIME_PRODUCTS]
                 .orEmpty()
                 .toOneTimePurchaseRecords()
-            val previous = records.firstOrNull { it.productId == purchase.productId }
-            val updated = OneTimePurchaseRecord(
-                productId = purchase.productId,
-                count = (previous?.count ?: 0) + purchase.quantity.coerceAtLeast(1),
-                lastPurchaseTimeMillis = maxOf(previous?.lastPurchaseTimeMillis ?: 0, purchase.purchaseTimeMillis),
-            )
+                .associateBy { it.productId }
+                .toMutableMap()
+            purchases.filter { tokens.add(it.purchaseToken) }.forEach { purchase ->
+                val previous = records[purchase.productId]
+                records[purchase.productId] = OneTimePurchaseRecord(
+                    productId = purchase.productId,
+                    count = (previous?.count ?: 0) + purchase.quantity.coerceAtLeast(1),
+                    lastPurchaseTimeMillis = maxOf(
+                        previous?.lastPurchaseTimeMillis ?: 0,
+                        purchase.purchaseTimeMillis,
+                    ),
+                )
+            }
+            preferences[SupportPreferenceKeys.RECORDED_PURCHASE_TOKENS] = tokens
             preferences[SupportPreferenceKeys.PURCHASED_ONE_TIME_PRODUCTS] =
-                (records.filterNot { it.productId == purchase.productId } + updated).toDataStoreEntries()
+                records.values.toList().toDataStoreEntries()
         }
-    }
-
-    private fun MutablePreferences.markPurchaseTokenRecorded(purchaseToken: String): Boolean {
-        val tokens = this[SupportPreferenceKeys.RECORDED_PURCHASE_TOKENS].orEmpty()
-        if (purchaseToken in tokens) return false
-        this[SupportPreferenceKeys.RECORDED_PURCHASE_TOKENS] = tokens + purchaseToken
-        return true
     }
 
     private val BillingPurchase.type: SupportType?
