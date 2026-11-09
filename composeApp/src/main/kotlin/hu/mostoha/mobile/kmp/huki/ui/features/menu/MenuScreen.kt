@@ -52,6 +52,7 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEffects
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEvents
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiState
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
@@ -183,6 +184,13 @@ private fun MenuContent(
         ) {
             MenuHero(versionName = uiState.versionName)
             Spacer(modifier = Modifier.height(Dimens.Medium))
+            uiState.supporterAnimal?.let { animal ->
+                MenuSupporterCard(
+                    animal = animal,
+                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, bottom = Dimens.Large),
+                )
+            }
             MenuCard {
                 MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_settings),
@@ -306,15 +314,17 @@ private fun MenuContent(
                     )
                 }
             }
-            MenuSupportCard(
-                title = mokoString(SharedRes.strings.menu_item_support),
-                message = mokoString(SharedRes.strings.menu_item_support_description),
-                buttonText = mokoString(SharedRes.strings.menu_item_support_button),
-                buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
-                testTag = TestTags.MENU_ROW_SUPPORT,
-                onClick = { onEvent(MenuUiEvents.SupportClicked) },
-                modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
-            )
+            if (uiState.supporterAnimal == null) {
+                MenuSupportCard(
+                    title = mokoString(SharedRes.strings.menu_item_support),
+                    message = mokoString(SharedRes.strings.menu_item_support_description),
+                    buttonText = mokoString(SharedRes.strings.menu_item_support_button),
+                    buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
+                    testTag = TestTags.MENU_ROW_SUPPORT,
+                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
+                )
+            }
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_contact))
             MenuCard {
                 MenuRow(
@@ -570,6 +580,29 @@ private fun MenuContentPreview() {
     HuKiTheme {
         MenuContent(
             uiState = MenuUiState.Default,
+            menuUiEffects = emptyFlow(),
+            onEvent = {},
+            onBack = {},
+            onSettingsClicked = {},
+            onRoutePlannerClicked = {},
+            onDiscoverClicked = {},
+            onGpxCollectionClicked = {},
+            onGpxGuideClicked = {},
+            onTrailSymbolsGuideClicked = {},
+            onQuickGuideClicked = {},
+            onPlaceHistoryClicked = {},
+            onLocationIqClicked = {},
+            onSupportClicked = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun MenuContentSupporterPreview() {
+    HuKiTheme {
+        MenuContent(
+            uiState = MenuUiState(supporterAnimal = SupportAnimal.OWL),
             menuUiEffects = emptyFlow(),
             onEvent = {},
             onBack = {},

@@ -74,6 +74,15 @@ extension MenuView {
         .padding(.top, 16)
     }
 
+    func supporterSection(animal: SupportAnimal) -> some View {
+        MenuSupporterCardView(
+            animal: animal,
+            action: { viewModel.onEvent(event: MenuUiEventsSupportClicked.shared) }
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+    }
+
     var guidesSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_guides))

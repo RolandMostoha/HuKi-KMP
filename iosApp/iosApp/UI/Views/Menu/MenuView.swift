@@ -34,9 +34,14 @@ struct MenuView: View {
                 VStack(spacing: 0) {
                     hero(versionName: uiState.versionName)
                     Spacer().frame(height: 10)
+                    if let supporterAnimal = uiState.supporterAnimal {
+                        supporterSection(animal: supporterAnimal)
+                    }
                     mainFeaturesSection
                     guidesSection
-                    supportSection
+                    if uiState.supporterAnimal == nil {
+                        supportSection
+                    }
                     contactSection
                     legalSection
                     supportersSection

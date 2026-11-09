@@ -184,9 +184,11 @@
     <string name="menu_a11y_open_location_iq">Location IQ weboldal megnyitása</string>
     <string name="menu_a11y_open_graphhopper">GraphHopper weboldal megnyitása</string>
     <string name="menu_item_support">HuKi támogatása</string>
-    <string name="menu_item_support_description">Támogatásod hozzájárul a HuKi fenntartásához és fejlesztéséhez.</string>
+    <string name="menu_item_support_description">Támogatásod hozzájárul a HuKi fejlesztéséhez és fenntartásához.</string>
     <string name="menu_item_support_button">Támogatom</string>
     <string name="menu_a11y_open_support">Támogatás megnyitása</string>
+    <string name="menu_supporter_title">Köszönöm a támogatást!</string>
+    <string name="menu_supporter_message">Támogatói ikonod és támogatások</string>
     <string name="menu_contact_email">huki.app@gmail.com</string>
     <string name="menu_email_subject_android">[HuKi-Android]</string>
     <string name="menu_email_subject_ios">[HuKi-iOS]</string>
