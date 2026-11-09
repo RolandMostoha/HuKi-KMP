@@ -326,7 +326,7 @@
     <string name="trail_symbols_green_title">Zöld sáv</string>
     <string name="trail_symbols_green_description">Kisebb jelentőségű, helyi útvonalak jelölése.</string>
     <string name="trail_symbols_stripe_colors_title">Színezések</string>
-    <string name="trail_symbols_stripe_colors_description">A túrajelzések színei az útvonal típusát jelzik (országos, regionális, helyi). Célpont esetén azt mutatja, hogy milyen útvonalról ágazik le.</string>
+    <string name="trail_symbols_stripe_colors_description">A túrajelzések színei az útvonal típusát jelzik (országos, regionális, helyi), nem pedig a nehézségét. Célpont esetén azt mutatja, hogy milyen útvonalról ágazik le.</string>
     <string name="trail_symbols_cross_title">Kereszt</string>
     <string name="trail_symbols_cross_description">Kereszteződési pont kék, piros, sárga vagy zöld sávok összeköttetéseiben.</string>
     <string name="trail_symbols_round_tour_title">Körtúra</string>
@@ -472,6 +472,7 @@
     <string name="whats_new_title">Újdonságok</string>
     <string name="whats_new_a11y_app_icon">HuKi alkalmazás ikon</string>
     <string name="whats_new_message_signature">— A HuKi fejlesztője</string>
+    <string name="whats_new_supporter_message">%s támogatóként te is hozzájárultál, hogy ez a verzió elkészülhessen.</string>
 
     <string name="destinations_type_highest_peak_per_landscape">Tájegység legmagasabb csúcsa</string>
     <string name="destinations_type_educational_trail">Tanösvény</string>
@@ -517,7 +518,7 @@
     <string name="support_a11y_loading">Támogatási lehetőségek betöltése</string>
     <string name="support_supporter_label">%s támogató</string>
     <string name="support_supporter_title">Köszönöm, hogy\n„%s” támogató vagy!</string>
-    <string name="support_supporter_message">Támogatásoddal közvetlenül hozzájárulsz a HuKi fejlesztéséhez és a projekt jövőjéhez. Nagyon sokat jelent számomra, hogy elismered a munkámat, igyekszem minden támogatást úgy felhasználni, hogy az a HuKi fejlődését szolgálja. 🌳</string>
+    <string name="support_supporter_message">Támogatásoddal közvetlenül hozzájárulsz a HuKi fejlesztéséhez és a projekt jövőjéhez. Nagyon sokat jelent számomra, hogy elismered a munkámat, igyekszem minden támogatást úgy felhasználni, hogy az a HuKi fejlődését szolgálja.</string>
     <string name="support_one_time_more_title">További egyszeri támogatás</string>
     <string name="support_recurring_more_title">További rendszeres támogatás</string>
     <string name="support_about_title">A projektről</string>

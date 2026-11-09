@@ -326,7 +326,7 @@
     <string name="trail_symbols_green_title">Green stripe</string>
     <string name="trail_symbols_green_description">Marks minor, local routes.</string>
     <string name="trail_symbols_stripe_colors_title">Colors</string>
-    <string name="trail_symbols_stripe_colors_description">The trail marking colors show the type of the route (national, regional, local). For a destination marking, the color shows which route it branches off from.</string>
+    <string name="trail_symbols_stripe_colors_description">The trail marking colors show the type of the route (national, regional, local), not its difficulty. For a destination marking, the color shows which route it branches off from.</string>
     <string name="trail_symbols_cross_title">Cross</string>
     <string name="trail_symbols_cross_description">A crossing point in the connections between blue, red, yellow or green stripes.</string>
     <string name="trail_symbols_round_tour_title">Round tour</string>
@@ -472,6 +472,7 @@
     <string name="whats_new_title">New Features</string>
     <string name="whats_new_a11y_app_icon">HuKi app icon</string>
     <string name="whats_new_message_signature">— The developer of HuKi</string>
+    <string name="whats_new_supporter_message">As a %s supporter, you also helped make this version happen.</string>
 
     <string name="destinations_type_highest_peak_per_landscape">Highest peak in landscape</string>
     <string name="destinations_type_educational_trail">Educational trail</string>
@@ -517,7 +518,7 @@
     <string name="support_a11y_loading">Loading support options</string>
     <string name="support_supporter_label">%s supporter</string>
     <string name="support_supporter_title">Thank you for your\n“%s” support!</string>
-    <string name="support_supporter_message">Your support directly contributes to the development of HuKi and the future of the project. It means a lot to me that you appreciate the work, and I try to use every contribution in a way that serves the growth of HuKi. 🌳</string>
+    <string name="support_supporter_message">Your support directly contributes to the development of HuKi and the future of the project. It means a lot to me that you appreciate the work, and I try to use every contribution in a way that serves the growth of HuKi.</string>
     <string name="support_one_time_more_title">Additional one-time support</string>
     <string name="support_recurring_more_title">Additional recurring support</string>
     <string name="support_about_title">About the project</string>

@@ -31,6 +31,10 @@ struct SupporterCardView: View {
         _isSilhouetteShown = State(initialValue: !celebrate)
     }
 
+    private var heart: Text {
+        Text(Image(systemName: "heart.fill")).foregroundStyle(animal.color)
+    }
+
     var body: some View {
         let animalName = strings.get(id: animal.nameRes)
         VStack(alignment: .leading, spacing: 0) {
@@ -69,7 +73,7 @@ struct SupporterCardView: View {
                 .padding(.top, 4)
                 .accessibilityAddTraits(.isHeader)
                 .riseIn(isShown: isTextShown, delay: 0.29)
-            Text(strings.get(id: SharedRes.strings().support_supporter_message))
+            Text("\(strings.get(id: SharedRes.strings().support_supporter_message)) \(heart)")
                 .font(.subheadline)
                 .lineSpacing(4)
                 .foregroundStyle(.secondary)

@@ -57,6 +57,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.TrailingHeartText
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -252,8 +253,9 @@ private fun SupporterCardContent(
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
-        Text(
+        TrailingHeartText(
             text = mokoString(SharedRes.strings.support_supporter_message),
+            heartColor = animalColor,
             style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier

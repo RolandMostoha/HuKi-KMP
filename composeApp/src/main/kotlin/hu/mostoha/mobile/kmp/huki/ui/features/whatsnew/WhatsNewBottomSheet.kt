@@ -27,7 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -40,11 +40,13 @@ import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.WhatsNew
 import hu.mostoha.mobile.kmp.huki.model.domain.WhatsNewMessage
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReleaseNoteLines
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.TrailingHeartText
 import hu.mostoha.mobile.kmp.huki.ui.components.VersionPill
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.formatter.LocalizedDateFormatter
@@ -57,6 +59,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun WhatsNewBottomSheet(
     whatsNew: WhatsNew,
+    supporterAnimal: SupportAnimal?,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,7 +86,7 @@ fun WhatsNewBottomSheet(
             )
             WhatsNewNotesCard(releaseNotes = whatsNew.releaseNotes)
             whatsNew.message?.let { message ->
-                WhatsNewMessageCard(message = message)
+                WhatsNewMessageCard(message = message, supporterAnimal = supporterAnimal)
             }
         }
     }
@@ -98,11 +101,7 @@ private fun WhatsNewHeader(version: String, releaseDate: LocalDate, onCloseClick
             contentDescription = mokoString(SharedRes.strings.whats_new_a11y_app_icon),
             modifier = Modifier
                 .size(Dimens.IconHero * 0.6f)
-                .shadow(
-                    elevation = Dimens.ExtraSmall,
-                    shape = RoundedCornerShape(Dimens.MediumLarge),
-                    clip = true,
-                ),
+                .clip(CircleShape),
         )
         Column(
             modifier = Modifier
@@ -146,11 +145,12 @@ private fun WhatsNewNotesCard(releaseNotes: StringDesc) {
     Column(
         modifier = Modifier
             .padding(
-                vertical = Dimens.Small,
-                horizontal = Dimens.Large,
+                bottom = Dimens.Small,
+                start = Dimens.Large,
+                end = Dimens.Large,
             )
             .testTagAsResourceId(TestTags.WHATS_NEW_RELEASE_NOTES),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+        verticalArrangement = Arrangement.spacedBy(Dimens.SmallMedium),
     ) {
         mokoString(releaseNotes).toReleaseNoteLines().forEach { note ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -170,8 +170,10 @@ private fun WhatsNewNotesCard(releaseNotes: StringDesc) {
 }
 
 @Composable
-private fun WhatsNewMessageCard(message: WhatsNewMessage) {
-    val accentColor = mokoColor(SharedRes.colors.primary)
+private fun WhatsNewMessageCard(message: WhatsNewMessage, supporterAnimal: SupportAnimal?) {
+    val accentColor = mokoColor(supporterAnimal?.colorRes ?: SharedRes.colors.primary)
+    val containerColor = mokoColor(supporterAnimal?.containerColorRes ?: SharedRes.colors.primaryContainer)
+    val iconResId = supporterAnimal?.iconRes?.drawableResId ?: R.drawable.ic_favorite
     Surface(
         shape = RoundedCornerShape(Dimens.MediumLarge),
         color = accentColor,
@@ -181,7 +183,7 @@ private fun WhatsNewMessageCard(message: WhatsNewMessage) {
     ) {
         Surface(
             shape = RoundedCornerShape(Dimens.MediumLarge),
-            color = mokoColor(SharedRes.colors.primaryContainer),
+            color = containerColor,
             modifier = Modifier.padding(start = Dimens.ExtraSmall),
         ) {
             Column(
@@ -193,7 +195,7 @@ private fun WhatsNewMessageCard(message: WhatsNewMessage) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_heart_double),
+                        imageVector = ImageVector.vectorResource(iconResId),
                         contentDescription = null,
                         tint = accentColor,
                         modifier = Modifier.size(20.dp),
@@ -213,6 +215,15 @@ private fun WhatsNewMessageCard(message: WhatsNewMessage) {
                     fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                supporterAnimal?.let { animal ->
+                    TrailingHeartText(
+                        text = mokoString(SharedRes.strings.whats_new_supporter_message, mokoString(animal.nameRes)),
+                        heartColor = accentColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = accentColor,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
                 Text(
                     text = mokoString(SharedRes.strings.whats_new_message_signature),
                     style = MaterialTheme.typography.bodySmall,
@@ -240,7 +251,21 @@ private fun WhatsNewBottomSheetPreview() {
                 onCloseClick = {},
             )
             WhatsNewNotesCard(releaseNotes = previewWhatsNew.releaseNotes)
-            previewWhatsNew.message?.let { WhatsNewMessageCard(message = it) }
+            previewWhatsNew.message?.let { WhatsNewMessageCard(message = it, supporterAnimal = null) }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun WhatsNewMessageCardSupporterPreview() {
+    HuKiTheme {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(Dimens.Large),
+        ) {
+            previewWhatsNew.message?.let { WhatsNewMessageCard(message = it, supporterAnimal = SupportAnimal.SQUIRREL) }
         }
     }
 }

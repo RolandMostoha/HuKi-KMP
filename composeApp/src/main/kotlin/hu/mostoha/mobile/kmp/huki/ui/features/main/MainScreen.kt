@@ -761,6 +761,7 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
         is Sheet.WhatsNew -> {
             WhatsNewBottomSheet(
                 whatsNew = sheet.whatsNew,
+                supporterAnimal = uiState.supporterAnimal,
                 sheetState = sheetState,
                 onDismissRequest = dismissSheet,
             )

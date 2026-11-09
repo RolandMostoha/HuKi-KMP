@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 @Composable
@@ -53,7 +53,7 @@ fun OktTypeCard(
             verticalArrangement = Arrangement.spacedBy(Dimens.Small),
         ) {
             Image(
-                painter = painterResource(type.icon.drawableResId),
+                painter = mokoPainter(type.icon),
                 contentDescription = null,
                 modifier = Modifier.height(Dimens.OktTypeIconHeight),
             )
