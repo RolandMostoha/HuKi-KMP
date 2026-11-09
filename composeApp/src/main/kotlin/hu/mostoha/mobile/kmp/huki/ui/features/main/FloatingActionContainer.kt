@@ -47,6 +47,7 @@ import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.landscapes.LandscapesResumeFab
@@ -74,6 +75,7 @@ fun FloatingActionContainer(
     onOktResumeClicked: () -> Unit,
     onLandscapesResumeClicked: () -> Unit,
     onMenuClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -130,8 +132,10 @@ fun FloatingActionContainer(
                 SearchBarAction(
                     visible = isSearchBarVisible,
                     searchBarModifier = Modifier.width(Dimens.SearchBarLandscapeWidth),
+                    supporterAnimal = mainUiState.supporterAnimal,
                     onSearchClicked = onSearchClicked,
                     onMenuClicked = onMenuClicked,
+                    onSupportClicked = onSupportClicked,
                 )
             }
             FabColumnAction(
@@ -183,8 +187,10 @@ fun FloatingActionContainer(
                 SearchBarAction(
                     visible = isSearchBarVisible,
                     searchBarModifier = Modifier.padding(horizontal = Dimens.Medium),
+                    supporterAnimal = mainUiState.supporterAnimal,
                     onSearchClicked = onSearchClicked,
                     onMenuClicked = onMenuClicked,
+                    onSupportClicked = onSupportClicked,
                 )
             }
         }
@@ -345,8 +351,10 @@ private fun DiscoverFabAction(visible: Boolean, onDiscoverClicked: () -> Unit, m
 @Composable
 private fun SearchBarAction(
     visible: Boolean,
+    supporterAnimal: SupportAnimal?,
     onSearchClicked: () -> Unit,
     onMenuClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
     modifier: Modifier = Modifier,
     searchBarModifier: Modifier = Modifier,
 ) {
@@ -366,8 +374,10 @@ private fun SearchBarAction(
     ) {
         SearchBar(
             modifier = searchBarModifier,
+            supporterAnimal = supporterAnimal,
             onSearchClick = onSearchClicked,
             onMenuClick = onMenuClicked,
+            onSupportClick = onSupportClicked,
         )
     }
 }
@@ -394,6 +404,7 @@ private fun MainContentPreview() {
             onOktResumeClicked = {},
             onLandscapesResumeClicked = {},
             onMenuClicked = {},
+            onSupportClicked = {},
         )
     }
 }

@@ -124,6 +124,7 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 .collectAsStateWithLifecycle()
             MainScreen(
                 onMenuClicked = { navController.navigate(Routes.MENU) },
+                onSupportClicked = { navController.navigate(Routes.SUPPORT) },
                 onLocationIqClicked = { navController.navigate(Routes.LOCATION_IQ) },
                 onGpxCollectionClicked = { navController.navigate(Routes.GPX_COLLECTION) },
                 onPlaceHistoryClicked = { navController.navigate(Routes.PLACE_HISTORY) },

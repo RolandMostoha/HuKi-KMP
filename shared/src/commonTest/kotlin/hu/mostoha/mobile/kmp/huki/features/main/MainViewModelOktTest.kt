@@ -41,6 +41,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
@@ -121,6 +122,7 @@ class MainViewModelOktTest {
             landscapeRepository = FakeLandscapeRepository(),
             incomingLinkStore = DefaultIncomingLinkStore(),
             locationLinkResolver = FakeLocationLinkResolver(),
+            supporterRepository = FakeSupporterRepository(),
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,

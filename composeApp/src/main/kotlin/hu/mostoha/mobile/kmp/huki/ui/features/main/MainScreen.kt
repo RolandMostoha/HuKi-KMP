@@ -99,6 +99,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MainScreen(
     onMenuClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
@@ -180,6 +181,7 @@ fun MainScreen(
         mapUiEffects = viewModel.mapUiEffects,
         onEvent = viewModel::onEvent,
         onMenuClicked = onMenuClicked,
+        onSupportClicked = onSupportClicked,
         onLocationIqClicked = onLocationIqClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
@@ -195,6 +197,7 @@ private fun MainContent(
     mapUiEffects: Flow<MapUiEffects>,
     onEvent: (MainUiEvents) -> Unit,
     onMenuClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
@@ -362,6 +365,10 @@ private fun MainContent(
                     onEvent(LandscapesUiEvents.LandscapesResumeClicked)
                 },
                 onMenuClicked = onMenuClicked,
+                onSupportClicked = {
+                    onEvent(MainUiEvents.SearchBarSupportClicked)
+                    onSupportClicked()
+                },
             )
             AnimatedContent(
                 targetState = uiState.sheet as? Sheet.RoutePlanner,
@@ -795,6 +802,7 @@ private fun MainContentPreview() {
             mapUiEffects = emptyFlow(),
             onEvent = {},
             onMenuClicked = {},
+            onSupportClicked = {},
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},
@@ -814,6 +822,7 @@ private fun MainContentLoadingPreview() {
             mapUiEffects = emptyFlow(),
             onEvent = {},
             onMenuClicked = {},
+            onSupportClicked = {},
             onLocationIqClicked = {},
             onGpxCollectionClicked = {},
             onPlaceHistoryClicked = {},

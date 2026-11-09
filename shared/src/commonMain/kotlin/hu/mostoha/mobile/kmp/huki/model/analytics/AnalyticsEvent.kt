@@ -1,7 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.model.analytics
 
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
-
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 
@@ -410,6 +409,10 @@ sealed interface AnalyticsEvent {
 
     data class SupportSectionOpened(val section: SupportSection) : AnalyticsEvent {
         override val name = "support_section_opened_${section.name.lowercase()}"
+    }
+
+    data object SearchBarSupportClicked : AnalyticsEvent {
+        override val name = "search_bar_support_clicked"
     }
 
     data object SupportPricesUnavailable : AnalyticsEvent {

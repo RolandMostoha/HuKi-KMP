@@ -115,6 +115,7 @@ val viewModelModule = module {
     viewModel { params ->
         MainViewModel(
             get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
+            get(),
             defaultDispatcher = get(named(Dispatcher.Default)),
             savedStateHandle = params.getOrNull() ?: get(),
         )

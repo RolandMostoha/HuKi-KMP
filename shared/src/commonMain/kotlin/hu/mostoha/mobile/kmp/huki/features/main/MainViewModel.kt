@@ -89,6 +89,7 @@ import hu.mostoha.mobile.kmp.huki.repository.MapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.OktRepository
 import hu.mostoha.mobile.kmp.huki.repository.PlaceHistoryRepository
 import hu.mostoha.mobile.kmp.huki.repository.SettingsRepository
+import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.WhatsNewRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
@@ -163,6 +164,7 @@ class MainViewModel(
     private val landscapeRepository: LandscapeRepository,
     private val incomingLinkStore: IncomingLinkStore,
     private val locationLinkResolver: LocationLinkResolver,
+    private val supporterRepository: SupporterRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
@@ -220,6 +222,7 @@ class MainViewModel(
         observeSettings()
         observeSheetViews()
         observeIncomingLinks()
+        observeSupporter()
     }
 
     fun sessionSnapshot(): String =
@@ -236,6 +239,7 @@ class MainViewModel(
             MainUiEvents.AlertDismissed -> dismissAlert()
             // Search events
             MainUiEvents.SearchClicked -> showSearch()
+            MainUiEvents.SearchBarSupportClicked -> analyticsService.logEvent(AnalyticsEvent.SearchBarSupportClicked)
             is MainUiEvents.SearchPlaceSelected -> showSearchPlace(event.place)
             is MainUiEvents.SearchRecentPlaceSelected -> showRecentPlace(event.place)
             is MainUiEvents.SearchDestinationSelected -> showSearchDestination(event.destination)
@@ -907,6 +911,14 @@ class MainViewModel(
             .distinctUntilChanged()
             .filter { it != Screen.MAP }
             .onEach { analyticsService.logEvent(AnalyticsEvent.ScreenView(it)) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeSupporter() {
+        supporterRepository.supporterState
+            .map { it.supporterAnimal }
+            .distinctUntilChanged()
+            .onEach { animal -> _uiState.update { it.copy(supporterAnimal = animal) } }
             .launchIn(viewModelScope)
     }
 

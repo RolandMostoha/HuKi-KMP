@@ -26,6 +26,8 @@ sealed interface MainUiEvents {
      * Search events
      */
     data object SearchClicked : MainUiEvents
+
+    data object SearchBarSupportClicked : MainUiEvents
     data class SearchPlaceSelected(val place: Place) : MainUiEvents
     data class SearchRecentPlaceSelected(val place: Place) : MainUiEvents
     data class SearchDestinationSelected(val destination: Destination) : MainUiEvents

@@ -15,6 +15,7 @@ struct FloatingActionContainer: View {
     let onZoomOutClicked: () -> Void
     let onSearchTap: () -> Void
     let onMenuClick: () -> Void
+    let onSupportClick: () -> Void
 
     @Environment(\.layoutMode) private var layoutMode
 
@@ -35,12 +36,12 @@ struct FloatingActionContainer: View {
                 VStack(spacing: 20) {
                     HStack(alignment: .bottom) {
                         discoverFab
-                            .padding(.leading, 11)
                         Spacer()
                         fabControls
                     }
                     searchBar
                 }
+                .padding(.horizontal, 6)
             }
         }
         .animation(.stateChange, value: uiState.sheet)
@@ -94,12 +95,12 @@ struct FloatingActionContainer: View {
         if uiState.sheet == nil && uiState.isSearchBarVisible {
             SearchBarView(
                 strings: strings,
+                supporterAnimal: uiState.supporterAnimal,
+                onSupportClick: onSupportClick,
                 onSearchTap: onSearchTap,
                 onMenuClick: onMenuClick
             )
             .frame(maxWidth: isWideLayout ? AdaptiveLayout.searchBarMaxWidth : .infinity, alignment: .leading)
-            .padding(.leading, isWideLayout ? 0 : 11)
-            .padding(.trailing, 11)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }

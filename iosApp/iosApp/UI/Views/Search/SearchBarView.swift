@@ -3,11 +3,17 @@ import SwiftUI
 
 struct SearchBarView: View {
     let strings: Strings
+    let supporterAnimal: SupportAnimal?
+    let onSupportClick: () -> Void
     let onSearchTap: () -> Void
     let onMenuClick: () -> Void
 
     var body: some View {
         HStack {
+            if let supporterAnimal {
+                SearchBarSupportButton(supporterAnimal: supporterAnimal, onClick: onSupportClick)
+                    .transition(.scale.combined(with: .opacity))
+            }
             searchField
             menuButton
         }
@@ -15,6 +21,7 @@ struct SearchBarView: View {
         .padding(.horizontal, 14)
         .glassBackground()
         .accessibilityIdentifier(TestTags.shared.MAIN_SEARCH_BAR)
+        .animation(.spring, value: supporterAnimal)
     }
 
     @ViewBuilder
@@ -46,7 +53,7 @@ struct SearchBarView: View {
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.primary)
                 .padding(.vertical, 11)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 9)
                 .contentShape(Rectangle())
         }
         .buttonStyle(PressFeedbackButtonStyle())

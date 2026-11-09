@@ -53,6 +53,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
@@ -69,6 +71,7 @@ import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResult
@@ -178,6 +181,7 @@ class MainViewModelTest {
         everySuspend { shouldShowWhatsNew() } returns false
     }
     private val analyticsService = FakeAnalyticsService()
+    private val supporterRepository = FakeSupporterRepository()
     private val crashlyticsService = FakeCrashlyticsService()
     private val incomingLinkStore = DefaultIncomingLinkStore()
     private val locationLinkResolver = FakeLocationLinkResolver()
@@ -196,6 +200,44 @@ class MainViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given a supporter - When view model init - Then the supporter animal is in the state`() {
+        runTest {
+            supporterRepository.supporterState.value = SupporterState(oneTimePurchaseCounts = mapOf(SupportAnimal.OWL to 1))
+
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.supporterAnimal shouldBe SupportAnimal.OWL
+        }
+    }
+
+    @Test
+    fun `Given a non-supporter - When they become a supporter - Then the supporter animal is updated`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+            viewModel.uiState.value.supporterAnimal shouldBe null
+
+            supporterRepository.supporterState.value = SupporterState(activeSubscriptions = setOf(SupportAnimal.BEAR))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.supporterAnimal shouldBe SupportAnimal.BEAR
+        }
+    }
+
+    @Test
+    fun `Given the map - When the search bar support button is clicked - Then it is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = false)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.SearchBarSupportClicked)
+
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.SearchBarSupportClicked
+        }
     }
 
     @Test
@@ -365,6 +407,7 @@ class MainViewModelTest {
             landscapeRepository = FakeLandscapeRepository(),
             incomingLinkStore = incomingLinkStore,
             locationLinkResolver = locationLinkResolver,
+            supporterRepository = supporterRepository,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
