@@ -407,4 +407,56 @@
         <light>#00838F</light>
         <dark>#00838F</dark>
     </color>
+    <color name="supportRed">
+        <light>#FF3B30</light>
+        <dark>#FF453A</dark>
+    </color>
+    <color name="supportSquirrel">
+        <light>#C4501A</light>
+        <dark>#F29A66</dark>
+    </color>
+    <color name="supportSquirrelContainer">
+        <light>#FDE7D6</light>
+        <dark>#36211A</dark>
+    </color>
+    <color name="supportOwl">
+        <light>#2C3E50</light>
+        <dark>#AFC2D6</dark>
+    </color>
+    <color name="supportOwlContainer">
+        <light>#E5EAF0</light>
+        <dark>#1D2733</dark>
+    </color>
+    <color name="supportHedgehog">
+        <light>#8A5216</light>
+        <dark>#E3AA62</dark>
+    </color>
+    <color name="supportHedgehogContainer">
+        <light>#FBEFD5</light>
+        <dark>#33271A</dark>
+    </color>
+    <color name="supportDeer">
+        <light>#8B5A2B</light>
+        <dark>#DDA874</dark>
+    </color>
+    <color name="supportDeerContainer">
+        <light>#F5EADF</light>
+        <dark>#2F241B</dark>
+    </color>
+    <color name="supportBoar">
+        <light>#9B2424</light>
+        <dark>#F28B85</dark>
+    </color>
+    <color name="supportBoarContainer">
+        <light>#FBE3E1</light>
+        <dark>#371C1C</dark>
+    </color>
+    <color name="supportBear">
+        <light>#5C3A1E</light>
+        <dark>#CDA582</dark>
+    </color>
+    <color name="supportBearContainer">
+        <light>#E8EEDE</light>
+        <dark>#252B1F</dark>
+    </color>
 </resources>

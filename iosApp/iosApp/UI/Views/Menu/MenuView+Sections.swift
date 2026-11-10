@@ -61,6 +61,28 @@ extension MenuView {
         .padding(.horizontal, 16)
     }
 
+    var supportSection: some View {
+        MenuSupportCardView(
+            title: strings.get(id: SharedRes.strings().menu_item_support),
+            message: strings.get(id: SharedRes.strings().menu_item_support_description),
+            buttonTitle: strings.get(id: SharedRes.strings().menu_item_support_button),
+            accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_support),
+            testTag: TestTags.shared.MENU_ROW_SUPPORT,
+            action: { viewModel.onEvent(event: MenuUiEventsSupportClicked.shared) }
+        )
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+    }
+
+    func supporterSection(animal: SupportAnimal) -> some View {
+        MenuSupporterCardView(
+            animal: animal,
+            action: { viewModel.onEvent(event: MenuUiEventsSupportClicked.shared) }
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+    }
+
     var guidesSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_guides))

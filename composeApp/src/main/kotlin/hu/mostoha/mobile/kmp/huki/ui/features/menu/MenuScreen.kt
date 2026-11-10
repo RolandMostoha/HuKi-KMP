@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -51,6 +52,7 @@ import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEffects
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiEvents
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuUiState
 import hu.mostoha.mobile.kmp.huki.features.menu.MenuViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.dividerColor
@@ -78,6 +80,7 @@ fun MenuScreen(
     onQuickGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
     viewModel: MenuViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -96,6 +99,7 @@ fun MenuScreen(
         onQuickGuideClicked = onQuickGuideClicked,
         onPlaceHistoryClicked = onPlaceHistoryClicked,
         onLocationIqClicked = onLocationIqClicked,
+        onSupportClicked = onSupportClicked,
     )
 }
 
@@ -115,6 +119,7 @@ private fun MenuContent(
     onQuickGuideClicked: () -> Unit,
     onPlaceHistoryClicked: () -> Unit,
     onLocationIqClicked: () -> Unit,
+    onSupportClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(menuUiEffects) {
@@ -130,6 +135,7 @@ private fun MenuContent(
                 MenuUiEffects.NavigateToTrailSymbolsGuide -> onTrailSymbolsGuideClicked()
                 MenuUiEffects.NavigateToQuickGuide -> onQuickGuideClicked()
                 MenuUiEffects.NavigateToLocationIq -> onLocationIqClicked()
+                MenuUiEffects.NavigateToSupport -> onSupportClicked()
                 is MenuUiEffects.OpenUrl -> context.openUrl(context.resolveMoko(effect.urlRes))
                 is MenuUiEffects.SendEmail -> context.sendEmail(
                     email = context.resolveMoko(effect.emailRes),
@@ -139,9 +145,11 @@ private fun MenuContent(
         }
     }
     val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .testTag(TestTags.MENU_SCREEN_ROOT),
         containerColor = backgroundColor,
         topBar = {
@@ -158,20 +166,31 @@ private fun MenuContent(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = backgroundColor,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+                ),
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
                 .padding(bottom = Dimens.ExtraLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MenuHero(versionName = uiState.versionName)
             Spacer(modifier = Modifier.height(Dimens.Medium))
+            uiState.supporterAnimal?.let { animal ->
+                MenuSupporterCard(
+                    animal = animal,
+                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, bottom = Dimens.Large),
+                )
+            }
             MenuCard {
                 MenuRow(
                     title = mokoString(SharedRes.strings.menu_item_settings),
@@ -295,6 +314,17 @@ private fun MenuContent(
                     )
                 }
             }
+            if (uiState.supporterAnimal == null) {
+                MenuSupportCard(
+                    title = mokoString(SharedRes.strings.menu_item_support),
+                    message = mokoString(SharedRes.strings.menu_item_support_description),
+                    buttonText = mokoString(SharedRes.strings.menu_item_support_button),
+                    buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
+                    testTag = TestTags.MENU_ROW_SUPPORT,
+                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
+                )
+            }
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_contact))
             MenuCard {
                 MenuRow(
@@ -388,13 +418,13 @@ private fun MenuHero(versionName: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(SharedRes.images.ic_app_icon.drawableResId),
+            painter = painterResource(SharedRes.images.ic_app_icon_android.drawableResId),
             contentDescription = mokoString(SharedRes.strings.menu_a11y_app_icon),
             modifier = Modifier
                 .size(Dimens.IconHero)
                 .shadow(
                     elevation = Dimens.Small,
-                    shape = RoundedCornerShape(Dimens.ExtraLarge),
+                    shape = CircleShape,
                     clip = true,
                 )
                 .testTag(TestTags.MENU_APP_ICON),
@@ -414,7 +444,7 @@ private fun MenuHero(versionName: String) {
             modifier = Modifier.padding(top = Dimens.ExtraSmall),
         )
         VersionPill(
-            text = mokoString(SharedRes.strings.menu_version_pattern, versionName),
+            text = mokoString(SharedRes.strings.menu_version_pattern_android, versionName),
             modifier = Modifier
                 .padding(top = Dimens.Medium)
                 .testTag(TestTags.MENU_VERSION),
@@ -562,6 +592,30 @@ private fun MenuContentPreview() {
             onQuickGuideClicked = {},
             onPlaceHistoryClicked = {},
             onLocationIqClicked = {},
+            onSupportClicked = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun MenuContentSupporterPreview() {
+    HuKiTheme {
+        MenuContent(
+            uiState = MenuUiState(supporterAnimal = SupportAnimal.OWL),
+            menuUiEffects = emptyFlow(),
+            onEvent = {},
+            onBack = {},
+            onSettingsClicked = {},
+            onRoutePlannerClicked = {},
+            onDiscoverClicked = {},
+            onGpxCollectionClicked = {},
+            onGpxGuideClicked = {},
+            onTrailSymbolsGuideClicked = {},
+            onQuickGuideClicked = {},
+            onPlaceHistoryClicked = {},
+            onLocationIqClicked = {},
+            onSupportClicked = {},
         )
     }
 }

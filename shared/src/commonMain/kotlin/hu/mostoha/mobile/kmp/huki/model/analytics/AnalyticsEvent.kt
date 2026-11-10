@@ -1,6 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.model.analytics
 
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxCollectionSortMode
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 
 /**
  * Analytics event, following the Google Analytics way of sending a [name] and optional [params].
@@ -379,5 +381,61 @@ sealed interface AnalyticsEvent {
 
     data class SessionRestored(val feature: RestoredFeature) : AnalyticsEvent {
         override val name = "session_restored_${feature.value}"
+    }
+
+    data class SupportPurchaseStarted(val animal: SupportAnimal) : AnalyticsEvent {
+        override val name = "support_purchase_started_${animal.name.lowercase()}"
+    }
+
+    data class SupportPurchaseCompleted(val animal: SupportAnimal) : AnalyticsEvent {
+        override val name = "support_purchase_completed_${animal.name.lowercase()}"
+    }
+
+    data class SupportPurchaseScheduled(val animal: SupportAnimal) : AnalyticsEvent {
+        override val name = "support_purchase_scheduled_${animal.name.lowercase()}"
+    }
+
+    data class SupportPurchaseCancelled(val animal: SupportAnimal) : AnalyticsEvent {
+        override val name = "support_purchase_cancelled_${animal.name.lowercase()}"
+    }
+
+    data object SupportPurchasePending : AnalyticsEvent {
+        override val name = "support_purchase_pending"
+    }
+
+    data object SupportPurchaseFailed : AnalyticsEvent {
+        override val name = "support_purchase_failed"
+    }
+
+    data class SupportSectionOpened(val section: SupportSection) : AnalyticsEvent {
+        override val name = "support_section_opened_${section.name.lowercase()}"
+    }
+
+    data object SearchBarSupportClicked : AnalyticsEvent {
+        override val name = "search_bar_support_clicked"
+    }
+
+    data object SupportPricesUnavailable : AnalyticsEvent {
+        override val name = "support_prices_unavailable"
+    }
+
+    data object SupportManageSubscriptionsClicked : AnalyticsEvent {
+        override val name = "support_manage_subscriptions_clicked"
+    }
+
+    data object SupportRestoreClicked : AnalyticsEvent {
+        override val name = "support_restore_clicked"
+    }
+
+    data object SupportRestoreCompleted : AnalyticsEvent {
+        override val name = "support_restore_completed"
+    }
+
+    data object SupportRestoreNothingToRestore : AnalyticsEvent {
+        override val name = "support_restore_nothing_to_restore"
+    }
+
+    data object SupportRestoreFailed : AnalyticsEvent {
+        override val name = "support_restore_failed"
     }
 }

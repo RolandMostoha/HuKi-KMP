@@ -130,7 +130,7 @@ fun MapContent(
     }
     val mapState = rememberMapState()
     val styleLoaded = remember { CompletableDeferred<Unit>() }
-    var isCameraPanelVisible by remember { mutableStateOf(true) }
+    var isCameraPanelVisible by remember { mutableStateOf(false) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
     val currentListSheetHeight by rememberUpdatedState(listSheetHeight)
@@ -322,9 +322,9 @@ fun MapContent(
                 .padding(start = Dimens.Large, top = ALTITUDE_TOP_PADDING),
         )
         MapCameraDebugPanel(
-            enabled = FeatureFlags.DEBUG_SHOW_CAMERA_PANEL,
+            enabled = FeatureFlags.DEBUG_CAMERA_PANEL_ENABLED,
             visible = isCameraPanelVisible,
-            cameraState = if (FeatureFlags.DEBUG_SHOW_CAMERA_PANEL) mapViewportState.cameraState else null,
+            cameraState = if (isCameraPanelVisible) mapViewportState.cameraState else null,
             onMoveCamera = { position -> mapViewportState.setCameraOptions(position.toCameraOptions()) },
             onOpen = { isCameraPanelVisible = true },
             onClose = { isCameraPanelVisible = false },

@@ -49,8 +49,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Feature                                                                                                                                                                                              |
 |--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                     |                                                                                       |
-| `[G]`  | Android: Use Android app image ![img_3.png](img_3.png)                                                                                                                                               |
-| `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                |
 | `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup. Bump `androidBuildNumber` above the legacy versionCode (688), e.g. 1000, or Play rejects the upload. |
 | `[G]`  | Android: Prepare for CD with Google Play, check HuKi-Android for reference                                                                                                                           |
 | `[G]`  | Android: Release mode: turn of debug logging, only keep errors? what is the recommended minimum verbosity here?                                                                                      |
@@ -64,13 +62,13 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### Bugs
 
-| Status | Scope        | Bug                                                                                                                                                                                                                                                                                                                                                                                  |
-|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                                                                           |
-| `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                                                                   |
-| `[ ]`  | GPX          | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                                                                                                                                                                               |
-| `[G]`  | Layers       | Bug: For the raster hiking layer, the mapbox UI often shows pixelated, hard RED boxes in the map while loading the not cached tiles. Its very visible with slow connection. Can we improve on the look? '/Users/mostoha.roland/Desktop/Screen Recording iPhone 17 Pro Max 2026. 11. 10. at 7.53.29.mp4'                                                      ![img_1.png](img_1.png) |
-| `[?]`  | Settings     | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                                                                                                                                                                                  |
+| Status | Scope      | Bug                                                                                                                                                                                                                                                                                                                                                                                                     |
+|--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                                                                                              |
+| `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                                                                                      |
+| `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                                                                                                                                                                                                  |
+| `[G]`  | Layers     | Bug: For the raster hiking layer, the mapbox UI often shows pixelated, hard RED boxes in the map while loading the not cached tiles. Its very visible with slow connection. Can we improve on the look? '/Users/mostoha.roland/Desktop/Screen Recording iPhone 17 Pro Max 2026. 11. 10. at 7.53.29.mp4' ![img.png](img.png)                                                     ![img_1.png](img_1.png) |
+| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                                                                                                                                                                                                     |
 
 ### Design
 
@@ -93,6 +91,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope | Task                                                                                                                                                               |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Map   | For people with poor vision, create a "high-contrast" version, which add more visibility to labels, map elements.                                                  |
 | `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking, when trails are loading, they often show weird pixelated PNGs everywhere. Can we make smoother? |
 
 ### FEATURE: Landscape orientation
@@ -143,6 +142,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                                                                                                                                                               |
 |--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | WhatsNew | Add footer option to metadata.json, remove the hardcoded "The developerof HuKi" strings. Keep "-" as a fixed prefix, and make the configured footer text italic.                                   |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 
@@ -220,9 +220,11 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 - Base concept: subscriptions and one time payments. Categorized by wild animals (e.g. Board=1EUR/month, Owl=1EUR).
 - The benefit of supporting is just visual: showing the supporter animal in various places (e.g. WhatsNew)
 
-| Status | Scope   | Task                |
-|--------|---------|---------------------|
-| `[G]`  | Support | Add Support feature |
+| Status | Scope   | Task                                                                                                                                                                                                                                                                                                                                                                                                   |
+|--------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Support | If the user is supporter, implement an easter egg. At random times (make it rare), show the chosen animal as a POI in the map. It should have a reveal animation, with a drop shadow. Sg like: ![img_17.png](img_17.png). On click it shows a thanks info window and dismisses shortly after.                                                                                                          |
+
+Lets plan the support strategy for Android (google-play-billing) - iOS().
 
 ## Ideas / Experimental features
 
@@ -286,7 +288,7 @@ shows live hike info there instead, like Apple Maps navigation. Depends on Backg
 
 ### FEATURE: Camera panel
 
-Inspired by DEBUG_SHOW_CAMERA_PANEL, add this as a usable feature for users. This might be useful, they can record their
+Inspired by the debug camera panel (DEBUG_CAMERA_PANEL_ENABLED), add this as a usable feature for users. This might be useful, they can record their
 exact location / zoom level with a CROSS marker.
 
 ### FEATURE: GPX Collection Import/Export (device-to-device, no cloud)

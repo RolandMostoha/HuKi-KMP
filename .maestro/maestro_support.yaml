@@ -1,0 +1,90 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Open Support from Menu
+- tapOn: "Menu"
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_SUPPORT
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: MENU_ROW_SUPPORT
+- assertVisible:
+    id: SUPPORT_SCREEN_ROOT
+- assertVisible: "Support"
+- assertVisible: "Dear Hiker!"
+
+# Reasons are collapsed by default and expand on tap
+- assertNotVisible: "I develop the app as a hobby.*"
+- tapOn: "Why am I doing this?"
+- assertVisible: "I develop the app as a hobby.*"
+- tapOn: "Why am I doing this?"
+- assertNotVisible: "I develop the app as a hobby.*"
+
+# Tiers when the store returns products, otherwise the error view (e.g. Android debug builds unknown to Play)
+- extendedWaitUntil:
+    notVisible:
+      id: SUPPORT_LOADING
+    timeout: 15000
+- runFlow:
+    when:
+      notVisible:
+        id: SUPPORT_PRICES_UNAVAILABLE
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: SUPPORT_TIER_HEDGEHOG
+          direction: DOWN
+          centerElement: true
+      - assertVisible: "One-time support"
+      - assertVisible:
+          id: SUPPORT_TIER_SQUIRREL
+      - assertVisible:
+          id: SUPPORT_TIER_OWL
+      - scrollUntilVisible:
+          element:
+            id: SUPPORT_TIER_BEAR
+          direction: DOWN
+          centerElement: true
+      - assertVisible: "Recurring support"
+      - assertVisible:
+          id: SUPPORT_TIER_DEER
+      - assertVisible:
+          id: SUPPORT_TIER_BOAR
+- runFlow:
+    when:
+      visible:
+        id: SUPPORT_PRICES_UNAVAILABLE
+    commands:
+      - assertVisible: "Try again"
+
+# Contact
+- scrollUntilVisible:
+    element:
+      id: SUPPORT_EMAIL_ROW
+    direction: DOWN
+- assertVisible: "huki.app@gmail.com"
+
+# Legal links
+- scrollUntilVisible:
+    element:
+      id: SUPPORT_PRIVACY_POLICY
+    direction: DOWN
+- assertVisible:
+    id: SUPPORT_TERMS_OF_USE
+
+# Back to Menu
+- tapOn:
+    id: SUPPORT_BACK_BUTTON
+- assertVisible:
+    id: MENU_SCREEN_ROOT

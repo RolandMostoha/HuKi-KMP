@@ -14,6 +14,11 @@ object FeatureFlags {
     const val DEBUG_ALWAYS_SHOW_WHATSNEW = false
     const val DEBUG_ENABLE_ANALYTICS = false
     const val DEBUG_ENABLE_CRASHLYTICS = false
-    const val DEBUG_SHOW_CAMERA_PANEL = false
     val DEBUG_ROUTING_MODE = RoutingMode.AUTO
+
+    /**
+     * Hidden until the map scale bar is tapped.
+     */
+    val DEBUG_CAMERA_PANEL_ENABLED: Boolean
+        get() = isDebugBuild
 }

@@ -61,7 +61,7 @@ import hu.mostoha.mobile.kmp.huki.util.openUrl
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 import kotlinx.coroutines.launch
 
-private val SectionTitleFontSize = 19.sp
+private val SectionTitleFontSize = 17.sp
 
 private val HikeRecommendationTitleSizes = listOf(14.sp, 13.sp, 12.sp, 11.sp)
 
@@ -122,7 +122,6 @@ fun DiscoverContent(
     ) {
         DiscoverHeader(onCloseClick = onCloseClicked)
         Column(
-            modifier = Modifier.padding(top = Dimens.SectionSpacing),
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {
             SectionHeader(
@@ -161,7 +160,7 @@ fun DiscoverContent(
         }
         Column(
             modifier = Modifier
-                .padding(top = Dimens.SectionSpacing)
+                .padding(top = Dimens.MediumLarge)
                 .testTag(TestTags.DISCOVER_HIKE_RECOMMENDATIONS_SECTION),
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {
@@ -196,7 +195,7 @@ fun DiscoverContent(
         }
         Column(
             modifier = Modifier
-                .padding(top = Dimens.SectionSpacing)
+                .padding(top = Dimens.MediumLarge)
                 .testTag(TestTags.DISCOVER_OKT_SECTION),
             verticalArrangement = Arrangement.spacedBy(Dimens.SectionHeaderSpacing),
         ) {

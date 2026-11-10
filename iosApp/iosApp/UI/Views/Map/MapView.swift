@@ -42,7 +42,7 @@ struct MapView: View {
     @State private var cameraZoom: Double = 0
     @State private var cameraCenter = CLLocationCoordinate2D()
     @State private var isMapLandscape = false
-    @State private var isDebugCameraPanelVisible = true
+    @State private var isDebugCameraPanelVisible = false
     @State private var lastRoutePlannerCamera: MapUiEffectsUpdateCamera?
     @State var hiddenBaseLabelLayerIds: [String]?
 
@@ -69,9 +69,6 @@ struct MapView: View {
                         return false
                     }
                     LongPressInteraction { context in
-                        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL {
-                            isDebugCameraPanelVisible = true
-                        }
                         onMapLongClicked(context.coordinate.location)
                         return true
                     }
@@ -204,8 +201,6 @@ struct MapView: View {
                 }
                 .task(id: proxy.map != nil) {
                     guard let map = proxy.map else { return }
-                    cameraZoom = map.cameraState.zoom
-                    cameraCenter = map.cameraState.center
                     let cameraChanges = AsyncStream<CameraState> { continuation in
                         let cancelable = map.onCameraChanged.observe { event in
                             continuation.yield(event.cameraState)
@@ -214,10 +209,15 @@ struct MapView: View {
                     }
                     for await state in cameraChanges {
                         onMapCameraChanged(state.cameraPosition)
-                        guard FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL else { continue }
+                        guard isDebugCameraPanelVisible else { continue }
                         cameraZoom = state.zoom
                         cameraCenter = state.center
                     }
+                }
+                .onChange(of: isDebugCameraPanelVisible) { _, isVisible in
+                    guard isVisible, let cameraState = proxy.map?.cameraState else { return }
+                    cameraZoom = cameraState.zoom
+                    cameraCenter = cameraState.center
                 }
                 .mapLabelScale(uiState.mapUiState.labelScale, map: proxy.map)
                 .task(id: [isBaseLabelsHidden, proxy.map != nil]) {
@@ -283,8 +283,8 @@ private extension MapView {
 
     @ViewBuilder
     var debugCameraPanel: some View {
-        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && !isDebugCameraPanelVisible {
-            // DEBUG only: opens the debug camera panel
+        if FeatureFlags.shared.DEBUG_CAMERA_PANEL_ENABLED && !isDebugCameraPanelVisible {
+            // DEBUG only: tapping the scale bar opens the debug camera panel
             Button(
                 action: { isDebugCameraPanelVisible = true },
                 label: {
@@ -298,7 +298,7 @@ private extension MapView {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(.leading, 16)
         }
-        if FeatureFlags.shared.DEBUG_SHOW_CAMERA_PANEL && isDebugCameraPanelVisible {
+        if FeatureFlags.shared.DEBUG_CAMERA_PANEL_ENABLED && isDebugCameraPanelVisible {
             MapCameraDebugOverlay(
                 zoom: cameraZoom,
                 center: cameraCenter,

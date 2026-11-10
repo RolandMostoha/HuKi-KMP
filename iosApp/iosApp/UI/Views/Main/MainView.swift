@@ -149,6 +149,10 @@ struct MainView: View {
                         },
                         onMenuClick: {
                             navigationPath.append(MenuRoute.menu)
+                        },
+                        onSupportClick: {
+                            viewModel.onEvent(event: MainUiEventsSearchBarSupportClicked.shared)
+                            navigationPath.append(SupportRoute.support)
                         }
                     )
                     .padding(.bottom, isLandscape ? 12 : 0)
@@ -223,46 +227,55 @@ struct MainView: View {
 
 private extension MainView {
     func navigationDestinations<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        guideDestinations {
+            content()
+                .navigationDestination(for: MenuRoute.self) { _ in
+                    menuDestination
+                }
+                .navigationDestination(for: SettingsRoute.self) { _ in
+                    SettingsView(onMapLabelScaleClicked: openMapLabelScaleSheet)
+                }
+                .navigationDestination(for: DestinationsRoute.self) { _ in
+                    DestinationsView(
+                        onShowOnMap: { destination in
+                            viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
+                            navigationPath = NavigationPath()
+                        },
+                        onOpenRoute: { destination in
+                            viewModel.onEvent(event: MainUiEventsDestinationRouteSelected(id: destination.id))
+                            navigationPath = NavigationPath()
+                        }
+                    )
+                }
+                .navigationDestination(for: GpxCollectionRoute.self) { _ in
+                    GpxCollectionView(
+                        onOpenTutorial: { navigationPath.append(GpxGuideRoute.gpxGuide) },
+                        onOpenGpx: { uri in
+                            viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
+                            navigationPath = NavigationPath()
+                        }
+                    )
+                }
+                .navigationDestination(for: PlaceHistoryRoute.self) { _ in
+                    PlaceHistoryView(
+                        onOpenPlace: { osmType, osmId in
+                            let event = MainUiEventsHistoryPlaceSelected(osmType: osmType, osmId: osmId)
+                            viewModel.onEvent(event: event)
+                            navigationPath = NavigationPath()
+                        }
+                    )
+                }
+                .navigationDestination(for: LocationIqRoute.self) { _ in
+                    LocationIqView()
+                }
+                .navigationDestination(for: SupportRoute.self) { _ in
+                    SupportView()
+                }
+        }
+    }
+
+    func guideDestinations<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
-            .navigationDestination(for: MenuRoute.self) { _ in
-                menuDestination
-            }
-            .navigationDestination(for: SettingsRoute.self) { _ in
-                SettingsView(onMapLabelScaleClicked: openMapLabelScaleSheet)
-            }
-            .navigationDestination(for: DestinationsRoute.self) { _ in
-                DestinationsView(
-                    onShowOnMap: { destination in
-                        viewModel.onEvent(event: MainUiEventsSearchDestinationSelected(destination: destination))
-                        navigationPath = NavigationPath()
-                    },
-                    onOpenRoute: { destination in
-                        viewModel.onEvent(event: MainUiEventsDestinationRouteSelected(id: destination.id))
-                        navigationPath = NavigationPath()
-                    }
-                )
-            }
-            .navigationDestination(for: GpxCollectionRoute.self) { _ in
-                GpxCollectionView(
-                    onOpenTutorial: { navigationPath.append(GpxGuideRoute.gpxGuide) },
-                    onOpenGpx: { uri in
-                        viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
-                        navigationPath = NavigationPath()
-                    }
-                )
-            }
-            .navigationDestination(for: PlaceHistoryRoute.self) { _ in
-                PlaceHistoryView(
-                    onOpenPlace: { osmType, osmId in
-                        let event = MainUiEventsHistoryPlaceSelected(osmType: osmType, osmId: osmId)
-                        viewModel.onEvent(event: event)
-                        navigationPath = NavigationPath()
-                    }
-                )
-            }
-            .navigationDestination(for: LocationIqRoute.self) { _ in
-                LocationIqView()
-            }
             .navigationDestination(for: GpxGuideRoute.self) { _ in
                 GpxGuideView()
             }
@@ -295,7 +308,8 @@ private extension MainView {
             onTrailSymbolsGuideClicked: { navigationPath.append(TrailSymbolsGuideRoute.trailSymbolsGuide) },
             onQuickGuideClicked: { navigationPath.append(QuickGuideRoute.quickGuide) },
             onPlaceHistoryClicked: { navigationPath.append(PlaceHistoryRoute.placeHistory) },
-            onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) }
+            onLocationIqClicked: { navigationPath.append(LocationIqRoute.locationIq) },
+            onSupportClicked: { navigationPath.append(SupportRoute.support) }
         )
     }
 

@@ -7,6 +7,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Alert
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ data class MainUiState(
     val mapZoomControlsAlwaysVisible: Boolean = UserPreferences.DEFAULTS.mapZoomControlsVisible,
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
     val alert: Alert? = null,
+    val supporterAnimal: SupportAnimal? = null,
 ) {
     val isSearchBarVisible: Boolean
         get() = !mapUiState.isGpxShown &&

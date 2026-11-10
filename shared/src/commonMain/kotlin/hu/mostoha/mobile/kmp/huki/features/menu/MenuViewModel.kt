@@ -8,6 +8,8 @@ import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
+import hu.mostoha.mobile.kmp.huki.repository.supporterAnimal
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.logScreenView
 import kotlinx.coroutines.channels.Channel
@@ -18,9 +20,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel() {
+class MenuViewModel(
+    private val analyticsService: AnalyticsService,
+    private val supporterRepository: SupporterRepository,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(MenuUiState.Default)
     val uiState: StateFlow<MenuUiState> = _uiState.asStateFlow()
 
@@ -29,6 +35,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
 
     init {
         initLogging()
+        observeSupporter()
     }
 
     fun onEvent(event: MenuUiEvents) {
@@ -50,6 +57,7 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
             MenuUiEvents.GraphhopperClicked -> openGraphhopper()
+            MenuUiEvents.SupportClicked -> sendEffect(MenuUiEffects.NavigateToSupport)
         }
     }
 
@@ -88,6 +96,12 @@ class MenuViewModel(private val analyticsService: AnalyticsService) : ViewModel(
             Logger.d { "UiEffect: ${uiEffect.toString().trimLongLists()}" }
             _menuUiEffects.send(uiEffect)
         }
+    }
+
+    private fun observeSupporter() {
+        supporterRepository.supporterAnimal
+            .onEach { animal -> _uiState.update { it.copy(supporterAnimal = animal) } }
+            .launchIn(viewModelScope)
     }
 
     private fun initLogging() {

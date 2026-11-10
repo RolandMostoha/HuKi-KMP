@@ -5,6 +5,9 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.MenuLink
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
+import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +25,7 @@ class MenuViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val analyticsService = FakeAnalyticsService()
+    private val supporterRepository = FakeSupporterRepository()
 
     private lateinit var menuViewModel: MenuViewModel
 
@@ -29,13 +33,25 @@ class MenuViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        menuViewModel = MenuViewModel(analyticsService)
+        menuViewModel = MenuViewModel(analyticsService, supporterRepository)
         testDispatcher.scheduler.runCurrent()
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given a non-supporter - When they become a supporter - Then the supporter animal is in the state`() {
+        runTest {
+            menuViewModel.uiState.value.supporterAnimal shouldBe null
+
+            supporterRepository.supporterState.value = SupporterState(activeSubscriptions = setOf(SupportAnimal.DEER))
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            menuViewModel.uiState.value.supporterAnimal shouldBe SupportAnimal.DEER
+        }
     }
 
     @Test
@@ -106,6 +122,19 @@ class MenuViewModelTest {
                 val actual = awaitItem()
 
                 actual shouldBe MenuUiEffects.NavigateToGpxGuide
+            }
+        }
+    }
+
+    @Test
+    fun `Given default state - When SupportClicked event - Then NavigateToSupport effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.SupportClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToSupport
             }
         }
     }

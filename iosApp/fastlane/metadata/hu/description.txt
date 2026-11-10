@@ -9,3 +9,5 @@ Funkciók:
 • Kéktúra útvonalak: OKT, RPDDK és AKT a térképen, szakaszokra bontva
 • Kéktúra bélyegzőhelyek távolsággal és becsült menetidővel
 • Útvonaltervező
+
+Felhasználási feltételek: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

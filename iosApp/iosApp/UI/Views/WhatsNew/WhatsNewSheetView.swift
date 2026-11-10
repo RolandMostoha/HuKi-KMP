@@ -4,6 +4,7 @@ import SwiftUI
 struct WhatsNewSheetView: View {
     let strings: Strings
     let whatsNew: WhatsNew
+    let supporterAnimal: SupportAnimal?
     let onDismissRequest: () -> Void
     var onHeightChange: (CGFloat) -> Void = { _ in }
 
@@ -15,11 +16,13 @@ struct WhatsNewSheetView: View {
     init(
         strings: Strings,
         whatsNew: WhatsNew,
+        supporterAnimal: SupportAnimal?,
         onDismissRequest: @escaping () -> Void,
         onHeightChange: @escaping (CGFloat) -> Void = { _ in }
     ) {
         self.strings = strings
         self.whatsNew = whatsNew
+        self.supporterAnimal = supporterAnimal
         self.onDismissRequest = onDismissRequest
         self.onHeightChange = onHeightChange
         self.monthYearText = LocalizedDateFormatter().formatMonthYear(date: whatsNew.releaseDate)
@@ -49,7 +52,7 @@ struct WhatsNewSheetView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 13) {
-            Image(uiImage: SharedRes.images().ic_app_icon.toUIImage()!)
+            Image(uiImage: SharedRes.images().ic_app_icon_ios.toUIImage()!)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 58, height: 58)
@@ -119,30 +122,57 @@ struct WhatsNewSheetView: View {
         .accessibilityIdentifier(TestTags.shared.WHATS_NEW_RELEASE_NOTES)
     }
 
+    @ViewBuilder
+    private var messageIcon: some View {
+        if let supporterAnimal {
+            supporterAnimal.iconImage
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+        } else {
+            Image(systemName: "heart.fill")
+                .font(.system(size: 16))
+        }
+    }
+
+    private func supporterMessage(_ animal: SupportAnimal, accent: SwiftUI.Color) -> some View {
+        let message = strings.get(
+            id: SharedRes.strings().whats_new_supporter_message,
+            args: [strings.get(id: animal.nameRes)]
+        )
+        return Text("\(message) \(Image(systemName: "heart.fill"))")
+            .font(.footnote.weight(.bold))
+            .foregroundStyle(accent)
+    }
+
     private func messageCard(_ message: WhatsNewMessage) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        let accent = supporterAnimal?.color ?? primary
+        let container = supporterAnimal?.containerColor ?? primaryContainer
+        return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 16))
-                    .foregroundStyle(primary)
+                messageIcon
+                    .foregroundStyle(accent)
                 Text(strings.get(desc: message.title).uppercased())
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(primary)
+                    .foregroundStyle(accent)
             }
             Text(strings.get(desc: message.body))
                 .font(.footnote)
                 .italic()
                 .foregroundStyle(.secondary)
+            if let supporterAnimal {
+                supporterMessage(supporterAnimal, accent: accent)
+            }
             Text(strings.get(id: SharedRes.strings().whats_new_message_signature))
                 .font(.footnote)
                 .italic()
-                .foregroundStyle(primary)
+                .foregroundStyle(accent)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(primaryContainer, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+        .background(container, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
         .padding(.leading, 3)
-        .background(primary, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+        .background(accent, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
         .accessibilityIdentifier(TestTags.shared.WHATS_NEW_MESSAGE_CARD)
     }
 }

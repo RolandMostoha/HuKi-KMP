@@ -9,3 +9,5 @@ Features:
 • National Blue Trails: OKT, RPDDK and AKT on the map, divided into sections
 • Blue Trail stamping points with distances and estimated travel time
 • Route Planner
+
+Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

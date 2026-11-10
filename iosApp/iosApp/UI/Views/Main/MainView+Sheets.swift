@@ -16,7 +16,7 @@ extension MainView {
         case .routePlanner(let sheet):
             routePlannerSheet(stops: sheet.stops, restored: sheet.restored)
         case .whatsNew(let sheet):
-            whatsNewSheet(whatsNew: sheet.whatsNew)
+            whatsNewSheet(whatsNew: sheet.whatsNew, supporterAnimal: uiState.supporterAnimal)
         case .discover:
             discoverSheet()
         case .okt:
@@ -164,10 +164,11 @@ extension MainView {
         .presentationDragIndicator(.hidden)
     }
 
-    func whatsNewSheet(whatsNew: WhatsNew) -> some View {
+    func whatsNewSheet(whatsNew: WhatsNew, supporterAnimal: SupportAnimal?) -> some View {
         WhatsNewSheetView(
             strings: strings,
             whatsNew: whatsNew,
+            supporterAnimal: supporterAnimal,
             onDismissRequest: {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
             },
