@@ -9,7 +9,9 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -347,11 +350,19 @@ private fun SearchBarAction(
     modifier: Modifier = Modifier,
     searchBarModifier: Modifier = Modifier,
 ) {
+    val density = LocalDensity.current
+    // Unclipped shrink moves the bar down by its own height, the slide adds the gap below it to exit under the nav bar
+    val bottomGap = WindowInsets.safeDrawing.getBottom(density) +
+        with(density) { (Dimens.Small + Dimens.Small).roundToPx() }
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+        enter = expandVertically(expandFrom = Alignment.Top, clip = false) +
+            slideInVertically(initialOffsetY = { bottomGap }) +
+            fadeIn(),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top, clip = false) +
+            slideOutVertically(targetOffsetY = { bottomGap }) +
+            fadeOut(),
     ) {
         SearchBar(
             modifier = searchBarModifier,
