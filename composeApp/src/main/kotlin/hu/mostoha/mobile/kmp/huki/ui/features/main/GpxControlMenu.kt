@@ -1,12 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -15,7 +17,6 @@ import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults
 import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
@@ -27,8 +28,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -38,6 +41,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
@@ -171,43 +175,16 @@ private fun GpxFabMenu(
 ) {
     val itemContainerColor = MaterialTheme.colorScheme.surface
     val itemContentColor = MaterialTheme.colorScheme.onSurface
-    val containerSize = ToggleFloatingActionButtonDefaults.containerSize()
     FloatingActionButtonMenu(
         modifier = modifier,
         expanded = expanded,
         horizontalAlignment = Alignment.Start,
         button = {
-            ToggleFloatingActionButton(
+            GpxMenuToggleButton(
                 modifier = buttonModifier.testTag(TestTags.MAIN_FAB_GPX_CONTROL_BUTTON),
-                checked = expanded,
-                onCheckedChange = onExpandedChange,
-                containerColor = ToggleFloatingActionButtonDefaults.containerColor(
-                    initialColor = MaterialTheme.colorScheme.surface,
-                    finalColor = MaterialTheme.colorScheme.primary,
-                ),
-                containerSize = containerSize,
-                containerCornerRadius = { progress -> containerSize(progress) / 2 },
-            ) {
-                val iconRes by remember {
-                    derivedStateOf {
-                        if (checkedProgress > 0.5f) R.drawable.ic_close else R.drawable.ic_tune
-                    }
-                }
-                Icon(
-                    painter = rememberVectorPainter(ImageVector.vectorResource(iconRes)),
-                    contentDescription = mokoString(SharedRes.strings.gpx_control_a11y_fab),
-                    tint = Color.Unspecified,
-                    modifier = with(ToggleFloatingActionButtonDefaults) {
-                        Modifier.animateIcon(
-                            checkedProgress = { checkedProgress },
-                            color = iconColor(
-                                initialColor = MaterialTheme.colorScheme.onSurface,
-                                finalColor = MaterialTheme.colorScheme.onPrimary,
-                            ),
-                        )
-                    },
-                )
-            }
+                expanded = expanded,
+                onExpandedChange = onExpandedChange,
+            )
         },
     ) {
         FloatingActionButtonMenuItem(
@@ -302,6 +279,53 @@ private fun GpxFabMenu(
             },
             text = { Text(text = mokoString(SharedRes.strings.gpx_control_clear_title)) },
         )
+    }
+}
+
+@Composable
+private fun GpxMenuToggleButton(expanded: Boolean, onExpandedChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+    val checkedProgress = animateFloatAsState(
+        targetValue = if (expanded) 1f else 0f,
+        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
+    )
+    val containerSize = ToggleFloatingActionButtonDefaults.containerSize()
+    val containerColor = ToggleFloatingActionButtonDefaults.containerColor(
+        initialColor = MaterialTheme.colorScheme.surface,
+        finalColor = MaterialTheme.colorScheme.primary,
+    )
+    val iconColor = ToggleFloatingActionButtonDefaults.iconColor(
+        initialColor = MaterialTheme.colorScheme.onSurface,
+        finalColor = MaterialTheme.colorScheme.onPrimary,
+    )
+    val iconRes by remember {
+        derivedStateOf { if (checkedProgress.value > 0.5f) R.drawable.ic_close else R.drawable.ic_tune }
+    }
+    Box(modifier = Modifier.size(containerSize(0f)), contentAlignment = Alignment.TopEnd) {
+        Box(
+            modifier = modifier
+                .layout { measurable, _ ->
+                    val sizePx = containerSize(checkedProgress.value).roundToPx()
+                    val placeable = measurable.measure(Constraints.fixed(sizePx, sizePx))
+                    layout(sizePx, sizePx) { placeable.place(0, 0) }
+                }
+                .graphicsLayer {
+                    shadowElevation = Dimens.FloatingActionElevation.toPx()
+                    shape = CircleShape
+                    clip = true
+                }
+                .drawBehind { drawRect(containerColor(checkedProgress.value)) }
+                .toggleable(value = expanded, onValueChange = onExpandedChange),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = rememberVectorPainter(ImageVector.vectorResource(iconRes)),
+                contentDescription = mokoString(SharedRes.strings.gpx_control_a11y_fab),
+                tint = Color.Unspecified,
+                modifier = with(ToggleFloatingActionButtonDefaults) {
+                    Modifier.animateIcon(checkedProgress = { checkedProgress.value }, color = iconColor)
+                },
+            )
+        }
     }
 }
 
