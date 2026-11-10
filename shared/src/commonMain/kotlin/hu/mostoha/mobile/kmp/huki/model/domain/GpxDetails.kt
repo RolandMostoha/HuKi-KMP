@@ -26,4 +26,11 @@ data class GpxDetails(
 
     val hasSlopeSegments: Boolean
         get() = slopeSegments.isNotEmpty()
+
+    /**
+     * Geometry is counted, as the UiState is logged on every change and a long track makes the full string slow.
+     */
+    override fun toString(): String =
+        "GpxDetails(layerId=$layerId, fileName=$fileName, locations=${locations.size}, " +
+            "waypoints=${waypoints.size}, slopeSegments=${slopeSegments.size}, isReversed=$isReversed)"
 }

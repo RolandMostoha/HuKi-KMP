@@ -1,10 +1,12 @@
 package hu.mostoha.mobile.kmp.huki.logger
 
+import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.features.destinations.DestinationsUiState
 import hu.mostoha.mobile.kmp.huki.features.destinations.NearbyState
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiState
 import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -83,6 +85,19 @@ class LoggerUtilsTest {
         actual shouldNotContain "FeatureCollection"
         actual shouldContain "selectedLandscapeId=bukk"
         actual shouldContain "outlinesGeoJson=${geoJson.length} chars"
+    }
+
+    @Test
+    fun `Given an open GPX - When logging the main state - Then its geometry is counted`() {
+        val state = MainUiState().copy(
+            mapUiState = MapUiState().copy(gpxDetails = TEST_GPX_DETAILS),
+            sheet = Sheet.Gpx(TEST_GPX_DETAILS),
+        )
+
+        val actual = state.toLogString()
+
+        actual shouldNotContain "latitude"
+        actual shouldContain "locations=${TEST_GPX_DETAILS.locations.size}"
     }
 
     @Test
