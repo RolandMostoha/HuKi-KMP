@@ -29,7 +29,7 @@ struct RoutePlannerWaypointRowView: View {
             }
         }
         .frame(maxWidth: .infinity, minHeight: rowHeight, alignment: .leading)
-        .animation(.smooth(duration: 0.2), value: isEmpty)
+        .animation(.toggle, value: isEmpty)
     }
 
     private var emptyTitleButton: some View {

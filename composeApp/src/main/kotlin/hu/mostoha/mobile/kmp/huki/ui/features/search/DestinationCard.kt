@@ -58,7 +58,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.DestinationTypeChip
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.EXPAND_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.millis
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
@@ -183,7 +185,7 @@ private fun DestinationTexts(destination: Destination, expanded: Boolean, modifi
             text = mokoString(destination.description),
             modifier = Modifier
                 .padding(top = if (expanded) 0.dp else Dimens.ExtraSmall)
-                .animateContentSize(animationSpec = tween(durationMillis = 250)),
+                .animateContentSize(animationSpec = tween(EXPAND_ANIM_DURATION.millis())),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = Color.White.copy(alpha = 0.85f),
             maxLines = descriptionMaxLines,

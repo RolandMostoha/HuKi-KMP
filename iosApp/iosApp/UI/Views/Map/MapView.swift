@@ -267,7 +267,7 @@ struct MapView: View {
                 altitudeOrnament
                 debugCameraPanel
             }
-            .animation(.smooth(duration: 0.3), value: isCompassVisible)
+            .animation(.stateChange, value: isCompassVisible)
         }
     }
 }

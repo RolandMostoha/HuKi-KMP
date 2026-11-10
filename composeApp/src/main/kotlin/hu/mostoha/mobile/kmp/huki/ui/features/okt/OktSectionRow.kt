@@ -66,17 +66,17 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OktStampItem
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.EXPAND_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import hu.mostoha.mobile.kmp.huki.util.formatter.TravelTimeFormatter
+import hu.mostoha.mobile.kmp.huki.util.millis
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 import org.maplibre.spatialk.units.extensions.kilometers
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-
-internal const val STAMP_CAROUSEL_ANIM_MILLIS = 250
 
 private val SectionRowShape = RoundedCornerShape(22.dp)
 private val SectionRowPadding = 12.dp
@@ -130,8 +130,10 @@ fun OktSectionRow(
         }
         AnimatedVisibility(
             visible = isSelected && stamps.isNotEmpty(),
-            enter = fadeIn(tween(STAMP_CAROUSEL_ANIM_MILLIS)) + expandVertically(tween(STAMP_CAROUSEL_ANIM_MILLIS)),
-            exit = fadeOut(tween(STAMP_CAROUSEL_ANIM_MILLIS)) + shrinkVertically(tween(STAMP_CAROUSEL_ANIM_MILLIS)),
+            enter =
+            fadeIn(tween(EXPAND_ANIM_DURATION.millis())) + expandVertically(tween(EXPAND_ANIM_DURATION.millis())),
+            exit =
+            fadeOut(tween(EXPAND_ANIM_DURATION.millis())) + shrinkVertically(tween(EXPAND_ANIM_DURATION.millis())),
         ) {
             OktStampCarousel(
                 stamps = stamps,

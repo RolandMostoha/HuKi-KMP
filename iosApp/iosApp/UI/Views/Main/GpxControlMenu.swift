@@ -203,7 +203,7 @@ struct GpxControlMenu: View {
     }
 
     private func expand() {
-        withAnimation(.smooth(duration: 0.35)) {
+        withAnimation(.menuExpand) {
             isExpanded = true
             isRouteFabVisible = false
         }
@@ -211,11 +211,11 @@ struct GpxControlMenu: View {
 
     private func collapse() {
         guard isExpanded else { return }
-        withAnimation(.smooth(duration: 0.35)) {
+        withAnimation(.menuExpand) {
             isExpanded = false
         } completion: {
             guard !isExpanded else { return }
-            withAnimation(.smooth(duration: 0.25)) { isRouteFabVisible = true }
+            withAnimation(.fabReveal) { isRouteFabVisible = true }
         }
     }
 }

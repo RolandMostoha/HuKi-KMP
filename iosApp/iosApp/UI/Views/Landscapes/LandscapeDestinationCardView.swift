@@ -50,7 +50,7 @@ struct LandscapeDestinationCardView: View {
                 isSelected ? categoryColor : Color(.systemBackground),
                 in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
+            .animation(.selection, value: isSelected)
         }
         .buttonStyle(PressFeedbackButtonStyle())
         .accessibilityElement(children: .combine)

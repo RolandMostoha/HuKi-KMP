@@ -46,14 +46,15 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.EXPAND_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.millis
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.rememberLastNonNull
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
-private const val CAROUSEL_ANIM_MILLIS = 250
 private const val SELECTED_CONTAINER_ALPHA = 0.3f
 private val RowShape = RoundedCornerShape(22.dp)
 private val RowPadding = 12.dp
@@ -96,8 +97,10 @@ fun DestinationGroupRow(
         )
         AnimatedVisibility(
             visible = isSelected && destinations.isNotEmpty(),
-            enter = fadeIn(tween(CAROUSEL_ANIM_MILLIS)) + expandVertically(tween(CAROUSEL_ANIM_MILLIS)),
-            exit = fadeOut(tween(CAROUSEL_ANIM_MILLIS)) + shrinkVertically(tween(CAROUSEL_ANIM_MILLIS)),
+            enter =
+            fadeIn(tween(EXPAND_ANIM_DURATION.millis())) + expandVertically(tween(EXPAND_ANIM_DURATION.millis())),
+            exit =
+            fadeOut(tween(EXPAND_ANIM_DURATION.millis())) + shrinkVertically(tween(EXPAND_ANIM_DURATION.millis())),
         ) {
             DestinationCarousel(
                 destinations = carouselDestinations,

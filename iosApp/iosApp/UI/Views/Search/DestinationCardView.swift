@@ -48,7 +48,7 @@ struct DestinationCardView: View {
         }
         .padding(contentPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .animation(.easeInOut(duration: 0.2), value: expanded)
+        .animation(.expand, value: expanded)
     }
 
     private var textBlock: some View {

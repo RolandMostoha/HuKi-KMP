@@ -58,6 +58,9 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.SearchField
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.SEARCH_CONTENT_FADE_IN_DURATION
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.SEARCH_CONTENT_FADE_OUT_DURATION
+import hu.mostoha.mobile.kmp.huki.util.millis
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -183,8 +186,12 @@ private fun SearchBottomSheetContent(
                     .fillMaxWidth()
                     .weight(1f),
                 transitionSpec = {
-                    fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith
-                        fadeOut(tween(durationMillis = 90))
+                    fadeIn(
+                        tween(
+                            durationMillis = SEARCH_CONTENT_FADE_IN_DURATION.millis(),
+                            delayMillis = SEARCH_CONTENT_FADE_OUT_DURATION.millis(),
+                        ),
+                    ) togetherWith fadeOut(tween(SEARCH_CONTENT_FADE_OUT_DURATION.millis()))
                 },
                 contentKey = { (type, _) -> type },
                 label = "searchContent",

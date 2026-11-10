@@ -58,7 +58,7 @@ struct PlaceDetailsSheetView: View {
         }
         .padding(.leading, 24)
         .padding(.trailing, 16)
-        .animation(.smooth(duration: 0.3), value: placeDetails)
+        .animation(.stateChange, value: placeDetails)
     }
 
     @ViewBuilder

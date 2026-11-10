@@ -13,7 +13,7 @@ extension MapView {
         .padding(.leading, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .allowsHitTesting(false)
-        .animation(.smooth(duration: 0.3), value: uiState.myLocationState.altitude == nil)
+        .animation(.stateChange, value: uiState.myLocationState.altitude == nil)
     }
 
     func isFacingNorth(_ bearing: Double) -> Bool {

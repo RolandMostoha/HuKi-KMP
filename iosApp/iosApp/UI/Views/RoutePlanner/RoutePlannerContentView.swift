@@ -14,10 +14,10 @@ struct RoutePlannerContentView: View {
 
     var body: some View {
         contentStack(showsPlanner: detent != .minimized)
-            .animation(.smooth(duration: 0.3), value: uiState.isRoutePlanLoading)
-            .animation(.smooth(duration: 0.3), value: uiState.routePlanError)
-            .animation(.smooth(duration: 0.3), value: uiState.routeStats)
-            .animation(.smooth(duration: 0.3), value: detent)
+            .animation(.stateChange, value: uiState.isRoutePlanLoading)
+            .animation(.stateChange, value: uiState.routePlanError)
+            .animation(.stateChange, value: uiState.routeStats)
+            .animation(.stateChange, value: detent)
             .background(alignment: .top) { minimizedHeightReader }
             .onChange(of: heights, initial: true) { _, newHeights in
                 onHeightsChange(newHeights)
@@ -136,8 +136,8 @@ struct RoutePlannerContentView: View {
         .frame(height: isFullScreen ? nil : waypointsListHeight(for: detent))
         .frame(maxHeight: isFullScreen ? .infinity : nil)
         .padding(.bottom, -Self.waypointsListBottomInset)
-        .animation(.smooth(duration: 0.3), value: uiState.waypoints)
-        .animation(.smooth(duration: 0.3), value: uiState.isMaxStopsReached)
+        .animation(.stateChange, value: uiState.waypoints)
+        .animation(.stateChange, value: uiState.isMaxStopsReached)
         .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_WAYPOINT_LIST)
     }
 

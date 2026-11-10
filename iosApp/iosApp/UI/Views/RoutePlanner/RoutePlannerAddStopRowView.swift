@@ -52,7 +52,7 @@ struct RoutePlannerAddStopRowView: View {
         .contentShape(.capsule)
         .disabled(!isRoundTripEnabled)
         .opacity(isRoundTripEnabled ? 1 : 0.35)
-        .animation(.smooth(duration: 0.2), value: isRoundTripEnabled)
+        .animation(.toggle, value: isRoundTripEnabled)
         .accessibilityLabel(strings.get(id: SharedRes.strings().route_planner_a11y_round_trip))
         .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_ROUND_TRIP_BUTTON)
     }

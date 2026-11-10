@@ -122,7 +122,7 @@ struct OktMarkerView: View {
             .overlay(Circle().strokeBorder(isSelected ? onOktBlue : oktBlue, lineWidth: 2))
             .shadow(color: .black.opacity(0.25), radius: 2, y: 1)
             .contentShape(Circle())
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
+            .animation(.selection, value: isSelected)
     }
 
     @ViewBuilder

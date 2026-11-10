@@ -59,7 +59,9 @@ import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
 import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
+import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.EXPAND_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.millis
 import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
@@ -162,7 +164,7 @@ private suspend fun LazyListState.scrollToSelectedSection(index: Int, previousIn
         ?: 0
     animateScrollBy(
         value = (item.offset - collapsingHeight).toFloat(),
-        animationSpec = tween(STAMP_CAROUSEL_ANIM_MILLIS),
+        animationSpec = tween(EXPAND_ANIM_DURATION.millis()),
     )
 }
 

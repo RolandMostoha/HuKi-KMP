@@ -240,7 +240,7 @@ struct DestinationMarkerView: View {
             .overlay(Circle().strokeBorder(surfaceColor, lineWidth: 2))
             .shadow(color: .black.opacity(0.25), radius: 2, y: 1)
             .contentShape(Circle())
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
+            .animation(.selection, value: isSelected)
     }
 }
 

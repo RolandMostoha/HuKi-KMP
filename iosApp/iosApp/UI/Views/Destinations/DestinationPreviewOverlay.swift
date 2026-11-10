@@ -64,8 +64,8 @@ struct DestinationPreviewOverlay: View {
     }
 
     private func dismiss(then action: (() -> Void)? = nil) {
-        withAnimation(.easeOut(duration: 0.2)) { appeared = false }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        withAnimation(.dismiss) { appeared = false }
+        DispatchQueue.main.asyncAfter(deadline: .now() + AnimationConstants.shared.DISMISS_ANIM_DURATION_S) {
             onDismiss()
             action?()
         }
