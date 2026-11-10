@@ -14,6 +14,8 @@ struct HikingTrailsMapContent: MapContent {
             .tileSize(Double(layer.tileSize))
             .minzoom(Double(layer.minZoom))
             .maxzoom(Double(layer.maxZoom))
+            .prefetchZoomDelta(Double(layer.prefetchZoomDelta))
+            .maxOverscaleFactorForParentTiles(Double(layer.maxOverscaleFactorForParentTiles))
         if baseLayer == .outdoors {
             // Classic styles have no slots, and only a slot layer can be placed at a custom position.
             SlotLayer(id: outdoorsSlotId)

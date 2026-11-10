@@ -6,6 +6,8 @@ enum class OverlayLayer(
     val tileSize: Long,
     val minZoom: Long,
     val maxZoom: Long,
+    val prefetchZoomDelta: Long,
+    val maxOverscaleFactorForParentTiles: Long,
 ) {
     TURISTAUTAK(
         layerId = "turistautak",
@@ -17,5 +19,9 @@ enum class OverlayLayer(
         tileSize = 256,
         minZoom = 5,
         maxZoom = 17,
+        // Requests only tiles of the current zoom level, no lower-zoom tiles loaded ahead as a quick preview
+        prefetchZoomDelta = 0,
+        // Limits how much an already loaded lower-zoom tile can be scaled up to fill in for a loading tile
+        maxOverscaleFactorForParentTiles = 1,
     ),
 }

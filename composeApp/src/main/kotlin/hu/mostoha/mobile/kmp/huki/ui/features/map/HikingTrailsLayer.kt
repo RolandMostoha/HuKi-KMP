@@ -20,6 +20,8 @@ fun HikingTrailsLayer() {
             tiles = StringListValue(OverlayLayer.TURISTAUTAK.tiles)
             minZoom = LongValue(OverlayLayer.TURISTAUTAK.minZoom)
             maxZoom = LongValue(OverlayLayer.TURISTAUTAK.maxZoom)
+            prefetchZoomDelta = LongValue(OverlayLayer.TURISTAUTAK.prefetchZoomDelta)
+            maxOverscaleFactorForParentTiles = LongValue(OverlayLayer.TURISTAUTAK.maxOverscaleFactorForParentTiles)
         },
     ) {
         rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)

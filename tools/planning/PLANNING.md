@@ -67,7 +67,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                                                                                              |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                                                                                      |
 | `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                                                                                                                                                                                                  |
-| `[G]`  | Layers     | Bug: For the raster hiking layer, the mapbox UI often shows pixelated, hard RED boxes in the map while loading the not cached tiles. Its very visible with slow connection. Can we improve on the look? '/Users/mostoha.roland/Desktop/Screen Recording iPhone 17 Pro Max 2026. 11. 10. at 7.53.29.mp4' ![img.png](img.png)                                                     ![img_1.png](img_1.png) |
 | `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                                                                                                                                                                                                     |
 
 ### Design
@@ -92,7 +91,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope | Task                                                                                                                                                               |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | For people with poor vision, create a "high-contrast" version, which add more visibility to labels, map elements.                                                  |
-| `[ ]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking, when trails are loading, they often show weird pixelated PNGs everywhere. Can we make smoother? |
+| `[x]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking, when trails are loading, they often show weird pixelated PNGs everywhere. Can we make smoother? |
 
 ### FEATURE: Landscape orientation
 
