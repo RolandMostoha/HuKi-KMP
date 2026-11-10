@@ -35,17 +35,24 @@ object MyLocationCameraAnimation {
     private fun zoomSteps(camera: CameraPosition, alreadyFollowing: Boolean): Double =
         if (alreadyFollowing) 0.0 else abs(maxOf(camera.zoom, MapConstants.FOLLOW_LOCATION_ZOOM_LEVEL) - camera.zoom)
 
-    private fun distanceSteps(camera: CameraPosition, myLocation: Location?): Double {
-        myLocation ?: return 0.0
-        val screenDistance = camera.location.distanceBetween(myLocation).inMeters / camera.metersPerPoint()
+    internal fun distanceSteps(camera: CameraPosition, target: Location?): Double {
+        target ?: return 0.0
+        val screenDistance =
+            camera.location.distanceBetween(target).inMeters / metersPerPoint(camera.location, camera.zoom)
         return log2(1 + screenDistance / SCREEN_DISTANCE_PER_STEP)
     }
 
     /**
-     * Web Mercator ground resolution at the camera center, for Mapbox's 512 point tiles.
+     * Web Mercator ground resolution at [location], for Mapbox's 512 point tiles.
      */
-    private fun CameraPosition.metersPerPoint(): Double =
+    internal fun metersPerPoint(location: Location, zoom: Double): Double =
         EARTH_CIRCUMFERENCE_METERS * cos(location.latitude * PI / 180) / (MAPBOX_TILE_SIZE * 2.0.pow(zoom))
+
+    /**
+     * Inverse of [metersPerPoint].
+     */
+    internal fun zoomFor(location: Location, metersPerPoint: Double): Double =
+        log2(EARTH_CIRCUMFERENCE_METERS * cos(location.latitude * PI / 180) / (MAPBOX_TILE_SIZE * metersPerPoint))
 
     private const val EARTH_CIRCUMFERENCE_METERS = 40_075_016.686
     private const val MAPBOX_TILE_SIZE = 512

@@ -19,7 +19,6 @@ import com.mapbox.maps.plugin.viewport.state.OverviewViewportState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
-import hu.mostoha.mobile.kmp.huki.util.AnimationConstants
 import hu.mostoha.mobile.kmp.huki.util.AnimationConstants.MAP_FOLLOW_ANIM_DURATION
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 
@@ -146,7 +145,7 @@ internal fun MapViewportState.moveCamera(
     routePlannerBottomInset: Dp? = null,
     listSheetHeight: Dp? = null,
 ) {
-    val durationMs = if (effect.animated) AnimationConstants.MAP_CAMERA_ANIM_DURATION.inWholeMilliseconds else 0L
+    val durationMs = if (effect.animated) effect.durationMs else 0L
     when (val target = effect.target) {
         is CameraTarget.Center -> this.flyTo(
             cameraOptions = CameraOptions.Builder()

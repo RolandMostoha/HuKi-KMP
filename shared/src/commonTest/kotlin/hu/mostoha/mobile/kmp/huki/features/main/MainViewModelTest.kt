@@ -81,6 +81,8 @@ import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
+import hu.mostoha.mobile.kmp.huki.util.OverviewCameraAnimation
+import hu.mostoha.mobile.kmp.huki.util.OverviewCameraTransition
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
@@ -1537,11 +1539,13 @@ class MainViewModelTest {
 
                 skipItems(1)
 
+                val bounds = TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location }
+                val transition = OverviewCameraAnimation.transition(MapConstants.HUNGARY_CAMERA_POSITION, bounds)
+                val duration = (transition as OverviewCameraTransition.Animate).duration
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
-                    target = CameraTarget.Bounds(
-                        TEST_GPX_DETAILS.locations + TEST_GPX_DETAILS.waypoints.map { it.location },
-                    ),
+                    target = CameraTarget.Bounds(bounds),
                     contentPadding = ContentPadding.MAP_GPX,
+                    durationMs = duration.inWholeMilliseconds,
                 )
                 ensureAllEventsConsumed()
             }

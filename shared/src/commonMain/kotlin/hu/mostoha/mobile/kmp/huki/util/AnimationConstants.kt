@@ -13,8 +13,6 @@ object AnimationConstants {
 
     val NAVIGATION_TRANSITION_DURATION = 300.milliseconds
 
-    val MAP_ROUTE_FADE_IN_DURATION: Duration = 1000.milliseconds
-
     val EXPAND_ANIM_DURATION: Duration = 250.milliseconds
     val EXPAND_ANIM_DURATION_S = EXPAND_ANIM_DURATION.toDouble(DurationUnit.SECONDS)
 

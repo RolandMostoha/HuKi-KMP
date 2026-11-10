@@ -102,6 +102,8 @@ import hu.mostoha.mobile.kmp.huki.util.LocationLinkParser
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.HUNGARY_BOUNDING_BOX
 import hu.mostoha.mobile.kmp.huki.util.MapConstants.PLACE_DEFAULT_CAMERA_ZOOM
 import hu.mostoha.mobile.kmp.huki.util.MyLocationCameraAnimation
+import hu.mostoha.mobile.kmp.huki.util.OverviewCameraAnimation
+import hu.mostoha.mobile.kmp.huki.util.OverviewCameraTransition
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TrackPosition
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
@@ -117,6 +119,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -654,6 +657,32 @@ class MainViewModel(
         sendEffect(MapUiEffects.UpdateCamera(CameraTarget.Bounds(bounds), contentPadding = contentPadding))
     }
 
+    private suspend fun fitCameraToGpx(bounds: List<Location>) {
+        val duration = when (
+            val transition = OverviewCameraAnimation.transition(
+                mapCameraStore.cameraPosition,
+                bounds,
+            )
+        ) {
+            is OverviewCameraTransition.Animate -> transition.duration
+            is OverviewCameraTransition.JumpAndArrive -> {
+                val start = transition.start
+                sendEffect(
+                    MapUiEffects.UpdateCamera(CameraTarget.Center(start.location, start.zoom), animated = false),
+                )
+                delay(OverviewCameraAnimation.JUMP_SETTLE_DELAY)
+                transition.duration
+            }
+        }
+        sendEffect(
+            MapUiEffects.UpdateCamera(
+                target = CameraTarget.Bounds(bounds),
+                contentPadding = ContentPadding.MAP_GPX,
+                durationMs = duration.inWholeMilliseconds,
+            ),
+        )
+    }
+
     private fun enableMyLocation(targetStatus: MyLocationStatus? = null) {
         viewModelScope.launch {
             withLocationPermission {
@@ -1120,7 +1149,7 @@ class MainViewModel(
                         )
                     }
                     if (restored == null) {
-                        fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
+                        fitCameraToGpx(gpxDetails.bounds)
                     } else {
                         onSessionRestored(restored)
                     }
@@ -1206,7 +1235,7 @@ class MainViewModel(
         analyticsService.logEvent(AnalyticsEvent.GpxOverviewClicked)
         viewModelScope.launch {
             val gpxDetails = uiState.value.mapUiState.gpxDetails ?: return@launch
-            fitCameraTo(gpxDetails.bounds, ContentPadding.MAP_GPX)
+            fitCameraToGpx(gpxDetails.bounds)
         }
     }
 

@@ -311,7 +311,8 @@ private extension MapView {
                         bearing: KotlinDouble(value: position.bearing),
                         pitch: KotlinDouble(value: position.pitch),
                         contentPadding: nil,
-                        animated: true
+                        animated: true,
+                        durationMs: Int64(AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S * 1000)
                     ))
                 },
                 onClose: { isDebugCameraPanelVisible = false }
@@ -344,9 +345,10 @@ private extension MapView {
             lastRoutePlannerCamera = effect
         }
         let targetPadding = cameraPadding(for: effect)
+        let duration = Double(effect.durationMs) / 1000
         let animation: ViewportAnimation = targetPadding == appliedCameraPadding
-            ? .default(maxDuration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
-            : .easeInOut(duration: AnimationConstants.shared.MAP_CAMERA_ANIM_DURATION_S)
+            ? .default(maxDuration: duration)
+            : .easeInOut(duration: duration)
         appliedCameraPadding = targetPadding
         withViewportAnimation(effect.animated ? animation : .default(maxDuration: 0)) {
             viewport = .target(

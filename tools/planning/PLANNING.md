@@ -53,6 +53,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[G]`  | Android: Use touch outside close for GPX MEnu ![img_7.png](img_7.png)                                                                                                                                |
 | `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup. Bump `androidBuildNumber` above the legacy versionCode (688), e.g. 1000, or Play rejects the upload. |
 | `[G]`  | Android: Prepare for CD with Google Play, check HuKi-Android for reference                                                                                                                           |
+| `[G]`  | Android: Release mode: turn of debug logging, only keep errors? what is the recommended minimum verbosity here?                                                                                      |
 | `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                     |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                            |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                   |
@@ -63,15 +64,20 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### Bugs
 
-| Status | Scope        | Bug                                                                                                                                                                                                                        |
-|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Settings     | Bug: Android. Tap ouside should only close the tooltip ![img_13.png](img_13.png)                                                                                                                                           |
-| `[x]`  | Settings     | Bug: Android. Avoid multi line for RPDDK base ![img_14.png](img_14.png)                                                                                                                                                    |
-| `[x]`  | RoutePlanner | Bug: Android. Route Planner when opened is still doing wrong animations, pulling the camera back and forth.                                                                                                                |
-| `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
-| `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
-| `[ ]`  | GPX          | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
-| `[?]`  | Settings     | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
+| Status | Scope        | Bug                                                                                                                                                                                                                                                                                                                                                                                  |
+|--------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | MyLocation   | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                                                                           |
+| `[ ]`  | Map          | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                                                                   |
+| `[ ]`  | GPX          | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                                                                                                                                                                               |
+| `[G]`  | Layers       | Bug: For the raster hiking layer, the mapbox UI often shows pixelated, hard RED boxes in the map while loading the not cached tiles. Its very visible with slow connection. Can we improve on the look? '/Users/mostoha.roland/Desktop/Screen Recording iPhone 17 Pro Max 2026. 11. 10. at 7.53.29.mp4'                                                      ![img_1.png](img_1.png) |
+| `[?]`  | Settings     | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                                                                                                                                                                                  |
+
+### Design
+
+| Status | Scope          | Bug                                                                                              |
+|--------|----------------|--------------------------------------------------------------------------------------------------|
+| `[ ]`  | Landscapes&OKT | Slow down the section / landscape animations, moving from section to section happens too quickly |
+
 
 ### FEATURE: Analytics
 
@@ -137,7 +143,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                                                                                                                                                               |
 |--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | WhatsNew | First Android 2.0 version should have a dedicated message. Separating the 2 whatsnew might be necessary per platform. Also versioning per platform, Android will go live with 2.0, next iOS is 1.5 |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 
@@ -191,7 +196,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                      |
 |--------|----------|-----------------------------------------------------------|
-| `[x]`  | Settings | Add a Graphhopper section to "Supporters" section In Menu |
 
 ### FEATURE: Menu - Guides
 
