@@ -67,6 +67,12 @@ android {
             }
         }
     }
+    bundle {
+        language {
+            // The per-app language can differ from the device language, so every locale must ship in the base APK
+            enableSplit = false
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
