@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.ProductPrice
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportRestoreResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
@@ -557,6 +558,92 @@ class SupportViewModelTest {
         analyticsService.screenViews shouldBe listOf(AnalyticsEvent.ScreenView(Screen.SUPPORT))
     }
 
+    @Test
+    fun `Given view model - When restore clicked - Then purchases are restored`() {
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        supporterRepository.restoreCount shouldBe 1
+    }
+
+    @Test
+    fun `Given ongoing restore - When restore clicked - Then it is not restored again`() {
+        supporterRepository.restoreGate = CompletableDeferred()
+        val viewModel = createViewModel()
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        supporterRepository.restoreCount shouldBe 1
+        viewModel.uiState.value.isRestoring shouldBe true
+    }
+
+    @Test
+    fun `Given ongoing restore - When tier clicked - Then nothing is purchased`() {
+        supporterRepository.restoreGate = CompletableDeferred()
+        val viewModel = createViewModel()
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        viewModel.onEvent(SupportUiEvents.TierClicked(SupportAnimal.OWL))
+        testDispatcher.scheduler.runCurrent()
+
+        supporterRepository.purchasedAnimals shouldBe emptyList()
+    }
+
+    @Test
+    fun `Given restore results - When restore clicked - Then the matching message is shown`() {
+        testCases().forEach { testCase ->
+            supporterRepository.restoreResult = testCase.input
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+            testDispatcher.scheduler.runCurrent()
+
+            viewModel.uiState.value.restoreMessage shouldBe testCase.result
+            viewModel.uiState.value.isRestoring shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given restore message - When dismissed - Then it is hidden`() {
+        supporterRepository.restoreResult = SupportRestoreResult.Restored
+        val viewModel = createViewModel()
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        viewModel.onEvent(SupportUiEvents.RestoreMessageDismissed)
+
+        viewModel.uiState.value.restoreMessage shouldBe null
+    }
+
+    @Test
+    fun `Given restore - When restored - Then the clicks and results are logged`() {
+        supporterRepository.restoreResult = SupportRestoreResult.Restored
+        billingService.products = SupportAnimal.entries.map { BillingProduct(it.productId, ProductPrice(1_000_000L, "HUF")) }
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.SupportRestoreClicked, AnalyticsEvent.SupportRestoreCompleted)
+    }
+
+    @Test
+    fun `Given failed restore - When restore clicked - Then the failure is recorded`() {
+        supporterRepository.restoreResult = SupportRestoreResult.Failed("Network error")
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(SupportUiEvents.RestorePurchasesClicked)
+        testDispatcher.scheduler.runCurrent()
+
+        crashlyticsService.recordedExceptions.map { it.message } shouldBe listOf("Network error")
+    }
+
     companion object {
         private val SWITCH_TIME = Instant.fromEpochMilliseconds(1_700_100_000_000)
         private val BEAR_PURCHASE = BillingPurchase(
@@ -572,5 +659,18 @@ class SupportViewModelTest {
             purchaseTimeMillis = 0,
             quantity = 1,
         )
+
+        private fun testCases() =
+            listOf(
+                TestCase(SupportRestoreResult.Restored, SupportRestoreMessage.RESTORED),
+                TestCase(SupportRestoreResult.NothingToRestore, SupportRestoreMessage.NOTHING_TO_RESTORE),
+                TestCase(SupportRestoreResult.Cancelled, null),
+                TestCase(SupportRestoreResult.Failed("Network error"), SupportRestoreMessage.FAILED),
+            )
     }
+
+    private data class TestCase(
+        val input: SupportRestoreResult,
+        val result: SupportRestoreMessage?,
+    )
 }

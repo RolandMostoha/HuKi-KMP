@@ -3,6 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportRestoreResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import kotlinx.coroutines.CompletableDeferred
@@ -16,6 +17,10 @@ class FakeSupporterRepository : SupporterRepository {
     val purchasedAnimals = mutableListOf<SupportAnimal>()
     val chosenAnimals = mutableListOf<SupportAnimal>()
     var refreshCount = 0
+        private set
+    var restoreResult: SupportRestoreResult = SupportRestoreResult.NothingToRestore
+    var restoreGate: CompletableDeferred<Unit>? = null
+    var restoreCount = 0
         private set
 
     override suspend fun refresh() {
@@ -38,6 +43,12 @@ class FakeSupporterRepository : SupporterRepository {
             }
         }
         return purchaseResult
+    }
+
+    override suspend fun restore(): SupportRestoreResult {
+        restoreCount++
+        restoreGate?.await()
+        return restoreResult
     }
 
     override suspend fun chooseAnimal(animal: SupportAnimal) {

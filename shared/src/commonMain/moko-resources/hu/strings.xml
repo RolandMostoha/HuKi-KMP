@@ -530,6 +530,14 @@
     <string name="support_purchase_pending_message">A vásárlás jóváhagyásra vár. Amint teljesül, megjelenik a támogatói jelvényed.</string>
     <string name="support_purchase_message_dismiss">Rendben</string>
     <string name="support_manage_subscriptions">Előfizetések kezelése</string>
+    <string name="support_restore_purchases">Korábbi vásárlások helyreállítása</string>
+    <string name="support_restore_restored_title">Vásárlások helyreállítva</string>
+    <string name="support_restore_restored_message">A korábbi támogatásaidat sikerült helyreállítani.</string>
+    <string name="support_restore_nothing_title">Nincs korábbi vásárlás</string>
+    <string name="support_restore_nothing_message_ios">Ehhez az Apple-fiókhoz nem található korábbi támogatás.</string>
+    <string name="support_restore_failed_title">Nem sikerült a helyreállítás</string>
+    <string name="support_restore_failed_message">Ellenőrizd az internetkapcsolatot, és próbáld újra.</string>
+    <string name="support_a11y_restoring">Korábbi vásárlások helyreállítása folyamatban</string>
     <string name="support_already_purchased_title">Már megvásároltad</string>
     <string name="support_already_purchased_message">A „%s” támogatói csomagot már megvásároltad.</string>
     <string name="support_tier_scheduled">Kezdés: %s</string>

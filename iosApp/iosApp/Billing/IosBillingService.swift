@@ -133,6 +133,19 @@ class IosBillingService: BillingService {
     /// Transactions are finished in the purchase flow, the history keeps the consumables.
     func consumePurchase(purchaseToken: String) {}
 
+    func syncPurchases(onResult: @escaping (BillingSyncResult) -> Void) {
+        Task { @MainActor in
+            do {
+                try await AppStore.sync()
+                onResult(BillingSyncResultSynced.shared)
+            } catch StoreKitError.userCancelled {
+                onResult(BillingSyncResultCancelled.shared)
+            } catch {
+                onResult(BillingSyncResultFailed(message: error.localizedDescription))
+            }
+        }
+    }
+
     private func product(for productId: String) async throws -> Product? {
         if let product = productsById[productId] {
             return product

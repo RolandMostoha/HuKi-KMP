@@ -99,11 +99,16 @@ struct SupportView: View {
                                 .transition(.opacity)
                         }
                         SupportContactView(cardColor: cardColor)
+                        SupportRestorePurchasesButton(isRestoring: uiState.isRestoring) {
+                            viewModel.onEvent(event: SupportUiEventsRestorePurchasesClicked.shared)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 36)
                         SupportLegalLinksView()
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 6)
-                    .padding(.bottom, 48)
+                    .padding(.bottom, 64)
                     .readableWidth()
                     .animation(.default, value: uiState.pricesState)
                     .animation(.default, value: uiState.purchaseMessage)
@@ -341,5 +346,53 @@ private struct SupportAlerts: ViewModifier {
             .onChange(of: uiState.scheduledDialogStartTime != nil) { _, newValue in
                 showScheduled = newValue
             }
+            .modifier(SupportRestoreAlert(restoreMessage: uiState.restoreMessage, onEvent: onEvent))
+    }
+}
+
+private struct SupportRestoreAlert: ViewModifier {
+    let restoreMessage: SupportRestoreMessage?
+    let onEvent: (SupportUiEvents) -> Void
+
+    @State private var isPresented = false
+
+    private let strings = Strings()
+
+    func body(content: Content) -> some View {
+        content
+            .alert(restoreTitle(restoreMessage), isPresented: $isPresented, presenting: restoreMessage) { _ in
+                Button(strings.get(id: SharedRes.strings().support_purchase_message_dismiss), role: .cancel) {
+                    onEvent(SupportUiEventsRestoreMessageDismissed.shared)
+                }
+            } message: { restoreMessage in
+                Text(strings.get(id: restoreMessageText(restoreMessage)))
+            }
+            .onChange(of: restoreMessage != nil) { _, newValue in
+                isPresented = newValue
+            }
+    }
+
+    private func restoreTitle(_ restoreMessage: SupportRestoreMessage?) -> String {
+        switch restoreMessage {
+        case .restored:
+            strings.get(id: SharedRes.strings().support_restore_restored_title)
+        case .nothingToRestore:
+            strings.get(id: SharedRes.strings().support_restore_nothing_title)
+        case .failed:
+            strings.get(id: SharedRes.strings().support_restore_failed_title)
+        case nil:
+            ""
+        }
+    }
+
+    private func restoreMessageText(_ restoreMessage: SupportRestoreMessage) -> StringResource {
+        switch restoreMessage {
+        case .restored:
+            SharedRes.strings().support_restore_restored_message
+        case .nothingToRestore:
+            SharedRes.strings().support_restore_nothing_message_ios
+        case .failed:
+            SharedRes.strings().support_restore_failed_message
+        }
     }
 }

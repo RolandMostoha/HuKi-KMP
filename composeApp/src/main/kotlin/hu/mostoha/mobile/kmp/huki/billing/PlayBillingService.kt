@@ -25,6 +25,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BillingEntitlements
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingProduct
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
+import hu.mostoha.mobile.kmp.huki.model.domain.BillingSyncResult
 import hu.mostoha.mobile.kmp.huki.model.domain.ProductPrice
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
@@ -127,6 +128,13 @@ class PlayBillingService(application: Application) : BillingService {
                 onError(exception.message.orEmpty())
             }
         }
+    }
+
+    /**
+     * Play has no separate sync, every entitlement fetch already queries its servers.
+     */
+    override fun syncPurchases(onResult: (BillingSyncResult) -> Unit) {
+        onResult(BillingSyncResult.Synced)
     }
 
     override fun setPurchaseListener(listener: (BillingPurchase) -> Unit) {

@@ -47,3 +47,11 @@ sealed interface BillingPurchaseResult {
 
     data class Failed(val message: String) : BillingPurchaseResult
 }
+
+sealed interface BillingSyncResult {
+    data object Synced : BillingSyncResult
+
+    data object Cancelled : BillingSyncResult
+
+    data class Failed(val message: String) : BillingSyncResult
+}

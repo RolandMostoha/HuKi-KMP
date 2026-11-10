@@ -17,6 +17,8 @@ data class SupportUiState(
     val purchaseMessage: SupportPurchaseMessage? = null,
     val alreadyPurchasedAnimal: SupportAnimal? = null,
     val scheduledDialogStartTime: Instant? = null,
+    val isRestoring: Boolean = false,
+    val restoreMessage: SupportRestoreMessage? = null,
 ) {
     companion object {
         val Default = SupportUiState()
@@ -51,5 +53,11 @@ enum class SupportPricesState {
 enum class SupportPurchaseMessage {
     PENDING,
     SCHEDULED,
+    FAILED,
+}
+
+enum class SupportRestoreMessage {
+    RESTORED,
+    NOTHING_TO_RESTORE,
     FAILED,
 }

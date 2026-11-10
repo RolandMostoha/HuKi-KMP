@@ -5,6 +5,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BillingProduct
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingScheduledSubscription
+import hu.mostoha.mobile.kmp.huki.model.domain.BillingSyncResult
 
 class FakeBillingService : BillingService {
     var products: List<BillingProduct> = emptyList()
@@ -13,6 +14,9 @@ class FakeBillingService : BillingService {
     var entitlements: List<BillingPurchase> = emptyList()
     var entitlementsErrorMessage: String? = null
     var scheduledSubscription: BillingScheduledSubscription? = null
+    var syncResult: BillingSyncResult = BillingSyncResult.Synced
+    var syncCount = 0
+        private set
 
     /**
      * A successful purchase schedules this subscription instead of becoming an active entitlement.
@@ -57,6 +61,11 @@ class FakeBillingService : BillingService {
 
     override fun consumePurchase(purchaseToken: String) {
         consumedPurchaseTokens += purchaseToken
+    }
+
+    override fun syncPurchases(onResult: (BillingSyncResult) -> Unit) {
+        syncCount++
+        onResult(syncResult)
     }
 
     override fun setPurchaseListener(listener: (BillingPurchase) -> Unit) {

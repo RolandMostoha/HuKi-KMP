@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingProduct
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportRestoreResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportSection
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
@@ -67,6 +68,8 @@ class SupportViewModel(
             SupportUiEvents.ScheduledDialogDismissed -> _uiState.update { it.copy(scheduledDialogStartTime = null) }
             is SupportUiEvents.SupporterAnimalChosen -> onSupporterAnimalChosen(event.animal)
             SupportUiEvents.ManageSubscriptionsClicked -> onManageSubscriptionsClicked()
+            SupportUiEvents.RestorePurchasesClicked -> onRestorePurchasesClicked()
+            SupportUiEvents.RestoreMessageDismissed -> _uiState.update { it.copy(restoreMessage = null) }
         }
     }
 
@@ -102,7 +105,7 @@ class SupportViewModel(
 
     private fun onTierClicked(animal: SupportAnimal) {
         val uiState = _uiState.value
-        if (uiState.purchasingAnimal != null) {
+        if (uiState.purchasingAnimal != null || uiState.isRestoring) {
             return
         }
         val tier = uiState.tiers.firstOrNull { it.animal == animal }
@@ -210,6 +213,39 @@ class SupportViewModel(
 
     private fun onManageSubscriptionsClicked() {
         analyticsService.logEvent(AnalyticsEvent.SupportManageSubscriptionsClicked)
+    }
+
+    private fun onRestorePurchasesClicked() {
+        val uiState = _uiState.value
+        if (uiState.isRestoring || uiState.purchasingAnimal != null) {
+            return
+        }
+        _uiState.update { it.copy(isRestoring = true) }
+        analyticsService.logEvent(AnalyticsEvent.SupportRestoreClicked)
+        viewModelScope.launch {
+            onRestoreResult(supporterRepository.restore())
+        }
+    }
+
+    private fun onRestoreResult(result: SupportRestoreResult) {
+        val restoreMessage = when (result) {
+            SupportRestoreResult.Restored -> {
+                analyticsService.logEvent(AnalyticsEvent.SupportRestoreCompleted)
+                SupportRestoreMessage.RESTORED
+            }
+            SupportRestoreResult.NothingToRestore -> {
+                analyticsService.logEvent(AnalyticsEvent.SupportRestoreNothingToRestore)
+                SupportRestoreMessage.NOTHING_TO_RESTORE
+            }
+            SupportRestoreResult.Cancelled -> null
+            is SupportRestoreResult.Failed -> {
+                Logger.w { "Billing: Restore failed: ${result.message}" }
+                crashlyticsService.recordException(BillingException(result.message))
+                analyticsService.logEvent(AnalyticsEvent.SupportRestoreFailed)
+                SupportRestoreMessage.FAILED
+            }
+        }
+        _uiState.update { it.copy(isRestoring = false, restoreMessage = restoreMessage) }
     }
 
     private fun onSupporterAnimalChosen(animal: SupportAnimal) {

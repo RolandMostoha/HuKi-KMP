@@ -10,7 +10,7 @@ struct SupportRestorePurchasesButton: View {
     var body: some View {
         HStack(spacing: 8) {
             Button(strings.get(id: SharedRes.strings().support_restore_purchases), action: onClick)
-                .font(.subheadline.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .disabled(isRestoring)
                 .accessibilityIdentifier(TestTags.shared.SUPPORT_RESTORE_PURCHASES)
             if isRestoring {
@@ -25,7 +25,7 @@ struct SupportRestorePurchasesButton: View {
 }
 
 #Preview {
-    VStack(alignment: .leading, spacing: 16) {
+    VStack(spacing: 16) {
         SupportRestorePurchasesButton(isRestoring: false, onClick: {})
         SupportRestorePurchasesButton(isRestoring: true, onClick: {})
     }

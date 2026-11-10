@@ -6,8 +6,10 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.UserProperty
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingScheduledSubscription
+import hu.mostoha.mobile.kmp.huki.model.domain.BillingSyncResult
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportRestoreResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeBillingService
@@ -403,6 +405,66 @@ class DefaultSupporterRepositoryTest {
             runCurrent()
 
             billingService.consumedPurchaseTokens shouldBe emptyList()
+        }
+
+    @Test
+    fun `Given purchases in the store - When restored - Then they are restored and stored`() =
+        runTest {
+            val repository = createRepository()
+            billingService.entitlements = listOf(purchase(SupportAnimal.DEER), purchase(SupportAnimal.OWL))
+
+            val result = repository.restore()
+            runCurrent()
+
+            result shouldBe SupportRestoreResult.Restored
+            billingService.syncCount shouldBe 1
+            repository.supporterState.value.ownedAnimals shouldBe listOf(SupportAnimal.OWL, SupportAnimal.DEER)
+        }
+
+    @Test
+    fun `Given no purchases in the store - When restored - Then there is nothing to restore`() =
+        runTest {
+            val repository = createRepository()
+
+            val result = repository.restore()
+
+            result shouldBe SupportRestoreResult.NothingToRestore
+        }
+
+    @Test
+    fun `Given cancelled sync - When restored - Then the restore is cancelled`() =
+        runTest {
+            val repository = createRepository()
+            billingService.syncResult = BillingSyncResult.Cancelled
+            billingService.entitlements = listOf(purchase(SupportAnimal.OWL))
+
+            val result = repository.restore()
+            runCurrent()
+
+            result shouldBe SupportRestoreResult.Cancelled
+            repository.supporterState.value.ownedAnimals shouldBe emptyList()
+        }
+
+    @Test
+    fun `Given failed sync - When restored - Then the restore fails`() =
+        runTest {
+            val repository = createRepository()
+            billingService.syncResult = BillingSyncResult.Failed("The Internet connection appears to be offline.")
+
+            val result = repository.restore()
+
+            result shouldBe SupportRestoreResult.Failed("The Internet connection appears to be offline.")
+        }
+
+    @Test
+    fun `Given failed entitlements fetch after sync - When restored - Then the restore fails`() =
+        runTest {
+            val repository = createRepository()
+            billingService.entitlementsErrorMessage = "The Internet connection appears to be offline."
+
+            val result = repository.restore()
+
+            result shouldBe SupportRestoreResult.Failed("The Internet connection appears to be offline.")
         }
 
     private suspend fun FakeDataStore.storedOneTimeEntries(): Set<String>? = data.first()[stringSetPreferencesKey("support_purchased_one_time_products")]

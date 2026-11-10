@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BillingEntitlements
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingProduct
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
+import hu.mostoha.mobile.kmp.huki.model.domain.BillingSyncResult
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -30,6 +31,11 @@ interface BillingService {
      * Called once a one-time purchase is recorded, so it can be bought again.
      */
     fun consumePurchase(purchaseToken: String)
+
+    /**
+     * Re-downloads the purchases from the store's servers, the store can ask the user to sign in.
+     */
+    fun syncPurchases(onResult: (BillingSyncResult) -> Unit)
 }
 
 class BillingException(message: String) : Exception(message)
@@ -54,4 +60,9 @@ suspend fun BillingService.fetchEntitlements(): BillingEntitlements =
             onSuccess = { purchases -> continuation.resume(purchases) },
             onError = { message -> continuation.resumeWithException(BillingException(message)) },
         )
+    }
+
+suspend fun BillingService.syncPurchases(): BillingSyncResult =
+    suspendCancellableCoroutine { continuation ->
+        syncPurchases(onResult = { result -> continuation.resume(result) })
     }

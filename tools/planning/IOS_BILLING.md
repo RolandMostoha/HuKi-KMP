@@ -2,22 +2,22 @@
 
 Setup guide for the Support screen's in-app purchases on iOS (StoreKit 2).
 
-| Tier                      | Type                                | Notes                              |
-|---------------------------|-------------------------------------|------------------------------------|
-| Squirrel / Owl / Hedgehog | **Consumable**                      | Repeatable tips, nothing unlocked  |
-| Deer / Boar / Bear        | **Auto-Renewable Subscription**, 1 month | One subscription group        |
+| Tier                      | Type                                     | Notes                             |
+|---------------------------|------------------------------------------|-----------------------------------|
+| Squirrel / Owl / Hedgehog | **Consumable**                           | Repeatable tips, nothing unlocked |
+| Deer / Boar / Bear        | **Auto-Renewable Subscription**, 1 month | One subscription group            |
 
 ### Product IDs
 Shared with Google Play (legacy IDs from the old Android app, kept so existing supporters keep their badge). Lower level number = higher price (`level_0` added for the new top tiers). Permanent — never change or reuse; animal names are display names only.
 
-| Animal   | Product ID                                | Type                         | Price     |
-|----------|-------------------------------------------|------------------------------|-----------|
-| Squirrel | `huki_support_one_time_level_2` | Consumable                   | 499 HUF   |
-| Owl      | `huki_support_one_time_level_1`      | Consumable                   | 999 HUF   |
-| Hedgehog | `huki_support_one_time_level_0` | Consumable                   | 1 490 HUF |
-| Deer     | `huki_support_recurring_level_2`     | Subscription, 1 month, Apple group rank 3 | 199 HUF |
-| Boar     | `huki_support_recurring_level_1`     | Subscription, 1 month, Apple group rank 2 | 499 HUF |
-| Bear     | `huki_support_recurring_level_0`     | Subscription, 1 month, Apple group rank 1 | 999 HUF |
+| Animal   | Product ID                       | Type                                      | Price     |
+|----------|----------------------------------|-------------------------------------------|-----------|
+| Squirrel | `huki_support_one_time_level_2`  | Consumable                                | 499 HUF   |
+| Owl      | `huki_support_one_time_level_1`  | Consumable                                | 999 HUF   |
+| Hedgehog | `huki_support_one_time_level_0`  | Consumable                                | 1 490 HUF |
+| Deer     | `huki_support_recurring_level_2` | Subscription, 1 month, Apple group rank 3 | 199 HUF   |
+| Boar     | `huki_support_recurring_level_1` | Subscription, 1 month, Apple group rank 2 | 499 HUF   |
+| Bear     | `huki_support_recurring_level_0` | Subscription, 1 month, Apple group rank 1 | 999 HUF   |
 
 Subscription group: `HuKi Supporter` (HU: `HuKi támogató`). Family Sharing off.
 
@@ -54,11 +54,11 @@ Consumables aren't restored by default → add `SKIncludeConsumableInAppPurchase
 - [x] Google Play: same six IDs created, icons from `tools/assets/support/`; new purchase options use ID `base` (`legacy-base` is reserved)
 
 ### 4. App Review requirements
-- [ ] **3.1.1**: tips via IAP, wording makes it clear **nothing is unlocked**
+- [x] **3.1.1**: tips via IAP, wording makes it clear **nothing is unlocked**
 - [x] **3.1.2**: purchase UI shows **price, period, auto-renewal**, links **Terms of Use (EULA)** + **Privacy Policy** on the Support screen
-- [ ] EULA in *App Information → License Agreement* (or Apple standard EULA link in the description)
-- [ ] Clear review note for the "supporter" subscriptions (unlocking nothing is a review risk)
-- [ ] **Restore Purchases** button
+- [x] EULA in *App Information → License Agreement* (or Apple standard EULA link in the description)
+- [x] Clear review note for the "supporter" subscriptions (unlocking nothing is a review risk)
+- [x] **Restore Purchases** button (iOS only: `AppStore.sync()` + entitlement fetch, result alert)
 - [ ] First IAPs ship **with a new app version**: products "Ready to Submit", attached in the version page's *In-App Purchases and Subscriptions* section
 
 ### 5. Sandbox testers

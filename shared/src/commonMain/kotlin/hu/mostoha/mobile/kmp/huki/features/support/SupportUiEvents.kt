@@ -21,4 +21,8 @@ sealed interface SupportUiEvents {
     data class SupporterAnimalChosen(val animal: SupportAnimal) : SupportUiEvents
 
     data object ManageSubscriptionsClicked : SupportUiEvents
+
+    data object RestorePurchasesClicked : SupportUiEvents
+
+    data object RestoreMessageDismissed : SupportUiEvents
 }

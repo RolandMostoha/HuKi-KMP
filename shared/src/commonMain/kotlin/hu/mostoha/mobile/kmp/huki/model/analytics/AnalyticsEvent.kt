@@ -422,4 +422,20 @@ sealed interface AnalyticsEvent {
     data object SupportManageSubscriptionsClicked : AnalyticsEvent {
         override val name = "support_manage_subscriptions_clicked"
     }
+
+    data object SupportRestoreClicked : AnalyticsEvent {
+        override val name = "support_restore_clicked"
+    }
+
+    data object SupportRestoreCompleted : AnalyticsEvent {
+        override val name = "support_restore_completed"
+    }
+
+    data object SupportRestoreNothingToRestore : AnalyticsEvent {
+        override val name = "support_restore_nothing_to_restore"
+    }
+
+    data object SupportRestoreFailed : AnalyticsEvent {
+        override val name = "support_restore_failed"
+    }
 }

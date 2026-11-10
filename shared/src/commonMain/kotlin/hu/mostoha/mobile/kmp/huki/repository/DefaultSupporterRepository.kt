@@ -11,9 +11,11 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.UserProperty
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingEntitlements
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchase
 import hu.mostoha.mobile.kmp.huki.model.domain.BillingPurchaseResult
+import hu.mostoha.mobile.kmp.huki.model.domain.BillingSyncResult
 import hu.mostoha.mobile.kmp.huki.model.domain.OneTimePurchaseRecord
 import hu.mostoha.mobile.kmp.huki.model.domain.ScheduledSubscription
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
+import hu.mostoha.mobile.kmp.huki.model.domain.SupportRestoreResult
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportType
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDataStoreEntries
@@ -26,6 +28,7 @@ import hu.mostoha.mobile.kmp.huki.service.BillingException
 import hu.mostoha.mobile.kmp.huki.service.BillingService
 import hu.mostoha.mobile.kmp.huki.service.fetchEntitlements
 import hu.mostoha.mobile.kmp.huki.service.purchase
+import hu.mostoha.mobile.kmp.huki.service.syncPurchases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,6 +117,24 @@ class DefaultSupporterRepository(
                 result
             }
         }.await()
+
+    override suspend fun restore(): SupportRestoreResult =
+        when (val syncResult = billingService.syncPurchases()) {
+            BillingSyncResult.Cancelled -> SupportRestoreResult.Cancelled
+            is BillingSyncResult.Failed -> SupportRestoreResult.Failed(syncResult.message)
+            BillingSyncResult.Synced -> try {
+                val entitlements = entitlementsMutex.withLock {
+                    billingService.fetchEntitlements().also { storeEntitlements(it) }
+                }
+                if (entitlements.purchases.any { it.type != null }) {
+                    SupportRestoreResult.Restored
+                } else {
+                    SupportRestoreResult.NothingToRestore
+                }
+            } catch (exception: BillingException) {
+                SupportRestoreResult.Failed(exception.message.orEmpty())
+            }
+        }
 
     override suspend fun chooseAnimal(animal: SupportAnimal) {
         try {
