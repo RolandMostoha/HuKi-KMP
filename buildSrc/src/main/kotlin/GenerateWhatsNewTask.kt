@@ -41,7 +41,7 @@ abstract class GenerateWhatsNewTask : DefaultTask() {
     /** A single localized moko string: resource name → value per locale. */
     private data class Loc(val name: String, val byLocale: Map<String, String>)
 
-    private data class MessageRes(val title: String, val body: String)
+    private data class MessageRes(val title: String, val body: String, val footer: String?)
 
     private data class Release(val version: String, val releaseDate: String, val notesName: String, val message: MessageRes?)
 
@@ -111,14 +111,23 @@ abstract class GenerateWhatsNewTask : DefaultTask() {
             val bodyName = "${base}_message_body"
             strings += Loc(titleName, messageNode.localeMap("title", path))
             strings += Loc(bodyName, messageNode.localeMap("body", path))
-            MessageRes(titleName, bodyName)
+            val footerName = if (messageNode["footer"] != null) {
+                "${base}_message_footer".also { name -> strings += Loc(name, messageNode.localeMap("footer", path)) }
+            } else {
+                null
+            }
+            MessageRes(titleName, bodyName, footerName)
         }
 
         return Release(version, releaseDate, base, message)
     }
 
     private fun Map<*, *>.localeMap(key: String, path: String): Map<String, String> {
-        val node = this[key] as? Map<*, *> ?: error("WhatsNew: message.$key missing from $path/metadata.json")
+        val node = when (val value = this[key]) {
+            is Map<*, *> -> value
+            null -> error("WhatsNew: message.$key missing from $path/metadata.json")
+            else -> error("WhatsNew: message.$key must be a locale object (e.g. {\"$EN_LOCALE\": \"...\"}) in $path/metadata.json")
+        }
         val map = node.toLocaleMap()
         require(map.containsKey(EN_LOCALE)) { "WhatsNew: message.$key missing $EN_LOCALE in $path/metadata.json" }
         return map
@@ -162,6 +171,7 @@ abstract class GenerateWhatsNewTask : DefaultTask() {
             |    data class Message(
             |        val title: StringResource,
             |        val body: StringResource,
+            |        val footer: StringResource?,
             |    )
             |
             |    data class Entry(
@@ -211,6 +221,7 @@ abstract class GenerateWhatsNewTask : DefaultTask() {
             """message = Message(
             |            title = SharedRes.strings.${message.title},
             |            body = SharedRes.strings.${message.body},
+            |            footer = ${message.footer?.let { "SharedRes.strings.$it" } ?: "null"},
             |        )""".trimMargin()
         } ?: "message = null"
         return """    Entry(

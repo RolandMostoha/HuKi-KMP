@@ -40,6 +40,7 @@ class WhatsNewMapperTest {
             message = WhatsNewContent.Message(
                 title = SharedRes.strings.a11y_menu,
                 body = SharedRes.strings.a11y_close,
+                footer = SharedRes.strings.menu_app_name,
             ),
         )
 
@@ -48,7 +49,26 @@ class WhatsNewMapperTest {
         actual.message shouldBe WhatsNewMessage(
             title = StringDesc.Resource(SharedRes.strings.a11y_menu),
             body = StringDesc.Resource(SharedRes.strings.a11y_close),
+            footer = StringDesc.Resource(SharedRes.strings.menu_app_name),
         )
+    }
+
+    @Test
+    fun `Given message without footer - When toWhatsNew - Then the footer is null`() {
+        val entry = WhatsNewContent.Entry(
+            version = "1.0",
+            releaseDate = "2026-08-01",
+            notes = SharedRes.strings.a11y_close,
+            message = WhatsNewContent.Message(
+                title = SharedRes.strings.a11y_menu,
+                body = SharedRes.strings.a11y_close,
+                footer = null,
+            ),
+        )
+
+        val actual = entry.toWhatsNew()
+
+        actual.message?.footer shouldBe null
     }
 
     @Test

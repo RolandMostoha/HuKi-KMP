@@ -8,6 +8,10 @@
     "body": {
       "en-US": "Thank you for being among the first to try the iOS version of HuKi. The app is still evolving, so I appreciate any feedback. Enjoy being in the nature!",
       "hu-HU": "Köszönöm, hogy az elsők között próbálod ki a HuKi iOS verzióját. Az alkalmazás még fejlődik, ezért minden visszajelzésnek örülök. Jó természetjárást kívánok!"
+    },
+    "footer": {
+      "en-US": "The developer of HuKi",
+      "hu-HU": "A HuKi fejlesztője"
     }
   }
 }

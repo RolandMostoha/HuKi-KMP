@@ -8,6 +8,10 @@
     "body": {
       "en-US": "HuKi has been rebuilt from the ground up, with a new map, a fresh design and many new features. Enjoy being in nature!",
       "hu-HU": "A HuKi teljesen megújult: új térkép, friss megjelenés és rengeteg új funkció. Jó természetjárást kívánok!"
+    },
+    "footer": {
+      "en-US": "The developer of HuKi",
+      "hu-HU": "A HuKi fejlesztője"
     }
   }
 }

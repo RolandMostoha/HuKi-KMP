@@ -163,10 +163,17 @@ struct WhatsNewSheetView: View {
             if let supporterAnimal {
                 supporterMessage(supporterAnimal, accent: accent)
             }
-            Text(strings.get(id: SharedRes.strings().whats_new_message_signature))
+            if let footer = message.footer {
+                Text(
+                    strings.get(
+                        id: SharedRes.strings().whats_new_message_footer,
+                        args: [strings.get(desc: footer)]
+                    )
+                )
                 .font(.footnote)
                 .italic()
                 .foregroundStyle(accent)
+            }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)

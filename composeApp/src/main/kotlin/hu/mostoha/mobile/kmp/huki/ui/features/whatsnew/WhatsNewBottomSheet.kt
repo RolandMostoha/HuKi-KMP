@@ -224,12 +224,14 @@ private fun WhatsNewMessageCard(message: WhatsNewMessage, supporterAnimal: Suppo
                         fontWeight = FontWeight.Bold,
                     )
                 }
-                Text(
-                    text = mokoString(SharedRes.strings.whats_new_message_signature),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontStyle = FontStyle.Italic,
-                    color = accentColor,
-                )
+                message.footer?.let { footer ->
+                    Text(
+                        text = mokoString(SharedRes.strings.whats_new_message_footer, mokoString(footer)),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontStyle = FontStyle.Italic,
+                        color = accentColor,
+                    )
+                }
             }
         }
     }
@@ -277,5 +279,6 @@ private val previewWhatsNew = WhatsNew(
     message = WhatsNewMessage(
         title = StringDesc.Resource(SharedRes.strings.menu_app_name),
         body = StringDesc.Resource(SharedRes.strings.menu_app_description),
+        footer = StringDesc.Resource(SharedRes.strings.menu_app_name),
     ),
 )

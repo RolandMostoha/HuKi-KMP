@@ -141,7 +141,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                                                                                                                                                               |
 |--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | WhatsNew | Add footer option to metadata.json, remove the hardcoded "The developerof HuKi" strings. Keep "-" as a fixed prefix, and make the configured footer text italic.                                   |
+| `[x]`  | WhatsNew | Add footer option to metadata.json, remove the hardcoded "The developerof HuKi" strings. Keep "-" as a fixed prefix, and make the configured footer text italic.                                   |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 

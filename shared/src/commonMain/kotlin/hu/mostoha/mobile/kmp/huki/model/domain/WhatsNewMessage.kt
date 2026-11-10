@@ -5,4 +5,5 @@ import dev.icerock.moko.resources.desc.StringDesc
 data class WhatsNewMessage(
     val title: StringDesc,
     val body: StringDesc,
+    val footer: StringDesc?,
 )

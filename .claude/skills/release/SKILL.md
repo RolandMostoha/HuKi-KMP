@@ -15,7 +15,7 @@ Each platform has its own version line, so a platform-only release (e.g. an iOS-
 
 Release content lives under `tools/release/whatsnew/<platform>/v<version>/` (`android` / `ios`), matching that platform's version in `version.properties`:
 - `whatsnew-en-US.md` (required) and `whatsnew-hu-HU.md` — one release-note bullet per line.
-- `metadata.json` — `releaseDate` (ISO `yyyy-MM-dd`) and an optional per-locale `message` (`title`/`body`) for the personal message card.
+- `metadata.json` — `releaseDate` (ISO `yyyy-MM-dd`) and an optional per-locale `message` (`title`/`body`, optional `footer` shown as "— <footer>" in italics, omitted when missing) for the personal message card.
 
 How it works:
 - **Generation**: the `generateWhatsNew` Gradle task (in `:shared`, runs before compile) generates `WhatsNewContent` (a common `expect`, plus an `actual` per platform holding only that platform's releases and `currentVersion`) and the moko `strings_whatsnew.xml` files (keys `whatsnew_<platform>_v<version>`). All generated — never edit them by hand.

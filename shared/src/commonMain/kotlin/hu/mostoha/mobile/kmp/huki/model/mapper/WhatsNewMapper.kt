@@ -32,4 +32,5 @@ private fun WhatsNewContent.Message.toWhatsNewMessage(): WhatsNewMessage =
     WhatsNewMessage(
         title = StringDesc.Resource(title),
         body = StringDesc.Resource(body),
+        footer = footer?.let { StringDesc.Resource(it) },
     )
