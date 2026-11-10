@@ -7,6 +7,12 @@ val versionProps = Properties().apply {
 
 fun versionProp(key: String): String = versionProps.getProperty(key) ?: error("version.properties: '$key' is missing")
 
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+
+fun signingProp(key: String): String? = System.getenv(key) ?: localProps.getProperty(key)
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
@@ -48,11 +54,22 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        signingProp("ANDROID_KEYSTORE_PATH")?.let { keystorePath ->
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = signingProp("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = signingProp("ANDROID_KEY_ALIAS")
+                keyPassword = signingProp("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".debug"
         }
         getByName("release") {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

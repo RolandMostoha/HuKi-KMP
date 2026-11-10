@@ -66,8 +66,9 @@ Everything else is dropped on upgrade, and its legacy files are deleted by the c
 Legacy CD (`github-workflow-deploy.yml`: `r0adkll/sign-android-release` + `r0adkll/upload-google-play`) is not
 carried over. Play publication moves to fastlane, like the iOS release (`iosApp/fastlane`).
 
-- [ ] Fastlane setup in `composeApp/fastlane` (`Appfile`, `Fastfile`), package `hu.mostoha.mobile.android.huki`,
-  authenticated with the `GOOGLE_PLAY_PUBLISHER_SERVICE_ACCOUNT` JSON key.
+- [x] Fastlane setup in `composeApp/fastlane` (`Appfile`, `Fastfile`), package `hu.mostoha.mobile.android.huki`,
+  authenticated with the `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` JSON key. Locally the key's path comes from
+  `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH` in the gitignored `composeApp/fastlane/.env`.
 - [ ] Lanes, mirroring iOS:
   - `verify`: `validate_play_store_json_key` and a dry run, no upload.
   - `beta`: `bundleRelease` → `upload_to_play_store` on the `internal` track, AAB + `mapping.txt`.
@@ -76,7 +77,7 @@ carried over. Play publication moves to fastlane, like the iOS release (`iosApp/
   - `release`: promote the internal build to `production` with a staged `rollout` (task 7).
 - [ ] Store content via `supply`: download the current listing (`fastlane supply init`) into
   `composeApp/fastlane/metadata/android` (HU + EN title, descriptions, screenshots) and keep it in git.
-- [ ] Release notes: generate `changelogs/<versionCode>.txt` per locale from `tools/release/whatsnew/android/v<version>/`
+- [x] Release notes: `:shared:generateAndroidStoreReleaseNotes` generates `changelogs/default.txt` per locale from `tools/release/whatsnew/android/v<version>/`
   (Play limit: 500 characters).
 - [ ] Release signing in Gradle (`signingConfigs.release` from env vars) with the **same upload key** as legacy: copy
   the secrets `SIGNING_KEY`, `ALIAS`, `KEY_STORE_PASSWORD`, `KEY_PASSWORD` to the HuKi-KMP repo.
