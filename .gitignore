@@ -56,6 +56,11 @@ iosApp/fastlane/report.xml
 iosApp/fastlane/.env*
 iosApp/fastlane/README.md
 iosApp/fastlane/metadata/*/release_notes.txt
+composeApp/vendor/
+composeApp/fastlane/report.xml
+composeApp/fastlane/.env*
+composeApp/fastlane/README.md
+composeApp/fastlane/metadata/android/*/changelogs/default.txt
 # Review contact details / demo credentials — public repo, keep them in App Store Connect only
 iosApp/fastlane/metadata/review_information/first_name.txt
 iosApp/fastlane/metadata/review_information/last_name.txt

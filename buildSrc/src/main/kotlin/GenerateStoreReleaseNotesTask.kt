@@ -1,6 +1,8 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
@@ -9,12 +11,18 @@ import java.io.File
 import java.util.Properties
 
 /**
- * Renders the current release's What's New markdown into the `release_notes.txt` files
- * `fastlane deliver` uploads, so the in-app sheet and the App Store page never drift apart.
+ * Renders the current release's What's New markdown into the store release notes fastlane uploads,
+ * so the in-app sheet and the store page never drift apart.
  */
 abstract class GenerateStoreReleaseNotesTask : DefaultTask() {
     @get:InputFile
     abstract val versionFile: RegularFileProperty
+
+    @get:Input
+    abstract val appVersionKey: Property<String>
+
+    @get:Input
+    abstract val maxLength: Property<Int>
 
     @get:InputDirectory
     abstract val whatsNewRootDir: DirectoryProperty
@@ -30,12 +38,13 @@ abstract class GenerateStoreReleaseNotesTask : DefaultTask() {
         val versionProperties = Properties().apply {
             versionFile.get().asFile.inputStream().use { load(it) }
         }
-        val appVersion = versionProperties.getProperty("iosAppVersion")
-            ?: error("StoreReleaseNotes: 'iosAppVersion' missing from ${versionFile.get().asFile.path}")
+        val versionKey = appVersionKey.get()
+        val appVersion = versionProperties.getProperty(versionKey)
+            ?: error("StoreReleaseNotes: '$versionKey' missing from ${versionFile.get().asFile.path}")
 
         val versionDir = whatsNewRootDir.get().asFile.resolve("v$appVersion")
         require(versionDir.isDirectory) {
-            "StoreReleaseNotes: no changelog dir for iosAppVersion=$appVersion (expected ${versionDir.path})"
+            "StoreReleaseNotes: no changelog dir for $versionKey=$appVersion (expected ${versionDir.path})"
         }
 
         write(versionDir, EN_LOCALE, enReleaseNotesFile.get().asFile, required = true)
@@ -58,8 +67,8 @@ abstract class GenerateStoreReleaseNotesTask : DefaultTask() {
             .joinToString("\n") { "$BULLET $it" }
 
         require(bullets.isNotEmpty()) { "StoreReleaseNotes: ${notes.path} has no bullet lines" }
-        require(bullets.length <= MAX_LENGTH) {
-            "StoreReleaseNotes: $locale release notes are ${bullets.length} chars, App Store allows $MAX_LENGTH"
+        require(bullets.length <= maxLength.get()) {
+            "StoreReleaseNotes: $locale release notes are ${bullets.length} chars, the store allows ${maxLength.get()}"
         }
 
         outputFile.parentFile.mkdirs()
@@ -71,6 +80,5 @@ abstract class GenerateStoreReleaseNotesTask : DefaultTask() {
         const val EN_LOCALE = "en-US"
         const val HU_LOCALE = "hu-HU"
         const val BULLET = "•"
-        const val MAX_LENGTH = 4000
     }
 }

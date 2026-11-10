@@ -69,26 +69,28 @@ carried over. Play publication moves to fastlane, like the iOS release (`iosApp/
 - [x] Fastlane setup in `composeApp/fastlane` (`Appfile`, `Fastfile`), package `hu.mostoha.mobile.android.huki`,
   authenticated with the `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` JSON key. Locally the key's path comes from
   `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH` in the gitignored `composeApp/fastlane/.env`.
-- [ ] Lanes, mirroring iOS:
-  - `verify`: `validate_play_store_json_key` and a dry run, no upload.
-  - `beta`: `bundleRelease` → `upload_to_play_store` on the `internal` track, AAB + `mapping.txt`.
+- [x] Lanes, mirroring iOS:
+  - `verify`: `validate_play_store_json_key` and a `versionCode` preflight against every track, no upload.
+  - `beta`: `bundleRelease` → `upload_to_play_store` on the `internal` track, AAB + `mapping.txt`. Checks the key first
+    and that the AAB is signed with the upload key (SHA-256 pinned). `validate_only:true` for a dry run.
   - `beta` also runs `uploadCrashlyticsSymbolFileRelease` after `bundleRelease`: `nativeSymbolUploadEnabled` only
     configures the task, without it Mapbox native crashes stay unsymbolicated in Crashlytics.
-  - `release`: promote the internal build to `production` with a staged `rollout` (task 7).
+  - `release`: promote the internal build to `production`, released to every user (no staged rollout).
 - [ ] Store content via `supply`: download the current listing (`fastlane supply init`) into
   `composeApp/fastlane/metadata/android` (HU + EN title, descriptions, screenshots) and keep it in git.
 - [x] Release notes: `:shared:generateAndroidStoreReleaseNotes` generates `changelogs/default.txt` per locale from `tools/release/whatsnew/android/v<version>/`
   (Play limit: 500 characters).
-- [ ] Release signing in Gradle (`signingConfigs.release` from env vars) with the **same upload key** as legacy: copy
-  the secrets `SIGNING_KEY`, `ALIAS`, `KEY_STORE_PASSWORD`, `KEY_PASSWORD` to the HuKi-KMP repo.
-- [ ] New workflow `github-workflow-android-release.yml`, modelled on `github-workflow-ios-release.yml`:
-  - Trigger: manual (`workflow_dispatch`, lane input `beta` / `release` / metadata only) or release tag, not every
-    push to `main`.
-  - Needs lint, unit tests, and the debug build to pass.
+- [x] Release signing in Gradle (`signingConfigs.release` from env vars, or `local.properties` locally) with the
+  **same upload key** as legacy.
+- [ ] Add the CI secrets to the HuKi-KMP repo: `ANDROID_UPLOAD_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+  `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` (legacy `SIGNING_KEY`, `KEY_STORE_PASSWORD`, `ALIAS`, `KEY_PASSWORD`)
+  and `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
+- [x] New workflow `github-workflow-android-release.yml`, modelled on `github-workflow-ios-release.yml`:
+  - Trigger: tag `android/v<androidAppVersion>` (→ `beta`) or manual on `main` with track `internal` (`beta`) /
+    `production` (`release`).
+  - Like iOS it relies on the Android CI of `main` for lint and tests, it doesn't rerun them.
   - Runs `bundle exec fastlane <lane>`, uploads the AAB and `mapping.txt` as artifacts.
-  - Crashlytics: `uploadCrashlyticsMappingFileRelease` runs with the release build, but
-    `uploadCrashlyticsSymbolFileRelease` (native symbols) must be called explicitly after `bundleRelease`.
-- [ ] Update the `release` skill with the Android fastlane lanes.
+- [x] Update the `release` skill with the Android fastlane lanes.
 
 ### 4. GPX collection `[G]`
 

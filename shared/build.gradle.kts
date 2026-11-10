@@ -42,15 +42,31 @@ val generateWhatsNew = tasks.register<GenerateWhatsNewTask>("generateWhatsNew") 
     huStringsFile.set(layout.projectDirectory.file("src/commonMain/moko-resources/hu/strings_whatsnew.xml"))
 }
 
-// Not wired into compilation: only `fastlane deliver` consumes these files.
+// Not wired into compilation: only fastlane (`deliver` / `supply`) consumes these files.
 tasks.register<GenerateStoreReleaseNotesTask>("generateStoreReleaseNotes") {
     versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
+    appVersionKey.set("iosAppVersion")
+    maxLength.set(4000)
     whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew/ios"))
     enReleaseNotesFile.set(
         rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/en-US/release_notes.txt"),
     )
     huReleaseNotesFile.set(
         rootProject.layout.projectDirectory.file("iosApp/fastlane/metadata/hu/release_notes.txt"),
+    )
+}
+
+// `default.txt` is the changelog supply uploads for any versionCode without its own `<versionCode>.txt`.
+tasks.register<GenerateStoreReleaseNotesTask>("generateAndroidStoreReleaseNotes") {
+    versionFile.set(rootProject.layout.projectDirectory.file("version.properties"))
+    appVersionKey.set("androidAppVersion")
+    maxLength.set(500)
+    whatsNewRootDir.set(rootProject.layout.projectDirectory.dir("tools/release/whatsnew/android"))
+    enReleaseNotesFile.set(
+        rootProject.layout.projectDirectory.file("composeApp/fastlane/metadata/android/en-US/changelogs/default.txt"),
+    )
+    huReleaseNotesFile.set(
+        rootProject.layout.projectDirectory.file("composeApp/fastlane/metadata/android/hu-HU/changelogs/default.txt"),
     )
 }
 

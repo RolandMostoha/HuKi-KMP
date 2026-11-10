@@ -1,0 +1,112 @@
+require "shellwords"
+
+REPO_ROOT = File.expand_path("../..", __dir__)
+ANDROID_DIR = File.expand_path("..", __dir__)
+VERSION_FILE = File.join(REPO_ROOT, "version.properties")
+WHATSNEW_DIR = File.join(REPO_ROOT, "tools/release/whatsnew/android")
+METADATA_DIR = File.expand_path("metadata/android", __dir__)
+AAB = File.join(ANDROID_DIR, "build/outputs/bundle/release/composeApp-release.aab")
+MAPPING = File.join(ANDROID_DIR, "build/outputs/mapping/release/mapping.txt")
+PLAY_TRACKS = %w[production beta alpha internal].freeze
+UPLOAD_CERT_SHA256 = "C6:39:0A:16:7E:CB:5B:7A:7B:5B:B8:E4:DA:3E:AC:7B:E2:F9:2F:CA:A1:BE:6A:91:EB:8B:2D:DC:50:58:E9:94"
+
+opt_out_usage
+default_platform(:android)
+
+platform :android do
+  desc "Read-only check of the service account key and of what version.properties would ship"
+  lane :verify do
+    validate_play_store_json_key
+    preflight_version
+  end
+
+  desc "Build the signed release AAB and upload it to the internal track (`validate_only:true`: Play only checks it)"
+  lane :beta do |options|
+    validate_only = options[:validate_only].to_s == "true"
+    # A bad key would otherwise only fail after the full R8 build.
+    validate_play_store_json_key
+    ensure_whatsnew_exists
+    preflight_version
+    gradlew_task(":shared:generateAndroidStoreReleaseNotes")
+    # A validation run must not leave a mapping file in Crashlytics for a build that never ships.
+    gradlew_task(":composeApp:bundleRelease#{' -x uploadCrashlyticsMappingFileRelease' if validate_only}")
+    ensure_signed(AAB)
+    upload_to_play_store(
+      track: "internal",
+      release_status: "completed",
+      aab: AAB,
+      mapping: MAPPING,
+      metadata_path: METADATA_DIR,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: validate_only
+    )
+    gradlew_task(":composeApp:uploadCrashlyticsSymbolFileRelease") unless validate_only
+  end
+
+  desc "Promote the internal build of version.properties to production, released to every user"
+  lane :release do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      track_promote_release_status: "completed",
+      version_code: version_property("androidBuildNumber").to_i,
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
+    )
+  end
+end
+
+def ensure_whatsnew_exists
+  version = version_property("androidAppVersion")
+  directory = File.join(WHATSNEW_DIR, "v#{version}")
+  UI.user_error!("No What's New content for androidAppVersion=#{version} (expected #{directory})") unless Dir.exist?(directory)
+end
+
+# Play never accepts a versionCode twice, on any track. Caught here instead of after a full release build.
+def preflight_version
+  version = version_property("androidAppVersion")
+  build = version_property("androidBuildNumber").to_i
+  used = PLAY_TRACKS.flat_map { |track| track_version_codes(track) }
+  latest = used.max || 0
+  if build <= latest
+    UI.user_error!(
+      "version.properties: androidBuildNumber #{build} is already used on Google Play (latest is #{latest}). " \
+      "Bump androidBuildNumber to #{latest + 1}."
+    )
+  end
+  UI.success("Version: #{version} (#{build}) — latest versionCode on Google Play #{latest}")
+end
+
+def track_version_codes(track)
+  google_play_track_version_codes(track: track)
+rescue StandardError => error
+  UI.important("Could not read the '#{track}' track (#{error.message}) — skipping it")
+  []
+end
+
+# Without the signing values (local.properties or env), bundleRelease silently produces an unsigned AAB.
+def ensure_signed(aab)
+  output = `keytool -printcert -jarfile #{aab.shellescape} 2>&1`
+  UI.user_error!("#{aab} is not signed: set ANDROID_KEYSTORE_PATH and the other signing values") if output.include?("Not a signed jar file")
+  sha256 = output[/SHA256:\s*(\S+)/, 1]
+  return if sha256 == UPLOAD_CERT_SHA256
+
+  UI.user_error!("#{aab} is signed with #{sha256 || 'an unknown key'}, not the upload key #{UPLOAD_CERT_SHA256}")
+end
+
+def gradlew_task(task)
+  sh("cd #{REPO_ROOT.shellescape} && ./gradlew #{task}")
+end
+
+def version_property(key)
+  match = File.read(VERSION_FILE).match(/^#{key}=(.*)$/)
+  UI.user_error!("version.properties: '#{key}' is missing") if match.nil?
+  match[1].strip
+end

@@ -1,0 +1,100 @@
+name: Android Release
+
+on:
+  push:
+    tags:
+      - "android/v*"
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "internal: build and upload to the internal track, production: promote that build to production"
+        type: choice
+        options:
+          - internal
+          - production
+        default: internal
+
+# Never cancel a release in flight: a killed run can leave a half-finished Play edit.
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  google_play:
+    name: Google Play
+    runs-on: [ ubuntu-latest ]
+    timeout-minutes: 45
+    env:
+      # A tag push has no inputs and uploads to the internal track.
+      LANE: ${{ inputs.track == 'production' && 'release' || 'beta' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/android
+        with:
+          MAPBOX_ACCESS_TOKEN_ANDROID: ${{ secrets.MAPBOX_ACCESS_TOKEN_ANDROID }}
+          LOCATION_IQ_API_KEY_ANDROID: ${{ secrets.LOCATION_IQ_API_KEY_ANDROID }}
+          GRAPHHOPPER_API_KEY_ANDROID: ${{ secrets.GRAPHHOPPER_API_KEY_ANDROID }}
+          MAPBOX_ACCESS_TOKEN_IOS: ${{ secrets.MAPBOX_ACCESS_TOKEN_IOS }}
+          LOCATION_IQ_API_KEY_IOS: ${{ secrets.LOCATION_IQ_API_KEY_IOS }}
+          GRAPHHOPPER_API_KEY_IOS: ${{ secrets.GRAPHHOPPER_API_KEY_IOS }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+
+      # A mistagged commit or a stray manual run fails here in seconds, before any build cost.
+      # Tag format: android/v<androidAppVersion>, e.g. android/v2.0 — move the tag to re-release the same version.
+      - name: Verify release ref
+        run: |
+          APP_VERSION="$(grep '^androidAppVersion=' version.properties | cut -d= -f2)"
+          APP_BUILD="$(grep '^androidBuildNumber=' version.properties | cut -d= -f2)"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            if [[ ! "$GITHUB_REF_NAME" =~ ^android/v([0-9]+(\.[0-9]+)*)$ ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME is not of the form android/v<version>"
+              exit 1
+            fi
+            if [ "${BASH_REMATCH[1]}" != "$APP_VERSION" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match androidAppVersion=$APP_VERSION in version.properties"
+              exit 1
+            fi
+          elif [ "$GITHUB_REF_NAME" != "main" ]; then
+            # A manual run uploads to Google Play, so never let it ship a feature branch.
+            echo "::error::Manual runs are only allowed from main (got $GITHUB_REF_NAME)"
+            exit 1
+          fi
+          echo "Running '$LANE' for $GITHUB_REF_NAME (androidAppVersion=$APP_VERSION, androidBuildNumber=$APP_BUILD)"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: composeApp
+
+      - name: Prepare upload keystore
+        if: env.LANE == 'beta'
+        run: |
+          echo "${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Run fastlane ${{ env.LANE }}
+        working-directory: composeApp
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: bundle exec fastlane "$LANE"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always() && env.LANE == 'beta'
+        with:
+          name: huki-android-release
+          path: |
+            composeApp/build/outputs/bundle/release/composeApp-release.aab
+            composeApp/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: ignore
+          retention-days: 30

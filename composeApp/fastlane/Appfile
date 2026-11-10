@@ -1,0 +1,7 @@
+# CI passes the service account JSON itself, locally a path to it is enough.
+if ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"]
+  json_key_data(ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"])
+else
+  json_key_file(ENV["GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_PATH"])
+end
+package_name("hu.mostoha.mobile.android.huki")
