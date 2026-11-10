@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.database.HukiDatabase
 import hu.mostoha.mobile.kmp.huki.datastore.LegacySupportMigration
 import hu.mostoha.mobile.kmp.huki.datastore.SETTINGS_DATA_STORE_FILE_NAME
 import hu.mostoha.mobile.kmp.huki.datastore.createDataStore
+import hu.mostoha.mobile.kmp.huki.migration.LegacyCleanup
 import hu.mostoha.mobile.kmp.huki.repository.AndroidBundledFileReader
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
 import hu.mostoha.mobile.kmp.huki.service.AndroidLocationMonitoringService
@@ -21,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okio.Buffer
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -61,6 +63,16 @@ val androidPlatformModule = module {
             context = get(),
             crashlyticsService = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+        )
+    }
+    single {
+        val context = get<Context>()
+        LegacyCleanup(
+            dataDir = context.dataDir,
+            externalFilesDirs = { context.getExternalFilesDirs(null).filterNotNull() },
+            dataStore = get(),
+            crashlyticsService = get(),
+            dispatcher = get(named(Dispatcher.IO)),
         )
     }
 }

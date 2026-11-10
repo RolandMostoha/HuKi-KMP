@@ -12,6 +12,7 @@ import hu.mostoha.mobile.kmp.huki.analytics.AndroidCrashlyticsService
 import hu.mostoha.mobile.kmp.huki.billing.PlayBillingService
 import hu.mostoha.mobile.kmp.huki.di.androidPlatformModule
 import hu.mostoha.mobile.kmp.huki.di.initKoin
+import hu.mostoha.mobile.kmp.huki.migration.LegacyCleanup
 import hu.mostoha.mobile.kmp.huki.repository.SupporterRepository
 import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.BillingService
@@ -45,6 +46,12 @@ class HuKiApplication : Application() {
             )
         }
         refreshSupporterStateInForeground()
+        cleanUpLegacyApp()
+    }
+
+    private fun cleanUpLegacyApp() {
+        val legacyCleanup = get<LegacyCleanup>()
+        ProcessLifecycleOwner.get().lifecycleScope.launch { legacyCleanup.run() }
     }
 
     /**
