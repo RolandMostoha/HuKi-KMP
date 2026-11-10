@@ -4,7 +4,7 @@
     <circle
         cx="256"
         cy="256"
-        r="240"
+        r="234"
         fill="#fffff7"
         stroke="#1a1a1a"
         stroke-width="40" />

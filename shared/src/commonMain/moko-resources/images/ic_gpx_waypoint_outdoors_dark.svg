@@ -3,7 +3,7 @@
     <circle
         cx="256"
         cy="256"
-        r="240"
+        r="234"
         fill="#00bb00"
         stroke="#fffdfd"
         stroke-width="40" />
