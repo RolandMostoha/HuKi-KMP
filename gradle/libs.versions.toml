@@ -72,6 +72,7 @@ filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "file
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-crashlytics-ndk = { module = "com.google.firebase:firebase-crashlytics-ndk" }
 google-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "play-services-location" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }

@@ -1,3 +1,4 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 
 val versionProps = Properties().apply {
@@ -61,6 +62,9 @@ android {
             ndk {
                 debugSymbolLevel = "SYMBOL_TABLE"
             }
+            configure<CrashlyticsExtension> {
+                nativeSymbolUploadEnabled = true
+            }
         }
     }
     compileOptions {
@@ -104,6 +108,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.crashlytics.ndk)
 
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.core)
