@@ -1,3 +1,4 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 
 val versionProps = Properties().apply {
@@ -54,6 +55,22 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
+            configure<CrashlyticsExtension> {
+                nativeSymbolUploadEnabled = true
+            }
+        }
+    }
+    bundle {
+        language {
+            // The per-app language can differ from the device language, so every locale must ship in the base APK
+            enableSplit = false
         }
     }
     compileOptions {
@@ -97,6 +114,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.crashlytics.ndk)
 
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotest.core)

@@ -46,19 +46,21 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / Design / tech tasks
 
-| Status | Feature                                                                                                                                                                                              |
-|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[G]`  | Android-Migration: from HuKi-Android (1.X) to HuKi-KMP (2.0) is smooth. GPX collection, Purchases. Remove and clear unnecessary resources, e.g. OsmDroid map DB.                                     |                                                                                       |
-| `[G]`  | Android: Prepare for prod release, release mode, obfuscation etc. Check HuKi-Android for setup. Bump `androidBuildNumber` above the legacy versionCode (688), e.g. 1000, or Play rejects the upload. |
-| `[G]`  | Android: Prepare for CD with Google Play, check HuKi-Android for reference                                                                                                                           |
-| `[G]`  | Android: Release mode: turn of debug logging, only keep errors? what is the recommended minimum verbosity here?                                                                                      |
-| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                     |
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                            |
-| `[ ]`  | App store preview video (optional)                                                                                                                                                                   |
-| `[ ]`  | App store header picture/video (optional)                                                                                                                                                            |
-| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                     |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                       |
-| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                      |
+| Status | Feature                                                                                                                                                                                                                                      |
+|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[G]`  | Android-Release: remove the `com.google.android.gms.permission.AD_ID` permission merged in by Firebase Analytics with `tools:node="remove"`, like legacy did. Play rejects the upload if it contradicts the "no advertising ID" declaration. |
+| `[G]`  | Android: Prepare for prod release. Configure fastlane from day 0, internal and prod tracks.                                                                                                                                                  |
+| `[G]`  | Android-Release: Decide release `signingConfigs` with the legacy upload key, probably by fastlane.                                                                                                                                           |
+| `[G]`  | Android-Release: run `./gradlew :composeApp:uploadCrashlyticsSymbolFileRelease` after `bundleRelease` (until the fastlane lane does it), otherwise Mapbox native crashes stay unsymbolicated.                                                |
+| `[G]`  | Android-Release: new Play store listing for 2.0. The current one shows the legacy OsmDroid app: new HU + EN screenshots, feature graphic, updated short / full description.                                                                  |
+| `[G]`  | Android-Release: update the Play data safety form and the privacy policy on huki.hu for 2.0: Mapbox (tiles, telemetry), NDK crash reports, GraphHopper / HuKi-Routing / LocationIQ. Compare with what legacy declared.                       |
+| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                                                             |
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                                                                    |
+| `[ ]`  | App store preview video (optional)                                                                                                                                                                                                           |
+| `[ ]`  | App store header picture/video (optional)                                                                                                                                                                                                    |
+| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                                                             |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                                                               |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                                                              |
 
 ### Bugs
 
