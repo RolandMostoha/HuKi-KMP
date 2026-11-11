@@ -36,6 +36,7 @@ import com.mapbox.maps.AnnotatedFeature
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationAnchorConfig
 import com.mapbox.maps.ViewAnnotationOptions
+import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMapComposable
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.style.ColorValue
@@ -48,6 +49,7 @@ import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.GeoJsonSourceState
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
+import com.mapbox.maps.plugin.locationcomponent.LocationComponentConstants.LOCATION_INDICATOR_LAYER
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
@@ -102,6 +104,10 @@ fun OktLayer(okt: OktUiState, onEvent: (OktUiEvents) -> Unit) {
         lineWidth = SharedDimens.OKT_SELECTED_LINE_WIDTH,
         lineColor = mokoColor(SharedRes.colors.oktBlue),
     )
+    // The line layers are added on top of the style, so they would bury the location puck
+    MapEffect(okt.baseLine.id, okt.selectedLine.id) { mapView ->
+        mapView.mapboxMap.moveStyleLayer(LOCATION_INDICATOR_LAYER, null)
+    }
     okt.markers.forEach { marker ->
         key(marker.id) {
             OktMarkerAnnotation(
