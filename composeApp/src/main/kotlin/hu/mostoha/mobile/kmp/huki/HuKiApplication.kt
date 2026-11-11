@@ -5,6 +5,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.mapbox.common.HttpServiceFactory
 import com.mapbox.common.MapboxOptions
 import hu.mostoha.mobile.android.huki.BuildConfig
 import hu.mostoha.mobile.kmp.huki.analytics.AndroidAnalyticsService
@@ -18,6 +19,7 @@ import hu.mostoha.mobile.kmp.huki.service.AnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.BillingService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsDecoratorService
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
+import hu.mostoha.mobile.kmp.huki.util.OverlayTileCacheInterceptor
 import hu.mostoha.mobile.kmp.huki.util.setDebugBuild
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
@@ -31,6 +33,7 @@ class HuKiApplication : Application() {
 
         setDebugBuild(BuildConfig.DEBUG)
         MapboxOptions.accessToken = Secrets.MAPBOX_ACCESS_TOKEN
+        HttpServiceFactory.setHttpServiceInterceptor(OverlayTileCacheInterceptor())
 
         initKoin {
             androidContext(this@HuKiApplication)

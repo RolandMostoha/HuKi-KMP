@@ -19,6 +19,7 @@ struct HukiApp: App {
 
     init() {
         MapboxOptions.accessToken = Secrets.shared.MAPBOX_ACCESS_TOKEN
+        HttpServiceFactory.setHttpServiceInterceptorForInterceptor(OverlayTileCacheInterceptor())
         // Maestro launch arguments
         let args = ProcessInfo.processInfo.arguments
         if let index = args.firstIndex(of: "skipWhatsNew"), index + 1 < args.count {

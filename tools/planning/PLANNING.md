@@ -227,6 +227,24 @@ Lets plan the support strategy for Android (google-play-billing) - iOS().
 
 ## Ideas / Experimental features
 
+### Hosting our own tile server for hiking layer
+
+- Actual tile server is "https://a.tile.openstreetmap.hu/tt/{z}/{x}/{y}.png"
+- The main idea is to host our own tile server for hiking layer and switch from actual
+- Hiking layer can be downloaded from: https://data2.openstreetmap.hu/index.php
+- TuraReteg.sqlitedb, ttszin.zip, tt.zip etc. ![img_2.png](img_2.png)
+- Create a tile server based on the tile PNGs
+- Set periodic sync for the tiles e.g. 2 weeks
+- Check validity of the idea - can this improve the app? better response times? better caching? more reliable? cost? cloud setup? google vs AWS?
+
+| Goal                   | Gain       | Why                                                                                                                                                                         |
+|------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Caching                | None       | Already solved by `OverlayTileCacheInterceptor`. Own server could set `Cache-Control` itself and drop the interceptor.                                                      |
+| Response time          | Medium     | Current server: HTTP/1.1, TLS 1.2, no HTTP/3, ~130 ms per tile. On weak trail signal the extra round trips add seconds to first loads. No gain offline or for cached tiles. |
+| Reliability            | Big        | Today the layer depends on a single volunteer server (Ubuntu 16.04). If it goes down, the main feature breaks.                                                              |
+| Load on the volunteers | Big        | All HuKi traffic moves off their server.                                                                                                                                    |
+| Offline mode           | Big, later | Own copy of the full layer (`tt.zip` is 371 MB) makes "download the hiking layer for Hungary" possible.                                                                     |
+
 ### FEATURE: Favorite POIs
 
 - Mark POIs as favorites (long-tap on map, destinations etc., any POI).
@@ -296,17 +314,17 @@ Goal: share/back up the whole GPX collection between devices without cloud or au
 portable collection file) from **transport** — let the OS own transport (AirDrop, Quick Share, Bluetooth, Files/USB,
 email, chat). A zipped bundle is plain data, so an Android export imports on iOS and vice-versa.
 
-| Status | Scope      | Task                                                                                               |
-|--------|------------|----------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPX Export | `GpxCollectionArchiver` (expect/actual): zip `gpx/external` + generated `manifest.json`            |
-| `[ ]`  | GPX Export | Export action → native share sheet (iOS ShareLink / Android ACTION_SEND + FileProvider)            |
-| `[ ]`  | GPX Import | `GpxCollectionArchiver` unzip to temp, then loop each `.gpx` through `GpxStorage.saveToFileSystem` |
-| `[ ]`  | GPX Import | iOS: declare imported/exported UTI + `CFBundleDocumentTypes`, handle inbound via `.onOpenURL`      |
-| `[ ]`  | GPX Import | Android: `<intent-filter>` ACTION_VIEW/ACTION_SEND for `.hukigpx`/zip, read URI in `onNewIntent`   |
+| Status | Scope      | Task                                                                                                    |
+|--------|------------|---------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX Export | `GpxCollectionArchiver` (expect/actual): zip `gpx/external` + generated `manifest.json`                 |
+| `[ ]`  | GPX Export | Export action → native share sheet (iOS ShareLink / Android ACTION_SEND + FileProvider)                 |
+| `[ ]`  | GPX Import | `GpxCollectionArchiver` unzip to temp, then loop each `.gpx` through `GpxStorage.saveToFileSystem`      |
+| `[ ]`  | GPX Import | iOS: declare imported/exported UTI + `CFBundleDocumentTypes`, handle inbound via `.onOpenURL`           |
+| `[ ]`  | GPX Import | Android: `<intent-filter>` ACTION_VIEW/ACTION_SEND for `.hukigpx`/zip, read URI in `onNewIntent`        |
 | `[ ]`  | GPX Import | Android: open plain `.gpx` files from other apps (email attachments, file managers), as in HuKi-Android |
-| `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                      |
-| `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                     |
-| `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`          |
+| `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                           |
+| `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                          |
+| `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`               |
 
 ### FEATURE: Hike Finder
 

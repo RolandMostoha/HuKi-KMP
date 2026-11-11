@@ -1,5 +1,8 @@
 package hu.mostoha.mobile.kmp.huki.model.domain
 
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+
 enum class OverlayLayer(
     val layerId: String,
     val tiles: List<String>,
@@ -8,6 +11,7 @@ enum class OverlayLayer(
     val maxZoom: Long,
     val prefetchZoomDelta: Long,
     val maxOverscaleFactorForParentTiles: Long,
+    val cacheMaxAge: Duration,
 ) {
     TURISTAUTAK(
         layerId = "turistautak",
@@ -23,5 +27,6 @@ enum class OverlayLayer(
         prefetchZoomDelta = 0,
         // Limits how much an already loaded lower-zoom tile can be scaled up to fill in for a loading tile
         maxOverscaleFactorForParentTiles = 1,
+        cacheMaxAge = 14.days,
     ),
 }
