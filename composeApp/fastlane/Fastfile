@@ -88,8 +88,9 @@ end
 def preflight_version
   version = version_property("androidAppVersion")
   build = version_property("androidBuildNumber").to_i
-  used = PLAY_TRACKS.flat_map { |track| track_version_codes(track) }
-  latest = used.max || 0
+  codes = PLAY_TRACKS.map { |track| track_version_codes(track) }
+  UI.user_error!("Could not read any Google Play track, check the service account key") if codes.all?(&:nil?)
+  latest = codes.compact.flatten.max || 0
   if build <= latest
     UI.user_error!(
       "version.properties: androidBuildNumber #{build} is already used on Google Play (latest is #{latest}). " \
@@ -103,7 +104,7 @@ def track_version_codes(track)
   google_play_track_version_codes(track: track)
 rescue StandardError => error
   UI.important("Could not read the '#{track}' track (#{error.message}) — skipping it")
-  []
+  nil
 end
 
 # Without the signing values (local.properties or env), bundleRelease silently produces an unsigned AAB.
