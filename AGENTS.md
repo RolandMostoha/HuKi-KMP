@@ -141,13 +141,13 @@ commit-message convention.
   - Platform-only change: append `-Android` / `-iOS` to the scope, e.g. `fix(Map-Android)`.
 - **Description**: lowercase, imperative mood, no trailing period.
 - **Fixes**: `fix <symptom> by <solution>`, e.g. `fix(PlaceDetails): fix disappearing POIs by ignoring camera padding`.
-- **Release commits** are the one exception: type `release`, scope is the version and platform — `release(v1.5-iOS)`, `release(v2.0-Android)`.
+- **Release commits** are the one exception: type `release`, scope is the platform and version — `release(iOS-v1.5)`, `release(Android-v2.0)`.
 - Examples:
     - `feat(Search): add LocationIQ autocomplete with Ktor`
     - `feat(GPX): add GPX Details bottom sheet`
     - `fix(Logger): trim long lists from UiState logging`
     - `ci(CI): cancel previous in-progress GitHub workflows`
-    - `release(v1.1): update store content, versioning`
+    - `release(Android-v1.1): update store content, versioning`
 
 ### Planning files in commits
 - `tools/planning/` changes (`PLANNING.md`, its images, other planning docs) go into any commit as they are,

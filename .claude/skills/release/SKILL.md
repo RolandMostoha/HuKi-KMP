@@ -27,7 +27,7 @@ How it works:
 
 Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) and is delivered by fastlane.
 
-1. One release commit on `main` (`release(v<X>-iOS): update store content, versioning`):
+1. One release commit on `main` (`release(iOS-v<X>): update store content, versioning`):
     - `version.properties` — bump `iosAppVersion` and `iosBuildNumber`
     - `tools/release/whatsnew/ios/v<X>/` — EN + HU notes and `metadata.json`
     - `iosApp/fastlane/metadata/` — (if changed) description, promo text, keywords
@@ -54,7 +54,7 @@ Play has one store listing for every track, so the listing is only sent for revi
 (step 6): an earlier review would show the new listing while production still serves the previous version. Managed
 publishing is off, an approved release goes live right away.
 
-1. One release commit on `main` (`release(v<X>-Android): update store content, versioning`):
+1. One release commit on `main` (`release(Android-v<X>): update store content, versioning`):
     - `version.properties` — bump `androidAppVersion` and `androidBuildNumber` (the Play `versionCode`, must be higher than
       any code ever uploaded; legacy HuKi-Android ended at 688)
     - `tools/release/whatsnew/android/v<X>/` — EN + HU notes and `metadata.json`
