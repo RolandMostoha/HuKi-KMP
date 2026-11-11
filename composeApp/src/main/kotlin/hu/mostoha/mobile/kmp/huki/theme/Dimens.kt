@@ -29,8 +29,8 @@ object Dimens {
     val FloatingActionSize = 56.dp
     val FloatingActionSpacing = 14.dp
 
-    val ZoomControlWidth = 53.dp
-    val ZoomControlIconSize = 51.dp
+    val ZoomControlWidth = 55.dp
+    val ZoomControlIconSize = 54.dp
 
     val SectionSpacing = 18.dp
     val SectionHeaderSpacing = 8.dp
