@@ -44,21 +44,31 @@ Other paths:
 
 ## Runbook (Android)
 
-Fastlane lives in `composeApp/fastlane/` (run from `composeApp/`). The Play store listing is still managed in Play Console;
-only the release notes come from the repo: `generateAndroidStoreReleaseNotes` renders
-`tools/release/whatsnew/android/v<X>/` into `metadata/android/<locale>/changelogs/default.txt` (Play limit: 500 chars).
+Store content lives in `composeApp/fastlane/metadata/android/<locale>/` (`en-US`, `hu-HU`) and is delivered by fastlane
+(run from `composeApp/`): `title.txt` (30 chars), `short_description.txt` (80), `full_description.txt` (4000),
+`images/` (`icon.png`, `featureGraphic.png`, `phoneScreenshots/`). Release notes are generated, never edited:
+`generateAndroidStoreReleaseNotes` renders `tools/release/whatsnew/android/v<X>/` into the gitignored
+`changelogs/default.txt` (Play limit: 500 chars).
+
+Play has one store listing for every track, so the listing only goes up with the production release (step 5): an
+earlier upload would show the new listing while production still serves the previous version. Managed publishing is
+off, an approved release goes live right away.
 
 1. One release commit on `main` (`release(v<X>-Android): update store content, versioning`):
     - `version.properties` — bump `androidAppVersion` and `androidBuildNumber` (the Play `versionCode`, must be higher than
       any code ever uploaded; legacy HuKi-Android ended at 688)
     - `tools/release/whatsnew/android/v<X>/` — EN + HU notes and `metadata.json`
+    - `composeApp/fastlane/metadata/android/` — (if changed) listing text, screenshots, feature graphic
 2. `bundle exec fastlane verify` — read-only; checks the service account key and that `androidBuildNumber` is unused on Play.
-3. Tag that commit: `git tag android/v<X> && git push origin android/v<X>`.
-4. The tag runs `.github/workflows/github-workflow-android-release.yml` → `fastlane beta`: signed `bundleRelease`, upload
-   to the **internal** track with the changelogs and `mapping.txt`, then the Crashlytics native symbols.
-5. Test the internal build (Play Console pre-launch report too), then run the **Android Release** workflow manually on
-   `main` with track `production` (fastlane `release`): promotes that `versionCode` from internal to production,
-   released to every user (no staged rollout). Track `internal` (fastlane `beta`) re-uploads like the tag does.
+3. Tag that commit: `git tag android/v<X> && git push origin android/v<X>`. The tag runs
+   `.github/workflows/github-workflow-android-release.yml` → `fastlane beta`: signed `bundleRelease`, upload to the
+   **internal** track with the release notes and `mapping.txt`, then the Crashlytics native symbols. The listing is
+   not touched.
+4. Test the internal build on a device (and the Play Console pre-launch report). Check the listing in the repo.
+5. Run the **Android Release** workflow manually on `main` with track `production` (fastlane `release`): promotes that
+   `versionCode` from internal to production **and** uploads the listing (`sync_image_upload`, only changed images) in
+   one Play edit, so Google reviews both together. After approval it goes live to every user (no staged rollout).
+   Don't use Play Console's "Promote release" button, it doesn't upload the listing.
 
 Signing:
 - The release must be signed with the legacy HuKi-Android **upload key** (SHA-256 `C6:39:0A:16:…:E9:94`), Play rejects
@@ -71,8 +81,11 @@ Signing:
 
 Other paths:
 - Local upload: `bundle exec fastlane beta` with the signing values and the service account path set.
-- Dry run: `bundle exec fastlane beta validate_only:true` — builds and lets Play validate the upload without publishing
-  (skips the Crashlytics mapping and symbol uploads).
+- Dry runs: `bundle exec fastlane beta validate_only:true` builds and lets Play validate the upload without publishing
+  (skips the Crashlytics mapping and symbol uploads); `bundle exec fastlane release validate_only:true` validates the
+  promotion and the listing.
+- Refresh the listing baseline from Play: `bundle exec fastlane supply init` (fails if `metadata/android` exists; move it
+  aside first, then delete the downloaded `changelogs/`).
 
 ## Tagging convention
 

@@ -46,19 +46,20 @@ platform :android do
     gradlew_task(":composeApp:uploadCrashlyticsSymbolFileRelease") unless validate_only
   end
 
-  desc "Promote the internal build of version.properties to production, released to every user"
-  lane :release do
+  desc "Promote the internal build of version.properties to production with the store listing, in one review (`validate_only:true`: Play only checks it)"
+  lane :release do |options|
+    # The store listing is shared by every track, so it only goes up together with the production release.
     upload_to_play_store(
       track: "internal",
       track_promote_to: "production",
       track_promote_release_status: "completed",
       version_code: version_property("androidBuildNumber").to_i,
+      metadata_path: METADATA_DIR,
+      sync_image_upload: true,
       skip_upload_aab: true,
       skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      skip_upload_changelogs: true
+      skip_upload_changelogs: true,
+      validate_only: options[:validate_only].to_s == "true"
     )
   end
 end
