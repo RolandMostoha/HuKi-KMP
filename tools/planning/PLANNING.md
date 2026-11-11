@@ -48,10 +48,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Feature                                                                                                                                                                                                                                      |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Android-Release: remove the `com.google.android.gms.permission.AD_ID` permission merged in by Firebase Analytics with `tools:node="remove"`, like legacy did. Play rejects the upload if it contradicts the "no advertising ID" declaration. |
-| `[x]`  | Android: Prepare for prod release. Configure fastlane from day 0, internal and prod tracks.                                                                                                                                                  |
-| `[x]`  | Android-Release: new Play store listing for 2.0. The current one shows the legacy OsmDroid app: new HU + EN screenshots, feature graphic, updated short / full description.                                                                  |
-| `[G]`  | Android-Release: update the Play data safety form and the privacy policy on huki.hu for 2.0: Mapbox (tiles, telemetry), NDK crash reports, GraphHopper / HuKi-Routing / LocationIQ. Compare with what legacy declared.                       |
 | `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                                                             |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                                                                    |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                                                           |
@@ -91,7 +87,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope | Task                                                                                                                                                               |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | For people with poor vision, create a "high-contrast" version, which add more visibility to labels, map elements.                                                  |
-| `[x]`  | Map   | Is there any optimization strategy for raster layers? HuKi-hiking, when trails are loading, they often show weird pixelated PNGs everywhere. Can we make smoother? |
 
 ### FEATURE: Landscape orientation
 
@@ -141,7 +136,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope    | Task                                                                                                                                                                                               |
 |--------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | WhatsNew | Add footer option to metadata.json, remove the hardcoded "The developerof HuKi" strings. Keep "-" as a fixed prefix, and make the configured footer text italic.                                   |
 | `[ ]`  | WhatsNew | Add "Follow on Facebook" section to WhatsNew's bottom.                                                                                                                                             |
 | `[ ]`  | WhatsNew | Version history screen under Settings: list every release + date + notes (uses the full `releases` list).                                                                                          |
 
