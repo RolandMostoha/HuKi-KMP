@@ -97,11 +97,11 @@ carried over. Play publication moves to fastlane, like the iOS release (`iosApp/
 GPX files already carry over: both apps use `filesDir/gpx/external` and `filesDir/gpx/routeplanner`, and
 `DefaultGpxStorage.listGpxFiles()` lists those directories.
 
-- [ ] Verify on a device that legacy GPX files show up in KMP after upgrade, and that `GpxOrigin.fromPath` maps them
-  to the right origin.
-- [ ] No `metadata.json` is needed: the collection scans the directories, files without an entry fall back to their
+- [x] Verify on a device that legacy GPX files show up in KMP after upgrade, and that `GpxOrigin.fromPath` maps them
+  to the right origin. Simulated upgrade (9 files, external + routeplanner) and the internal track upgrade (2026-11-11).
+- [x] No `metadata.json` is needed: the collection scans the directories, files without an entry fall back to their
   file date, and landscapes are looked up and cached on the first scan.
-- [ ] Check legacy GPX files parse in KMP: `DefaultGpxRepository.scanGpxFile` deletes files it can't parse, so a file
+- [x] Check legacy GPX files parse in KMP: `DefaultGpxRepository.scanGpxFile` deletes files it can't parse, so a file
   the legacy parser accepted but Spatial K rejects would be lost. Use a mix of real-world files in the upgrade test.
 
 ### 5. Purchases / Support `[G]`
@@ -164,10 +164,10 @@ Verified on the `legacy_1_2_4_seeded` snapshot: freed 4.7 MB from 7 files, GPX f
 
 ### 7. Rollout
 
-- [ ] Upgrade test on the internal track: install 1.2.4 from Play, add GPX files, buy a one-time product and a
+- [x] Upgrade test on the internal track (2026-11-11, 2.0 / versionCode 1000 via `fastlane beta`): install 1.2.4 from Play, add GPX files, buy a one-time product and a
   subscription with a license tester account, then update to the signed 2.0 build.
   - Check: GPX files present, one-time animal imported (from the legacy DataStore), subscription shown with
     "Manage subscriptions", legacy files cleaned up, 2.0 WhatsNew shown once.
-- [ ] Closed testing with a few real users.
-- [ ] Production staged rollout: 10% → 50% → 100%, watching Crashlytics and Play vitals between steps.
+- [ ] Production release with `fastlane release` (track `production`), to every user at once (no staged rollout).
+  Watch Crashlytics and Play vitals after it.
 - [ ] Archive HuKi-Android: freeze `master`, disable its deploy workflow.
