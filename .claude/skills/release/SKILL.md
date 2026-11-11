@@ -50,9 +50,9 @@ Store content lives in `composeApp/fastlane/metadata/android/<locale>/` (`en-US`
 `generateAndroidStoreReleaseNotes` renders `tools/release/whatsnew/android/v<X>/` into the gitignored
 `changelogs/default.txt` (Play limit: 500 chars).
 
-Play has one store listing for every track, so the listing only goes up with the production release (step 5): an
-earlier upload would show the new listing while production still serves the previous version. Managed publishing is
-off, an approved release goes live right away.
+Play has one store listing for every track, so the listing is only sent for review with the production release
+(step 6): an earlier review would show the new listing while production still serves the previous version. Managed
+publishing is off, an approved release goes live right away.
 
 1. One release commit on `main` (`release(v<X>-Android): update store content, versioning`):
     - `version.properties` — bump `androidAppVersion` and `androidBuildNumber` (the Play `versionCode`, must be higher than
@@ -64,8 +64,10 @@ off, an approved release goes live right away.
    `.github/workflows/github-workflow-android-release.yml` → `fastlane beta`: signed `bundleRelease`, upload to the
    **internal** track with the release notes and `mapping.txt`, then the Crashlytics native symbols. The listing is
    not touched.
-4. Test the internal build on a device (and the Play Console pre-launch report). Check the listing in the repo.
-5. Run the **Android Release** workflow manually on `main` with track `production` (fastlane `release`): promotes that
+4. Test the internal build on a device (and the Play Console pre-launch report).
+5. `bundle exec fastlane listing`: stages the listing (`changes_not_sent_for_review`, only changed images) without
+   sending it for review. Check the preview in Play Console.
+6. Run the **Android Release** workflow manually on `main` with track `production` (fastlane `release`): promotes that
    `versionCode` from internal to production **and** uploads the listing (`sync_image_upload`, only changed images) in
    one Play edit, so Google reviews both together. After approval it goes live to every user (no staged rollout).
    Don't use Play Console's "Promote release" button, it doesn't upload the listing.
@@ -83,7 +85,9 @@ Other paths:
 - Local upload: `bundle exec fastlane beta` with the signing values and the service account path set.
 - Dry runs: `bundle exec fastlane beta validate_only:true` builds and lets Play validate the upload without publishing
   (skips the Crashlytics mapping and symbol uploads); `bundle exec fastlane release validate_only:true` validates the
-  promotion and the listing.
+  promotion and the listing; `bundle exec fastlane listing validate_only:true` validates the listing alone.
+- If `release` refuses to commit while the staged listing waits, send both for review from Play Console's
+  "Publishing overview".
 - Refresh the listing baseline from Play: `bundle exec fastlane supply init` (fails if `metadata/android` exists; move it
   aside first, then delete the downloaded `changelogs/`).
 

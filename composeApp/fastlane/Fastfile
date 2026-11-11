@@ -46,6 +46,20 @@ platform :android do
     gradlew_task(":composeApp:uploadCrashlyticsSymbolFileRelease") unless validate_only
   end
 
+  desc "Stage the store listing in Play Console without sending it for review (`validate_only:true`: Play only checks it)"
+  lane :listing do |options|
+    # Staged only, `release` sends it for review together with the production promotion.
+    upload_to_play_store(
+      metadata_path: METADATA_DIR,
+      sync_image_upload: true,
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: true,
+      changes_not_sent_for_review: true,
+      validate_only: options[:validate_only].to_s == "true"
+    )
+  end
+
   desc "Promote the internal build of version.properties to production with the store listing, in one review (`validate_only:true`: Play only checks it)"
   lane :release do |options|
     # The store listing is shared by every track, so it only goes up together with the production release.

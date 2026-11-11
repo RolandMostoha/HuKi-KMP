@@ -472,7 +472,7 @@
     <string name="whats_new_title">Újdonságok</string>
     <string name="whats_new_a11y_app_icon">HuKi alkalmazás ikon</string>
     <string name="whats_new_message_footer">— %s</string>
-    <string name="whats_new_supporter_message">%s támogatóként te is hozzájárultál, hogy ez a verzió elkészülhessen.</string>
+    <string name="whats_new_supporter_message">%s támogatóként te is hozzájárultál ahhoz, hogy ez a verzió elkészülhessen.</string>
 
     <string name="destinations_type_highest_peak_per_landscape">Tájegység legmagasabb csúcsa</string>
     <string name="destinations_type_educational_trail">Tanösvény</string>

@@ -28,7 +28,7 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 
 ---
 
-## Screenshot #1 — default map (danube_bend)
+## Screenshot — Default map - Dunakanyar
 
 - light mode
 - default opened app state, no sheet
@@ -41,21 +41,7 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 
 ---
 
-## Screenshot #2 — okt_15
-
-- light mode
-- Base Map / GPX sheet open.
-- tools/gpx/okt_15.gpx opened
-
-|               | Lat/Long/Zoom           |
-|---------------|-------------------------|
-| Camera        | 47.61895,18.94269,10.54 |
-| Camera (iPad) | 47.54157,18.94180,10.49 |
-| Location      | 47.78995,18.93374       |
-
----
-
-## Screenshot #3 — Navigation
+## Screenshot — Navigation
 
 - dark mode.
 - OUTDOORS layer
@@ -70,16 +56,30 @@ Two camera scenes are reused across the screenshots: **danube_bend** and **okt_1
 
 ---
 
-## Screenshot #4 — destinations
+## Screenshot — GPX tracks
 
-Light mode. Destinations view.
+- [tihanyi_kortura.gpx](../gpx/tihanyi_kortura.gpx) is opened.
+- OUTDOORS layer
 
-|          | Lat/Long/Zoom |
-|----------|---------------|
-| Camera   | TBD           |
-| Location | TBD           |
+---
 
-## Screenshot #5 — OKT
+## Screenshot — Route Planner
+
+- From Dobogókő to Rám-hegy
+- OUTDOORS layer
+
+---
+
+## Screenshot — Destinations
+
+- Börzsöny landscape selected
+- OUTDOORS layer
+- Csóványos destination selected
+
+---
+
+
+## Screenshot — OKT
 
 - OKT 17 opened, Törökmező turistaház stamp selected
 

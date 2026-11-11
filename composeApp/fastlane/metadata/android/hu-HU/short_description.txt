@@ -1,1 +1,1 @@
-HuKi egy túra app, ami segítségedre lehet a magyarországi túrázásaid során.
+Túratérkép magyar turistajelzésekkel, útvonaltervezővel és GPX támogatással

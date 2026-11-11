@@ -1,1 +1,1 @@
-HuKi is a hiking app which helps you explore the hiking trails of Hungary.
+Hiking map with Hungarian trail markings, route planner and GPX support
