@@ -121,6 +121,24 @@ class SupportViewModelTest {
     }
 
     @Test
+    fun `Given a store error - When created - Then the error is recorded as non-fatal`() {
+        billingService.errorMessage = "Play Billing error 3: Billing service unavailable on device."
+
+        createViewModel()
+
+        crashlyticsService.recordedExceptions.map { it.message } shouldBe listOf(billingService.errorMessage)
+    }
+
+    @Test
+    fun `Given no store products - When created - Then no error is recorded`() {
+        billingService.products = emptyList()
+
+        createViewModel()
+
+        crashlyticsService.recordedExceptions shouldBe emptyList()
+    }
+
+    @Test
     fun `Given store products - When created - Then nothing is logged`() {
         billingService.products = listOf(BillingProduct(SupportAnimal.OWL.productId, OWL_PRICE))
 

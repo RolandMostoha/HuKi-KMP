@@ -85,6 +85,7 @@ class SupportViewModel(
                 _uiState.update { it.withPrices(products) }
             } catch (exception: BillingException) {
                 Logger.w(exception) { "Billing: Failed to fetch support products." }
+                crashlyticsService.recordException(exception)
                 _uiState.update { it.copy(pricesState = SupportPricesState.UNAVAILABLE) }
             }
             if (_uiState.value.pricesState == SupportPricesState.UNAVAILABLE) {
