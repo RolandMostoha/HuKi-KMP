@@ -1,0 +1,5 @@
+- Új vektoros térkép új rétegekkel
+- Új kirándulóhelyek és kategóriák
+- Új beállítási lehetőségek
+- Újragondolt GPX gyűjtemény
+- Útmutatók: gyorstalpaló, turistajelzések, GPX

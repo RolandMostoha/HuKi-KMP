@@ -1,0 +1,5 @@
+- New vector map with new layers
+- New destinations and categories
+- New settings options
+- Redesigned GPX collection
+- Guides: quick guide, trail markings, GPX
