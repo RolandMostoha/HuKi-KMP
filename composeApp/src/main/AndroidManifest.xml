@@ -30,7 +30,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
 
+        <activity
+            android:name="hu.mostoha.mobile.kmp.huki.IncomingLinkActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay">
             <!-- Location links: "Open in Maps" from other apps, e.g. Google Photos -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

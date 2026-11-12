@@ -215,7 +215,8 @@ UI → UiEvent → ViewModel → UiState
   - iOS: SwiftUI `NavigationStack` with a `@State NavigationPath`, declared in `MainView`.
 
 ### Incoming links
-- Android `MainActivity` (`singleTask`) turns `geo:` VIEW, shared `text/plain` and `https://huki.hu/place` App Links into an `IncomingLink` and pushes it to `IncomingLinkStore`.
+- Android `IncomingLinkActivity` (invisible, owns every VIEW / SEND intent filter) forwards what `toIncomingLink()` accepts, with only the caller's URI grants, to `MainActivity` (`singleTask`) with `FLAG_ACTIVITY_NEW_TASK`, so HuKi opens in its own task, never inside the caller's.
+- `MainActivity` turns `geo:` VIEW, shared `text/plain`, `https://huki.hu/place` App Links and GPX files into an `IncomingLink` and pushes it to `IncomingLinkStore`.
 - `MainViewModel` consumes it: `LocationLinkParser` reads `geo:`, Google Maps and HuKi links, `DefaultLocationLinkResolver` follows `maps.app.goo.gl` redirects and searches name-only links with LocationIQ, then Place Details opens. `RootNavHost` pops back to the map.
 - GPX files opened from other apps: Android `VIEW` intents (`content:` URIs with GPX mime types, `application/octet-stream` or a `.gpx` path) → `IncomingLink.GpxFile`; iOS `CFBundleDocumentTypes` + `onOpenURL`. Both import with `GpxSource.FILES`.
 - A launch link wins over session restore, What's New and the my location fly-in.
