@@ -1,13 +1,15 @@
-Funkciók:
-• Interaktív túratérkép a klasszikus magyar turistajelzésekkel
-• GPS navigáció
+HuKi funkciói:
+• Interaktív túratérkép a magyar turistajelzésekkel
+• Helymeghatározás, GPS alapú navigáció
 • Térképrétegek: Természet, Városi és Műhold
-• Helység és kirándulóhely kereső
-• GPX importálás, tárolás és betöltés
-• Magyarország tájai a térképen, több mint 400 kirándulóhellyel
+• Helység- és kirándulóhely kereső
+• GPX útvonal importálás, tárolás és betöltés
+• Magyarország tájai a térképen (pl. Bükk, Mátra, Balaton), több mint 400 kirándulóhellyel
 • Kirándulóhely kategóriák, pl. kisvasutak és tanösvények beépített GPX útvonallal
-• Kéktúra útvonalak: OKT, RPDDK és AKT a térképen, szakaszokra bontva
+• Kéktúra útvonalak: Országos Kéktúra (OKT), Rockenbauer Pál Dél-dunántúli Kéktúra (RPDDK) és Alföldi Kéktúra (AKT) a térképen, szakaszokra bontva
 • Kéktúra bélyegzőhelyek távolsággal és becsült menetidővel
-• Útvonaltervező
+• Útvonaltervező, amellyel túraútvonalakon és biciklis útvonalakon is tervezhetsz
+
+A HuKi ingyenes, reklámmentes és nyílt forráskódú alkalmazás, amelyet egyetlen fejlesztő készít és gondoz szabadidejében, saját hobbi projektjeként. A fejlesztés önkéntes támogatással segíthető.
 
 Felhasználási feltételek: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -1,0 +1,7 @@
+- GPX: irányjelző nyilak és meredekségi színezés
+- A HuKi által készített útvonalak újratervezhetőek
+- GPX gyűjtemény távolság és tájegységek szerint
+- Aktuális magasság jelzése a GPS alapján
+- Állítható térképfelirat méret
+- Gyorstalpaló az útmutatókban
+- Támogatói csomagok

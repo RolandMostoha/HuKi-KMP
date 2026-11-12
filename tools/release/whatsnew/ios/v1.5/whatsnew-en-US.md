@@ -1,0 +1,7 @@
+- GPX: direction arrows and slope coloring
+- Routes made by HuKi can be re-planned
+- GPX collection by distance and landscape
+- Current altitude shown from GPS
+- Adjustable map text size
+- Quick Guide in the guides
+- Supporter packages

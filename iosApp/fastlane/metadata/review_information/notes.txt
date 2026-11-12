@@ -1,5 +1,5 @@
 HuKi is a hiking app for Hungarian landscapes, trails and destinations.
-No account or sign-in is required — all features are available immediately.
+No account or sign-in is required — all features are available immediately and for free.
 
 TESTING TIP — SET LOCATION TO HUNGARY:
 The map data and points of interest are centered around Hungary. Please set the
@@ -12,3 +12,11 @@ Location is used only while the app is in foreground and is never tracked in the
 background (no "location" UIBackgroundMode, no allowsBackgroundLocationUpdates).
 The NSLocationAlwaysAndWhenInUseUsageDescription string exists only because a
 linked library includes that API symbol; at runtime the app requests When-In-Use only.
+
+IN-APP PURCHASES — VOLUNTARY SUPPORT:
+The in-app purchases are voluntary support for the developer. They unlock no
+features or content: every feature stays free for everyone. As a thank-you,
+supporters get a cosmetic badge with a forest animal (shown in the menu, the
+search bar and the Support screen).
+Where to find them: open the Menu from the map → "Support HuKi" → "Support".
+On the Support screen there are "Restore purchases", "Terms of Use" (Apple standard EULA) and "Privacy Policy".

@@ -1,13 +1,15 @@
-Features:
-• Interactive hiking map with classic Hungarian trail markings
-• GPS navigation
+HuKi features:
+• Interactive hiking map with the Hungarian trail markings
+• Location tracking, GPS-based navigation
 • Map layers: Nature, Urban and Satellite
 • Search for Places and Destinations
-• GPX import, storage and loading
-• Hungary's landscapes on the map, with 400+ destinations
+• GPX route import, storage and loading
+• Hungary's landscapes on the map (e.g. Bükk, Mátra, Balaton), with 400+ destinations
 • Destination categories, e.g. scenic railways and educational trails with built-in GPX routes
-• National Blue Trails: OKT, RPDDK and AKT on the map, divided into sections
+• Blue Trails: National Blue Trail (OKT), Rockenbauer Pál South Transdanubian Blue Trail (RPDDK) and Great Plain Blue Trail (AKT) on the map, divided into sections
 • Blue Trail stamping points with distances and estimated travel time
-• Route Planner
+• Route Planner for planning on both hiking trails and bike routes
+
+HuKi is a free, ad-free and open-source app, built and maintained by a single developer as a free-time hobby project. You can support its development voluntarily.
 
 Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
