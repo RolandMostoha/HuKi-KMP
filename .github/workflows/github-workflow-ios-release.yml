@@ -21,6 +21,9 @@ jobs:
     name: TestFlight & App Store metadata
     runs-on: [ macos-latest ]
     timeout-minutes: 60
+    env:
+      # Fastlane's 3s default is too short on a cold runner right after the SPM resolve.
+      FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "30"
     steps:
       - uses: actions/checkout@v4
       - name: Checkout with secrets
