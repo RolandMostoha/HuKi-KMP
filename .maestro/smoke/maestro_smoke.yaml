@@ -12,7 +12,7 @@ appId: ${APP_ID}
       id: WHATS_NEW_SHEET
     timeout: 30000
 - assertVisible: "New Features"
-- assertVisible: "v\\d+\\.\\d+"
+- assertVisible: "v\\d+(\\.\\d+)+"
 - assertVisible:
     id: WHATS_NEW_RELEASE_NOTES
 - assertVisible:
@@ -105,8 +105,8 @@ appId: ${APP_ID}
       id: MAP_MAPBOX
     timeout: 15000
 
-# Search sheet: destinations section, then one query covering both the local dataset (hard) and the
-# LocationIQ section (soft - it renders while loading, on error and with results alike)
+# Search sheet: destinations section, then a query answered by the bundled destinations only, so
+# LocationIQ's latency or outages can't fail the run. Dobogókő is the only destination matching "Dobog".
 - tapOn:
     id: MAIN_SEARCH_BAR
 - extendedWaitUntil:
@@ -120,21 +120,19 @@ appId: ${APP_ID}
 - inputText: "Dobog"
 - extendedWaitUntil:
     visible:
-      id: SEARCH_RESULT_ITEM
+      id: DESTINATIONS_SECTION
     timeout: 15000
 - assertVisible: "Dobogókő"
-- extendedWaitUntil:
-    visible:
-      id: SEARCH_ONLINE_SECTION
-    timeout: 15000
-    optional: true
 
 # Place Details
-- tapOn: "Dobogókő"
+- tapOn:
+    id: DESTINATION_CARD
+    index: 0
 - extendedWaitUntil:
     visible:
       id: PLACE_DETAILS_TITLE
     timeout: 20000
+- assertVisible: "Dobogókő"
 - assertVisible:
     id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
 - assertVisible:

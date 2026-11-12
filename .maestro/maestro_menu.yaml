@@ -16,7 +16,7 @@ appId: ${APP_ID}
 # Hero
 - assertVisible: "HuKi"
 - assertVisible: "Hungarian Hiking Map"
-- assertVisible: "(Android|iOS) v\\d+\\.\\d+"
+- assertVisible: "(Android|iOS) v\\d+(\\.\\d+)+"
 
 # Contact section — scroll into view if the screen is short
 - scrollUntilVisible:

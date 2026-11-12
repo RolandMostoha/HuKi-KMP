@@ -11,7 +11,7 @@ appId: ${APP_ID}
 
 # Header: title, version pill and release notes
 - assertVisible: "New Features"
-- assertVisible: "v\\d+\\.\\d+"
+- assertVisible: "v\\d+(\\.\\d+)+"
 - assertVisible:
     id: WHATS_NEW_RELEASE_NOTES
 
