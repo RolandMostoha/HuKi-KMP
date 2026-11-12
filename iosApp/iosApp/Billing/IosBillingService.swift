@@ -189,10 +189,12 @@ private extension Transaction {
     }
 
     /// A downgrade within the subscription group only renews into the new product, it isn't a transaction yet.
+    /// Compared to the renewal info's own product, as the group status can still belong to a replaced subscription.
     func scheduledSubscription() async -> BillingScheduledSubscription? {
         guard case .verified(let renewalInfo)? = await subscriptionStatus?.renewalInfo,
               renewalInfo.willAutoRenew,
               let nextProductId = renewalInfo.autoRenewPreference,
+              nextProductId != renewalInfo.currentProductID,
               nextProductId != productID,
               let startDate = renewalInfo.renewalDate ?? expirationDate else {
             return nil
