@@ -48,7 +48,6 @@ import com.mapbox.maps.extension.compose.style.layers.generated.LineJoinValue
 import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.GeoJsonSourceState
-import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentConstants.LOCATION_INDICATOR_LAYER
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
@@ -151,7 +150,7 @@ fun OktLayer(okt: OktUiState, onEvent: (OktUiEvents) -> Unit) {
 
 @Composable
 private fun rememberOktLineSource(line: OktLine): GeoJsonSourceState {
-    val source = rememberGeoJsonSourceState(key = line.id)
+    val source = rememberGeoJsonSource()
     LaunchedEffect(line.id) {
         source.data = GeoJSONData(line.geoJson)
     }

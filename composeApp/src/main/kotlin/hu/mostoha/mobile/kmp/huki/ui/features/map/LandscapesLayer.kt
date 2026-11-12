@@ -52,7 +52,6 @@ import com.mapbox.maps.extension.compose.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.compose.style.layers.generated.SymbolLayer
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
 import com.mapbox.maps.extension.compose.style.sources.generated.GeoJsonSourceState
-import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.style.expressions.generated.Expression
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.Strings
@@ -159,7 +158,7 @@ fun LandscapesLayer(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents)
 @MapboxMapComposable
 private fun HungaryMaskLayer(geoJson: String) {
     val isDarkMode = LocalIsDarkTheme.current
-    val source = rememberLandscapesSource(key = "landscapes_hungary_mask_source", geoJson = geoJson)
+    val source = rememberLandscapesSource(geoJson = geoJson)
     FillLayer(sourceState = source, layerId = MASK_LAYER_ID) {
         fillColor = ColorValue(if (isDarkMode) Color.Black else Color.White)
         fillOpacity = DoubleValue(if (isDarkMode) MASK_DARK_OPACITY else MASK_OPACITY)
@@ -173,8 +172,8 @@ private fun HungaryMaskLayer(geoJson: String) {
 private fun LandscapeOutlineLayers(landscapes: LandscapesUiState, onEvent: (LandscapesUiEvents) -> Unit) {
     val context = LocalContext.current
     val currentOnEvent by rememberUpdatedState(onEvent)
-    val outlinesSource = rememberLandscapesSource(key = "landscapes_source", geoJson = landscapes.outlinesGeoJson)
-    val labelsSource = rememberLandscapesSource(key = "landscapes_label_source", geoJson = landscapes.labelsGeoJson)
+    val outlinesSource = rememberLandscapesSource(geoJson = landscapes.outlinesGeoJson)
+    val labelsSource = rememberLandscapesSource(geoJson = landscapes.labelsGeoJson)
     val fallbackColor = mokoColor(SharedRes.colors.primary)
     val colorExpression = remember(landscapes.landscapes) {
         landscapes.landscapes.colorExpression(fallbackColor) { it.colorRes.toComposeColor(context) }
@@ -293,8 +292,8 @@ private fun SelectedLandscapeLayers(sourceState: GeoJsonSourceState, landscape: 
 }
 
 @Composable
-private fun rememberLandscapesSource(key: String, geoJson: String): GeoJsonSourceState {
-    val source = rememberGeoJsonSourceState(key = key)
+private fun rememberLandscapesSource(geoJson: String): GeoJsonSourceState {
+    val source = rememberGeoJsonSource()
     LaunchedEffect(geoJson) {
         source.data = GeoJSONData(geoJson)
     }

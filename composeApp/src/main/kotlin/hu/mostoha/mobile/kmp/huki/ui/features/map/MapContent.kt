@@ -45,7 +45,6 @@ import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.rememberMapState
 import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
-import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import com.mapbox.maps.extension.style.expressions.dsl.generated.literal
 import com.mapbox.maps.plugin.DistanceUnits
 import com.mapbox.maps.plugin.LocationPuck2D
@@ -381,7 +380,7 @@ private fun GpxLayer(
 ) {
     val gpxDetails = mapUiState.gpxDetails ?: return
     if (mapUiState.gpxRouteVisible) {
-        val geoJsonSource = rememberGeoJsonSourceState(key = gpxDetails.layerId) {
+        val geoJsonSource = rememberGeoJsonSource {
             lineMetrics = BooleanValue(true)
         }
         LaunchedEffect(key1 = gpxDetails.layerId) {
@@ -389,7 +388,7 @@ private fun GpxLayer(
         }
         if (mapUiState.gpxSlopeColorsVisible && gpxDetails.hasSlopeSegments) {
             val slopeSourceId = "${gpxDetails.layerId}$SLOPE_LAYER_SUFFIX"
-            val slopeSource = rememberGeoJsonSourceState(key = slopeSourceId)
+            val slopeSource = rememberGeoJsonSource()
             val flatColor = routeColor.toArgb()
             LaunchedEffect(gpxDetails.layerId, flatColor) {
                 slopeSource.data = GeoJSONData(gpxDetails.slopeSegments.toSlopeFeatures(SlopeColorScale(flatColor)))

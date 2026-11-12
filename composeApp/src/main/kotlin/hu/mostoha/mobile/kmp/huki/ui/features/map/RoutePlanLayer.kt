@@ -17,7 +17,6 @@ import com.mapbox.maps.extension.compose.MapboxMapComposable
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.sources.GeoJSONData
-import com.mapbox.maps.extension.compose.style.sources.generated.rememberGeoJsonSourceState
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
@@ -36,7 +35,7 @@ fun RoutePlanLayer(
     routeStrokeColor: Color,
 ) {
     if (routePlan != null) {
-        val geoJsonSource = rememberGeoJsonSourceState(key = ROUTE_PLAN_LAYER_ID) {
+        val geoJsonSource = rememberGeoJsonSource {
             lineMetrics = BooleanValue(true)
         }
         LaunchedEffect(routePlan.locations) {
