@@ -514,7 +514,7 @@
     <string name="support_recurring_title">Recurring support</string>
     <string name="support_recurring_note_ios">Renews monthly and can be canceled anytime in the App Store. Monthly support helps fund the ongoing development and maintenance of HuKi, such as updating maps and collecting new hiking destinations.</string>
     <string name="support_recurring_note_android">Renews monthly and can be canceled anytime in Google Play. Monthly support helps fund the ongoing development and maintenance of HuKi, such as updating maps and collecting new hiking destinations.</string>
-    <string name="support_price_per_month">/ month</string>
+    <string name="support_price_per_month">per month</string>
     <string name="support_prices_unavailable_title">Couldn’t load support options</string>
     <string name="support_prices_unavailable">Something went wrong. Please try again.</string>
     <string name="support_retry">Try again</string>
@@ -543,7 +543,7 @@
     <string name="support_a11y_restoring">Restoring purchases</string>
     <string name="support_already_purchased_title">Already purchased</string>
     <string name="support_already_purchased_message">You have already purchased the “%s” supporter package.</string>
-    <string name="support_tier_scheduled">Starts %s</string>
+    <string name="support_tier_scheduled">Starts</string>
     <string name="support_a11y_tier_scheduled">Scheduled subscription</string>
     <string name="support_purchase_scheduled_title">Switch scheduled</string>
     <string name="support_purchase_scheduled_message">Your new subscription starts when the current one renews. Until then, your current subscription stays active.</string>

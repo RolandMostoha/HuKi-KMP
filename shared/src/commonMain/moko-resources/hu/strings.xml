@@ -514,7 +514,7 @@
     <string name="support_recurring_title">Rendszeres támogatás</string>
     <string name="support_recurring_note_ios">Havonta megújul, és bármikor lemondható az App Store-ban. A havi támogatás segít finanszírozni a HuKi folyamatos fejlesztését és fenntartását, például térképek frissítését és új kirándulóhelyek gyűjtését.</string>
     <string name="support_recurring_note_android">Havonta megújul, és bármikor lemondható a Google Playen. A havi támogatás segít finanszírozni a HuKi folyamatos fejlesztését és fenntartását, például térképek frissítését és új kirándulóhelyek gyűjtését.</string>
-    <string name="support_price_per_month">/ hó</string>
+    <string name="support_price_per_month">havonta</string>
     <string name="support_prices_unavailable_title">Nem sikerült betölteni a támogatási lehetőségeket</string>
     <string name="support_prices_unavailable">Valami hiba történt. Kérlek próbáld újra.</string>
     <string name="support_retry">Újrapróbálás</string>
@@ -543,7 +543,7 @@
     <string name="support_a11y_restoring">Korábbi vásárlások helyreállítása folyamatban</string>
     <string name="support_already_purchased_title">Már megvásároltad</string>
     <string name="support_already_purchased_message">A „%s” támogatói csomagot már megvásároltad.</string>
-    <string name="support_tier_scheduled">Kezdés: %s</string>
+    <string name="support_tier_scheduled">Kezdés</string>
     <string name="support_a11y_tier_scheduled">Ütemezett előfizetés</string>
     <string name="support_purchase_scheduled_title">Váltás ütemezve</string>
     <string name="support_purchase_scheduled_message">Az új előfizetésed a jelenlegi megújulásakor indul. Addig a jelenlegi előfizetésed marad érvényben.</string>

@@ -28,11 +28,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +48,7 @@ fun SupportTierTile(
     animal: SupportAnimal,
     name: String,
     price: String?,
-    perMonthSuffix: String?,
+    billingPeriod: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isActive: Boolean = false,
@@ -102,28 +99,32 @@ fun SupportTierTile(
                 isActive -> ActivePill(pillColor = pillColor)
                 scheduledDate != null -> ScheduledPill(date = scheduledDate, pillColor = pillColor, color = animalColor)
                 isPurchasing -> PurchasingPill(pillColor = pillColor, color = animalColor)
-                else -> PricePill(price = price, perMonthSuffix = perMonthSuffix, pillColor = pillColor)
+                else -> PricePill(price = price, pillColor = pillColor)
+            }
+            val caption = when {
+                isActive || isPurchasing -> null
+                scheduledDate != null -> mokoString(SharedRes.strings.support_tier_scheduled)
+                price != null -> billingPeriod
+                else -> null
+            }
+            if (caption != null) {
+                Text(
+                    text = caption,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = Dimens.ExtraSmall),
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PricePill(price: String?, perMonthSuffix: String?, pillColor: Color) {
+private fun PricePill(price: String?, pillColor: Color) {
     Text(
-        text = buildAnnotatedString {
-            append(price ?: "–")
-            if (perMonthSuffix != null && price != null) {
-                withStyle(
-                    SpanStyle(
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ),
-                ) {
-                    append(" $perMonthSuffix")
-                }
-            }
-        },
+        text = price ?: "–",
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
@@ -183,7 +184,7 @@ private fun ScheduledPill(date: String, pillColor: Color, color: Color) {
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = mokoString(SharedRes.strings.support_tier_scheduled, date),
+            text = date,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = color,
@@ -228,7 +229,7 @@ private fun SupportTierTilePreview() {
                 animal = SupportAnimal.SQUIRREL,
                 name = "Mókus",
                 price = "499 Ft",
-                perMonthSuffix = null,
+                billingPeriod = null,
                 onClick = {},
                 modifier = Modifier
                     .weight(1f)
@@ -238,7 +239,7 @@ private fun SupportTierTilePreview() {
                 animal = SupportAnimal.BOAR,
                 name = "Vaddisznó",
                 price = "499 Ft",
-                perMonthSuffix = "/ hó",
+                billingPeriod = "havonta",
                 isActive = true,
                 onClick = {},
                 modifier = Modifier
@@ -249,7 +250,7 @@ private fun SupportTierTilePreview() {
                 animal = SupportAnimal.DEER,
                 name = "Szarvas",
                 price = "249 Ft",
-                perMonthSuffix = "/ hó",
+                billingPeriod = "havonta",
                 scheduledDate = "nov. 3.",
                 onClick = {},
                 modifier = Modifier
@@ -261,7 +262,7 @@ private fun SupportTierTilePreview() {
                 name = "Medve",
                 price = "999 Ft",
                 isPurchasing = true,
-                perMonthSuffix = "/ hó",
+                billingPeriod = "havonta",
                 onClick = {},
                 modifier = Modifier
                     .weight(1f)

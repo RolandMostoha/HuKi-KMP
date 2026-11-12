@@ -415,7 +415,7 @@ private fun TierSection(
                     animal = tier.animal,
                     name = mokoString(tier.animal.nameRes),
                     price = tier.price?.format(locale),
-                    perMonthSuffix = if (tier.animal.type == SupportType.RECURRING) {
+                    billingPeriod = if (tier.animal.type == SupportType.RECURRING) {
                         mokoString(SharedRes.strings.support_price_per_month)
                     } else {
                         null

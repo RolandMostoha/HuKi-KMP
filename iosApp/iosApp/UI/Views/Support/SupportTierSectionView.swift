@@ -23,7 +23,7 @@ struct SupportTierSectionView: View {
                         animal: tier.animal,
                         name: strings.get(id: tier.animal.nameRes),
                         price: tier.price?.formatted,
-                        perMonthSuffix: tier.animal.type == .recurring
+                        billingPeriod: tier.animal.type == .recurring
                             ? strings.get(id: SharedRes.strings().support_price_per_month)
                             : nil,
                         isActive: tier.isActive,

@@ -5,7 +5,7 @@ struct SupportTierTileView: View {
     let animal: SupportAnimal
     let name: String
     let price: String?
-    let perMonthSuffix: String?
+    let billingPeriod: String?
     var isActive = false
     var scheduledDate: String?
     var isPurchasing = false
@@ -40,6 +40,14 @@ struct SupportTierTileView: View {
                     .frame(minHeight: 26)
                     .background(SwiftUI.Color.white.opacity(colorScheme == .dark ? 0.09 : 0.8), in: .capsule)
                     .padding(.top, 8)
+                if let caption {
+                    Text(caption)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.top, 4)
+                }
             }
             .padding(.top, 10)
             .padding(.horizontal, 8)
@@ -62,10 +70,7 @@ struct SupportTierTileView: View {
                 .labelStyle(.titleAndIcon)
                 .foregroundStyle(SwiftUI.Color(SharedRes.colors().success.getUIColor()))
         } else if let scheduledDate {
-            Label(
-                strings.get(id: SharedRes.strings().support_tier_scheduled, args: [scheduledDate]),
-                systemImage: "clock"
-            )
+            Label(scheduledDate, systemImage: "clock")
             .labelStyle(.titleAndIcon)
             .foregroundStyle(animal.color)
         } else if isPurchasing {
@@ -74,7 +79,7 @@ struct SupportTierTileView: View {
                 .tint(animal.color)
                 .padding(.horizontal, 10)
         } else {
-            priceText
+            Text(price ?? "–").foregroundStyle(.primary)
         }
     }
 
@@ -88,13 +93,14 @@ struct SupportTierTileView: View {
         return ""
     }
 
-    private var priceText: Text {
-        let priceText = Text(price ?? "–").foregroundStyle(.primary)
-        guard let perMonthSuffix, price != nil else {
-            return priceText
+    private var caption: String? {
+        if isActive || isPurchasing {
+            return nil
         }
-        let suffixText = Text(perMonthSuffix).fontWeight(.medium).foregroundStyle(.secondary)
-        return Text("\(priceText) \(suffixText)")
+        if scheduledDate != nil {
+            return strings.get(id: SharedRes.strings().support_tier_scheduled)
+        }
+        return price == nil ? nil : billingPeriod
     }
 }
 
@@ -112,14 +118,14 @@ private struct SupportTierButtonStyle: ButtonStyle {
             animal: .squirrel,
             name: "Mókus",
             price: "499 Ft",
-            perMonthSuffix: nil,
+            billingPeriod: nil,
             action: {}
         )
         SupportTierTileView(
             animal: .boar,
             name: "Vaddisznó",
             price: "499 Ft",
-            perMonthSuffix: "/ hó",
+            billingPeriod: "havonta",
             isActive: true,
             action: {}
         )
@@ -127,7 +133,7 @@ private struct SupportTierButtonStyle: ButtonStyle {
             animal: .deer,
             name: "Szarvas",
             price: "249 Ft",
-            perMonthSuffix: "/ hó",
+            billingPeriod: "havonta",
             scheduledDate: "nov. 3.",
             action: {}
         )
@@ -135,7 +141,7 @@ private struct SupportTierButtonStyle: ButtonStyle {
             animal: .bear,
             name: "Medve",
             price: "999 Ft",
-            perMonthSuffix: "/ hó",
+            billingPeriod: "havonta",
             isPurchasing: true,
             action: {}
         )
