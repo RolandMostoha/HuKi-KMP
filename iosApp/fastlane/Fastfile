@@ -30,24 +30,27 @@ platform :ios do
     install_distribution_certificate
     archive_release
     # No `groups:`: the internal group gets every build by automatic distribution, and Apple rejects a manual assignment.
+    # Processing takes 10-30 min and nothing here needs it: the internal group gets the build automatically.
     upload_to_testflight(
       api_key: api_key,
       distribute_external: false,
-      submit_beta_review: false
+      submit_beta_review: false,
+      skip_waiting_for_build_processing: true
     )
     upload_crashlytics_symbols
   end
 
-  desc "Push store metadata, screenshots and release notes, then submit for review"
-  lane :release do
+  desc "Push store metadata, screenshots and release notes (skip_screenshots:true to keep the live ones)"
+  lane :release do |options|
     ensure_whatsnew_exists
     gradlew_task(":shared:generateStoreReleaseNotes")
+    # No build_number: the build is picked in App Store Connect before Add for Review, so this lane
+    # does not have to wait for TestFlight processing.
     deliver(
       api_key: connect_api_key,
-      # Pin the build version.properties describes; deliver would otherwise submit "the latest".
-      build_number: version_property("iosBuildNumber"),
       app_version: version_property("iosAppVersion"),
       skip_binary_upload: true,
+      skip_screenshots: options[:skip_screenshots].to_s == "true",
       overwrite_screenshots: true,
       force: true,
       # Staged, not submitted: App Review is started by a human in App Store Connect.

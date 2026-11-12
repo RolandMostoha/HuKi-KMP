@@ -35,12 +35,14 @@ Store content lives in `iosApp/fastlane/` (metadata, screenshots, review notes) 
     - `tools/screenshots/` — (if changed) raw captures, `SCREENSHOTS.md` and the AppMockUp `.mockup` design sources, so the store assets and their sources stay in one commit
 2. `bundle exec fastlane verify` — read-only; checks App Store Connect agrees with `version.properties`.
 3. Tag that commit: `git tag ios/v<X> && git push origin ios/v<X>`.
-4. The tag runs `.github/workflows/github-workflow-ios-release.yml`: uploads to TestFlight and stages all store content. Nothing is submitted for review.
-5. Test the TestFlight build, then in App Store Connect select the build and press **Add for Review**.
+4. The tag runs `.github/workflows/github-workflow-ios-release.yml`, two jobs in parallel. Nothing is submitted for review.
+    - `testflight` (macOS, ~30 min): archive + upload, doesn't wait for Apple's processing (10–30 min more).
+    - `metadata` (Ubuntu, ~3 min): stages the store content. Screenshots only when `iosApp/fastlane/screenshots/` changed since the previous `ios/v*` tag.
+5. Test the TestFlight build once it's processed, then in App Store Connect select the build on the version page and press **Add for Review**.
 
 Other paths:
 - Ad-hoc internal TestFlight builds: `bundle exec fastlane beta` locally (never reviewed).
-- Store content only (build already on TestFlight): run the **iOS Release** workflow manually on `main` with `metadata_only` checked.
+- Store content only (build already on TestFlight): run the **iOS Release** workflow manually on `main` with `metadata_only` checked, plus `screenshots` to force a screenshot upload. Locally: `bundle exec fastlane release` (add `skip_screenshots:true` to keep the live ones).
 
 ## Runbook (Android)
 

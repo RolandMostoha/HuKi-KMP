@@ -7,7 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       metadata_only:
-        description: "Skip the TestFlight upload, only push App Store metadata for the build in version.properties"
+        description: "Skip the TestFlight upload, only push App Store metadata for the version in version.properties"
+        type: boolean
+        default: false
+      screenshots:
+        description: "Upload screenshots even if they did not change since the previous release"
         type: boolean
         default: false
 
@@ -17,28 +21,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  app_store:
-    name: TestFlight & App Store metadata
-    runs-on: [ macos-latest ]
-    timeout-minutes: 60
-    env:
-      # Fastlane's 3s default is too short on a cold runner right after the SPM resolve.
-      FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "30"
+  # A mistagged commit or a stray manual run fails here in seconds, before any build cost.
+  verify:
+    name: Verify release ref
+    runs-on: [ ubuntu-latest ]
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout with secrets
-        uses: ./.github/actions/checkout-with-secrets/ios
-        with:
-          MAPBOX_ACCESS_TOKEN_IOS: ${{ secrets.MAPBOX_ACCESS_TOKEN_IOS }}
-          LOCATION_IQ_API_KEY_IOS: ${{ secrets.LOCATION_IQ_API_KEY_IOS }}
-          GRAPHHOPPER_API_KEY_IOS: ${{ secrets.GRAPHHOPPER_API_KEY_IOS }}
-          MAPBOX_ACCESS_TOKEN_ANDROID: ${{ secrets.MAPBOX_ACCESS_TOKEN_ANDROID }}
-          LOCATION_IQ_API_KEY_ANDROID: ${{ secrets.LOCATION_IQ_API_KEY_ANDROID }}
-          GRAPHHOPPER_API_KEY_ANDROID: ${{ secrets.GRAPHHOPPER_API_KEY_ANDROID }}
-          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
-          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
 
-      # A mistagged commit or a stray manual run fails here in seconds, before any build cost.
       # Tag format: ios/v<iosAppVersion>, e.g. ios/v1.1 — move the tag to re-release the same version.
       - name: Verify release ref
         run: |
@@ -59,6 +49,30 @@ jobs:
             exit 1
           fi
           echo "Releasing $GITHUB_REF_NAME (iosAppVersion=$APP_VERSION, iosBuildNumber=$APP_BUILD)"
+
+  testflight:
+    name: TestFlight
+    needs: verify
+    if: ${{ !inputs.metadata_only }}
+    runs-on: [ macos-latest ]
+    # A cold archive alone takes ~30 min on the hosted runner.
+    timeout-minutes: 90
+    env:
+      # Fastlane's 3s default is too short on a cold runner right after the SPM resolve.
+      FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "30"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/ios
+        with:
+          MAPBOX_ACCESS_TOKEN_IOS: ${{ secrets.MAPBOX_ACCESS_TOKEN_IOS }}
+          LOCATION_IQ_API_KEY_IOS: ${{ secrets.LOCATION_IQ_API_KEY_IOS }}
+          GRAPHHOPPER_API_KEY_IOS: ${{ secrets.GRAPHHOPPER_API_KEY_IOS }}
+          MAPBOX_ACCESS_TOKEN_ANDROID: ${{ secrets.MAPBOX_ACCESS_TOKEN_ANDROID }}
+          LOCATION_IQ_API_KEY_ANDROID: ${{ secrets.LOCATION_IQ_API_KEY_ANDROID }}
+          GRAPHHOPPER_API_KEY_ANDROID: ${{ secrets.GRAPHHOPPER_API_KEY_ANDROID }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
 
       - name: Select Xcode 26.5
         uses: maxim-lobanov/setup-xcode@v1
@@ -82,7 +96,6 @@ jobs:
           working-directory: iosApp
 
       - name: Upload to TestFlight
-        if: ${{ !inputs.metadata_only }}
         working-directory: iosApp
         env:
           IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
@@ -91,15 +104,6 @@ jobs:
           IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
           IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
         run: bundle exec fastlane beta
-
-      # Staged only — App Review is started by a human in App Store Connect.
-      - name: Push App Store metadata
-        working-directory: iosApp
-        env:
-          IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
-          IOS_ASC_ISSUER_ID: ${{ secrets.IOS_ASC_ISSUER_ID }}
-          IOS_ASC_KEY_P8_BASE64: ${{ secrets.IOS_ASC_KEY_P8_BASE64 }}
-        run: bundle exec fastlane release
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -122,3 +126,63 @@ jobs:
           path: fastlane-logs
           if-no-files-found: warn
           retention-days: 7
+
+  # Staged only, App Review is started by a human in App Store Connect. Runs next to the TestFlight job:
+  # deliver only talks to the App Store Connect API, so it needs neither a Mac nor a processed build.
+  metadata:
+    name: App Store metadata
+    needs: verify
+    runs-on: [ ubuntu-latest ]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout with secrets
+        uses: ./.github/actions/checkout-with-secrets/ios
+        with:
+          MAPBOX_ACCESS_TOKEN_IOS: ${{ secrets.MAPBOX_ACCESS_TOKEN_IOS }}
+          LOCATION_IQ_API_KEY_IOS: ${{ secrets.LOCATION_IQ_API_KEY_IOS }}
+          GRAPHHOPPER_API_KEY_IOS: ${{ secrets.GRAPHHOPPER_API_KEY_IOS }}
+          MAPBOX_ACCESS_TOKEN_ANDROID: ${{ secrets.MAPBOX_ACCESS_TOKEN_ANDROID }}
+          LOCATION_IQ_API_KEY_ANDROID: ${{ secrets.LOCATION_IQ_API_KEY_ANDROID }}
+          GRAPHHOPPER_API_KEY_ANDROID: ${{ secrets.GRAPHHOPPER_API_KEY_ANDROID }}
+          HUKI_ROUTING_API_KEY: ${{ secrets.HUKI_ROUTING_API_KEY }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true
+          working-directory: iosApp
+
+      # Screenshot uploads are slow and flaky on Apple's side, so only send them when they changed.
+      - name: Check screenshot changes
+        id: screenshots
+        run: |
+          APP_VERSION="$(grep '^iosAppVersion=' version.properties | cut -d= -f2)"
+          PREVIOUS_TAG="$(git describe --tags --abbrev=0 --match 'ios/v*' --exclude "ios/v$APP_VERSION" HEAD 2>/dev/null || true)"
+          if [ "${{ inputs.screenshots }}" == "true" ] || [ -z "$PREVIOUS_TAG" ] \
+            || ! git diff --quiet "$PREVIOUS_TAG" HEAD -- iosApp/fastlane/screenshots; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Uploading screenshots (previous release: ${PREVIOUS_TAG:-none})"
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Screenshots unchanged since $PREVIOUS_TAG, skipping them"
+          fi
+
+      - name: Push App Store metadata
+        working-directory: iosApp
+        env:
+          IOS_ASC_KEY_ID: ${{ secrets.IOS_ASC_KEY_ID }}
+          IOS_ASC_ISSUER_ID: ${{ secrets.IOS_ASC_ISSUER_ID }}
+          IOS_ASC_KEY_P8_BASE64: ${{ secrets.IOS_ASC_KEY_P8_BASE64 }}
+        run: bundle exec fastlane release skip_screenshots:${{ steps.screenshots.outputs.skip }}
