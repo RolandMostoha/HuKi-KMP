@@ -13,7 +13,7 @@ import kotlin.test.Test
 class ReplanStopsMapperTest {
 
     @Test
-    fun `Given HuKi GPX waypoints - When toReplanStops - Then start, stops and end are rebuilt in order`() {
+    fun `Given HuKi GPX waypoints - When toReplanStops - Then start stops and end are rebuilt in order`() {
         testCases().forEach { testCase ->
             val gpxDetails = TEST_GPX_DETAILS.copy(waypoints = testCase.input)
 
