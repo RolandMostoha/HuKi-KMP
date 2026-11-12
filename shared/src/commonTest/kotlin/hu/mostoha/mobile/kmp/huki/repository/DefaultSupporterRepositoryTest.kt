@@ -14,6 +14,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
 import hu.mostoha.mobile.kmp.huki.service.FakeBillingService
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -334,13 +335,47 @@ class DefaultSupporterRepositoryTest {
             val result = repository.purchase(SupportAnimal.BOAR)
             runCurrent()
 
-            result shouldBe BillingPurchaseResult.Scheduled(Instant.fromEpochMilliseconds(SWITCH_TIME))
+            result shouldBe BillingPurchaseResult.Scheduled
             repository.supporterState.value shouldBe SupporterState(
                 activeSubscriptions = setOf(SupportAnimal.BEAR),
                 chosenAnimal = SupportAnimal.BEAR,
                 scheduledSubscription = ScheduledSubscription(SupportAnimal.BOAR, Instant.fromEpochMilliseconds(SWITCH_TIME)),
                 lastPurchaseTimes = mapOf(SupportAnimal.BEAR to PURCHASE_INSTANT),
             )
+        }
+
+    @Test
+    fun `Given lagging renewal info - When a downgrade is purchased - Then the purchase is scheduled and not chosen`() =
+        runTest {
+            billingService.entitlements = listOf(purchase(SupportAnimal.BEAR))
+            val repository = createRepository()
+            repository.chooseAnimal(SupportAnimal.BEAR)
+            billingService.purchaseResult = BillingPurchaseResult.Success(purchase(SupportAnimal.DEER))
+            billingService.isPurchaseUnreported = true
+
+            val result = repository.purchase(SupportAnimal.DEER)
+            runCurrent()
+
+            result shouldBe BillingPurchaseResult.Scheduled
+            repository.supporterState.value.activeSubscriptions shouldBe setOf(SupportAnimal.BEAR)
+            repository.supporterState.value.chosenAnimal shouldBe SupportAnimal.BEAR
+        }
+
+    @Test
+    fun `Given renewal info reporting late - When a downgrade is purchased - Then the scheduled subscription is stored`() =
+        runTest {
+            billingService.entitlements = listOf(purchase(SupportAnimal.BEAR))
+            val repository = createRepository()
+            billingService.purchaseResult = BillingPurchaseResult.Success(purchase(SupportAnimal.DEER))
+            billingService.isPurchaseUnreported = true
+
+            val result = async { repository.purchase(SupportAnimal.DEER) }
+            runCurrent()
+            billingService.scheduledSubscription = BillingScheduledSubscription(SupportAnimal.DEER.productId, SWITCH_TIME)
+
+            result.await() shouldBe BillingPurchaseResult.Scheduled
+            repository.supporterState.value.scheduledSubscription shouldBe
+                ScheduledSubscription(SupportAnimal.DEER, Instant.fromEpochMilliseconds(SWITCH_TIME))
         }
 
     @Test

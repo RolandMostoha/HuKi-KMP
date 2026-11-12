@@ -300,7 +300,8 @@ class SupportViewModelTest {
     @Test
     fun `Given scheduled subscription purchase - When tier clicked - Then the switch is announced without celebration`() {
         supporterRepository.supporterState.value = SupporterState(activeSubscriptions = setOf(SupportAnimal.BEAR))
-        supporterRepository.purchaseResult = BillingPurchaseResult.Scheduled(SWITCH_TIME)
+        supporterRepository.purchaseResult = BillingPurchaseResult.Scheduled
+        supporterRepository.scheduledStartTime = SWITCH_TIME
         val viewModel = createViewModel()
 
         viewModel.onEvent(SupportUiEvents.TierClicked(SupportAnimal.BOAR))

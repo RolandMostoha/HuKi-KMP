@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.Instant
 
 class FakeSupporterRepository : SupporterRepository {
     override val supporterState = MutableStateFlow(SupporterState())
@@ -23,6 +24,8 @@ class FakeSupporterRepository : SupporterRepository {
     var restoreCount = 0
         private set
 
+    var scheduledStartTime: Instant = Instant.fromEpochMilliseconds(0)
+
     override suspend fun refresh() {
         refreshCount++
     }
@@ -30,8 +33,8 @@ class FakeSupporterRepository : SupporterRepository {
     override suspend fun purchase(animal: SupportAnimal): BillingPurchaseResult {
         purchasedAnimals += animal
         purchaseGate?.await()
-        (purchaseResult as? BillingPurchaseResult.Scheduled)?.let { result ->
-            supporterState.update { it.copy(scheduledSubscription = ScheduledSubscription(animal, result.startTime)) }
+        if (purchaseResult == BillingPurchaseResult.Scheduled) {
+            supporterState.update { it.copy(scheduledSubscription = ScheduledSubscription(animal, scheduledStartTime)) }
         }
         if (purchaseResult is BillingPurchaseResult.Success) {
             supporterState.update { state ->

@@ -1,7 +1,5 @@
 package hu.mostoha.mobile.kmp.huki.model.domain
 
-import kotlin.time.Instant
-
 /**
  * [purchaseToken] is unique per purchase: the Play purchase token or the App Store transaction ID.
  * [quantity] is above 1 when a one-time product is bought in multiple quantities in one purchase.
@@ -34,9 +32,9 @@ sealed interface BillingPurchaseResult {
     data class Success(val purchase: BillingPurchase) : BillingPurchaseResult
 
     /**
-     * The subscription replaces the current one only from [startTime], it isn't active until then.
+     * The subscription replaces the current one only when it renews, it isn't active until then.
      */
-    data class Scheduled(val startTime: Instant) : BillingPurchaseResult
+    data object Scheduled : BillingPurchaseResult
 
     /**
      * Waiting for an approval (Ask to Buy, slow payment method), it completes through the purchase listener.

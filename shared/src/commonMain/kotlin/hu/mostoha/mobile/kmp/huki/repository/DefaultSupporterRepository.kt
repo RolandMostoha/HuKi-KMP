@@ -31,6 +31,7 @@ import hu.mostoha.mobile.kmp.huki.service.purchase
 import hu.mostoha.mobile.kmp.huki.service.syncPurchases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okio.IOException
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class DefaultSupporterRepository(
@@ -106,17 +108,25 @@ class DefaultSupporterRepository(
                 return@async result
             }
             recordPurchase(result.purchase)
-            val scheduled = scheduledSubscription.value?.takeIf {
-                it.animal == animal &&
-                    animal !in activeSubscriptions.value.keys
-            }
-            if (scheduled != null) {
-                BillingPurchaseResult.Scheduled(scheduled.startTime)
+            if (animal.type == SupportType.RECURRING && animal !in activeSubscriptions.value.keys) {
+                awaitScheduledSubscription(animal)
+                BillingPurchaseResult.Scheduled
             } else {
                 chooseAnimal(animal)
                 result
             }
         }.await()
+
+    /**
+     * The store reports a downgrade only in its renewal info, which can lag behind the purchase.
+     */
+    private suspend fun awaitScheduledSubscription(animal: SupportAnimal) {
+        repeat(SCHEDULED_SUBSCRIPTION_FETCH_ATTEMPTS) {
+            if (scheduledSubscription.value?.animal == animal) return
+            delay(SCHEDULED_SUBSCRIPTION_FETCH_DELAY)
+            refresh()
+        }
+    }
 
     override suspend fun restore(): SupportRestoreResult =
         when (val syncResult = billingService.syncPurchases()) {
@@ -258,4 +268,9 @@ class DefaultSupporterRepository(
 
     private val BillingPurchase.type: SupportType?
         get() = SupportAnimal.fromProductId(productId)?.type
+
+    companion object {
+        private const val SCHEDULED_SUBSCRIPTION_FETCH_ATTEMPTS = 5
+        private val SCHEDULED_SUBSCRIPTION_FETCH_DELAY = 1.seconds
+    }
 }

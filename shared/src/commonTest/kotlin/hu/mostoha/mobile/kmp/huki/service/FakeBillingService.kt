@@ -22,6 +22,11 @@ class FakeBillingService : BillingService {
      * A successful purchase schedules this subscription instead of becoming an active entitlement.
      */
     var scheduledAfterPurchase: BillingScheduledSubscription? = null
+
+    /**
+     * A successful purchase neither becomes active nor shows up as scheduled, like a lagging App Store renewal info.
+     */
+    var isPurchaseUnreported = false
     val requestedProductIds = mutableListOf<List<String>>()
     val purchasedProductIds = mutableListOf<String>()
     val consumedPurchaseTokens = mutableListOf<String>()
@@ -43,7 +48,11 @@ class FakeBillingService : BillingService {
         val complete = {
             (purchaseResult as? BillingPurchaseResult.Success)?.let { result ->
                 val scheduled = scheduledAfterPurchase
-                if (scheduled != null) scheduledSubscription = scheduled else entitlements = entitlements + result.purchase
+                when {
+                    isPurchaseUnreported -> Unit
+                    scheduled != null -> scheduledSubscription = scheduled
+                    else -> entitlements = entitlements + result.purchase
+                }
             }
             onResult(purchaseResult)
         }
