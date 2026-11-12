@@ -58,6 +58,7 @@ class SupportViewModel(
         Logger.d { "SupportEvent: $event" }
         when (event) {
             SupportUiEvents.ScreenViewed -> analyticsService.logScreenView(Screen.SUPPORT)
+            SupportUiEvents.ManageSubscriptionsClosed -> viewModelScope.launch { supporterRepository.refresh() }
             is SupportUiEvents.SectionOpened -> onSectionOpened(event.section)
             SupportUiEvents.RetryClicked -> loadPrices()
             is SupportUiEvents.TierClicked -> onTierClicked(event.animal)

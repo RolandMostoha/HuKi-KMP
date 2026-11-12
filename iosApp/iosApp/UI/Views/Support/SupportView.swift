@@ -88,9 +88,10 @@ struct SupportView: View {
                                 onTierClick: onTierClick
                             )
                             .transition(.opacity)
-                            SupportManageSubscriptionsButton {
-                                viewModel.onEvent(event: SupportUiEventsManageSubscriptionsClicked.shared)
-                            }
+                            SupportManageSubscriptionsButton(
+                                onClick: { viewModel.onEvent(event: SupportUiEventsManageSubscriptionsClicked.shared) },
+                                onDismiss: { viewModel.onEvent(event: SupportUiEventsManageSubscriptionsClosed.shared) }
+                            )
                             .padding(.horizontal, 6)
                             .padding(.top, 12)
                         }

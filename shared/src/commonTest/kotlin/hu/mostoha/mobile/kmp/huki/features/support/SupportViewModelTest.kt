@@ -186,6 +186,16 @@ class SupportViewModelTest {
     }
 
     @Test
+    fun `Given screen open - When manage subscriptions closed - Then supporter state is refreshed again`() {
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(SupportUiEvents.ManageSubscriptionsClosed)
+        testDispatcher.scheduler.runCurrent()
+
+        supporterRepository.refreshCount shouldBe 2
+    }
+
+    @Test
     fun `Given supporter state - When created - Then active subscriptions and supporter animal show`() {
         supporterRepository.supporterState.value = SupporterState(
             activeSubscriptions = setOf(SupportAnimal.BOAR),
