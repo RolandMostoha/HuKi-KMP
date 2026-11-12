@@ -6,6 +6,7 @@ struct GpxFileCardView: View {
     let file: GpxFileItem
     let landscape: GpxLandscape?
     let onOpen: () -> Void
+    let onReplan: () -> Void
     let onRename: () -> Void
     let onShare: () -> Void
     let onDelete: () -> Void
@@ -29,6 +30,8 @@ struct GpxFileCardView: View {
                     Spacer(minLength: 0)
                     GpxFileOptionsMenuView(
                         strings: strings,
+                        isReplanVisible: file.isReplannable,
+                        onReplan: onReplan,
                         onRename: onRename,
                         onShare: onShare,
                         onDelete: onDelete
@@ -51,13 +54,23 @@ struct GpxFileCardView: View {
     }
 
     private var tagRow: some View {
-        HStack(spacing: 6) {
+        FlowLayout(spacing: 6) {
             tag(
                 icon: Image(systemName: originSystemImage).font(.system(size: 13, weight: .semibold)),
                 text: strings.get(id: originLabel),
                 foreground: Color(SharedRes.colors().onSecondary.getUIColor()),
                 background: Color(SharedRes.colors().secondary.getUIColor())
             )
+            if file.isRoundTrip {
+                tag(
+                    icon: Image(systemName: "arrow.trianglehead.counterclockwise")
+                        .font(.system(size: 13, weight: .semibold)),
+                    text: strings.get(id: SharedRes.strings().route_planner_round_trip),
+                    foreground: Color(SharedRes.colors().onSecondary.getUIColor()),
+                    background: Color(SharedRes.colors().secondary.getUIColor())
+                )
+                .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_ITEM_ROUND_TRIP_TAG)
+            }
             if let landscape {
                 tag(
                     icon: Image(uiImage: landscape.iconRes.toUIImage()!)

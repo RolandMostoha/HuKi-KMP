@@ -87,6 +87,7 @@ fun GpxCollectionScreen(
     onBack: () -> Unit,
     onOpenTutorial: () -> Unit,
     onOpenGpx: (String) -> Unit,
+    onOpenRoutePlanner: (String) -> Unit,
     isEnterTransitionSettled: Boolean = true,
     viewModel: GpxCollectionViewModel = koinViewModel(),
 ) {
@@ -100,6 +101,7 @@ fun GpxCollectionScreen(
         onBack = onBack,
         onOpenTutorial = onOpenTutorial,
         onOpenGpx = onOpenGpx,
+        onOpenRoutePlanner = onOpenRoutePlanner,
     )
 }
 
@@ -112,6 +114,7 @@ private fun GpxCollectionContent(
     onBack: () -> Unit,
     onOpenTutorial: () -> Unit,
     onOpenGpx: (String) -> Unit,
+    onOpenRoutePlanner: (String) -> Unit,
     isListVisible: Boolean = true,
 ) {
     val context = LocalContext.current
@@ -121,6 +124,7 @@ private fun GpxCollectionContent(
                 GpxCollectionUiEffects.NavigateBack -> onBack()
                 GpxCollectionUiEffects.NavigateToTutorial -> onOpenTutorial()
                 is GpxCollectionUiEffects.OpenGpx -> onOpenGpx(effect.fileUri)
+                is GpxCollectionUiEffects.OpenRoutePlanner -> onOpenRoutePlanner(effect.fileUri)
                 is GpxCollectionUiEffects.ShareGpx -> context.shareGpxFile(effect.fileUri, effect.fileName)
             }
         }
@@ -244,6 +248,9 @@ private fun GpxCollectionContent(
                                     section = section,
                                     onFileClick = { file ->
                                         onEvent(GpxCollectionUiEvents.FileClicked(file))
+                                    },
+                                    onReplanClick = { file ->
+                                        onEvent(GpxCollectionUiEvents.ReplanClicked(file))
                                     },
                                     onShareClick = { file ->
                                         onEvent(GpxCollectionUiEvents.ShareClicked(file))
@@ -407,6 +414,7 @@ private val GpxDistanceRange.label: StringResource
 private fun GpxFileSectionCard(
     section: GpxFileSection,
     onFileClick: (GpxFileItem) -> Unit,
+    onReplanClick: (GpxFileItem) -> Unit,
     onShareClick: (GpxFileItem) -> Unit,
     onDeleteClick: (GpxFileItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -424,6 +432,7 @@ private fun GpxFileSectionCard(
                     file = file,
                     landscape = item.landscape,
                     onClick = { onFileClick(file) },
+                    onReplanClick = { onReplanClick(file) },
                     onRenameClick = {}, // Rename not wired yet
                     onShareClick = { onShareClick(file) },
                     onDeleteClick = { onDeleteClick(file) },
@@ -494,6 +503,7 @@ private fun GpxCollectionContentPreview() {
             onBack = {},
             onOpenTutorial = {},
             onOpenGpx = {},
+            onOpenRoutePlanner = {},
         )
     }
 }
@@ -509,6 +519,7 @@ private fun GpxCollectionEmptyPreview() {
             onBack = {},
             onOpenTutorial = {},
             onOpenGpx = {},
+            onOpenRoutePlanner = {},
         )
     }
 }
@@ -524,6 +535,7 @@ private fun GpxCollectionLoadingPreview() {
             onBack = {},
             onOpenTutorial = {},
             onOpenGpx = {},
+            onOpenRoutePlanner = {},
         )
     }
 }

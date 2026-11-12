@@ -16,6 +16,7 @@ sealed interface GpxUiEvents : MainUiEvents {
     ) : GpxUiEvents
     data class GpxFileReopened(val uri: String) : GpxUiEvents
     data class RoutePlanGpxSaved(val uri: String) : GpxUiEvents
+    data class GpxReplanRequested(val uri: String) : GpxUiEvents
     data object GpxRouteVisibilityToggled : GpxUiEvents
     data object GpxDistancesVisibilityToggled : GpxUiEvents
     data object GpxSlopeColorsToggled : GpxUiEvents

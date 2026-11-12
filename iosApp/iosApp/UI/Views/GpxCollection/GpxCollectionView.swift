@@ -4,6 +4,7 @@ import SwiftUI
 struct GpxCollectionView: View {
     let onOpenTutorial: () -> Void
     let onOpenGpx: (String) -> Void
+    let onOpenRoutePlanner: (String) -> Void
 
     @StateObject private var holder = ViewModelHolder(KoinViewModelProvider.shared.getGpxCollectionViewModel)
     private var viewModel: GpxCollectionViewModel { holder.viewModel }
@@ -209,6 +210,8 @@ struct GpxCollectionView: View {
             onOpenTutorial()
         case .openGpx(let effect):
             onOpenGpx(effect.fileUri)
+        case .openRoutePlanner(let effect):
+            onOpenRoutePlanner(effect.fileUri)
         case .shareGpx(let effect):
             shareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
         }

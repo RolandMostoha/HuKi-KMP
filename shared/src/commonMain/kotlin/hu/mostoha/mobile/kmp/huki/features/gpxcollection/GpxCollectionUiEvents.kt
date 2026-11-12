@@ -10,6 +10,7 @@ sealed interface GpxCollectionUiEvents {
     data class SortModeSelected(val sortMode: GpxCollectionSortMode) : GpxCollectionUiEvents
     data class FileClicked(val file: GpxFileItem) : GpxCollectionUiEvents
     data class ShareClicked(val file: GpxFileItem) : GpxCollectionUiEvents
+    data class ReplanClicked(val file: GpxFileItem) : GpxCollectionUiEvents
     data class DeleteClicked(val file: GpxFileItem) : GpxCollectionUiEvents
     data object DeleteConfirmed : GpxCollectionUiEvents
     data object DeleteDismissed : GpxCollectionUiEvents

@@ -50,6 +50,7 @@ fun GpxFileCard(
     file: GpxFileItem,
     landscape: GpxLandscape?,
     onClick: () -> Unit,
+    onReplanClick: () -> Unit,
     onRenameClick: () -> Unit,
     onShareClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -96,6 +97,8 @@ fun GpxFileCard(
                 }
             }
             GpxFileOptionsMenu(
+                isReplanVisible = file.isReplannable,
+                onReplanClick = onReplanClick,
                 onRenameClick = onRenameClick,
                 onShareClick = onShareClick,
                 onDeleteClick = onDeleteClick,
@@ -104,6 +107,7 @@ fun GpxFileCard(
         GpxFileStatsRow(file = file)
         GpxFileTagRow(
             origin = file.origin,
+            isRoundTrip = file.isRoundTrip,
             landscape = landscape,
             modifier = Modifier.padding(start = Dimens.ExtraLarge, end = Dimens.Large, top = Dimens.ExtraSmall),
         )
@@ -111,11 +115,16 @@ fun GpxFileCard(
 }
 
 @Composable
-private fun GpxFileTagRow(origin: GpxOrigin, landscape: GpxLandscape?, modifier: Modifier = Modifier) {
+private fun GpxFileTagRow(
+    origin: GpxOrigin,
+    isRoundTrip: Boolean,
+    landscape: GpxLandscape?,
+    modifier: Modifier = Modifier,
+) {
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(Dimens.Small),
-        verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
+        verticalArrangement = Arrangement.spacedBy(Dimens.Small),
     ) {
         GpxFileTag(
             icon = ImageVector.vectorResource(origin.iconResId),
@@ -123,6 +132,15 @@ private fun GpxFileTagRow(origin: GpxOrigin, landscape: GpxLandscape?, modifier:
             containerColor = MaterialTheme.colorScheme.secondary,
             contentColor = MaterialTheme.colorScheme.onSecondary,
         )
+        if (isRoundTrip) {
+            GpxFileTag(
+                icon = ImageVector.vectorResource(R.drawable.ic_refresh),
+                text = mokoString(SharedRes.strings.route_planner_round_trip),
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.testTag(TestTags.GPX_COLLECTION_ITEM_ROUND_TRIP_TAG),
+            )
+        }
         if (landscape != null) {
             GpxFileTag(
                 icon = mokoImage(landscape.iconRes),
@@ -229,6 +247,7 @@ private fun GpxFileCardPreview() {
                     iconRes = SharedRes.images.ic_landscapes_mountain_medium,
                 ),
                 onClick = {},
+                onReplanClick = {},
                 onRenameClick = {},
                 onShareClick = {},
                 onDeleteClick = {},
@@ -237,6 +256,7 @@ private fun GpxFileCardPreview() {
                 file = previewFile(GpxOrigin.ROUTE_PLANNER),
                 landscape = null,
                 onClick = {},
+                onReplanClick = {},
                 onRenameClick = {},
                 onShareClick = {},
                 onDeleteClick = {},
@@ -258,4 +278,6 @@ private fun previewFile(origin: GpxOrigin) =
         lastModified = Clock.System.now(),
         lastOpened = Clock.System.now(),
         origin = origin,
+        isReplannable = origin == GpxOrigin.ROUTE_PLANNER,
+        isRoundTrip = origin == GpxOrigin.ROUTE_PLANNER,
     )

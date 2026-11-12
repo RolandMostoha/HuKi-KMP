@@ -20,6 +20,7 @@ data class GpxDetails(
     val jelSymbol: JelSymbol? = null,
     val slopeSegments: List<SlopeSegment> = emptyList(),
     val isReversed: Boolean = false,
+    val isHukiAuthored: Boolean = false,
 ) {
     val isReversible: Boolean
         get() = locations.size >= 2

@@ -309,6 +309,41 @@ class GpxCollectionViewModelTest {
     }
 
     @Test
+    fun `Given a replannable file - When ReplanClicked event - Then OpenRoutePlanner effect is emitted and analytics is logged`() {
+        val file = gpxFileItem("today.gpx", now).copy(isReplannable = true)
+        everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(GpxCollectionUiEvents.ReplanClicked(file))
+
+                awaitItem() shouldBe GpxCollectionUiEffects.OpenRoutePlanner(file.fileUri)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxReplanClicked)
+            }
+        }
+    }
+
+    @Test
+    fun `Given a not replannable file - When ReplanClicked event - Then no effect is emitted`() {
+        val file = gpxFileItem("today.gpx", now)
+        everySuspend { gpxRepository.getGpxFiles() } returns listOf(file)
+
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(GpxCollectionUiEvents.ReplanClicked(file))
+                testDispatcher.scheduler.runCurrent()
+
+                expectNoEvents()
+                analyticsService.loggedEvents shouldBe emptyList()
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When HelpClicked event - Then NavigateToTutorial effect is emitted`() {
         everySuspend { gpxRepository.getGpxFiles() } returns emptyList()
 

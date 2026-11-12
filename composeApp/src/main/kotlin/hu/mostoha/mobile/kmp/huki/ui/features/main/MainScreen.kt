@@ -107,6 +107,8 @@ fun MainScreen(
     onGpxGuideClicked: () -> Unit,
     openGpxUri: String? = null,
     onOpenGpxConsumed: () -> Unit = {},
+    replanGpxUri: String? = null,
+    onReplanGpxConsumed: () -> Unit = {},
     openPlace: Pair<OsmType, String>? = null,
     onOpenPlaceConsumed: () -> Unit = {},
     openDestinationId: String? = null,
@@ -130,6 +132,13 @@ fun MainScreen(
         openGpxUri?.let {
             viewModel.onEvent(GpxUiEvents.GpxFileReopened(it))
             onOpenGpxConsumed()
+        }
+    }
+
+    LaunchedEffect(replanGpxUri) {
+        replanGpxUri?.let {
+            viewModel.onEvent(GpxUiEvents.GpxReplanRequested(it))
+            onReplanGpxConsumed()
         }
     }
 

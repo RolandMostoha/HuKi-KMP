@@ -52,6 +52,7 @@ private object Routes {
     const val EXTRA_OPEN_DISCOVER_KEY = "extra_open_discover"
     const val EXTRA_OPEN_MAP_LABEL_SCALE_KEY = "extra_open_map_label_scale"
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
+    const val EXTRA_REPLAN_GPX_URI_KEY = "extra_replan_gpx_uri"
     const val EXTRA_PLACE_OSM_TYPE_KEY = "extra_place_osm_type"
     const val EXTRA_PLACE_OSM_ID_KEY = "extra_place_osm_id"
     const val EXTRA_DESTINATION_ID_KEY = "extra_destination_id"
@@ -98,6 +99,9 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
             val openGpxUri by entry.savedStateHandle
                 .getStateFlow<String?>(Routes.EXTRA_GPX_URI_KEY, null)
                 .collectAsStateWithLifecycle()
+            val replanGpxUri by entry.savedStateHandle
+                .getStateFlow<String?>(Routes.EXTRA_REPLAN_GPX_URI_KEY, null)
+                .collectAsStateWithLifecycle()
             val openPlaceOsmType by entry.savedStateHandle
                 .getStateFlow<String?>(Routes.EXTRA_PLACE_OSM_TYPE_KEY, null)
                 .collectAsStateWithLifecycle()
@@ -132,6 +136,8 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 onGpxGuideClicked = { navController.navigate(Routes.GPX_GUIDE) },
                 openGpxUri = openGpxUri,
                 onOpenGpxConsumed = { entry.savedStateHandle[Routes.EXTRA_GPX_URI_KEY] = null },
+                replanGpxUri = replanGpxUri,
+                onReplanGpxConsumed = { entry.savedStateHandle[Routes.EXTRA_REPLAN_GPX_URI_KEY] = null },
                 openPlace = openPlace,
                 onOpenPlaceConsumed = {
                     entry.savedStateHandle[Routes.EXTRA_PLACE_OSM_TYPE_KEY] = null
@@ -206,6 +212,10 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 onOpenTutorial = { navController.navigate(Routes.GPX_GUIDE) },
                 onOpenGpx = { uri ->
                     navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_GPX_URI_KEY] = uri
+                    navController.popBackStack<Main>(inclusive = false)
+                },
+                onOpenRoutePlanner = { uri ->
+                    navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_REPLAN_GPX_URI_KEY] = uri
                     navController.popBackStack<Main>(inclusive = false)
                 },
             )

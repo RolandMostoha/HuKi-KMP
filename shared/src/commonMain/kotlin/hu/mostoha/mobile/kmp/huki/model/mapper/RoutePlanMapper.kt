@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.Raw
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
@@ -22,6 +23,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRateLimit
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteRequest
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import hu.mostoha.mobile.kmp.huki.util.formatter.CoordinateFormatter
 import io.ktor.http.Headers
@@ -174,3 +176,23 @@ private fun List<List<Double>>.toLocations(): List<Location> =
             altitude = coordinates.getOrNull(ALTITUDE_INDEX),
         )
     }
+
+/**
+ * Rebuilds the Route Planner stops of a HuKi-saved GPX, with a round trip ending at its start.
+ */
+fun GpxDetails.toReplanStops(): List<RoutePlannerWaypoint> {
+    val start = waypoints.firstOrNull { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
+    val end = waypoints.firstOrNull { it.type == WaypointType.END || it.type == WaypointType.ROUND_TRIP }
+    val maxIntermediates = RoutePlanConstants.MAX_WAYPOINT_COUNT - listOfNotNull(start, end).size
+    val intermediates = waypoints
+        .filter { it.type == WaypointType.INTERMEDIATE }
+        .take(maxIntermediates)
+
+    return (listOfNotNull(start) + intermediates + listOfNotNull(end)).map { it.toReplanStop() }
+}
+
+private fun GpxWaypoint.toReplanStop(): RoutePlannerWaypoint {
+    val placeName = name?.trim()?.ifEmpty { null } ?: return location.toRoutePlannerWaypoint()
+
+    return RoutePlannerWaypoint(name = StringDesc.Raw(placeName), placeName = placeName, location = location)
+}

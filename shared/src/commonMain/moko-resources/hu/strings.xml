@@ -250,6 +250,9 @@
     <string name="gpx_collection_origin_route_planner">Útvonaltervező</string>
     <string name="gpx_collection_origin_bundled">HuKi útvonal</string>
     <string name="gpx_collection_action_rename">Átnevezés</string>
+    <string name="gpx_collection_action_replan">Újratervezés</string>
+    <string name="gpx_replan_error_title">Sikertelen újratervezés</string>
+    <string name="gpx_replan_error_message">Nem sikerült beolvasni az útvonal megállóit ebből a GPX fájlból.</string>
     <string name="gpx_collection_action_share">Megosztás</string>
     <string name="gpx_collection_action_delete">Törlés</string>
     <string name="gpx_collection_delete_dialog_title">Törlöd a GPX fájlt?</string>

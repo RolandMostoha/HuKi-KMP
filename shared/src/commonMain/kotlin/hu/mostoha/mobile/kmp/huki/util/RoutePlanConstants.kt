@@ -8,6 +8,11 @@ object RoutePlanConstants {
     const val GRAPHHOPPER_URL = "https://www.graphhopper.com/"
 
     /**
+     * Author of the GPX files saved by the Route Planner, which identifies them after they leave the app.
+     */
+    const val GPX_AUTHOR_NAME = "HuKi"
+
+    /**
      * Collected route stops, keeping the planner's first stop free for my location.
      */
     const val MAX_ROUTE_STOPS = MAX_WAYPOINT_COUNT - 1

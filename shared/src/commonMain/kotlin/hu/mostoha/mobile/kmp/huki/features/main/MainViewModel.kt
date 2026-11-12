@@ -53,7 +53,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteProgress
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
@@ -69,6 +71,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toOktLine
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktMarkers
 import hu.mostoha.mobile.kmp.huki.model.mapper.toOktSectionItem
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
+import hu.mostoha.mobile.kmp.huki.model.mapper.toReplanStops
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRestoredFeature
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
@@ -300,6 +303,7 @@ class MainViewModel(
             is GpxUiEvents.GpxFileSelected -> importGpx(event.uri, AnalyticsEvent.GpxImported(event.source))
             is GpxUiEvents.GpxFileReopened -> importGpx(event.uri, AnalyticsEvent.HistoryGpxSelected)
             is GpxUiEvents.RoutePlanGpxSaved -> importGpx(event.uri, analyticsEvent = null)
+            is GpxUiEvents.GpxReplanRequested -> replanGpx(event.uri)
             GpxUiEvents.GpxRouteVisibilityToggled -> toggleGpxRouteVisibility()
             GpxUiEvents.GpxDistancesVisibilityToggled -> toggleAllDistancesVisibility()
             GpxUiEvents.GpxSlopeColorsToggled -> toggleGpxSlopeColors()
@@ -603,6 +607,44 @@ class MainViewModel(
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
         val waypoints = stops.map { it.toRoutePlannerWaypoint() }
         routePlannerSession.value = null
+        openRoutePlannerSheet(Sheet.RoutePlanner(waypoints), waypoints)
+    }
+
+    private fun replanGpx(uri: String) {
+        viewModelScope.launch {
+            runCatching {
+                gpxRepository.peekGpxFile(uri).toReplanStops().also { stops ->
+                    check(stops.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT) { "GPX has ${stops.size} replan stops" }
+                }
+            }
+                .onSuccess { stops ->
+                    // Seeded as a session, so the planner takes the GPX stops as they are, without my location
+                    val session = RoutePlannerSession(
+                        routeProfile = RoutePlannerProfile.ON_TRAILS,
+                        waypoints = stops + RoutePlannerWaypoint(),
+                    )
+                    routePlannerSession.value = session
+                    openRoutePlannerSheet(Sheet.RoutePlanner(restored = session), session.waypoints)
+                }
+                .onFailure { onGpxReplanFailed(it) }
+        }
+    }
+
+    private fun onGpxReplanFailed(exception: Throwable) {
+        Logger.e(exception) { "Failed to replan GPX file." }
+        analyticsService.logEvent(AnalyticsEvent.GpxReplanFailed)
+        crashlyticsService.recordException(exception)
+        _uiState.update { uiState ->
+            uiState.copy(
+                alert = Alert(
+                    title = SharedRes.strings.gpx_replan_error_title,
+                    message = SharedRes.strings.gpx_replan_error_message,
+                ),
+            )
+        }
+    }
+
+    private fun openRoutePlannerSheet(sheet: Sheet.RoutePlanner, waypoints: List<RoutePlannerWaypoint>) {
         selectedWaypoint.value = null
         framedRouteStopLocations = waypoints.mapNotNull { it.location }
         cancelPlaceDetailsLoad()
@@ -611,7 +653,7 @@ class MainViewModel(
         cancelLandscapesJob()
         _uiState.update { uiState ->
             uiState.copy(
-                sheet = Sheet.RoutePlanner(waypoints),
+                sheet = sheet,
                 isOktLoading = false,
                 mapUiState = uiState.mapUiState
                     .withoutGpx()

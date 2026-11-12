@@ -6,6 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxFileItem
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
 import hu.mostoha.mobile.kmp.huki.model.domain.JelSymbol
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
+import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.util.toInstantFromIsoOffset
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import org.maplibre.spatialk.gpx.Document
@@ -25,8 +26,9 @@ fun GpxDetails.toGpxFileItem(
     lastModified: Instant,
     lastOpened: Instant?,
     landscapeId: String? = null,
-): GpxFileItem =
-    GpxFileItem(
+): GpxFileItem {
+    val origin = GpxOrigin.fromPath(fileUri)
+    return GpxFileItem(
         fileName = fileName,
         fileUri = fileUri,
         trackId = trackId,
@@ -37,9 +39,12 @@ fun GpxDetails.toGpxFileItem(
         decline = decline,
         lastModified = lastModified,
         lastOpened = lastOpened,
-        origin = GpxOrigin.fromPath(fileUri),
+        origin = origin,
         landscapeId = landscapeId,
+        isReplannable = isHukiAuthored || origin == GpxOrigin.ROUTE_PLANNER,
+        isRoundTrip = waypoints.any { it.type == WaypointType.ROUND_TRIP },
     )
+}
 
 fun GpxDetails.toRouteStats(): RouteStats =
     RouteStats(

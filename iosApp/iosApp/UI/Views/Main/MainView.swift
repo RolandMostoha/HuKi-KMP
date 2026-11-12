@@ -253,6 +253,10 @@ private extension MainView {
                         onOpenGpx: { uri in
                             viewModel.onEvent(event: GpxUiEventsGpxFileReopened(uri: uri))
                             navigationPath = NavigationPath()
+                        },
+                        onOpenRoutePlanner: { uri in
+                            viewModel.onEvent(event: GpxUiEventsGpxReplanRequested(uri: uri))
+                            navigationPath = NavigationPath()
                         }
                     )
                 }
