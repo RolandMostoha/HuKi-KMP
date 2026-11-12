@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
@@ -32,6 +33,8 @@ import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
 @Composable
 fun GpxFileOptionsMenu(
+    isReplanVisible: Boolean,
+    onReplanClick: () -> Unit,
     onRenameClick: () -> Unit,
     onShareClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -67,6 +70,24 @@ fun GpxFileOptionsMenu(
                 top = Dimens.Medium,
                 bottom = Dimens.Medium,
             )
+            if (isReplanVisible) {
+                DropdownMenuItem(
+                    modifier = Modifier.testTagAsResourceId(TestTags.GPX_COLLECTION_ITEM_REPLAN_BUTTON),
+                    contentPadding = itemContentPadding,
+                    text = { Text(text = mokoString(SharedRes.strings.gpx_collection_action_replan)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_route),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onReplanClick()
+                    },
+                )
+            }
             if (FeatureFlags.IS_GPX_RENAME_ENABLED) {
                 DropdownMenuItem(
                     contentPadding = itemContentPadding,
@@ -129,6 +150,8 @@ fun GpxFileOptionsMenu(
 private fun GpxFileOptionsMenuPreview() {
     HuKiTheme {
         GpxFileOptionsMenu(
+            isReplanVisible = true,
+            onReplanClick = {},
             onRenameClick = {},
             onShareClick = {},
             onDeleteClick = {},
@@ -141,6 +164,8 @@ private fun GpxFileOptionsMenuPreview() {
 private fun GpxFileOptionsMenuExpandedPreview() {
     HuKiTheme {
         GpxFileOptionsMenu(
+            isReplanVisible = true,
+            onReplanClick = {},
             onRenameClick = {},
             onShareClick = {},
             onDeleteClick = {},

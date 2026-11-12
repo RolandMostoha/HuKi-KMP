@@ -25,6 +25,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanFileName
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanTitle
 import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.calculateDecline
 import hu.mostoha.mobile.kmp.huki.util.calculateIncline
 import hu.mostoha.mobile.kmp.huki.util.calculateSlopeSegments
@@ -73,6 +74,12 @@ open class DefaultGpxRepository(
                 content = bundledFileReader.readText(file).encodeToByteArray(),
             )
             openGpx(source) { replaceBundledGpx(source) }
+        }
+
+    override suspend fun peekGpxFile(uri: String): GpxDetails =
+        withContext(Dispatchers.IO) {
+            val source = runCatching { gpxStorage.readGpx(uri) }.getOrElse { throw UnreadableGpxFileException(it) }
+            parseGpxDetails(source.fileName, uri, source.content.decodeToString())
         }
 
     override suspend fun getGpxFiles(): List<GpxFileItem> =
@@ -274,6 +281,7 @@ open class DefaultGpxRepository(
             decline = locations.calculateDecline(),
             jelSymbol = gpx.toJelSymbol(),
             slopeSegments = locations.calculateSlopeSegments(),
+            isHukiAuthored = gpx.metadata?.author?.name?.trim() == RoutePlanConstants.GPX_AUTHOR_NAME,
         )
     }
 

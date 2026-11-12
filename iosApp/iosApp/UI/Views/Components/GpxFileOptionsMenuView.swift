@@ -3,12 +3,23 @@ import SwiftUI
 
 struct GpxFileOptionsMenuView: View {
     let strings: Strings
+    let isReplanVisible: Bool
+    let onReplan: () -> Void
     let onRename: () -> Void
     let onShare: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
         Menu {
+            if isReplanVisible {
+                Button(action: onReplan) {
+                    Label(
+                        strings.get(id: SharedRes.strings().gpx_collection_action_replan),
+                        systemImage: "arrow.triangle.turn.up.right.diamond"
+                    )
+                }
+                .accessibilityIdentifier(TestTags.shared.GPX_COLLECTION_ITEM_REPLAN_BUTTON)
+            }
             if FeatureFlags.shared.IS_GPX_RENAME_ENABLED {
                 Button(action: onRename) {
                     Label(strings.get(id: SharedRes.strings().gpx_collection_action_rename), systemImage: "pencil")

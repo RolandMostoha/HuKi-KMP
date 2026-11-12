@@ -54,6 +54,7 @@ class GpxCollectionViewModel(
             is GpxCollectionUiEvents.SortModeSelected -> selectSortMode(event.sortMode)
             is GpxCollectionUiEvents.FileClicked -> sendEffect(GpxCollectionUiEffects.OpenGpx(event.file.fileUri))
             is GpxCollectionUiEvents.ShareClicked -> shareGpx(event.file)
+            is GpxCollectionUiEvents.ReplanClicked -> replanGpx(event.file)
             is GpxCollectionUiEvents.DeleteClicked -> _uiState.update { it.copy(pendingDelete = event.file) }
             GpxCollectionUiEvents.DeleteDismissed -> _uiState.update { it.copy(pendingDelete = null) }
             GpxCollectionUiEvents.DeleteConfirmed -> deletePendingFile()
@@ -63,6 +64,13 @@ class GpxCollectionViewModel(
     private fun shareGpx(file: GpxFileItem) {
         analyticsService.logEvent(AnalyticsEvent.GpxShared(GpxShareSource.COLLECTION))
         sendEffect(GpxCollectionUiEffects.ShareGpx(fileUri = file.fileUri, fileName = file.fileName))
+    }
+
+    private fun replanGpx(file: GpxFileItem) {
+        if (!file.isReplannable) return
+
+        analyticsService.logEvent(AnalyticsEvent.GpxReplanClicked)
+        sendEffect(GpxCollectionUiEffects.OpenRoutePlanner(file.fileUri))
     }
 
     private fun selectSortMode(sortMode: GpxCollectionSortMode) {

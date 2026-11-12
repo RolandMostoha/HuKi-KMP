@@ -1,0 +1,75 @@
+appId: ${APP_ID}
+---
+# GPX Replan: save a route plan, then replan it from the GPX Collection
+- launchApp:
+    clearState: false
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- setLocation:
+    latitude: 47.7193911
+    longitude: 18.8961602
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+
+# Plan from my location to a destination and save it as a HuKi GPX
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Ram-szakad"
+- tapOn: "Rám-szakadék"
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- tapOn:
+    id: ROUTE_PLANNER_SAVE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_CLOSE_BUTTON
+    timeout: 10000
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
+
+# The newest file comes first, and as a HuKi route plan it offers Replan
+- tapOn: "Menu"
+- tapOn:
+    id: MENU_ROW_GPX_COLLECTION
+- extendedWaitUntil:
+    visible:
+      id: GPX_COLLECTION_SCREEN_ROOT
+    timeout: 5000
+- tapOn:
+    id: GPX_COLLECTION_SORT_DATE
+- tapOn:
+    id: GPX_COLLECTION_ITEM_OPTIONS_BUTTON
+    index: 0
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: GPX_COLLECTION_ITEM_REPLAN_BUTTON
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Replan"
+
+# The planner opens on the map with the saved stops and routes them again
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SHEET
+    timeout: 10000
+- assertVisible: "Rám-szakadék"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET

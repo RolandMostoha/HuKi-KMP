@@ -146,6 +146,14 @@ sealed interface AnalyticsEvent {
         override val name = "gpx_deleted"
     }
 
+    data object GpxReplanClicked : AnalyticsEvent {
+        override val name = "gpx_replan_clicked"
+    }
+
+    data object GpxReplanFailed : AnalyticsEvent {
+        override val name = "gpx_replan_failed"
+    }
+
     data class GpxShared(val source: GpxShareSource) : AnalyticsEvent {
         override val name = "gpx_shared_${source.value}"
     }

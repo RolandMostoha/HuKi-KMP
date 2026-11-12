@@ -11,6 +11,11 @@ interface GpxRepository {
 
     suspend fun readBundledGpxFile(file: FileResource): GpxDetails
 
+    /**
+     * Reads a sandbox GPX without recording it as opened, so the file and its collection order stay untouched.
+     */
+    suspend fun peekGpxFile(uri: String): GpxDetails
+
     suspend fun saveRoutePlan(
         routePlan: RoutePlan,
         stopPlaceNames: List<String?>,

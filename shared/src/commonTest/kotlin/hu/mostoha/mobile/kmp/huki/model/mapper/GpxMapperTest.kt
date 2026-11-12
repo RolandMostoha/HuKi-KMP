@@ -3,6 +3,9 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import hu.mostoha.mobile.kmp.huki.data.TEST_GPX_DETAILS
 import hu.mostoha.mobile.kmp.huki.model.data.GpxMetadataEntry
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxOrigin
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.util.toIsoOffsetString
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -50,6 +53,38 @@ class GpxMapperTest {
         )
 
         actual.origin shouldBe GpxOrigin.ROUTE_PLANNER
+    }
+
+    @Test
+    fun `Given gpx details - When toGpxFileItem - Then only HuKi route plans are replannable`() {
+        replannableTestCases().forEach { testCase ->
+            val details = TEST_GPX_DETAILS.copy(fileUri = testCase.input.first, isHukiAuthored = testCase.input.second)
+
+            val actual = details.toGpxFileItem(
+                trackId = "track-1",
+                lastModified = Instant.fromEpochSeconds(1_700_000_000),
+                lastOpened = null,
+            )
+
+            actual.isReplannable shouldBe testCase.result
+        }
+    }
+
+    @Test
+    fun `Given gpx details - When toGpxFileItem - Then only closed tracks are round trips`() {
+        roundTripTestCases().forEach { testCase ->
+            val details = TEST_GPX_DETAILS.copy(
+                waypoints = testCase.input.map { type -> GpxWaypoint(Location(47.7193, 18.8961), type) },
+            )
+
+            val actual = details.toGpxFileItem(
+                trackId = "track-1",
+                lastModified = Instant.fromEpochSeconds(1_700_000_000),
+                lastOpened = null,
+            )
+
+            actual.isRoundTrip shouldBe testCase.result
+        }
     }
 
     @Test
@@ -137,4 +172,35 @@ class GpxMapperTest {
             incline = 500,
             decline = 300,
         )
+
+    private data class ReplannableTestCase(
+        val input: Pair<String, Boolean>,
+        val result: Boolean,
+    )
+
+    private data class RoundTripTestCase(
+        val input: List<WaypointType>,
+        val result: Boolean,
+    )
+
+    companion object {
+        private fun roundTripTestCases() =
+            listOf(
+                RoundTripTestCase(input = listOf(WaypointType.ROUND_TRIP), result = true),
+                RoundTripTestCase(
+                    input = listOf(WaypointType.ROUND_TRIP, WaypointType.INTERMEDIATE),
+                    result = true,
+                ),
+                RoundTripTestCase(input = listOf(WaypointType.START, WaypointType.END), result = false),
+                RoundTripTestCase(input = emptyList(), result = false),
+            )
+
+        private fun replannableTestCases() =
+            listOf(
+                ReplannableTestCase(input = "/files/gpx/routeplanner/dobogoko.gpx" to false, result = true),
+                ReplannableTestCase(input = "/files/gpx/external/dobogoko.gpx" to true, result = true),
+                ReplannableTestCase(input = "/files/gpx/external/dobogoko.gpx" to false, result = false),
+                ReplannableTestCase(input = "/files/gpx/bundled/okt_01.gpx" to false, result = false),
+            )
+    }
 }

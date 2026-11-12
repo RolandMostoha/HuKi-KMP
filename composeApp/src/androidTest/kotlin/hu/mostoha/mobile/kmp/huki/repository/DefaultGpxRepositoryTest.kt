@@ -15,6 +15,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.mapper.toReplanStops
 import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
@@ -73,6 +74,33 @@ class DefaultGpxRepositoryTest {
             gpx.waypoints.count { it.type == WaypointType.START } shouldBe 1
             gpx.waypoints.count { it.type == WaypointType.END } shouldBe 1
             gpx.waypoints.count { it.type == WaypointType.INTERMEDIATE } shouldBe 1
+        }
+    }
+
+    @Test
+    fun givenSavedRoutePlan_whenPeekGpxFile_thenItsStopsAreRebuiltWithoutRecordingItAsOpened() {
+        runTest {
+            val uri = repository.saveRoutePlan(ROUTE_PLAN, STOP_NAMES, RoutePlannerProfile.ON_TRAILS)
+            val content = File(uri).readText()
+
+            val gpx = repository.peekGpxFile(uri)
+
+            gpx.isHukiAuthored shouldBe true
+            gpx.toReplanStops().map { it.placeName } shouldBe STOP_NAMES
+            gpx.toReplanStops().map { it.location?.latitude } shouldBe ROUTE_PLAN.waypoints.map { it.latitude }
+            File(uri).readText() shouldBe content
+            repository.getRecentGpxFiles(limit = 100).none { it.fileUri == uri } shouldBe true
+            repository.getGpxFiles().first { it.fileUri == uri }.isReplannable shouldBe true
+        }
+    }
+
+    @Test
+    fun givenExternalGpx_whenGetGpxFiles_thenItIsNotReplannable() {
+        runTest {
+            val gpx = repository.readGpxFile(saveTestGpx("gpx_test_with_routes.gpx").toString())
+
+            gpx.isHukiAuthored shouldBe false
+            repository.getGpxFiles().first { it.fileUri == gpx.fileUri }.isReplannable shouldBe false
         }
     }
 

@@ -51,10 +51,12 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
+import hu.mostoha.mobile.kmp.huki.model.domain.UnreadableGpxFileException
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
@@ -92,6 +94,7 @@ import hu.mostoha.mobile.kmp.huki.util.formatter.DistanceFormatter
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -3056,6 +3059,53 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
 
             viewModel.uiState.value.mapUiState.routeStops shouldBe emptyList()
+        }
+    }
+
+    @Test
+    fun `Given a HuKi GPX - When GpxReplanRequested - Then the route planner opens with its stops`() {
+        runTest {
+            val gpxDetails = TEST_GPX_DETAILS.copy(
+                waypoints = listOf(
+                    GpxWaypoint(TEST_PLACE.location, WaypointType.START, name = "Start"),
+                    GpxWaypoint(TEST_LONG_TAP_LOCATION, WaypointType.INTERMEDIATE, name = "Stop"),
+                    GpxWaypoint(TEST_DESTINATION.location, WaypointType.END, name = "End"),
+                ),
+            )
+            everySuspend { gpxRepository.peekGpxFile("uri") } returns gpxDetails
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(GpxUiEvents.GpxReplanRequested("uri"))
+            advanceUntilIdle()
+
+            val restored = viewModel.uiState.value.sheet.shouldBeInstanceOf<Sheet.RoutePlanner>().restored!!
+            restored.routeProfile shouldBe RoutePlannerProfile.ON_TRAILS
+            restored.waypoints.map { it.placeName } shouldBe listOf("Start", "Stop", "End", null)
+            restored.waypoints.map { it.location } shouldBe
+                listOf(TEST_PLACE.location, TEST_LONG_TAP_LOCATION, TEST_DESTINATION.location, null)
+            verifySuspend(VerifyMode.not) { gpxRepository.readGpxFile(any()) }
+        }
+    }
+
+    @Test
+    fun `Given an unreadable GPX - When GpxReplanRequested - Then the replan error alert is shown`() {
+        runTest {
+            everySuspend { gpxRepository.peekGpxFile(any()) } throws UnreadableGpxFileException()
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(GpxUiEvents.GpxReplanRequested("uri"))
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value) {
+                alert!!.title shouldBe SharedRes.strings.gpx_replan_error_title
+                alert!!.message shouldBe SharedRes.strings.gpx_replan_error_message
+                sheet shouldBe null
+            }
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.GpxReplanFailed
+            analyticsService.loggedEvents shouldNotContain AnalyticsEvent.GpxImportFailed
+            crashlyticsService.recordedExceptions.shouldNotBeEmpty()
         }
     }
 

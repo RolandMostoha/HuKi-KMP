@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.WhatsNewContent
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants.GPX_AUTHOR_NAME
 import org.maplibre.spatialk.gpx.Author
 import org.maplibre.spatialk.gpx.Document
 import org.maplibre.spatialk.gpx.Link
@@ -13,7 +14,6 @@ import org.maplibre.spatialk.gpx.TrackSegment
 import org.maplibre.spatialk.gpx.Waypoint
 import kotlin.time.Instant
 
-private const val APP_NAME = "HuKi"
 private const val APP_URL = "https://huki.hu"
 private const val UNTITLED_ROUTE_PLAN = "Route plan"
 
@@ -39,10 +39,10 @@ fun RoutePlan.toGpxDocument(
     createdAt: Instant,
 ): Document =
     Document(
-        creator = "$APP_NAME ${WhatsNewContent.currentVersion}",
+        creator = "$GPX_AUTHOR_NAME ${WhatsNewContent.currentVersion}",
         metadata = Metadata(
             name = title,
-            author = Author(name = APP_NAME, link = Link(href = APP_URL, text = APP_NAME)),
+            author = Author(name = GPX_AUTHOR_NAME, link = Link(href = APP_URL, text = GPX_AUTHOR_NAME)),
             timestamp = createdAt,
         ),
         tracks = listOf(

@@ -17,4 +17,6 @@ data class GpxFileItem(
     val lastOpened: Instant?,
     val origin: GpxOrigin,
     val landscapeId: String? = null,
+    val isReplannable: Boolean = false,
+    val isRoundTrip: Boolean = false,
 )

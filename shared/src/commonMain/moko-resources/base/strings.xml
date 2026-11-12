@@ -250,6 +250,9 @@
     <string name="gpx_collection_origin_route_planner">Route planner</string>
     <string name="gpx_collection_origin_bundled">HuKi route</string>
     <string name="gpx_collection_action_rename">Rename</string>
+    <string name="gpx_collection_action_replan">Replan</string>
+    <string name="gpx_replan_error_title">Replanning failed</string>
+    <string name="gpx_replan_error_message">The route stops could not be read from this GPX file.</string>
     <string name="gpx_collection_action_share">Share</string>
     <string name="gpx_collection_action_delete">Delete</string>
     <string name="gpx_collection_delete_dialog_title">Delete GPX file?</string>

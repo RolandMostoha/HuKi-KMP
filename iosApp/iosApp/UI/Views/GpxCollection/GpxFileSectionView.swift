@@ -17,6 +17,7 @@ struct GpxFileSectionView: View {
                         file: file,
                         landscape: item.landscape,
                         onOpen: { onEvent(GpxCollectionUiEventsFileClicked(file: file)) },
+                        onReplan: { onEvent(GpxCollectionUiEventsReplanClicked(file: file)) },
                         onRename: {},
                         onShare: { onEvent(GpxCollectionUiEventsShareClicked(file: file)) },
                         onDelete: { onEvent(GpxCollectionUiEventsDeleteClicked(file: file)) }
