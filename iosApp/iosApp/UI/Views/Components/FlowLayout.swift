@@ -15,20 +15,24 @@ struct FlowLayout: Layout {
         var rowY = bounds.minY
         for row in rows(for: subviews, maxWidth: bounds.width) {
             var itemX = bounds.minX
-            for index in row.indices {
-                let size = subviews[index].sizeThatFits(.unspecified)
-                subviews[index].place(
-                    at: CGPoint(x: itemX, y: rowY + (row.height - size.height) / 2),
-                    proposal: ProposedViewSize(size)
+            for item in row.items {
+                subviews[item.index].place(
+                    at: CGPoint(x: itemX, y: rowY + (row.height - item.size.height) / 2),
+                    proposal: ProposedViewSize(item.size)
                 )
-                itemX += size.width + spacing
+                itemX += item.size.width + spacing
             }
             rowY += row.height + spacing
         }
     }
 
+    private struct Item {
+        let index: Int
+        let size: CGSize
+    }
+
     private struct Row {
-        var indices: [Int] = []
+        var items: [Item] = []
         var width: CGFloat = 0
         var height: CGFloat = 0
     }
@@ -37,17 +41,20 @@ struct FlowLayout: Layout {
         var rows: [Row] = []
         var current = Row()
         for index in subviews.indices {
-            let size = subviews[index].sizeThatFits(.unspecified)
-            let nextWidth = current.indices.isEmpty ? size.width : current.width + spacing + size.width
-            if !current.indices.isEmpty && nextWidth > maxWidth {
+            let idealSize = subviews[index].sizeThatFits(.unspecified)
+            // A subview wider than a whole row is capped, so its text truncates instead of overflowing
+            let size = idealSize.width > maxWidth
+                ? subviews[index].sizeThatFits(ProposedViewSize(width: maxWidth, height: nil))
+                : idealSize
+            if !current.items.isEmpty && current.width + spacing + size.width > maxWidth {
                 rows.append(current)
                 current = Row()
             }
-            current.width = current.indices.isEmpty ? size.width : current.width + spacing + size.width
+            current.width += (current.items.isEmpty ? 0 : spacing) + size.width
             current.height = max(current.height, size.height)
-            current.indices.append(index)
+            current.items.append(Item(index: index, size: size))
         }
-        if !current.indices.isEmpty {
+        if !current.items.isEmpty {
             rows.append(current)
         }
         return rows

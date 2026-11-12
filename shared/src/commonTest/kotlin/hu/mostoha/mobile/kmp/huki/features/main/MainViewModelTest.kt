@@ -3110,6 +3110,23 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given a GPX without a track - When GpxReplanRequested - Then the replan error alert is shown`() {
+        runTest {
+            everySuspend { gpxRepository.peekGpxFile(any()) } returns TEST_GPX_DETAILS.copy(waypoints = emptyList())
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(GpxUiEvents.GpxReplanRequested("uri"))
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value) {
+                alert!!.title shouldBe SharedRes.strings.gpx_replan_error_title
+                sheet shouldBe null
+            }
+        }
+    }
+
+    @Test
     fun `Given full route stops - When another place is shown - Then the oldest is dropped and it joins`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

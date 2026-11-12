@@ -612,12 +612,16 @@ class MainViewModel(
 
     private fun replanGpx(uri: String) {
         viewModelScope.launch {
-            runCatching { gpxRepository.peekGpxFile(uri) }
-                .onSuccess { gpxDetails ->
+            runCatching {
+                gpxRepository.peekGpxFile(uri).toReplanStops().also { stops ->
+                    check(stops.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT) { "GPX has ${stops.size} replan stops" }
+                }
+            }
+                .onSuccess { stops ->
                     // Seeded as a session, so the planner takes the GPX stops as they are, without my location
                     val session = RoutePlannerSession(
                         routeProfile = RoutePlannerProfile.ON_TRAILS,
-                        waypoints = gpxDetails.toReplanStops() + RoutePlannerWaypoint(),
+                        waypoints = stops + RoutePlannerWaypoint(),
                     )
                     routePlannerSession.value = session
                     openRoutePlannerSheet(Sheet.RoutePlanner(restored = session), session.waypoints)
