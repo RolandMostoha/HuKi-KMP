@@ -217,6 +217,7 @@ UI → UiEvent → ViewModel → UiState
 ### Incoming links
 - Android `MainActivity` (`singleTask`) turns `geo:` VIEW, shared `text/plain` and `https://huki.hu/place` App Links into an `IncomingLink` and pushes it to `IncomingLinkStore`.
 - `MainViewModel` consumes it: `LocationLinkParser` reads `geo:`, Google Maps and HuKi links, `DefaultLocationLinkResolver` follows `maps.app.goo.gl` redirects and searches name-only links with LocationIQ, then Place Details opens. `RootNavHost` pops back to the map.
+- GPX files opened from other apps: Android `VIEW` intents (`content:` URIs with GPX mime types, `application/octet-stream` or a `.gpx` path) → `IncomingLink.GpxFile`; iOS `CFBundleDocumentTypes` + `onOpenURL`. Both import with `GpxSource.FILES`.
 - A launch link wins over session restore, What's New and the my location fly-in.
 - E2E: `maestro_location_link.yaml` (Android only).
 

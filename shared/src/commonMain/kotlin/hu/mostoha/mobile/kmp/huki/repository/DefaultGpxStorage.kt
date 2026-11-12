@@ -44,7 +44,7 @@ class DefaultGpxStorage : GpxStorage {
 
     override suspend fun saveToSandbox(source: GpxFileSource, origin: GpxOrigin): PlatformFile =
         withContext(Dispatchers.IO) {
-            val destination = resolveDestination(gpxDir(origin), source.fileName, source.content)
+            val destination = resolveDestination(gpxDir(origin), source.fileName.withGpxExtension(), source.content)
             if (!destination.exists()) {
                 destination.write(source.content)
             }
@@ -112,6 +112,12 @@ class DefaultGpxStorage : GpxStorage {
             index++
         }
     }
+
+    /**
+     * Files from other apps may be named by their sender without a `.gpx` extension, e.g. `attachment`.
+     */
+    private fun String.withGpxExtension(): String =
+        if (endsWith(".$GPX_EXTENSION", ignoreCase = true)) this else "$this.$GPX_EXTENSION"
 
     companion object {
         private const val GPX_DIR = "gpx"

@@ -6,7 +6,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 
 interface LocationLinkResolver {
-    suspend fun resolve(link: IncomingLink): LocationLinkResult
+    suspend fun resolve(link: IncomingLink.Text): LocationLinkResult
 }
 
 sealed interface LocationLinkResult {

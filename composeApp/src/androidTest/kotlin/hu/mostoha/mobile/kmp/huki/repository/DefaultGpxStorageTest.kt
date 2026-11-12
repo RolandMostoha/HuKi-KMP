@@ -57,6 +57,28 @@ class DefaultGpxStorageTest {
     }
 
     @Test
+    fun givenFileWithoutGpxExtension_whenSaveToSandbox_thenGpxExtensionAdded() {
+        runTest {
+            val uri = writeSourceFile("attachment", "content-a")
+
+            val imported = importFile(uri)
+
+            imported.name shouldBe "attachment.gpx"
+        }
+    }
+
+    @Test
+    fun givenUppercaseGpxExtension_whenSaveToSandbox_thenNameKept() {
+        runTest {
+            val uri = writeSourceFile("TRACK.GPX", "content-a")
+
+            val imported = importFile(uri)
+
+            imported.name shouldBe "TRACK.GPX"
+        }
+    }
+
+    @Test
     fun givenSameContent_whenImportTwice_thenSingleFileReused() {
         runTest {
             val uri = writeSourceFile("track.gpx", "content-a")

@@ -281,7 +281,7 @@
     <string name="gpx_guide_step_3_title">Download the GPX file to your phone</string>
     <string name="gpx_guide_step_3_message">Save it from the website — it lands in Files or Downloads.</string>
     <string name="gpx_guide_step_4_title">Open the file with HuKi</string>
-    <string name="gpx_guide_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.</string>
+    <string name="gpx_guide_step_4_message">Tap the GPX file, choose Share, then pick HuKi. The route appears in your GPX Collection.\n\nYou can also open GPX routes from the app: tap the Layers button, then GPX Layer.</string>
     <string name="gpx_guide_a11y_open_collection">Open %s</string>
 
     <string name="quick_guide_title">Quick Guide</string>

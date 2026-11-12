@@ -218,9 +218,7 @@ HuKi is open source, in four parts. Full terms: [NOTICE](NOTICE).
 |------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | Source code                                                | [GPL v3.0 or later](LICENSE), with an exception for linking the Mapbox, Firebase and Google Play services SDKs |
 | Descriptions, curated destination data, in-app texts       | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                                |
-| "HuKi" name, logo and app icon                             | Not licensed: forks must use a different name and icon                                                         |
+| "HuKi" name, logo and app icon and brand identity          | Not licensed: forks must use a different name and icon                                                         |
 | OpenStreetMap data, Blue Trail GPX files, Material Symbols | Their own terms (ODbL, kektura.hu, Apache 2.0)                                                                 |
 
-Versions published before 2026-11-07 were released under the MIT License.
-
-Pull requests are not accepted, but bug reports are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+For contributions please see [CONTRIBUTING.md](CONTRIBUTING.md).

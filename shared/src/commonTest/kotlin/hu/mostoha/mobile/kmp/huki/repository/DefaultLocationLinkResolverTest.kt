@@ -36,7 +36,7 @@ class DefaultLocationLinkResolverTest {
         runTest {
             val resolver = createResolver(MockEngine { error("No request expected") })
 
-            val actual = resolver.resolve(IncomingLink("geo:47.7136,18.4507"))
+            val actual = resolver.resolve(IncomingLink.Text("geo:47.7136,18.4507"))
 
             actual shouldBe LocationLinkResult.Coordinates(SUTTO)
             verifySuspend(not) { geocodingRepository.autocomplete(any()) }
@@ -49,7 +49,7 @@ class DefaultLocationLinkResolverTest {
             everySuspend { geocodingRepository.autocomplete("Dobogókő") } returns NetworkResult.Success(listOf(DOBOGOKO))
             val resolver = createResolver(MockEngine { error("No request expected") })
 
-            val actual = resolver.resolve(IncomingLink("geo:0,0?q=Dobog%C3%B3k%C5%91"))
+            val actual = resolver.resolve(IncomingLink.Text("geo:0,0?q=Dobog%C3%B3k%C5%91"))
 
             actual shouldBe LocationLinkResult.PlaceFound(DOBOGOKO.toPlaceSearchResult())
         }
@@ -61,7 +61,7 @@ class DefaultLocationLinkResolverTest {
             everySuspend { geocodingRepository.autocomplete(any()) } returns NetworkResult.Error(NetworkError.NO_INTERNET)
             val resolver = createResolver(MockEngine { error("No request expected") })
 
-            val actual = resolver.resolve(IncomingLink("geo:0,0?q=Dobog%C3%B3k%C5%91"))
+            val actual = resolver.resolve(IncomingLink.Text("geo:0,0?q=Dobog%C3%B3k%C5%91"))
 
             actual shouldBe LocationLinkResult.Failed(NetworkError.NO_INTERNET)
         }
@@ -78,7 +78,7 @@ class DefaultLocationLinkResolverTest {
             }
             val resolver = createResolver(engine)
 
-            val actual = resolver.resolve(IncomingLink("Süttő\nhttps://maps.app.goo.gl/AbC"))
+            val actual = resolver.resolve(IncomingLink.Text("Süttő\nhttps://maps.app.goo.gl/AbC"))
 
             actual shouldBe LocationLinkResult.Coordinates(SUTTO)
         }
@@ -95,7 +95,7 @@ class DefaultLocationLinkResolverTest {
             }
             val resolver = createResolver(engine)
 
-            val actual = resolver.resolve(IncomingLink("https://maps.app.goo.gl/AbC"))
+            val actual = resolver.resolve(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
 
             actual shouldBe LocationLinkResult.Coordinates(SUTTO)
         }
@@ -117,7 +117,7 @@ class DefaultLocationLinkResolverTest {
             val engine = MockEngine { redirectTo("https://maps.google.com/maps?q=Dobog%C3%B3k%C5%91&ftid=0x1:0x2") }
             val resolver = createResolver(engine)
 
-            val actual = resolver.resolve(IncomingLink("https://maps.app.goo.gl/AbC"))
+            val actual = resolver.resolve(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
 
             actual shouldBe LocationLinkResult.PlaceFound(place.toPlaceSearchResult())
         }
@@ -128,7 +128,7 @@ class DefaultLocationLinkResolverTest {
         runTest {
             val resolver = createResolver(MockEngine { respond(content = "", status = HttpStatusCode.OK) })
 
-            val actual = resolver.resolve(IncomingLink("https://maps.app.goo.gl/AbC"))
+            val actual = resolver.resolve(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
 
             actual shouldBe LocationLinkResult.Unsupported
         }
@@ -139,7 +139,7 @@ class DefaultLocationLinkResolverTest {
         runTest {
             val resolver = createResolver(MockEngine { throw IOException("Connection reset") })
 
-            val actual = resolver.resolve(IncomingLink("https://maps.app.goo.gl/AbC"))
+            val actual = resolver.resolve(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
 
             actual shouldBe LocationLinkResult.Failed(NetworkError.UNKNOWN)
         }
@@ -150,7 +150,7 @@ class DefaultLocationLinkResolverTest {
         runTest {
             val resolver = createResolver(MockEngine { error("No request expected") })
 
-            val actual = resolver.resolve(IncomingLink("See you at the trailhead!"))
+            val actual = resolver.resolve(IncomingLink.Text("See you at the trailhead!"))
 
             actual shouldBe LocationLinkResult.Unsupported
             verifySuspend(not) { geocodingRepository.autocomplete(any()) }

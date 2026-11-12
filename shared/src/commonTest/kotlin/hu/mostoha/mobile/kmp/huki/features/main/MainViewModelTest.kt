@@ -140,6 +140,7 @@ class MainViewModelTest {
         )
         private val TEST_LONG_TAP_LOCATION = Location(47.7181, 18.8948)
         private const val TEST_GEO_LINK = "geo:47.7181,18.8948"
+        private const val TEST_INCOMING_GPX_URI = "content://com.android.providers.downloads.documents/document/42"
         private val TEST_LOCATION_IQ_PLACE = LocationIqPlace(
             placeId = "1",
             osmId = "2",
@@ -253,7 +254,7 @@ class MainViewModelTest {
             viewModel.mapUiEffects.test {
                 awaitItem() shouldBe MapUiEffects.ShowMyLocation(MyLocationStatus.Following, FLY_IN_DURATION_MS)
 
-                incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+                incomingLinkStore.push(IncomingLink.Text(TEST_GEO_LINK))
                 advanceUntilIdle()
 
                 awaitItem() shouldBe MapUiEffects.UpdateCamera(
@@ -275,7 +276,7 @@ class MainViewModelTest {
     fun `Given app launched from a location link - When view model init - Then the camera goes to the link instead of my location`() {
         runTest {
             locationLinkResolver.result = LocationLinkResult.Coordinates(TEST_LONG_TAP_LOCATION)
-            incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+            incomingLinkStore.push(IncomingLink.Text(TEST_GEO_LINK))
 
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -294,7 +295,7 @@ class MainViewModelTest {
     @Test
     fun `Given app launched with text without a location link - When view model init - Then it flies to my location`() {
         runTest {
-            incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+            incomingLinkStore.push(IncomingLink.Text("See you at the trailhead!"))
 
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
@@ -315,12 +316,12 @@ class MainViewModelTest {
 
             incomingLinkStore.linkOpened.test {
                 locationLinkResolver.result = LocationLinkResult.Unsupported
-                incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+                incomingLinkStore.push(IncomingLink.Text("See you at the trailhead!"))
                 advanceUntilIdle()
                 expectNoEvents()
 
                 locationLinkResolver.result = LocationLinkResult.Coordinates(TEST_LONG_TAP_LOCATION)
-                incomingLinkStore.push(IncomingLink(TEST_GEO_LINK))
+                incomingLinkStore.push(IncomingLink.Text(TEST_GEO_LINK))
                 advanceUntilIdle()
                 awaitItem()
             }
@@ -342,7 +343,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            incomingLinkStore.push(IncomingLink("https://maps.app.goo.gl/AbC"))
+            incomingLinkStore.push(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
             advanceUntilIdle()
 
             viewModel.uiState.value.sheet shouldBe Sheet.PlaceDetails
@@ -357,7 +358,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            incomingLinkStore.push(IncomingLink("See you at the trailhead!"))
+            incomingLinkStore.push(IncomingLink.Text("See you at the trailhead!"))
             advanceUntilIdle()
 
             viewModel.uiState.value.alert shouldBe Alert(
@@ -376,7 +377,7 @@ class MainViewModelTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
-            incomingLinkStore.push(IncomingLink("https://maps.app.goo.gl/AbC"))
+            incomingLinkStore.push(IncomingLink.Text("https://maps.app.goo.gl/AbC"))
             advanceUntilIdle()
 
             viewModel.uiState.value.alert shouldBe Alert(
@@ -1236,6 +1237,53 @@ class MainViewModelTest {
                     mapUiState.gpxLayerVisible shouldBe true
                 }
             }
+        }
+    }
+
+    @Test
+    fun `Given app running - When GPX file is opened from another app - Then the GPX is imported from files`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.push(IncomingLink.GpxFile(TEST_INCOMING_GPX_URI))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            viewModel.uiState.value.sheet shouldBe Sheet.Gpx(TEST_GPX_DETAILS)
+            incomingLinkStore.pendingLink.value shouldBe null
+            verifySuspend { gpxRepository.readGpxFile(TEST_INCOMING_GPX_URI) }
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.GpxImported(GpxSource.FILES)
+        }
+    }
+
+    @Test
+    fun `Given following my location - When an unreadable file is opened from another app - Then following continues`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } throws UnreadableGpxFileException(IllegalStateException())
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            incomingLinkStore.push(IncomingLink.GpxFile(TEST_INCOMING_GPX_URI))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.myLocationState.myLocationStatus shouldBe MyLocationStatus.Following
+            viewModel.uiState.value.alert.shouldNotBeNull()
+        }
+    }
+
+    @Test
+    fun `Given app launched from a GPX file - When view model init - Then the GPX is imported`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS
+            incomingLinkStore.push(IncomingLink.GpxFile(TEST_INCOMING_GPX_URI))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.mapUiState.gpxDetails shouldBe TEST_GPX_DETAILS
+            incomingLinkStore.pendingLink.value shouldBe null
         }
     }
 

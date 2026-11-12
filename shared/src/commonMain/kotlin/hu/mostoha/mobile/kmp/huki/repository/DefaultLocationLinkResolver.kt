@@ -37,7 +37,7 @@ class DefaultLocationLinkResolver(
      */
     private val redirectClient = httpClient.config { followRedirects = false }
 
-    override suspend fun resolve(link: IncomingLink): LocationLinkResult =
+    override suspend fun resolve(link: IncomingLink.Text): LocationLinkResult =
         when (val locationLink = LocationLinkParser.parse(link.text)) {
             null -> LocationLinkResult.Unsupported
             else -> locationLink.toResult(redirectsLeft = MAX_REDIRECTS)

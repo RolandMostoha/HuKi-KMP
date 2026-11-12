@@ -281,7 +281,7 @@
     <string name="gpx_guide_step_3_title">Töltsd le a GPX fájlt a telefonodra</string>
     <string name="gpx_guide_step_3_message">Mentsd el a weboldalról — a Fájlok vagy a Letöltések közé kerül.</string>
     <string name="gpx_guide_step_4_title">Nyisd meg a fájlt a HuKi-val</string>
-    <string name="gpx_guide_step_4_message">Klikkelj a GPX fájlra, válaszd a Megosztást, majd a HuKi-t. Az útvonal ezután megjelenik a GPX gyűjteményedben.</string>
+    <string name="gpx_guide_step_4_message">Klikkelj a GPX fájlra, válaszd a Megosztást, majd a HuKi-t. Az útvonal ezután megjelenik a GPX gyűjteményedben.\n\nA GPX útvonalakat az alkalmazásból is megnyithatod: kattints a Rétegek gombra, majd a GPX Rétegre.</string>
     <string name="gpx_guide_a11y_open_collection">%s megnyitása</string>
 
     <string name="quick_guide_title">Gyorstalpaló</string>

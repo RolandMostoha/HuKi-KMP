@@ -315,7 +315,7 @@ email, chat). A zipped bundle is plain data, so an Android export imports on iOS
 | `[ ]`  | GPX Import | `GpxCollectionArchiver` unzip to temp, then loop each `.gpx` through `GpxStorage.saveToFileSystem`      |
 | `[ ]`  | GPX Import | iOS: declare imported/exported UTI + `CFBundleDocumentTypes`, handle inbound via `.onOpenURL`           |
 | `[ ]`  | GPX Import | Android: `<intent-filter>` ACTION_VIEW/ACTION_SEND for `.hukigpx`/zip, read URI in `onNewIntent`        |
-| `[ ]`  | GPX Import | Android: open plain `.gpx` files from other apps (email attachments, file managers), as in HuKi-Android |
+| `[x]`  | GPX Import | Android: open plain `.gpx` files from other apps (email attachments, file managers), as in HuKi-Android |
 | `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                           |
 | `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                          |
 | `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`               |

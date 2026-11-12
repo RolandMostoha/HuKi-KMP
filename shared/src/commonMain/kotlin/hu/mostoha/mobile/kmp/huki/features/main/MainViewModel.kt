@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.logger.toLogString
 import hu.mostoha.mobile.kmp.huki.logger.trimLongLists
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxShareSource
+import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Layer
 import hu.mostoha.mobile.kmp.huki.model.analytics.PlaceDetailsSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.Screen
@@ -216,7 +217,7 @@ class MainViewModel(
 
     init {
         initLogging()
-        val hasLaunchLink = incomingLinkStore.pendingLink.value?.let { LocationLinkParser.parse(it.text) } != null
+        val hasLaunchLink = incomingLinkStore.pendingLink.value?.isOpenable() == true
         val restoredSession = initSession(hasLaunchLink)
         initMyLocation(restoredSession, hasLaunchLink)
         initDistanceMonitoring()
@@ -897,12 +898,28 @@ class MainViewModel(
                 .filterNotNull()
                 .collectLatest { link ->
                     incomingLinkStore.consume()
-                    openLocationLink(link)
+                    when (link) {
+                        is IncomingLink.Text -> openLocationLink(link)
+                        is IncomingLink.GpxFile -> openIncomingGpx(link.uri)
+                    }
                 }
         }
     }
 
-    private suspend fun openLocationLink(link: IncomingLink) {
+    private fun IncomingLink.isOpenable(): Boolean =
+        when (this) {
+            is IncomingLink.Text -> LocationLinkParser.parse(text) != null
+            is IncomingLink.GpxFile -> true
+        }
+
+    private fun openIncomingGpx(uri: String) {
+        incomingLinkStore.markOpened()
+        loadGpx(AnalyticsEvent.GpxImported(GpxSource.FILES)) {
+            gpxRepository.readGpxFile(uri).also { stopFollowing() }
+        }
+    }
+
+    private suspend fun openLocationLink(link: IncomingLink.Text) {
         when (val result = locationLinkResolver.resolve(link)) {
             is LocationLinkResult.Coordinates -> showLinkedLocation(result.location)
             is LocationLinkResult.PlaceFound -> showLinkedPlace(result.place)

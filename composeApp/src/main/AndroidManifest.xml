@@ -61,6 +61,56 @@
                 <data android:host="huki.hu" />
                 <data android:pathPrefix="/place" />
             </intent-filter>
+
+            <!-- GPX files with a GPX mime type -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:mimeType="application/gpx+xml" />
+                <!-- Non-standard types used by some apps -->
+                <data android:mimeType="application/gpx" />
+                <data android:mimeType="text/gpx" />
+                <data android:mimeType="text/gpx+xml" />
+                <data android:mimeType="text/xml+gpx" />
+            </intent-filter>
+
+            <!-- GPX files without a known mime type, e.g. email attachments and file managers -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+
+            <!-- GPX files matched by their .gpx extension -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern="/.*\\.gpx" />
+                <data android:pathPattern="/.*\\..*\\.gpx" />
+                <data android:pathPattern="/.*\\..*\\..*\\.gpx" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.gpx" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.gpx" />
+                <data android:pathPattern="/.*\\.GPX" />
+                <data android:pathPattern="/.*\\..*\\.GPX" />
+                <data android:pathPattern="/.*\\..*\\..*\\.GPX" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.GPX" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.GPX" />
+            </intent-filter>
         </activity>
 
         <provider
