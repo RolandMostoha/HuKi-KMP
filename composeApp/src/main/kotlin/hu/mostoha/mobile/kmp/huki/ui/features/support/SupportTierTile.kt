@@ -97,24 +97,17 @@ fun SupportTierTile(
             )
             when {
                 isActive -> ActivePill(pillColor = pillColor)
-                scheduledDate != null -> ScheduledPill(date = scheduledDate, pillColor = pillColor, color = animalColor)
+                scheduledDate != null -> ScheduledPill(
+                    date = scheduledDate,
+                    caption = mokoString(SharedRes.strings.support_tier_scheduled),
+                    pillColor = pillColor,
+                    color = animalColor,
+                )
                 isPurchasing -> PurchasingPill(pillColor = pillColor, color = animalColor)
-                else -> PricePill(price = price, pillColor = pillColor)
-            }
-            val caption = when {
-                isActive || isPurchasing -> null
-                scheduledDate != null -> mokoString(SharedRes.strings.support_tier_scheduled)
-                price != null -> billingPeriod
-                else -> null
-            }
-            if (caption != null) {
-                Text(
-                    text = caption,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = Dimens.ExtraSmall),
+                else -> PricePill(
+                    price = price,
+                    caption = billingPeriod.takeIf { price != null },
+                    pillColor = pillColor,
                 )
             }
         }
@@ -122,22 +115,45 @@ fun SupportTierTile(
 }
 
 @Composable
-private fun PricePill(price: String?, pillColor: Color) {
-    Text(
-        text = price ?: "–",
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
-        autoSize = TextAutoSize.StepBased(
-            minFontSize = 8.sp,
-            maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-        ),
+private fun PricePill(price: String?, caption: String?, pillColor: Color) {
+    CaptionedPill(caption = caption, pillColor = pillColor) {
+        Text(
+            text = price ?: "–",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 8.sp,
+                maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun CaptionedPill(caption: String?, pillColor: Color, content: @Composable () -> Unit) {
+    Column(
         modifier = Modifier
             .padding(top = Dimens.SmallMedium)
-            .background(pillColor, CircleShape)
+            .background(pillColor, if (caption == null) CircleShape else RoundedCornerShape(14.dp))
             .padding(horizontal = Dimens.Medium, vertical = Dimens.Small),
-    )
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        content()
+        if (caption != null) {
+            Text(
+                text = caption,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 8.sp,
+                    maxFontSize = MaterialTheme.typography.labelSmall.fontSize,
+                ),
+            )
+        }
+    }
 }
 
 @Composable
@@ -168,32 +184,35 @@ private fun ActivePill(pillColor: Color) {
 }
 
 @Composable
-private fun ScheduledPill(date: String, pillColor: Color, color: Color) {
-    Row(
-        modifier = Modifier
-            .padding(top = Dimens.SmallMedium)
-            .background(pillColor, CircleShape)
-            .padding(horizontal = Dimens.Medium, vertical = Dimens.Small),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(SharedRes.images.ic_schedule.drawableResId),
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(14.dp),
-        )
-        Text(
-            text = date,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = color,
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(
-                minFontSize = 8.sp,
-                maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
-            ),
-        )
+private fun ScheduledPill(
+    date: String,
+    caption: String,
+    pillColor: Color,
+    color: Color,
+) {
+    CaptionedPill(caption = caption, pillColor = pillColor) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(SharedRes.images.ic_schedule.drawableResId),
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp),
+            )
+            Text(
+                text = date,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = color,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 8.sp,
+                    maxFontSize = MaterialTheme.typography.labelMedium.fontSize,
+                ),
+            )
+        }
     }
 }
 

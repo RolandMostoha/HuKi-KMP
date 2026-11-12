@@ -31,23 +31,26 @@ struct SupportTierTileView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .padding(.top, 10)
-                pill
-                    .font(.caption.weight(.semibold))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .padding(.horizontal, 10)
-                    .frame(minHeight: 26)
-                    .background(SwiftUI.Color.white.opacity(colorScheme == .dark ? 0.09 : 0.8), in: .capsule)
-                    .padding(.top, 8)
-                if let caption {
-                    Text(caption)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .padding(.top, 4)
+                VStack(spacing: 1) {
+                    pill
+                        .font(.caption.weight(.semibold))
+                        .monospacedDigit()
+                    if let caption {
+                        Text(caption)
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .padding(.horizontal, 10)
+                .padding(.vertical, caption == nil ? 0 : 5)
+                .frame(minHeight: 26)
+                .background(
+                    SwiftUI.Color.white.opacity(colorScheme == .dark ? 0.09 : 0.8),
+                    in: caption == nil ? AnyShape(.capsule) : AnyShape(.rect(cornerRadius: 14, style: .continuous))
+                )
+                .padding(.top, 8)
             }
             .padding(.top, 10)
             .padding(.horizontal, 8)
