@@ -48,6 +48,6 @@ fun RoutePlannerMaxStopsRow(
 @Composable
 private fun RoutePlannerMaxStopsRowPreview() {
     HuKiTheme {
-        RoutePlannerMaxStopsRow(maxStopCount = 10)
+        RoutePlannerMaxStopsRow(maxStopCount = 15)
     }
 }

@@ -4,7 +4,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.BoundingBox
 
 object RoutePlanConstants {
     const val MIN_WAYPOINT_COUNT = 2
-    const val MAX_WAYPOINT_COUNT = 10
+    const val MAX_WAYPOINT_COUNT = 15
     const val GRAPHHOPPER_URL = "https://www.graphhopper.com/"
 
     /**
