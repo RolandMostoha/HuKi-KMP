@@ -40,7 +40,7 @@ object Dimens {
     val ButtonSmallMinHeight = 32.dp
 
     val RoutePlannerPeekHeight = 200.dp
-    val RoutePlannerRowHeight = 52.dp
+    val RoutePlannerRowHeight = 48.dp
     val RoutePlannerRowHeightExpanded = 56.dp
     val RoutePlannerListMaxHeight = 400.dp
     val RoutePlannerWaypointIconColumnWidth = 20.dp

@@ -108,6 +108,7 @@ class RoutePlannerViewModel(
             RoutePlannerUiEvents.RetryClicked -> retryRoutePlan()
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
+            RoutePlannerUiEvents.SettingsClicked -> Unit
             RoutePlannerUiEvents.GraphhopperAttributionClicked -> openGraphhopper()
         }
     }

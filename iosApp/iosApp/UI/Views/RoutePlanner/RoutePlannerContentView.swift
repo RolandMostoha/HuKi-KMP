@@ -83,31 +83,32 @@ struct RoutePlannerContentView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 6) {
+        HStack(spacing: 8) {
+            GlassIconButton(
+                systemName: "gearshape",
+                accessibilityLabel: strings.get(id: SharedRes.strings().route_planner_a11y_settings),
+                accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_SETTINGS_BUTTON,
+                iconSize: Self.headerIconSize,
+                action: { onEvent(RoutePlannerUiEventsSettingsClicked.shared) }
+            )
+            VStack(spacing: 4) {
                 Text(strings.get(id: SharedRes.strings().route_planner_title))
                     .font(.system(size: 24, weight: .bold))
                     .lineLimit(1)
                     .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_TITLE)
-                PoweredByAttributionView(
+                RoutePlannerGraphhopperAttributionView(
                     strings: strings,
-                    logo: SharedRes.images().img_graphhopper_logo.toUIImage()!,
-                    logoHeight: 10,
-                    accessibilityLabel: strings.get(id: SharedRes.strings().route_planner_a11y_open_graphhopper),
-                    font: .caption2,
-                    tintsLogo: true,
                     action: { onEvent(RoutePlannerUiEventsGraphhopperAttributionClicked.shared) }
                 )
-                .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
             CloseButton(
                 action: { onEvent(RoutePlannerUiEventsCloseClicked.shared) },
-                accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_CLOSE_BUTTON
+                accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_CLOSE_BUTTON,
+                iconSize: Self.headerIconSize
             )
         }
-        .padding(.leading, 24)
-        .padding(.trailing, 16)
+        .padding(.horizontal, 16)
     }
 
     private var profilePicker: some View {
@@ -223,6 +224,7 @@ struct RoutePlannerContentView: View {
     private static let waypointsListMaxHeight: CGFloat = 400
     private static let defaultProfilePickerHeight: CGFloat = 32
     private static let stackSpacing: CGFloat = 16
+    private static let headerIconSize: CGFloat = 24
     private static let maxDefaultStopCount = 3
 
     private var isFullScreen: Bool {

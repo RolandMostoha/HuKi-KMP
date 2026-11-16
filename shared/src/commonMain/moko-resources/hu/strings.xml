@@ -96,6 +96,7 @@
     <string name="route_planner_add_stop_title">Új megálló</string>
     <string name="route_planner_pick_my_location">Aktuális pozícióm</string>
     <string name="route_planner_pick_on_map">Térképen hosszú klikkel</string>
+    <string name="route_planner_a11y_settings">Útvonaltervező beállításai</string>
     <string name="route_planner_a11y_profiles">Útvonal típusa</string>
     <string name="route_planner_a11y_add_stop">Új megálló hozzáadása</string>
     <string name="route_planner_a11y_round_trip">Körtúra készítése</string>

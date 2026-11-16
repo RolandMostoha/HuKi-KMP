@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,10 +46,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
@@ -115,13 +117,14 @@ fun RoutePlannerContent(
         Column(
             modifier = Modifier
                 .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier.wrapContentHeight())
-                .padding(top = Dimens.Small),
+                .padding(top = Dimens.ExtraSmall),
         ) {
             DragHandle(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                verticalPadding = Dimens.SmallMedium,
+                verticalPadding = Dimens.Small,
             )
             RoutePlannerHeader(
+                onSettingsClick = { onEvent(RoutePlannerUiEvents.SettingsClicked) },
                 onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
                 onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
             )
@@ -133,7 +136,7 @@ fun RoutePlannerContent(
                         .onGloballyPositioned { plannerHeight = with(density) { it.size.height.toDp() } }
                         .padding(
                             start = Dimens.ExtraLarge,
-                            top = Dimens.Medium,
+                            top = Dimens.ExtraSmall,
                             end = Dimens.ExtraLarge,
                         ),
                     verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
@@ -233,6 +236,7 @@ private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true):
 
 @Composable
 private fun RoutePlannerHeader(
+    onSettingsClick: () -> Unit,
     onCloseClick: () -> Unit,
     onGraphhopperClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -240,42 +244,76 @@ private fun RoutePlannerHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = Dimens.ExtraLarge, end = Dimens.Large),
+            .padding(horizontal = Dimens.Large),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        RoutePlannerHeaderButton(
+            iconResId = R.drawable.ic_settings,
+            contentDescription = mokoString(SharedRes.strings.route_planner_a11y_settings),
+            onClick = onSettingsClick,
+            modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_SETTINGS_BUTTON),
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = Dimens.Small),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Text(
                 text = mokoString(SharedRes.strings.route_planner_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_TITLE),
             )
-            PoweredByAttribution(
-                logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
-                logoHeight = 10.dp,
-                logoTint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
-                onClick = onGraphhopperClick,
-                modifier = Modifier
-                    .offset(x = -Dimens.ExtraSmall)
-                    .testTag(TestTags.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION),
-            )
+            GraphhopperAttribution(onClick = onGraphhopperClick)
         }
-        IconButton(
+        RoutePlannerHeaderButton(
+            iconResId = R.drawable.ic_close,
+            contentDescription = mokoString(SharedRes.strings.a11y_close),
             onClick = onCloseClick,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
             modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_CLOSE_BUTTON),
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close),
-                contentDescription = mokoString(SharedRes.strings.a11y_close),
-            )
-        }
+        )
     }
+}
+
+@Composable
+private fun RoutePlannerHeaderButton(
+    @DrawableRes iconResId: Int,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IconButton(
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(iconResId),
+            contentDescription = contentDescription,
+        )
+    }
+}
+
+private const val SECONDARY_TEXT_ALPHA = 0.6f
+
+@Composable
+private fun GraphhopperAttribution(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    PoweredByAttribution(
+        logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
+        logoHeight = 9.dp,
+        logoTint = MaterialTheme.colorScheme.onSurface,
+        textStyle = MaterialTheme.typography.bodySmall.copy(
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = SECONDARY_TEXT_ALPHA),
+            fontSize = 9.sp,
+        ),
+        contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
+        onClick = onClick,
+        modifier = modifier.testTag(TestTags.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION),
+    )
 }
 
 @Preview

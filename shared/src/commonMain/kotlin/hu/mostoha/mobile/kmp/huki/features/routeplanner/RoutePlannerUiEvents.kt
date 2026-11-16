@@ -25,5 +25,6 @@ sealed interface RoutePlannerUiEvents {
     data object RetryClicked : RoutePlannerUiEvents
     data object SaveRouteClicked : RoutePlannerUiEvents
     data object CloseClicked : RoutePlannerUiEvents
+    data object SettingsClicked : RoutePlannerUiEvents
     data object GraphhopperAttributionClicked : RoutePlannerUiEvents
 }

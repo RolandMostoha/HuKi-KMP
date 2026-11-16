@@ -96,6 +96,7 @@
     <string name="route_planner_add_stop_title">Add new stop</string>
     <string name="route_planner_pick_my_location">My actual location</string>
     <string name="route_planner_pick_on_map">Select on map with long tap</string>
+    <string name="route_planner_a11y_settings">Route planner settings</string>
     <string name="route_planner_a11y_profiles">Route type</string>
     <string name="route_planner_a11y_add_stop">Add a new stop</string>
     <string name="route_planner_a11y_round_trip">Create a round trip</string>
