@@ -7,16 +7,15 @@ struct MainView: View {
     let viewModel: MainViewModel
     @State var navigationPath = NavigationPath()
     @State var gpxDetent: PresentationDetent = .height(Dimens.gpxDetailsCollapsedDetentHeight)
+    @State var gpxCollapsedHeight: CGFloat = Dimens.gpxDetailsCollapsedDetentHeight
+    @State var gpxExpandedHeight: CGFloat = Dimens.gpxDetailsExpandedDetentHeight
     @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var landscapesDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var screenHeight: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
     @State var whatsNewHeight: CGFloat = Dimens.whatsNewDetentHeight
-    @State var routePlannerHeights = RoutePlannerSheetHeights(
-        expanded: Dimens.routePlannerDetentHeight,
-        minimized: Dimens.routePlannerMinimizedDetentHeight
-    )
+    @State var routePlannerHeights = RoutePlannerSheetHeights.initial
     @State var routePlannerDetent: RoutePlannerDetent = .expanded
     @State var routePlannerPick: RoutePlannerPick?
     @State var gpxShareItem: ShareItem?

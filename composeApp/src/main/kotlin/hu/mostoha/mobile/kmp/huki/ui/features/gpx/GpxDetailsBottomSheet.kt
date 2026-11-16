@@ -58,7 +58,9 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun GpxDetailsBottomSheet(
     gpxDetails: GpxDetails,
+    isRouteVisible: Boolean,
     onStartClick: () -> Unit,
+    onRouteVisibilityClick: () -> Unit,
     onNavigateToStart: () -> Unit,
     onNavigateToEnd: () -> Unit,
     onShareClick: () -> Unit,
@@ -184,21 +186,25 @@ fun GpxDetailsBottomSheet(
                             end = Dimens.ExtraLarge,
                         ),
                 )
-                if (gpxDetails.isReversible) {
-                    SecondaryButton(
-                        iconResId = R.drawable.ic_swap_horiz,
-                        text = mokoString(SharedRes.strings.gpx_control_direction_reverse),
-                        onClick = onReverseDirectionClick,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag(TestTags.GPX_DETAILS_REVERSE_DIRECTION_BUTTON)
-                            .padding(
-                                start = Dimens.ExtraLarge,
-                                top = Dimens.Medium,
-                                end = Dimens.ExtraLarge,
-                            ),
-                    )
-                }
+                SecondaryButton(
+                    iconResId = if (isRouteVisible) R.drawable.ic_visibility_off else R.drawable.ic_visibility,
+                    text = mokoString(
+                        if (isRouteVisible) {
+                            SharedRes.strings.gpx_control_route_visibility_hide
+                        } else {
+                            SharedRes.strings.gpx_control_route_visibility_show
+                        },
+                    ),
+                    onClick = onRouteVisibilityClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(TestTags.GPX_DETAILS_ROUTE_VISIBILITY_BUTTON)
+                        .padding(
+                            start = Dimens.ExtraLarge,
+                            top = Dimens.Medium,
+                            end = Dimens.ExtraLarge,
+                        ),
+                )
             }
             Column(
                 modifier = Modifier
@@ -211,6 +217,16 @@ fun GpxDetailsBottomSheet(
                     ),
                 verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
             ) {
+                if (gpxDetails.isReversible) {
+                    SecondaryButton(
+                        iconResId = R.drawable.ic_swap_horiz,
+                        text = mokoString(SharedRes.strings.gpx_control_direction_reverse),
+                        onClick = onReverseDirectionClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(TestTags.GPX_DETAILS_REVERSE_DIRECTION_BUTTON),
+                    )
+                }
                 if (gpxDetails.mapsNavigationTarget(GpxMapsNavigationType.START) != null) {
                     SecondaryButton(
                         iconResId = SharedRes.images.ic_maps_navigation.drawableResId,
@@ -247,6 +263,17 @@ fun GpxDetailsBottomSheet(
 @Preview(showBackground = true)
 @Composable
 private fun GpxDetailsBottomSheetPreview() {
+    GpxDetailsBottomSheetPreviewContent(isRouteVisible = true)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GpxDetailsBottomSheetRouteHiddenPreview() {
+    GpxDetailsBottomSheetPreviewContent(isRouteVisible = false)
+}
+
+@Composable
+private fun GpxDetailsBottomSheetPreviewContent(isRouteVisible: Boolean) {
     HuKiTheme {
         GpxDetailsBottomSheet(
             gpxDetails = GpxDetails(
@@ -266,7 +293,9 @@ private fun GpxDetailsBottomSheetPreview() {
                 decline = 63,
                 jelSymbol = JelSymbol.ZT,
             ),
+            isRouteVisible = isRouteVisible,
             onStartClick = {},
+            onRouteVisibilityClick = {},
             onNavigateToStart = {},
             onNavigateToEnd = {},
             onShareClick = {},

@@ -133,7 +133,8 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | Status | Scope      | Task                                                                                                                                                    |
 |--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | GPX        | Display waypoint comments in a window                                                                                                                   |
-| `[R]`  | GPXDetails | Add a button to hide - show route (Útvonal elrejtése), similarly to STARTED GPX ![img.png](img.png). Between Start route and Reverse direction buttons. |
+| `[x]`  | GPXDetails | Add a button to hide - show route (Útvonal elrejtése), similarly to STARTED GPX ![img.png](img.png). Between Start route and Reverse direction buttons. |
+| `[R]`  | GPX        | Arrow icons are rare in the route and barely visible. Brainstorm how can we improve it. Example Természetjáró ![img_1.png](img_1.png)                   |
 | `[?]`  | GPX        | Also: Auto-detect direction next to manual setup                                                                                                        |
 
 ### FEATURE: GPX Collection

@@ -4,12 +4,24 @@ import SwiftUI
 struct GpxDetailsSheetView: View {
     let strings: Strings
     let gpxDetails: GpxDetails
+    let isRouteVisible: Bool
     let onStartClick: () -> Void
+    let onRouteVisibilityClick: () -> Void
     let onNavigateToStart: () -> Void
     let onNavigateToEnd: () -> Void
     let onShareClick: () -> Void
     let onReverseDirectionClick: () -> Void
     let onDismissRequest: () -> Void
+    /// Collapsed sheet height: everything down to the route visibility button plus a peek of the next one.
+    var onCollapsedHeightChange: (CGFloat) -> Void = { _ in }
+    /// Expanded sheet height: the whole content.
+    var onExpandedHeightChange: (CGFloat) -> Void = { _ in }
+
+    private static let contentSpace = "gpxDetailsContent"
+
+    @State private var routeVisibilityButtonMaxY: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
+    @State private var bottomSafeAreaInset: CGFloat = 0
 
     private var hasStartNavigation: Bool {
         gpxDetails.mapsNavigationTarget(type: .start) != nil
@@ -31,6 +43,21 @@ struct GpxDetailsSheetView: View {
                         action: onStartClick
                     )
                     .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_START_BUTTON)
+                    SecondaryButton(
+                        icon: .system(isRouteVisible ? "eye.slash" : "eye"),
+                        title: strings.get(
+                            id: isRouteVisible
+                                ? SharedRes.strings().gpx_control_route_visibility_hide
+                                : SharedRes.strings().gpx_control_route_visibility_show
+                        ),
+                        action: onRouteVisibilityClick
+                    )
+                    .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_ROUTE_VISIBILITY_BUTTON)
+                    .onGeometryChange(for: CGFloat.self) {
+                        $0.frame(in: .named(Self.contentSpace)).maxY
+                    } action: { maxY in
+                        routeVisibilityButtonMaxY = maxY
+                    }
                     if gpxDetails.isReversible {
                         SecondaryButton(
                             icon: .system("arrow.left.arrow.right"),
@@ -51,8 +78,34 @@ struct GpxDetailsSheetView: View {
             .padding(.top, 24)
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
+            .coordinateSpace(.named(Self.contentSpace))
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                contentHeight = height
+            }
         }
         .scrollBounceBehavior(.basedOnSize)
+        .onGeometryChange(for: CGFloat.self) {
+            $0.safeAreaInsets.bottom
+        } action: { bottom in
+            bottomSafeAreaInset = bottom
+        }
+        .onChange(of: collapsedHeight) {
+            guard routeVisibilityButtonMaxY > 0, contentHeight > 0 else { return }
+            onCollapsedHeightChange(collapsedHeight)
+        }
+        .onChange(of: expandedHeight) {
+            guard contentHeight > 0 else { return }
+            onExpandedHeightChange(expandedHeight)
+        }
+    }
+
+    // Content keeps showing through the bottom safe area below the detent height.
+    private var expandedHeight: CGFloat {
+        contentHeight - bottomSafeAreaInset
+    }
+
+    private var collapsedHeight: CGFloat {
+        min(routeVisibilityButtonMaxY + Dimens.gpxDetailsCollapsedPeek - bottomSafeAreaInset, expandedHeight)
     }
 
     private var header: some View {

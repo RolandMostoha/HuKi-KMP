@@ -132,27 +132,10 @@ enum Dimens {
     static let landscapeDestinationCardWidth: CGFloat = 148
     static let landscapeDestinationCardHeight: CGFloat = 112
 
-    static let gpxDetailsCollapsedDetentHeight: CGFloat = 240
-    static let gpxDetailsExpandedDetentHeight: CGFloat = 382
-    static let gpxDetailsExpandedWithEndDetentHeight: CGFloat = 412
-    static let gpxDetailsPadExpandedDetentHeight: CGFloat = 382
-    static let gpxDetailsPadExpandedWithEndDetentHeight: CGFloat = 442
+    static let gpxDetailsCollapsedDetentHeight: CGFloat = 302
+    static let gpxDetailsCollapsedPeek: CGFloat = 42
+    static let gpxDetailsExpandedDetentHeight: CGFloat = 444
     static let gpxDetailsJelSymbolSize: CGFloat = 20
-    static let gpxDetailsReverseButtonHeight: CGFloat = 80
-    static let gpxDetailsCollapsedReverseButtonHeight: CGFloat = 62
-
-    static func gpxDetailsCollapsedHeight(isReversible: Bool) -> CGFloat {
-        gpxDetailsCollapsedDetentHeight + (isReversible ? gpxDetailsCollapsedReverseButtonHeight : 0)
-    }
-
-    static func gpxDetailsExpandedHeight(hasEnd: Bool, isReversible: Bool, isPad: Bool) -> CGFloat {
-        let reverseButtonHeight = isReversible ? gpxDetailsReverseButtonHeight : 0
-        if isPad {
-            return (hasEnd ? gpxDetailsPadExpandedWithEndDetentHeight : gpxDetailsPadExpandedDetentHeight)
-                + reverseButtonHeight
-        }
-        return (hasEnd ? gpxDetailsExpandedWithEndDetentHeight : gpxDetailsExpandedDetentHeight) + reverseButtonHeight
-    }
 
     static let placeDetailsDetentHeight: CGFloat = 215
 

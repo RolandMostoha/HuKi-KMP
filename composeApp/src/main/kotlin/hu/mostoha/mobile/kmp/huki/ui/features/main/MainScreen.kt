@@ -572,8 +572,12 @@ private fun MainStandardBottomSheet(
         is Sheet.Gpx -> {
             GpxDetailsBottomSheet(
                 gpxDetails = sheet.gpxDetails,
+                isRouteVisible = uiState.mapUiState.gpxRouteVisible,
                 onStartClick = {
                     onEvent(GpxUiEvents.GpxStartNavigationClicked)
+                },
+                onRouteVisibilityClick = {
+                    onEvent(GpxUiEvents.GpxRouteVisibilityToggled)
                 },
                 onNavigateToStart = {
                     onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))

@@ -16,7 +16,19 @@ appId: ${APP_ID}
     longitude: 18.9086
 - runFlow: subflows/maestro_flow_import_gpx.yaml
 
-# Reversing from GPX Details keeps the sheet open on the same GPX
+# Hiding and showing the route from GPX Details flips the button label and keeps the sheet open
+- tapOn:
+    id: GPX_DETAILS_ROUTE_VISIBILITY_BUTTON
+- assertVisible: "Show the route line"
+- tapOn:
+    id: GPX_DETAILS_ROUTE_VISIBILITY_BUTTON
+- assertVisible: "Hide the route line"
+
+# Reversing from GPX Details keeps the sheet open on the same GPX.
+# The collapsed sheet only peeks the Reverse button, so expand it first.
+- swipe:
+    start: 50%, 85%
+    end: 50%, 35%
 - tapOn:
     id: GPX_DETAILS_REVERSE_DIRECTION_BUTTON
 - assertVisible:

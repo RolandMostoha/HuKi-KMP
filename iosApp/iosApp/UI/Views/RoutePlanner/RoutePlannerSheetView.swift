@@ -14,6 +14,11 @@ struct RoutePlannerPick: Equatable {
 struct RoutePlannerSheetHeights: Equatable {
     let expanded: CGFloat
     let minimized: CGFloat
+
+    static let initial = RoutePlannerSheetHeights(
+        expanded: Dimens.routePlannerDetentHeight,
+        minimized: Dimens.routePlannerMinimizedDetentHeight
+    )
 }
 
 enum RoutePlannerDetent {

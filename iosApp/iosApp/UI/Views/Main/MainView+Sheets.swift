@@ -276,15 +276,32 @@ extension MainView {
         return isLandscape ? .large : .height(Dimens.layersDetentHeight)
     }
 
-    private func gpxCollapsedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
-        .height(Dimens.gpxDetailsCollapsedHeight(isReversible: gpxDetails.isReversible))
+    private var gpxCollapsedDetent: PresentationDetent {
+        .height(gpxCollapsedHeight)
     }
 
-    private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
-        let hasEnd = gpxDetails.mapsNavigationTarget(type: .end) != nil
-        return .height(
-            Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isReversible: gpxDetails.isReversible, isPad: isPad)
-        )
+    private func updateGpxCollapsedHeight(_ height: CGFloat) {
+        let height = height.rounded()
+        guard height != gpxCollapsedHeight else { return }
+        let wasCollapsed = gpxDetent == gpxCollapsedDetent
+        gpxCollapsedHeight = height
+        if wasCollapsed {
+            gpxDetent = gpxCollapsedDetent
+        }
+    }
+
+    private var gpxExpandedDetent: PresentationDetent {
+        .height(gpxExpandedHeight)
+    }
+
+    private func updateGpxExpandedHeight(_ height: CGFloat) {
+        let height = height.rounded()
+        guard height != gpxExpandedHeight else { return }
+        let wasExpanded = gpxDetent == gpxExpandedDetent
+        gpxExpandedHeight = height
+        if wasExpanded {
+            gpxDetent = gpxExpandedDetent
+        }
     }
 
     @ViewBuilder
@@ -293,8 +310,12 @@ extension MainView {
             GpxDetailsSheetView(
                 strings: strings,
                 gpxDetails: gpxDetails,
+                isRouteVisible: uiState.mapUiState.gpxRouteVisible,
                 onStartClick: {
                     viewModel.onEvent(event: GpxUiEventsGpxStartNavigationClicked())
+                },
+                onRouteVisibilityClick: {
+                    viewModel.onEvent(event: GpxUiEventsGpxRouteVisibilityToggled())
                 },
                 onNavigateToStart: {
                     viewModel.onEvent(event: GpxUiEventsGpxMapsNavigationClicked(type: .start))
@@ -310,15 +331,17 @@ extension MainView {
                 },
                 onDismissRequest: {
                     viewModel.onEvent(event: GpxUiEventsGpxCloseClicked())
-                }
+                },
+                onCollapsedHeightChange: updateGpxCollapsedHeight,
+                onExpandedHeightChange: updateGpxExpandedHeight
             )
             .sheet(item: $gpxShareItem) { item in
                 ShareSheetView(url: item.url)
             }
             .presentationDetents(
                 isPad
-                    ? [gpxExpandedDetent(gpxDetails)]
-                    : [gpxCollapsedDetent(gpxDetails), gpxExpandedDetent(gpxDetails)],
+                    ? [gpxExpandedDetent]
+                    : [gpxCollapsedDetent, gpxExpandedDetent],
                 selection: $gpxDetent
             )
             .presentationDragIndicator(isPad ? .hidden : .visible)
@@ -326,8 +349,8 @@ extension MainView {
             .presentationContentInteraction(.resizes)
             .onChange(of: gpxDetails.fileUri, initial: true) {
                 gpxDetent = isPad
-                    ? gpxExpandedDetent(gpxDetails)
-                    : gpxCollapsedDetent(gpxDetails)
+                    ? gpxExpandedDetent
+                    : gpxCollapsedDetent
             }
         } else {
             EmptyView()
