@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.Dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
+import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.JelSymbol
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
@@ -210,15 +211,17 @@ fun GpxDetailsBottomSheet(
                     ),
                 verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
             ) {
-                SecondaryButton(
-                    iconResId = SharedRes.images.ic_maps_navigation.drawableResId,
-                    text = mokoString(SharedRes.strings.gpx_details_navigation_to_start),
-                    onClick = onNavigateToStart,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(TestTags.GPX_DETAILS_NAV_START_BUTTON),
-                )
-                if (gpxDetails.waypoints.firstOrNull { it.type == WaypointType.END }?.location != null) {
+                if (gpxDetails.mapsNavigationTarget(GpxMapsNavigationType.START) != null) {
+                    SecondaryButton(
+                        iconResId = SharedRes.images.ic_maps_navigation.drawableResId,
+                        text = mokoString(SharedRes.strings.gpx_details_navigation_to_start),
+                        onClick = onNavigateToStart,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(TestTags.GPX_DETAILS_NAV_START_BUTTON),
+                    )
+                }
+                if (gpxDetails.mapsNavigationTarget(GpxMapsNavigationType.END) != null) {
                     SecondaryButton(
                         iconResId = SharedRes.images.ic_maps_navigation.drawableResId,
                         text = mokoString(SharedRes.strings.gpx_details_navigation_to_end),

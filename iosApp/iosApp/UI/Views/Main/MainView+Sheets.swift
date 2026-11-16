@@ -277,7 +277,7 @@ extension MainView {
     }
 
     private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
-        let hasEnd = gpxDetails.waypoints.contains { $0.type == .end }
+        let hasEnd = gpxDetails.mapsNavigationTarget(type: .end) != nil
         return .height(
             Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isReversible: gpxDetails.isReversible, isPad: isPad)
         )

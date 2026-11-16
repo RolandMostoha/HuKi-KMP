@@ -64,6 +64,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
 | `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
 | `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
+| `[x]`  | GPX        | Bug: Maps navigation crashed on waypoint-only GPX files (no START / END waypoint), and their "Navigate to end" button was missing.                                                                                         |
 
 ### Design
 
@@ -81,10 +82,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Layers
 
-| Status | Scope  | Task                                                                                                    |
-|--------|--------|---------------------------------------------------------------------------------------------------------|
-| `[R]`  | Layers | Add back Tuhu baase layer from HuKi-Android and Bike overlay                                            |
-| `[R]`  | Layers | Add Merreterjek Bike overlay from https://tiles.merretekerjek.hu/merretekerjek-varosban/11/1127/713.png |
+| Status | Scope  | Task                                                                                                                        |
+|--------|--------|-----------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Layers | Add back Tuhu baase layer from HuKi-Android and Bike overlay                                                                |
+| `[R]`  | Layers | Add Merreterjek Bike overlay from https://tiles.merretekerjek.hu/merretekerjek-varosban/11/1127/713.png                     |
+| `[ ]`  | Layers | When GPX layer is clicked, raise a dialog / actions menu with: 3 most recent GPX files + 1 button "Import from file system" |
 
 ### FEATURE: Landscape orientation
 

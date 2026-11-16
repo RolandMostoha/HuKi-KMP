@@ -29,6 +29,27 @@ data class GpxDetails(
         get() = slopeSegments.isNotEmpty()
 
     /**
+     * The track's edge for the given direction, or the first / last waypoint of a waypoint-only GPX. `null` when
+     * there is no distinct target, e.g. the end of a round trip or of a single-waypoint file.
+     */
+    fun mapsNavigationTarget(type: GpxMapsNavigationType): Location? {
+        val edges = waypoints.filter { it.type != WaypointType.INTERMEDIATE }
+        val target = if (edges.isEmpty()) {
+            when (type) {
+                GpxMapsNavigationType.START -> waypoints.firstOrNull()
+                GpxMapsNavigationType.END -> waypoints.drop(1).lastOrNull()
+            }
+        } else {
+            when (type) {
+                GpxMapsNavigationType.START ->
+                    edges.firstOrNull { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
+                GpxMapsNavigationType.END -> edges.firstOrNull { it.type == WaypointType.END }
+            }
+        }
+        return target?.location
+    }
+
+    /**
      * Geometry is counted, as the UiState is logged on every change and a long track makes the full string slow.
      */
     override fun toString(): String =

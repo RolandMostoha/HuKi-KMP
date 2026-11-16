@@ -59,7 +59,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteProgress
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
-import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toBlueTrail
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
@@ -1131,18 +1130,8 @@ class MainViewModel(
     }
 
     private fun openMapsNavigation(type: GpxMapsNavigationType) {
+        val targetLocation = _uiState.value.mapUiState.gpxDetails?.mapsNavigationTarget(type) ?: return
         analyticsService.logEvent(AnalyticsEvent.GpxMapsNavigationOpened)
-        val gpxDetails = _uiState.value.mapUiState.gpxDetails ?: return
-        val targetLocation = when (type) {
-            GpxMapsNavigationType.START ->
-                gpxDetails.waypoints
-                    .first { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
-                    .location
-            GpxMapsNavigationType.END ->
-                gpxDetails.waypoints
-                    .first { it.type == WaypointType.END }
-                    .location
-        }
         viewModelScope.launch {
             sendEffect(MainUiEffects.OpenMapsNavigation(targetLocation))
         }

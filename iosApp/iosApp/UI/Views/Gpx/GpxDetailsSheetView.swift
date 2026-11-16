@@ -11,8 +11,12 @@ struct GpxDetailsSheetView: View {
     let onReverseDirectionClick: () -> Void
     let onDismissRequest: () -> Void
 
-    private var hasEndWaypoint: Bool {
-        gpxDetails.waypoints.contains { $0.type == .end }
+    private var hasStartNavigation: Bool {
+        gpxDetails.mapsNavigationTarget(type: .start) != nil
+    }
+
+    private var hasEndNavigation: Bool {
+        gpxDetails.mapsNavigationTarget(type: .end) != nil
     }
 
     var body: some View {
@@ -89,12 +93,14 @@ struct GpxDetailsSheetView: View {
     @ViewBuilder
     private var navigationButtons: some View {
         VStack(spacing: 12) {
-            NavigationButton(
-                title: strings.get(id: SharedRes.strings().gpx_details_navigation_to_start),
-                action: onNavigateToStart
-            )
-            .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_NAV_START_BUTTON)
-            if hasEndWaypoint {
+            if hasStartNavigation {
+                NavigationButton(
+                    title: strings.get(id: SharedRes.strings().gpx_details_navigation_to_start),
+                    action: onNavigateToStart
+                )
+                .accessibilityIdentifier(TestTags.shared.GPX_DETAILS_NAV_START_BUTTON)
+            }
+            if hasEndNavigation {
                 NavigationButton(
                     title: strings.get(id: SharedRes.strings().gpx_details_navigation_to_end),
                     action: onNavigateToEnd
