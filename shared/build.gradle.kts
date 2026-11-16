@@ -195,6 +195,11 @@ tasks.matching { it.name.startsWith("generateMR") }.configureEach {
     dependsOn(generateWhatsNew)
 }
 
+// moko-resources compiles Assets.car in a doLast that a build cache hit skips, leaving the klib without images
+tasks.matching { it.name == "compileKotlinIosArm64" || it.name == "compileKotlinIosSimulatorArm64" }.configureEach {
+    outputs.doNotCacheIf("moko-resources Assets.car is produced outside the cached task action") { true }
+}
+
 tasks.matching { it.name == "embedAndSignAppleFrameworkForXcode" }.configureEach {
     dependsOn(generateVersionXcconfig)
 }
