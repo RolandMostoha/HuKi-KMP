@@ -4,5 +4,7 @@ enum class Layer(val value: String) {
     OUTDOORS("outdoors"),
     CITY("city"),
     SATELLITE("satellite"),
+    TUHU("tuhu"),
     HIKING("hiking"),
+    BIKE("bike"),
 }

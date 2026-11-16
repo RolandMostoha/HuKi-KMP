@@ -12,6 +12,7 @@ data class MainSessionSnapshot(
     val camera: CameraSnapshot,
     val myLocationStatus: String,
     val hikingLayerVisible: Boolean,
+    val bikeLayerVisible: Boolean = false,
     val feature: FeatureSnapshot? = null,
 ) {
     companion object {

@@ -12,10 +12,14 @@ sealed interface MenuUiEvents {
     data object TrailSymbolsGuideClicked : MenuUiEvents
     data object QuickGuideClicked : MenuUiEvents
     data object EmailClicked : MenuUiEvents
-    data object PrivacyPolicyClicked : MenuUiEvents
-    data object FacebookClicked : MenuUiEvents
-    data object GithubClicked : MenuUiEvents
     data object LocationIqClicked : MenuUiEvents
-    data object GraphhopperClicked : MenuUiEvents
+
+    sealed interface WebsiteClicked : MenuUiEvents
+    data object PrivacyPolicyClicked : WebsiteClicked
+    data object FacebookClicked : WebsiteClicked
+    data object GithubClicked : WebsiteClicked
+    data object GraphhopperClicked : WebsiteClicked
+    data object TuHuClicked : WebsiteClicked
+    data object WaymarkedTrailsClicked : WebsiteClicked
     data object SupportClicked : MenuUiEvents
 }

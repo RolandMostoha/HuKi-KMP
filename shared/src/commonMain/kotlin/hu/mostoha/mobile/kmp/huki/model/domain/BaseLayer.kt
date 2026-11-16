@@ -20,4 +20,8 @@ enum class BaseLayer(
         title = SharedRes.strings.layers_base_satellite_title,
         image = SharedRes.images.ic_layers_satellite,
     ),
+    TUHU(
+        title = SharedRes.strings.layers_base_tuhu_title,
+        image = SharedRes.images.ic_layers_tuhu,
+    ),
 }

@@ -45,6 +45,7 @@ struct MenuView: View {
                     contactSection
                     legalSection
                     supportersSection
+                    licencesSection
                 }
                 .padding(.bottom, 24)
                 .readableWidth()

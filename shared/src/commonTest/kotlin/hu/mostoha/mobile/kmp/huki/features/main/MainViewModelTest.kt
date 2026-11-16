@@ -1079,6 +1079,55 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given OUTDOORS with hiking layer - When TuHu selected then hiking toggled then OUTDOORS selected - Then hiking layer follows TuHu`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.TUHU))
+
+                with(awaitItem().mapUiState) {
+                    baseLayer shouldBe BaseLayer.TUHU
+                    hikingLayerVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.OUTDOORS))
+
+                with(awaitItem().mapUiState) {
+                    baseLayer shouldBe BaseLayer.OUTDOORS
+                    hikingLayerVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given stored TuHu base layer - When view model created - Then hiking layer is hidden`() {
+        runTest {
+            every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(baseLayer = BaseLayer.TUHU))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                baseLayer shouldBe BaseLayer.TUHU
+                hikingLayerVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
     fun `When HikingLayerSelected - Then uiState has switched hiking layer visibility`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -1094,6 +1143,26 @@ class MainViewModelTest {
                 viewModel.onEvent(MainUiEvents.HikingLayerSelected)
 
                 awaitItem().mapUiState.hikingLayerVisible shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `When BikeLayerSelected - Then uiState has switched bike layer visibility`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.bikeLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+                awaitItem().mapUiState.bikeLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+                awaitItem().mapUiState.bikeLayerVisible shouldBe false
             }
         }
     }
@@ -1999,6 +2068,55 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given waypoint-only GPX - When GpxMapsNavigationClicked END - Then effect is OpenMapsNavigation to last waypoint`() {
+        runTest {
+            val firstLocation = Location(47.0, 19.0, 300.0)
+            val lastLocation = Location(48.0, 20.0, 500.0)
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                locations = emptyList(),
+                waypoints = listOf(
+                    GpxWaypoint(firstLocation, WaypointType.INTERMEDIATE),
+                    GpxWaypoint(lastLocation, WaypointType.INTERMEDIATE),
+                ),
+            )
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.END))
+
+                awaitItem() shouldBe MainUiEffects.OpenMapsNavigation(lastLocation)
+                ensureAllEventsConsumed()
+            }
+        }
+    }
+
+    @Test
+    fun `Given GPX without waypoints - When GpxMapsNavigationClicked - Then no effect is emitted`() {
+        runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                locations = emptyList(),
+                waypoints = emptyList(),
+            )
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
+            advanceUntilIdle()
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
+                advanceUntilIdle()
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
     fun `Given no loaded GPX - When GpxMapsNavigationClicked - Then no effect is emitted`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -2468,6 +2586,30 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given TuHu selection - When onEvent - Then TuHu layer analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.TUHU))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.TUHU))
+        }
+    }
+
+    @Test
+    fun `Given bike layer selection - When onEvent - Then bike layer analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.BIKE))
+        }
+    }
+
+    @Test
     fun `Given place selection from search - When onEvent - Then place analytics event is logged`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -2621,13 +2763,18 @@ class MainViewModelTest {
     @Test
     fun `Given GPX details - When GpxMapsNavigationClicked - Then gpx maps navigation opened event is logged`() {
         runTest {
+            everySuspend { gpxRepository.readGpxFile(any()) } returns TEST_GPX_DETAILS.copy(
+                waypoints = listOf(GpxWaypoint(Location(47.0, 19.0), WaypointType.START)),
+            )
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(GpxUiEvents.GpxFileSelected("uri"))
             advanceUntilIdle()
 
             viewModel.onEvent(GpxUiEvents.GpxMapsNavigationClicked(GpxMapsNavigationType.START))
             advanceUntilIdle()
 
-            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.GpxMapsNavigationOpened)
+            analyticsService.loggedEvents.last() shouldBe AnalyticsEvent.GpxMapsNavigationOpened
         }
     }
 

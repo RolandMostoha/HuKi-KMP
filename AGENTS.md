@@ -93,7 +93,9 @@ Chores is a checklist which should be checked for every "feature complete" code 
   - Android API reference: https://docs.mapbox.com/android/maps/api/latest/
   - iOS: MapBox is used with SwiftUI
   - iOS API reference: https://docs.mapbox.com/ios/maps/api/latest/documentation/mapboxmaps/
-  - **Base layers**: `OUTDOORS` (classic style), `STANDARD` and `SATELLITE` (Standard Satellite).
+  - **Base layers**: `OUTDOORS` (classic style), `STANDARD` and `SATELLITE` (Standard Satellite), `TUHU` (turistautak.hu raster tiles on an empty style, `TuHuBaseMap`).
+    - TuHu: light only, from 150% Map label scale it loads one zoom level lower at 2x (raster tiles only scale in powers of two). Selecting it hides the hiking overlay, leaving it shows the overlay again.
+  - **Overlays** (`OverlayLayer`, drawn in `MapUiState.visibleOverlays` order): hiking trails (`tile.openstreetmap.hu/tt`, on by default) and bike routes (Waymarked Trails cycling, off by default).
   - **Dark mode** Outdoors → custom, graded with a LUT (tools/python/generate_dark_map_lut.py). Standard and Standard-Satellite have official dark variants.
   - **Tile cache**: Mapbox's default disk cache (1 GB). `OverlayTileCacheInterceptor` (Android + iOS) adds a 14-day `Cache-Control` to the hiking overlay tiles, whose server sends none. Details: `tools/docs/MAP_TILE_CACHE.md`.
 - **Location**: `LocationMonitoringService` (commonMain) is the shared location source — a `locationUpdates` stream plus a one-shot `lastKnownLocation()`.

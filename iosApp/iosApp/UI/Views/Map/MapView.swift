@@ -23,20 +23,12 @@ struct MapView: View {
     var listSheetHeight: CGFloat = Dimens.oktDetentMinHeight
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     private var isDarkMode: Bool { colorScheme == .dark }
 
     private let viewportObserver = ViewportObserver()
     private let strings = Strings()
-
-    // Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
-    // otherwise only once the camera is rotated away from north.
-    private var isCompassVisible: Bool {
-        if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
-            return true
-        }
-        return !isFacingNorth(cameraBearing)
-    }
 
     @State private var cameraBearing: Double = 0
     @State private var cameraZoom: Double = 0
@@ -63,7 +55,8 @@ struct MapView: View {
         MapReader { proxy in
             ZStack(alignment: .topTrailing) {
                 Map(viewport: $viewport) {
-                    OutdoorsColorThemeContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode)
+                    BaseLayerMapContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode,
+                                        tileScaleFactor: tileScaleFactor)
                     TapInteraction { _ in
                         dismissInfoWindows()
                         return false
@@ -76,9 +69,8 @@ struct MapView: View {
                         LandscapesMapContent(strings: strings, landscapes: landscapes, isDarkMode: isDarkMode,
                                              onEvent: onLandscapesEvent)
                     }
-                    if uiState.mapUiState.hikingLayerVisible {
-                        HikingTrailsMapContent(baseLayer: uiState.mapUiState.baseLayer)
-                    }
+                    OverlaysMapContent(baseLayer: uiState.mapUiState.baseLayer,
+                                       overlays: uiState.mapUiState.visibleOverlays)
                     if let okt = uiState.mapUiState.okt {
                         OktMapContent(
                             strings: strings,
@@ -274,6 +266,15 @@ struct MapView: View {
 }
 
 private extension MapView {
+    // Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
+    // otherwise only once the camera is rotated away from north.
+    var isCompassVisible: Bool {
+        if case .followingLiveCompass = onEnum(of: uiState.myLocationState.myLocationStatus) {
+            return true
+        }
+        return !isFacingNorth(cameraBearing)
+    }
+
     var placeMarkerLocations: [Shared.Location] {
         uiState.mapUiState.routeStops.map(\.location) + [uiState.mapUiState.placeDetails?.location].compactMap { $0 }
     }

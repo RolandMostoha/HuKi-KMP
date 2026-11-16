@@ -62,6 +62,12 @@ class OverlayTileCachePolicyTest {
                     result = null,
                 ),
                 TestCase(
+                    url = "https://tile.waymarkedtrails.org/cycling/15/18011/11536.png",
+                    code = 200,
+                    headers = SERVER_HEADERS,
+                    result = null,
+                ),
+                TestCase(
                     url = "https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/15/18011/11536.vector.pbf",
                     code = 200,
                     headers = SERVER_HEADERS,

@@ -3,10 +3,11 @@ package hu.mostoha.mobile.kmp.huki.ui.features.layers
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -21,13 +22,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.dividerColor
+import hu.mostoha.mobile.kmp.huki.ui.components.DragHandle
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 
 @Composable
@@ -35,9 +36,11 @@ fun LayersBottomSheet(
     sheetState: SheetState,
     selectedBaseLayer: BaseLayer,
     isHikingLayerSelected: Boolean,
+    isBikeLayerSelected: Boolean,
     isGpxLayerSelected: Boolean,
     onBaseLayerSelected: (BaseLayer) -> Unit,
     onHikingLayerSelected: () -> Unit,
+    onBikeLayerSelected: () -> Unit,
     onGpxLayerSelected: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -45,92 +48,94 @@ fun LayersBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.surface,
-        dragHandle = null,
         sheetState = sheetState,
+        dragHandle = {
+            DragHandle(
+                modifier = Modifier.padding(top = Dimens.Small),
+                verticalPadding = Dimens.SmallMedium,
+            )
+        },
     ) {
         Column(
             modifier = modifier
+                .verticalScroll(rememberScrollState())
                 .padding(
-                    start = Dimens.Medium,
-                    top = Dimens.Medium,
-                    end = Dimens.Medium,
+                    start = Dimens.Large,
+                    end = Dimens.Large,
                     bottom = Dimens.ModalSheetBottomPadding,
                 ),
-            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = mokoString(SharedRes.strings.layers_base_layers_title),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = mokoString(SharedRes.strings.layers_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(
+                    onClick = onDismissRequest,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_close),
+                        contentDescription = mokoString(SharedRes.strings.a11y_close),
                     )
-                },
-                actions = {
-                    IconButton(
-                        onClick = { onDismissRequest() },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        ),
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_close),
-                            contentDescription = mokoString(SharedRes.strings.a11y_close),
-                        )
-                    }
-                },
-            )
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = Dimens.ExtraLarge),
-                horizontalArrangement = Arrangement.spacedBy(36.dp),
-            ) {
+                }
+            }
+            LayersSectionTitle(text = mokoString(SharedRes.strings.layers_base_layers_title))
+            Row(modifier = Modifier.fillMaxWidth()) {
                 BaseLayer.entries.forEach { baseLayer ->
                     LayersItem(
                         title = mokoString(baseLayer.title),
                         imageRes = baseLayer.image.drawableResId,
                         selected = baseLayer == selectedBaseLayer,
-                        onClick = {
-                            onBaseLayerSelected(baseLayer)
-                        },
+                        onClick = { onBaseLayerSelected(baseLayer) },
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(Dimens.Medium))
-            Text(
-                text = mokoString(SharedRes.strings.layers_overlay_layers_title),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                ),
+            HorizontalDivider(
+                modifier = Modifier.padding(top = Dimens.Large),
+                color = MaterialTheme.colorScheme.dividerColor,
             )
-            Spacer(modifier = Modifier.height(Dimens.Medium))
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = Dimens.ExtraLarge),
-                horizontalArrangement = Arrangement.spacedBy(56.dp),
-            ) {
+            LayersSectionTitle(text = mokoString(SharedRes.strings.layers_overlay_layers_title))
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+                LayersItem(
+                    title = mokoString(SharedRes.strings.layers_overlay_bike_title),
+                    imageRes = SharedRes.images.ic_layers_bike.drawableResId,
+                    selected = isBikeLayerSelected,
+                    showCheckmark = true,
+                    onClick = onBikeLayerSelected,
+                )
                 LayersItem(
                     title = mokoString(SharedRes.strings.layers_overlay_hiking_title),
                     imageRes = SharedRes.images.ic_layers_hiking.drawableResId,
                     selected = isHikingLayerSelected,
-                    onClick = {
-                        onHikingLayerSelected()
-                    },
+                    showCheckmark = true,
+                    onClick = onHikingLayerSelected,
                 )
                 LayersItem(
                     title = mokoString(SharedRes.strings.layers_overlay_gpx_title),
                     imageRes = SharedRes.images.ic_layers_gpx.drawableResId,
                     selected = isGpxLayerSelected,
-                    onClick = {
-                        onGpxLayerSelected()
-                    },
+                    showCheckmark = true,
+                    onClick = onGpxLayerSelected,
                 )
             }
         }
     }
+}
+
+@Composable
+private fun LayersSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(top = Dimens.Large, bottom = Dimens.Medium),
+    )
 }
 
 @Preview
@@ -144,10 +149,12 @@ private fun LayersBottomSheetPreview() {
                 velocityThreshold = { 0f },
             ),
             isHikingLayerSelected = true,
+            isBikeLayerSelected = true,
             isGpxLayerSelected = false,
-            selectedBaseLayer = BaseLayer.SATELLITE,
+            selectedBaseLayer = BaseLayer.TUHU,
             onBaseLayerSelected = {},
             onHikingLayerSelected = {},
+            onBikeLayerSelected = {},
             onGpxLayerSelected = {},
             onDismissRequest = {},
         )

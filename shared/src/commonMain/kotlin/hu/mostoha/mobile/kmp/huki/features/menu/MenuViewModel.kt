@@ -52,11 +52,8 @@ class MenuViewModel(
             MenuUiEvents.TrailSymbolsGuideClicked -> sendEffect(MenuUiEffects.NavigateToTrailSymbolsGuide)
             MenuUiEvents.QuickGuideClicked -> sendEffect(MenuUiEffects.NavigateToQuickGuide)
             MenuUiEvents.EmailClicked -> openEmail()
-            MenuUiEvents.FacebookClicked -> openFacebook()
-            MenuUiEvents.GithubClicked -> openGithub()
-            MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
-            MenuUiEvents.GraphhopperClicked -> openGraphhopper()
+            is MenuUiEvents.WebsiteClicked -> openWebsite(event)
             MenuUiEvents.SupportClicked -> sendEffect(MenuUiEffects.NavigateToSupport)
         }
     }
@@ -71,24 +68,18 @@ class MenuViewModel(
         sendEffect(MenuUiEffects.SendEmail(SharedRes.strings.menu_contact_email))
     }
 
-    private fun openFacebook() {
-        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.FACEBOOK))
-        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_facebook_url))
-    }
-
-    private fun openGithub() {
-        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GITHUB))
-        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_github_url))
-    }
-
-    private fun openGraphhopper() {
-        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GRAPHHOPPER))
-        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_graphhopper_url))
-    }
-
-    private fun openPrivacyPolicy() {
-        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.PRIVACY_POLICY))
-        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_privacy_policy_url))
+    private fun openWebsite(event: MenuUiEvents.WebsiteClicked) {
+        val (link, url) = when (event) {
+            MenuUiEvents.FacebookClicked -> MenuLink.FACEBOOK to SharedRes.strings.menu_facebook_url
+            MenuUiEvents.GithubClicked -> MenuLink.GITHUB to SharedRes.strings.menu_github_url
+            MenuUiEvents.GraphhopperClicked -> MenuLink.GRAPHHOPPER to SharedRes.strings.menu_graphhopper_url
+            MenuUiEvents.TuHuClicked -> MenuLink.TUHU to SharedRes.strings.menu_tuhu_url
+            MenuUiEvents.WaymarkedTrailsClicked ->
+                MenuLink.WAYMARKED_TRAILS to SharedRes.strings.menu_waymarked_trails_url
+            MenuUiEvents.PrivacyPolicyClicked -> MenuLink.PRIVACY_POLICY to SharedRes.strings.menu_privacy_policy_url
+        }
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(link))
+        sendEffect(MenuUiEffects.OpenUrl(url))
     }
 
     private fun sendEffect(uiEffect: MenuUiEffects) {

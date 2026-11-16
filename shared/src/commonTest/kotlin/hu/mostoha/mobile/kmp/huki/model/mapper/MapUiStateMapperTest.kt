@@ -68,4 +68,68 @@ class MapUiStateMapperTest {
 
         actual shouldBe state
     }
+
+    @Test
+    fun `Given open Landscapes on TuHu - When withoutLandscapes - Then hiking layer stays hidden`() {
+        val state = MapUiState(
+            baseLayer = BaseLayer.TUHU,
+            hikingLayerVisible = false,
+            landscapes = LandscapesUiState(
+                landscapes = emptyList(),
+                outlinesGeoJson = "{}",
+                labelsGeoJson = "{}",
+                hungaryMaskGeoJson = "{}",
+            ),
+        )
+
+        val actual = state.withoutLandscapes()
+
+        actual shouldBe MapUiState(baseLayer = BaseLayer.TUHU, hikingLayerVisible = false)
+    }
+
+    @Test
+    fun `Given base layer transitions - When withBaseLayer - Then hiking layer follows the TuHu rule`() {
+        withBaseLayerTestCases().forEach { testCase ->
+            val state = MapUiState(baseLayer = testCase.from, hikingLayerVisible = testCase.hikingLayerVisible)
+
+            val actual = state.withBaseLayer(testCase.to)
+
+            actual shouldBe MapUiState(baseLayer = testCase.to, hikingLayerVisible = testCase.expected)
+        }
+    }
+
+    @Test
+    fun `Given open Landscapes - When withBaseLayer leaves TuHu - Then hiking layer stays hidden`() {
+        val landscapes = LandscapesUiState(
+            landscapes = emptyList(),
+            outlinesGeoJson = "{}",
+            labelsGeoJson = "{}",
+            hungaryMaskGeoJson = "{}",
+        )
+        val state = MapUiState(baseLayer = BaseLayer.TUHU, hikingLayerVisible = false, landscapes = landscapes)
+
+        val actual = state.withBaseLayer(BaseLayer.OUTDOORS)
+
+        actual shouldBe state.copy(baseLayer = BaseLayer.OUTDOORS)
+    }
+
+    private data class WithBaseLayerTestCase(
+        val from: BaseLayer,
+        val to: BaseLayer,
+        val hikingLayerVisible: Boolean,
+        val expected: Boolean,
+    )
+
+    companion object {
+        private fun withBaseLayerTestCases() =
+            listOf(
+                WithBaseLayerTestCase(BaseLayer.OUTDOORS, BaseLayer.TUHU, hikingLayerVisible = true, expected = false),
+                WithBaseLayerTestCase(BaseLayer.SATELLITE, BaseLayer.TUHU, hikingLayerVisible = false, expected = false),
+                WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.OUTDOORS, hikingLayerVisible = false, expected = true),
+                WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.CITY, hikingLayerVisible = true, expected = true),
+                WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.TUHU, hikingLayerVisible = true, expected = true),
+                WithBaseLayerTestCase(BaseLayer.OUTDOORS, BaseLayer.CITY, hikingLayerVisible = false, expected = false),
+                WithBaseLayerTestCase(BaseLayer.CITY, BaseLayer.SATELLITE, hikingLayerVisible = true, expected = true),
+            )
+    }
 }

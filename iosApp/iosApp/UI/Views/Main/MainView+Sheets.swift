@@ -230,12 +230,16 @@ extension MainView {
             strings: strings,
             selectedBaseLayer: uiState.mapUiState.baseLayer,
             isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
+            isBikeLayerSelected: uiState.mapUiState.bikeLayerVisible,
             isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
             onBaseLayerSelected: { baseLayer in
                 viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
             },
             onHikingLayerSelected: {
                 viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
+            },
+            onBikeLayerSelected: {
+                viewModel.onEvent(event: MainUiEventsBikeLayerSelected())
             },
             onGpxLayerSelected: {
                 viewModel.onEvent(event: GpxUiEventsGpxLayerSelected())
@@ -277,7 +281,7 @@ extension MainView {
     }
 
     private func gpxExpandedDetent(_ gpxDetails: GpxDetails) -> PresentationDetent {
-        let hasEnd = gpxDetails.waypoints.contains { $0.type == .end }
+        let hasEnd = gpxDetails.mapsNavigationTarget(type: .end) != nil
         return .height(
             Dimens.gpxDetailsExpandedHeight(hasEnd: hasEnd, isReversible: gpxDetails.isReversible, isPad: isPad)
         )

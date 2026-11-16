@@ -7,6 +7,7 @@ data class MainSession(
     val cameraPadding: ContentPadding?,
     val myLocationStatus: MyLocationStatus,
     val hikingLayerVisible: Boolean,
+    val bikeLayerVisible: Boolean,
     val feature: FeatureSession?,
 )
 

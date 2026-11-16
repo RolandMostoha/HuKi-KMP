@@ -405,6 +405,30 @@ private fun MenuContent(
                     )
                 }
             }
+            MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_licences))
+            MenuCard {
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_tuhu),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_tuhu),
+                    testTag = TestTags.MENU_ROW_TUHU,
+                    onClick = { onEvent(MenuUiEvents.TuHuClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_tuhu_description),
+                ) {
+                    TintedRowIcon(SharedRes.images.ic_link.drawableResId)
+                }
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_waymarked_trails),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_waymarked_trails),
+                    testTag = TestTags.MENU_ROW_WAYMARKED_TRAILS,
+                    onClick = { onEvent(MenuUiEvents.WaymarkedTrailsClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_waymarked_trails_description),
+                ) {
+                    TintedRowIcon(SharedRes.images.ic_link.drawableResId)
+                }
+            }
         }
     }
 }

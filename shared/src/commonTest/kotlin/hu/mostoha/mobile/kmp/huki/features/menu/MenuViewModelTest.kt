@@ -222,6 +222,34 @@ class MenuViewModelTest {
     }
 
     @Test
+    fun `Given default state - When TuHuClicked event - Then OpenUrl effect with TuHu url is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.TuHuClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_tuhu_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.TUHU))
+            }
+        }
+    }
+
+    @Test
+    fun `Given default state - When WaymarkedTrailsClicked event - Then OpenUrl effect with Waymarked Trails url is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.WaymarkedTrailsClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.OpenUrl(SharedRes.strings.menu_waymarked_trails_url)
+                analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.MenuLinkClicked(MenuLink.WAYMARKED_TRAILS))
+            }
+        }
+    }
+
+    @Test
     fun `Given default state - When PrivacyPolicyClicked event - Then OpenUrl effect with privacy policy url is emitted`() {
         runTest {
             menuViewModel.menuUiEffects.test {

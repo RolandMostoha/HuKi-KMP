@@ -59,7 +59,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteProgress
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
-import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.model.domain.toLocations
 import hu.mostoha.mobile.kmp.huki.model.mapper.toBlueTrail
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHikeRecommender
@@ -78,6 +77,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.model.mapper.toUrl
+import hu.mostoha.mobile.kmp.huki.model.mapper.withBaseLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutLandscapes
@@ -196,7 +196,7 @@ class MainViewModel(
      */
     val sessionSnapshots: Flow<String> = combine(_uiState, routePlannerSession) { uiState, routePlanner ->
         val session = uiState.toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlanner)
-        Triple(session.myLocationStatus, session.hikingLayerVisible, session.feature)
+        Triple(session.myLocationStatus, session.hikingLayerVisible to session.bikeLayerVisible, session.feature)
     }
         .distinctUntilChanged()
         .map { sessionSnapshot() }
@@ -224,7 +224,7 @@ class MainViewModel(
         initMyLocationMonitoring()
         initWhatsNew(restoredSession, hasLaunchLink)
         initLaunchArgGpx()
-        observeSettings()
+        observeSettings(restoredSession)
         observeSheetViews()
         observeIncomingLinks()
         observeSupporter()
@@ -286,6 +286,7 @@ class MainViewModel(
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
             MainUiEvents.HikingLayerSelected -> toggleHikingLayer()
+            MainUiEvents.BikeLayerSelected -> toggleBikeLayer()
             // Map label scale events
             MainUiEvents.MapLabelScaleClicked -> showSheet(Sheet.MapLabelScale)
             is MainUiEvents.MapLabelScaleChanged -> previewMapLabelScale(event.factor)
@@ -853,7 +854,9 @@ class MainViewModel(
         crashlyticsService.log("Session: restoring ${restoredFeature.value}")
         mapCameraStore.update(session.camera)
         cameraPadding = session.cameraPadding
-        _uiState.updateMapUiState { it.copy(hikingLayerVisible = session.hikingLayerVisible) }
+        _uiState.updateMapUiState {
+            it.copy(hikingLayerVisible = session.hikingLayerVisible, bikeLayerVisible = session.bikeLayerVisible)
+        }
         when (val feature = session.feature) {
             is FeatureSession.Gpx -> restoreGpx(feature)
             is FeatureSession.Okt -> openOkt(feature.type, restored = feature)
@@ -980,16 +983,24 @@ class MainViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun observeSettings() {
+    private fun observeSettings(restoredSession: MainSession?) {
+        var keepRestoredHikingLayer = restoredSession != null
         settingsRepository.settings
             .distinctUntilChanged()
             .onEach { settings ->
+                // A restored session keeps its saved hiking layer visibility, even on TuHu
+                val keepHikingLayer = keepRestoredHikingLayer
+                keepRestoredHikingLayer = false
                 _uiState.update {
+                    val mapUiState = if (keepHikingLayer) {
+                        it.mapUiState.copy(baseLayer = settings.baseLayer)
+                    } else {
+                        it.mapUiState.withBaseLayer(settings.baseLayer)
+                    }
                     it.copy(
                         mapZoomControlsAlwaysVisible = settings.mapZoomControlsVisible,
                         themeMode = settings.themeMode,
-                        mapUiState = it.mapUiState.copy(
-                            baseLayer = settings.baseLayer,
+                        mapUiState = mapUiState.copy(
                             rotationEnabled = settings.mapRotationEnabled,
                             labelScale = settings.mapLabelScale,
                         ),
@@ -1069,9 +1080,7 @@ class MainViewModel(
 
     private fun selectBaseLayer(baseLayer: BaseLayer) {
         analyticsService.logEvent(AnalyticsEvent.LayerSelected(baseLayer.toLayer()))
-        _uiState.updateMapUiState {
-            it.copy(baseLayer = baseLayer)
-        }
+        _uiState.updateMapUiState { it.withBaseLayer(baseLayer) }
         viewModelScope.launch {
             settingsRepository.setBaseLayer(baseLayer)
         }
@@ -1096,6 +1105,11 @@ class MainViewModel(
         _uiState.updateMapUiState {
             it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
         }
+    }
+
+    private fun toggleBikeLayer() {
+        analyticsService.logEvent(AnalyticsEvent.LayerSelected(Layer.BIKE))
+        _uiState.updateMapUiState { it.copy(bikeLayerVisible = it.bikeLayerVisible.not()) }
     }
 
     private fun switchGpxLayer() {
@@ -1131,18 +1145,8 @@ class MainViewModel(
     }
 
     private fun openMapsNavigation(type: GpxMapsNavigationType) {
+        val targetLocation = _uiState.value.mapUiState.gpxDetails?.mapsNavigationTarget(type) ?: return
         analyticsService.logEvent(AnalyticsEvent.GpxMapsNavigationOpened)
-        val gpxDetails = _uiState.value.mapUiState.gpxDetails ?: return
-        val targetLocation = when (type) {
-            GpxMapsNavigationType.START ->
-                gpxDetails.waypoints
-                    .first { it.type == WaypointType.START || it.type == WaypointType.ROUND_TRIP }
-                    .location
-            GpxMapsNavigationType.END ->
-                gpxDetails.waypoints
-                    .first { it.type == WaypointType.END }
-                    .location
-        }
         viewModelScope.launch {
             sendEffect(MainUiEffects.OpenMapsNavigation(targetLocation))
         }
