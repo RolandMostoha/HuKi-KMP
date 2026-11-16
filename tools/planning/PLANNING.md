@@ -48,7 +48,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Feature                                                                                                                                                                                                                                      |
 |--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Android-Design: Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png)                                                                                                                             |
 | `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                                                                    |
 | `[ ]`  | App store preview video (optional)                                                                                                                                                                                                           |
 | `[ ]`  | App store header picture/video (optional)                                                                                                                                                                                                    |
@@ -58,35 +57,34 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### Bugs
 
-| Status | Scope      | Bug                                                                                                                                                                                                                                                                                                                                                                                                     |
-|--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later"                                                                                                                                                                              |
-| `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                                                                                                                                                                                                      |
-| `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                                                                                                                                                                                                  |
-| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                                                                                                                                                                                                     |
+| Status | Scope      | Bug                                                                                                                                                                                                                        |
+|--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | Altitude   | iOS: Altitude is barely readable in dark mode, also scale bar                                                                                                                                                              |
+| `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
+| `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
+| `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
+| `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
 
 ### Design
 
 | Status | Scope          | Bug                                                                                              |
 |--------|----------------|--------------------------------------------------------------------------------------------------|
 | `[ ]`  | Landscapes&OKT | Slow down the section / landscape animations, moving from section to section happens too quickly |
-
-
-### FEATURE: Analytics
-
-| Status | Scope     | Task                                                                                                                |
-|--------|-----------|---------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Analytics | My Location: No-signal / GPS lost                                                                                   |
-| `[ ]`  | Analytics | Search with no results                                                                                              |
-| `[ ]`  | Analytics | GPX as params: attach distance_km and waypoint_count as params                                                      |
-| `[ ]`  | Analytics | whats_new_shown, whats_new_dismissed                                                                                |
-| `[ ]`  | Analytics | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
+| `[ ]`  | GPX            | Design: Use pills for distance and travel time ![img_11.png](img_11.png)                         |
+| `[ ]`  | Android-Design | Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png) |
 
 ### FEATURE: Map
 
 | Status | Scope | Task                                                                                                                                                               |
 |--------|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Map   | For people with poor vision, create a "high-contrast" version, which add more visibility to labels, map elements.                                                  |
+
+### FEATURE: Layers
+
+| Status | Scope  | Task                                                                                                    |
+|--------|--------|---------------------------------------------------------------------------------------------------------|
+| `[R]`  | Layers | Add back Tuhu baase layer from HuKi-Android and Bike overlay                                            |
+| `[R]`  | Layers | Add Merreterjek Bike overlay from https://tiles.merretekerjek.hu/merretekerjek-varosban/11/1127/713.png |
 
 ### FEATURE: Landscape orientation
 
@@ -104,6 +102,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | MyLocation | Instead of the arrow compass indicator in My Location marker, use cone shaped one. ![img_5.png](img_5.png). Legacy vs today for reference:![img_6.png](img_6.png)                                                                                                     |
 | `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
@@ -119,18 +118,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|--------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Destinations | Add VIA FERRATA as challenge                                                                                                          |
 | `[ ]`  | Destinations | Kisvasutak: Show waypoints. GPX generation is ready: `generate-scenic-railway-gpx` skill (`tools/python/generate_scenic_railways.py`) |
-
-### FEATURE: Discover
-
-| Status | Scope    | Task |
-|--------|----------|------|
-| `[ ]`  | Discover |      |
-
-### FEATURE: OKT
-
-| Status | Scope | Task |
-|--------|-------|------|
-| `[ ]`  | OKT   |      |
 
 ### FEATURE: Versioning + WhatsNew
 
@@ -172,32 +159,43 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Route Planner
 
-| Status | Scope        | Task                                                                                                                                                                                                                                                                                |
-|--------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                               |
-| `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                                |
-| `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                                                                                                                |
-| `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                                                                                                     |
-| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                                      |
-| `[?]`  | RoutePlanner | Add support for removing stops from Map during RoutePlan phase. If users click on the wps, there should be a toolbar "Delete Stop" button, which removes the waypoint.                                                                                                              |
-| `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                           |
-| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                                                                                                        |
-| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                                                                                                                  |
+| Status | Scope        | Task                                                                                                                                                                                           |
+|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[R]`  | RoutePlanner | Add RoundTrip option to route planner as 4th element in the segmented control. It brings up one destination, and distance tweaker                                                              |
+| `[R]`  | RoutePlanner | Make route plans max 15 WPs instead of 10                                                                                                                                                      |
+| `[R]`  | RoutePlanner | If the waypoint is clicked again, it highlihts the selected one and you should be able to edit the actual waypoint (override with a new entry)                                                 |
+| `[R]`  | RoutePlanner | Make the waypoints clickable from the map. which highlights and shows and selects the WP in the sheet                                                                                          |
+| `[R]`  | RoutePlanner | Add comment possibility to route planner. Also show the GPX comments in the infowindow                                                                                                         |
+| `[R]`  | RoutePlanner | One-time hint when the planner opens: "Long-press the map to add a stop" (only 128 of ~300 planner users found the long-press)                                                                 |
+| `[R]`  | RoutePlanner | Add title for "make a roundtrip" button for visibility ![img_10.png](img_10.png)                                                                                                               |
+| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                          |
+| `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                           |
+| `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                           |
+| `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                |
+| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly. |
+| `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.      |
+| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                   |
+| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                             |
 
+
+### FEATURE: Discover
+
+| Status | Scope    | Task |
+|--------|----------|------|
+| `[ ]`  | Discover |      |
+
+### FEATURE: OKT
+
+| Status | Scope | Task |
+|--------|-------|------|
+| `[ ]`  | OKT   |      |
 
 ### FEATURE: Menu & Settings
 
-| Status | Scope    | Task                                                      |
-|--------|----------|-----------------------------------------------------------|
-
-### FEATURE: Menu - Guides
-
-Goal: a new section in Menu, with 1 page guides of different topics.
-
-| Status | Scope  | Task                                                                                                                                              |
-|--------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                                                                                         |
-| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section.                                                               |
+| Status | Scope  | Task                                                                                |
+|--------|--------|-------------------------------------------------------------------------------------|
+| `[ ]`  | Guides | Add "Problem on route" to Guides section.                                           |
+| `[ ]`  | Guides | Add a section for "Slope coloring" and "Travel Time calculation" to Guides section. |
 
 #### Guides: Report problem on route
 
@@ -217,9 +215,27 @@ Goal: a new section in Menu, with 1 page guides of different topics.
 |--------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | Support | If the user is supporter, implement an easter egg. At random times (make it rare), show the chosen animal as a POI in the map. It should have a reveal animation, with a drop shadow. Sg like: ![img_17.png](img_17.png). On click it shows a thanks info window and dismisses shortly after.                                                                                                          |
 
+### FEATURE: Analytics
+
+| Status | Scope     | Task                                                                                                                |
+|--------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Analytics | My Location: No-signal / GPS lost                                                                                   |
+| `[ ]`  | Analytics | Search with no results                                                                                              |
+| `[ ]`  | Analytics | GPX as params: attach distance_km and waypoint_count as params                                                      |
+| `[ ]`  | Analytics | whats_new_shown, whats_new_dismissed                                                                                |
+| `[ ]`  | Analytics | Offline - somehow monitor if user goes offline -> really helpful measurement, how many ppl experiencing it on hikes |
+
 Lets plan the support strategy for Android (google-play-billing) - iOS().
 
 ## Ideas / Experimental features
+
+### AI feature / AppFunctions
+
+Users describe what they want in the hike, and ChatBot can process the stops and creates a route plan
+
+![img_4.png](img_4.png)
+
+In this example, HuKI can process the stops suggested by ChatGPT and creates a route plan.
 
 ### Hosting our own tile server for hiking layer
 
