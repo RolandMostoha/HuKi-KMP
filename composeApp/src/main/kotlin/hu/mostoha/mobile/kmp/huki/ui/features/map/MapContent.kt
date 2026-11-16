@@ -315,6 +315,7 @@ fun MapContent(
         }
         MapAltitude(
             altitude = altitude,
+            isDarkMap = mapUiState.baseLayer.isDarkMap(isDarkMode),
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(insetPadding)

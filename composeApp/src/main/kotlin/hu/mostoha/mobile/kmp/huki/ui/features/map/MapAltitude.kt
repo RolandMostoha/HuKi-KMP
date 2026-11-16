@@ -1,11 +1,13 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,7 +31,7 @@ import hu.mostoha.mobile.kmp.huki.util.mokoString
 private const val ALTITUDE_ICON = "▲"
 
 @Composable
-fun MapAltitude(altitude: Int?, modifier: Modifier = Modifier) {
+fun MapAltitude(altitude: Int?, isDarkMap: Boolean, modifier: Modifier = Modifier) {
     val lastAltitude = remember { mutableStateOf(altitude) }
     if (altitude != null) {
         lastAltitude.value = altitude
@@ -40,17 +42,20 @@ fun MapAltitude(altitude: Int?, modifier: Modifier = Modifier) {
         enter = fadeIn(),
         exit = fadeOut(),
     ) {
-        lastAltitude.value?.let { AltitudeLabel(altitude = it) }
+        lastAltitude.value?.let { AltitudeLabel(altitude = it, isDarkMap = isDarkMap) }
     }
 }
 
 @Composable
-private fun AltitudeLabel(altitude: Int) {
+private fun AltitudeLabel(altitude: Int, isDarkMap: Boolean) {
     val formattedAltitude = DistanceFormatter.formatMeters(altitude)
     val description = mokoString(SharedRes.strings.my_location_a11y_altitude, formattedAltitude)
     val text = "$ALTITUDE_ICON $formattedAltitude"
     val textStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.4.sp)
-    val haloWidth = with(LocalDensity.current) { 2.dp.toPx() }
+    // The stroke is centred on the glyph outline, so 3dp reaches 1.5dp past it
+    val haloWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    val textColor by animateColorAsState(if (isDarkMap) Color.White else Color.Black)
+    val haloColor by animateColorAsState(if (isDarkMap) Color.Black else Color.White)
     Box(
         modifier = Modifier.clearAndSetSemantics {
             testTag = TestTags.MAIN_ALTITUDE
@@ -60,16 +65,22 @@ private fun AltitudeLabel(altitude: Int) {
         Text(
             text = text,
             style = textStyle.copy(
-                color = Color.White,
+                color = haloColor,
                 drawStyle = Stroke(width = haloWidth, join = StrokeJoin.Round),
             ),
         )
-        Text(text = text, style = textStyle.copy(color = Color.Black))
+        Text(text = text, style = textStyle.copy(color = textColor))
     }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFD8E8C8)
 @Composable
 private fun MapAltitudePreview() {
-    MapAltitude(altitude = 1124)
+    MapAltitude(altitude = 1124, isDarkMap = false)
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF292E29)
+@Composable
+private fun MapAltitudeDarkPreview() {
+    MapAltitude(altitude = 103, isDarkMap = true)
 }

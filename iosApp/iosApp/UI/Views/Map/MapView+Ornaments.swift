@@ -5,7 +5,7 @@ extension MapView {
     var altitudeOrnament: some View {
         ZStack {
             if let altitude = uiState.myLocationState.altitude {
-                MapAltitudeView(altitude: altitude.int32Value)
+                MapAltitudeView(altitude: altitude.int32Value, baseLayer: uiState.mapUiState.baseLayer)
                     .transition(.opacity)
             }
         }
