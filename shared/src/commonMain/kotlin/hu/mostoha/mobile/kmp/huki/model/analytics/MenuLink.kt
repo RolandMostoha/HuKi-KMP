@@ -7,4 +7,5 @@ enum class MenuLink(val value: String) {
     GRAPHHOPPER("graphhopper"),
     PRIVACY_POLICY("privacy_policy"),
     TUHU("tuhu"),
+    WAYMARKED_TRAILS("waymarked_trails"),
 }

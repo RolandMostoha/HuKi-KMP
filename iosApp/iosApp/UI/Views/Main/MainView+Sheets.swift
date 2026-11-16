@@ -230,12 +230,16 @@ extension MainView {
             strings: strings,
             selectedBaseLayer: uiState.mapUiState.baseLayer,
             isHikingLayerSelected: uiState.mapUiState.hikingLayerVisible,
+            isBikeLayerSelected: uiState.mapUiState.bikeLayerVisible,
             isGpxLayerSelected: uiState.mapUiState.gpxLayerVisible,
             onBaseLayerSelected: { baseLayer in
                 viewModel.onEvent(event: MainUiEventsBaseLayerSelected(baseLayer: baseLayer))
             },
             onHikingLayerSelected: {
                 viewModel.onEvent(event: MainUiEventsHikingLayerSelected())
+            },
+            onBikeLayerSelected: {
+                viewModel.onEvent(event: MainUiEventsBikeLayerSelected())
             },
             onGpxLayerSelected: {
                 viewModel.onEvent(event: GpxUiEventsGpxLayerSelected())

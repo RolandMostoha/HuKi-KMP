@@ -52,6 +52,15 @@ class SessionMapperTest {
     }
 
     @Test
+    fun `Given a session saved before the bike layer - When decoded - Then the bike layer is hidden`() {
+        val json = SESSION.copy(bikeLayerVisible = true).encodeSession().replace(",\"bikeLayerVisible\":true", "")
+
+        val actual = decodeSession(json)
+
+        actual?.bikeLayerVisible shouldBe false
+    }
+
+    @Test
     fun `Given malformed JSON - When decoded - Then it is dropped`() {
         val json = "{not json"
 
@@ -71,6 +80,7 @@ class SessionMapperTest {
             cameraPadding = ContentPadding.MAP_OKT_STARTED,
             myLocationStatus = MyLocationStatus.Default,
             hikingLayerVisible = true,
+            bikeLayerVisible = false,
             feature = null,
         )
         private val OKT_FEATURE = FeatureSession.Okt(
@@ -99,6 +109,7 @@ class SessionMapperTest {
         fun testCases() =
             listOf(
                 TestCase(input = SESSION, result = SESSION),
+                TestCase(input = SESSION.copy(bikeLayerVisible = true), result = SESSION.copy(bikeLayerVisible = true)),
                 TestCase(
                     input = SESSION.copy(myLocationStatus = MyLocationStatus.FollowingLiveCompass),
                     result = SESSION.copy(myLocationStatus = MyLocationStatus.FollowingLiveCompass),

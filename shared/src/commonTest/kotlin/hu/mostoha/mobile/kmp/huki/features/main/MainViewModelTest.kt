@@ -1148,6 +1148,26 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `When BikeLayerSelected - Then uiState has switched bike layer visibility`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.bikeLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+                awaitItem().mapUiState.bikeLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+                awaitItem().mapUiState.bikeLayerVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
     fun `Given stored base layer - When view model created - Then uiState has the stored base layer`() {
         runTest {
             every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(baseLayer = BaseLayer.SATELLITE))
@@ -2574,6 +2594,18 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.TUHU))
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.TUHU))
+        }
+    }
+
+    @Test
+    fun `Given bike layer selection - When onEvent - Then bike layer analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BikeLayerSelected)
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.BIKE))
         }
     }
 

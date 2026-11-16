@@ -69,9 +69,8 @@ struct MapView: View {
                         LandscapesMapContent(strings: strings, landscapes: landscapes, isDarkMode: isDarkMode,
                                              onEvent: onLandscapesEvent)
                     }
-                    if uiState.mapUiState.hikingLayerVisible {
-                        HikingTrailsMapContent(baseLayer: uiState.mapUiState.baseLayer)
-                    }
+                    OverlaysMapContent(baseLayer: uiState.mapUiState.baseLayer,
+                                       overlays: uiState.mapUiState.visibleOverlays)
                     if let okt = uiState.mapUiState.okt {
                         OktMapContent(
                             strings: strings,

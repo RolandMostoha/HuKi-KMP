@@ -16,6 +16,8 @@ appId: ${APP_ID}
 - assertVisible: "Base Map"
 - tapOn: "Satellite"
 - tapOn: "Hiking Trails"
+- tapOn: "Bike Routes"
+- tapOn: "Bike Routes"
 - tapOn: "TuHu"
 - tapOn: "Outdoors"
 - tapOn: "Close"

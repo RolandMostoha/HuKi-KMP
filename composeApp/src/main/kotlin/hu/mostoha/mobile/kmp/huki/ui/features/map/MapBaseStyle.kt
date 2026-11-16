@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.style.GenericStyle
@@ -16,6 +17,7 @@ import com.mapbox.maps.extension.compose.style.standard.MapboxStandardStyle
 import com.mapbox.maps.extension.compose.style.standard.rememberStandardSatelliteStyleState
 import com.mapbox.maps.extension.compose.style.standard.rememberStandardStyleState
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.TuHuBaseMap
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
@@ -27,12 +29,12 @@ private typealias MapSlotContent = @Composable () -> Unit
 fun MapBaseStyle(
     baseLayer: BaseLayer,
     isDarkMode: Boolean,
-    isHikingLayerVisible: Boolean,
+    overlays: List<OverlayLayer>,
     tileScaleFactor: Float,
 ) {
     val lightPreset = if (isDarkMode) LightPresetValue.NIGHT else LightPresetValue.DAY
-    val hikingSlotContent: MapSlotContent? = if (isHikingLayerVisible) {
-        { HikingTrailsLayer() }
+    val overlaySlotContent: MapSlotContent? = if (overlays.isNotEmpty()) {
+        { OverlayTileLayers(overlays) }
     } else {
         null
     }
@@ -44,10 +46,10 @@ fun MapBaseStyle(
 
             GenericStyle(
                 style = Style.OUTDOORS,
-                layerPositionedContent = remember(isHikingLayerVisible) {
+                layerPositionedContent = remember(overlays) {
                     layerPositionedContent {
-                        if (isHikingLayerVisible) {
-                            belowLayer(MapConstants.OUTDOORS_HIKING_LAYER_BELOW_ID) { HikingTrailsLayer() }
+                        if (overlays.isNotEmpty()) {
+                            belowLayer(MapConstants.OUTDOORS_HIKING_LAYER_BELOW_ID) { OverlayTileLayers(overlays) }
                         }
                     }
                 },
@@ -58,7 +60,7 @@ fun MapBaseStyle(
         }
         BaseLayer.CITY -> {
             MapboxStandardStyle(
-                middleSlot = hikingSlotContent,
+                middleSlot = overlaySlotContent,
                 standardStyleState = rememberStandardStyleState {
                     configurationsState.lightPreset = lightPreset
                 },
@@ -66,7 +68,7 @@ fun MapBaseStyle(
         }
         BaseLayer.SATELLITE -> {
             MapboxStandardSatelliteStyle(
-                middleSlot = hikingSlotContent,
+                middleSlot = overlaySlotContent,
                 standardSatelliteStyleState = rememberStandardSatelliteStyleState {
                     configurationsState.lightPreset = lightPreset
                 },
@@ -76,11 +78,14 @@ fun MapBaseStyle(
             val tileSize = TuHuBaseMap.tileSize(tileScaleFactor)
             GenericStyle(
                 style = TuHuBaseMap.STYLE_JSON,
-                layerPositionedContent = remember(isHikingLayerVisible, tileSize) {
+                layerPositionedContent = remember(overlays, tileSize) {
                     layerPositionedContent {
-                        aboveLayer(TuHuBaseMap.BACKGROUND_LAYER_ID) { TuHuLayer(tileSize) }
-                        if (isHikingLayerVisible) {
-                            aboveLayer(TuHuBaseMap.layerId(tileSize)) { HikingTrailsLayer() }
+                        aboveLayer(TuHuBaseMap.BACKGROUND_LAYER_ID) {
+                            // Re-added with the overlays, or a new overlay lands under the TuHu tiles
+                            key(overlays) {
+                                TuHuLayer(tileSize)
+                                OverlayTileLayers(overlays)
+                            }
                         }
                     }
                 },

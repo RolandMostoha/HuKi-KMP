@@ -36,9 +36,11 @@ fun LayersBottomSheet(
     sheetState: SheetState,
     selectedBaseLayer: BaseLayer,
     isHikingLayerSelected: Boolean,
+    isBikeLayerSelected: Boolean,
     isGpxLayerSelected: Boolean,
     onBaseLayerSelected: (BaseLayer) -> Unit,
     onHikingLayerSelected: () -> Unit,
+    onBikeLayerSelected: () -> Unit,
     onGpxLayerSelected: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -99,7 +101,14 @@ fun LayersBottomSheet(
                 color = MaterialTheme.colorScheme.dividerColor,
             )
             LayersSectionTitle(text = mokoString(SharedRes.strings.layers_overlay_layers_title))
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraLarge)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+                LayersItem(
+                    title = mokoString(SharedRes.strings.layers_overlay_bike_title),
+                    imageRes = SharedRes.images.ic_layers_bike.drawableResId,
+                    selected = isBikeLayerSelected,
+                    showCheckmark = true,
+                    onClick = onBikeLayerSelected,
+                )
                 LayersItem(
                     title = mokoString(SharedRes.strings.layers_overlay_hiking_title),
                     imageRes = SharedRes.images.ic_layers_hiking.drawableResId,
@@ -140,10 +149,12 @@ private fun LayersBottomSheetPreview() {
                 velocityThreshold = { 0f },
             ),
             isHikingLayerSelected = true,
+            isBikeLayerSelected = true,
             isGpxLayerSelected = false,
             selectedBaseLayer = BaseLayer.TUHU,
             onBaseLayerSelected = {},
             onHikingLayerSelected = {},
+            onBikeLayerSelected = {},
             onGpxLayerSelected = {},
             onDismissRequest = {},
         )

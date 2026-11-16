@@ -11,7 +11,14 @@ enum class OverlayLayer(
     val maxZoom: Long,
     val prefetchZoomDelta: Long,
     val maxOverscaleFactorForParentTiles: Long,
-    val cacheMaxAge: Duration,
+    /**
+     * Added when the tile server sends no cache headers, `null` keeps the server's own.
+     */
+    val cacheMaxAge: Duration?,
+    /**
+     * Listed in the Mapbox attribution dialog, which opens HTML links.
+     */
+    val attribution: String? = null,
 ) {
     TURISTAUTAK(
         layerId = "turistautak",
@@ -28,5 +35,17 @@ enum class OverlayLayer(
         // Limits how much an already loaded lower-zoom tile can be scaled up to fill in for a loading tile
         maxOverscaleFactorForParentTiles = 1,
         cacheMaxAge = 14.days,
+    ),
+    WAYMARKED_CYCLING(
+        layerId = "waymarked-cycling",
+        tiles = listOf("https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"),
+        tileSize = 256,
+        minZoom = 5,
+        maxZoom = 18,
+        prefetchZoomDelta = 0,
+        maxOverscaleFactorForParentTiles = 1,
+        cacheMaxAge = null,
+        attribution = "<a href=\"https://waymarkedtrails.org/\">© Waymarked Trails (CC BY-SA 3.0)</a> " +
+            "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap</a>",
     ),
 }

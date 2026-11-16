@@ -58,6 +58,7 @@ class MenuViewModel(
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
             MenuUiEvents.GraphhopperClicked -> openGraphhopper()
             MenuUiEvents.TuHuClicked -> openTuHu()
+            MenuUiEvents.WaymarkedTrailsClicked -> openWaymarkedTrails()
             MenuUiEvents.SupportClicked -> sendEffect(MenuUiEffects.NavigateToSupport)
         }
     }
@@ -90,6 +91,11 @@ class MenuViewModel(
     private fun openTuHu() {
         analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.TUHU))
         sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_tuhu_url))
+    }
+
+    private fun openWaymarkedTrails() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.WAYMARKED_TRAILS))
+        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_waymarked_trails_url))
     }
 
     private fun openPrivacyPolicy() {

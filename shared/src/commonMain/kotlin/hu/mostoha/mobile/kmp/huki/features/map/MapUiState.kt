@@ -5,6 +5,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DistanceInfoWindowData
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
+import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
@@ -15,6 +16,7 @@ data class MapUiState(
     val rotationEnabled: Boolean = UserPreferences.DEFAULTS.mapRotationEnabled,
     val labelScale: MapLabelScale = UserPreferences.DEFAULTS.mapLabelScale,
     val hikingLayerVisible: Boolean = true,
+    val bikeLayerVisible: Boolean = false,
     val gpxLayerVisible: Boolean = false,
     val gpxRouteVisible: Boolean = true,
     val gpxDetails: GpxDetails? = null,
@@ -34,6 +36,15 @@ data class MapUiState(
 
     val routePlanMarkers: List<GpxWaypoint>
         get() = routePlan?.toGpxWaypoints() ?: routePlanWaypoints
+
+    /**
+     * In drawing order, bike routes on top of the hiking trails. Open Landscapes hide the bike routes too.
+     */
+    val visibleOverlays: List<OverlayLayer>
+        get() = buildList {
+            if (hikingLayerVisible) add(OverlayLayer.TURISTAUTAK)
+            if (bikeLayerVisible && landscapes == null) add(OverlayLayer.WAYMARKED_CYCLING)
+        }
 
     companion object {
         val Default = MapUiState()

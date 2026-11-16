@@ -74,6 +74,16 @@ appId: ${APP_ID}
 - assertVisible:
     id: MENU_SCREEN_ROOT
 
+# Licences section
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_WAYMARKED_TRAILS
+    direction: DOWN
+    centerElement: true
+- assertVisible:
+    id: MENU_ROW_TUHU
+- assertVisible: "Waymarked Trails"
+
 # Back navigation returns to the map
 - tapOn:
     id: MENU_BACK_BUTTON
