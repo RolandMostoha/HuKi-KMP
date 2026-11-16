@@ -212,6 +212,24 @@ extension MenuView {
         }
     }
 
+    var licencesSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            MenuSectionHeaderView(text: strings.get(id: SharedRes.strings().menu_section_licences))
+            VStack(spacing: 0) {
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_link.toUIImage()!),
+                    title: strings.get(id: SharedRes.strings().menu_item_tuhu),
+                    description: strings.get(id: SharedRes.strings().menu_item_tuhu_description),
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_tuhu),
+                    testTag: TestTags.shared.MENU_ROW_TUHU,
+                    action: { viewModel.onEvent(event: MenuUiEventsTuHuClicked.shared) }
+                )
+            }
+            .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal, 16)
+        }
+    }
+
     func tintedIcon(_ image: UIImage, color: SwiftUI.Color = Color(.label)) -> some View {
         Image(uiImage: image)
             .renderingMode(.template)

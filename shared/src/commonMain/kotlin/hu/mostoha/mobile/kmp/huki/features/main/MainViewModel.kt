@@ -77,6 +77,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toScreen
 import hu.mostoha.mobile.kmp.huki.model.mapper.toUrl
+import hu.mostoha.mobile.kmp.huki.model.mapper.withBaseLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutLandscapes
@@ -223,7 +224,7 @@ class MainViewModel(
         initMyLocationMonitoring()
         initWhatsNew(restoredSession, hasLaunchLink)
         initLaunchArgGpx()
-        observeSettings()
+        observeSettings(restoredSession)
         observeSheetViews()
         observeIncomingLinks()
         observeSupporter()
@@ -979,16 +980,24 @@ class MainViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun observeSettings() {
+    private fun observeSettings(restoredSession: MainSession?) {
+        var keepRestoredHikingLayer = restoredSession != null
         settingsRepository.settings
             .distinctUntilChanged()
             .onEach { settings ->
+                // A restored session keeps its saved hiking layer visibility, even on TuHu
+                val keepHikingLayer = keepRestoredHikingLayer
+                keepRestoredHikingLayer = false
                 _uiState.update {
+                    val mapUiState = if (keepHikingLayer) {
+                        it.mapUiState.copy(baseLayer = settings.baseLayer)
+                    } else {
+                        it.mapUiState.withBaseLayer(settings.baseLayer)
+                    }
                     it.copy(
                         mapZoomControlsAlwaysVisible = settings.mapZoomControlsVisible,
                         themeMode = settings.themeMode,
-                        mapUiState = it.mapUiState.copy(
-                            baseLayer = settings.baseLayer,
+                        mapUiState = mapUiState.copy(
                             rotationEnabled = settings.mapRotationEnabled,
                             labelScale = settings.mapLabelScale,
                         ),
@@ -1068,9 +1077,7 @@ class MainViewModel(
 
     private fun selectBaseLayer(baseLayer: BaseLayer) {
         analyticsService.logEvent(AnalyticsEvent.LayerSelected(baseLayer.toLayer()))
-        _uiState.updateMapUiState {
-            it.copy(baseLayer = baseLayer)
-        }
+        _uiState.updateMapUiState { it.withBaseLayer(baseLayer) }
         viewModelScope.launch {
             settingsRepository.setBaseLayer(baseLayer)
         }

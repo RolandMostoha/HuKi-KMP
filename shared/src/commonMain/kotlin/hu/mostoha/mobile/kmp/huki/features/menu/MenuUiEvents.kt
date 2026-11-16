@@ -17,5 +17,6 @@ sealed interface MenuUiEvents {
     data object GithubClicked : MenuUiEvents
     data object LocationIqClicked : MenuUiEvents
     data object GraphhopperClicked : MenuUiEvents
+    data object TuHuClicked : MenuUiEvents
     data object SupportClicked : MenuUiEvents
 }

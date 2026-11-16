@@ -16,6 +16,7 @@ import com.mapbox.maps.extension.compose.style.standard.MapboxStandardStyle
 import com.mapbox.maps.extension.compose.style.standard.rememberStandardSatelliteStyleState
 import com.mapbox.maps.extension.compose.style.standard.rememberStandardStyleState
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
+import hu.mostoha.mobile.kmp.huki.model.domain.TuHuBaseMap
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 
@@ -23,7 +24,12 @@ private typealias MapSlotContent = @Composable () -> Unit
 
 @Composable
 @MapboxStyleComposable
-fun MapBaseStyle(baseLayer: BaseLayer, isDarkMode: Boolean, isHikingLayerVisible: Boolean) {
+fun MapBaseStyle(
+    baseLayer: BaseLayer,
+    isDarkMode: Boolean,
+    isHikingLayerVisible: Boolean,
+    tileScaleFactor: Float,
+) {
     val lightPreset = if (isDarkMode) LightPresetValue.NIGHT else LightPresetValue.DAY
     val hikingSlotContent: MapSlotContent? = if (isHikingLayerVisible) {
         { HikingTrailsLayer() }
@@ -63,6 +69,20 @@ fun MapBaseStyle(baseLayer: BaseLayer, isDarkMode: Boolean, isHikingLayerVisible
                 middleSlot = hikingSlotContent,
                 standardSatelliteStyleState = rememberStandardSatelliteStyleState {
                     configurationsState.lightPreset = lightPreset
+                },
+            )
+        }
+        BaseLayer.TUHU -> {
+            val tileSize = TuHuBaseMap.tileSize(tileScaleFactor)
+            GenericStyle(
+                style = TuHuBaseMap.STYLE_JSON,
+                layerPositionedContent = remember(isHikingLayerVisible, tileSize) {
+                    layerPositionedContent {
+                        aboveLayer(TuHuBaseMap.BACKGROUND_LAYER_ID) { TuHuLayer(tileSize) }
+                        if (isHikingLayerVisible) {
+                            aboveLayer(TuHuBaseMap.layerId(tileSize)) { HikingTrailsLayer() }
+                        }
+                    }
                 },
             )
         }

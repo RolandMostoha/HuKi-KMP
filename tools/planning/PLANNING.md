@@ -84,7 +84,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope  | Task                                                                                                                        |
 |--------|--------|-----------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Layers | Add back Tuhu baase layer from HuKi-Android and Bike overlay                                                                |
+| `[x]`  | Layers | Add back Tuhu baase layer from HuKi-Android                                                                                 |
 | `[R]`  | Layers | Add Merreterjek Bike overlay from https://tiles.merretekerjek.hu/merretekerjek-varosban/11/1127/713.png                     |
 | `[ ]`  | Layers | When GPX layer is clicked, raise a dialog / actions menu with: 3 most recent GPX files + 1 button "Import from file system" |
 

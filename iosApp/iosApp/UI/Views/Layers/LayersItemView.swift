@@ -5,32 +5,66 @@ struct LayersItemView: View {
     let title: String
     let image: UIImage
     let selected: Bool
+    var showsCheckmark = false
     let onClick: () -> Void
 
+    private var primary: SwiftUI.Color { SwiftUI.Color(SharedRes.colors().primary.getUIColor()) }
+
     var body: some View {
-        VStack(spacing: 8) {
-            Button(action: onClick) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(selected ? Color(SharedRes.colors().primary.getUIColor()).opacity(0.08) : Color.clear)
-                        .stroke(selected ? Color(SharedRes.colors().primary.getUIColor()) : Color.clear, lineWidth: 2)
-                        .frame(width: 72, height: 72)
-
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 64, height: 64)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+        Button(action: onClick) {
+            VStack(spacing: 8) {
+                ZStack(alignment: .topTrailing) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(selected ? primary.opacity(0.08) : Color.clear)
+                            .stroke(selected ? primary : Color.clear, lineWidth: 2)
+                        Color.clear
+                            .overlay(Image(uiImage: image).resizable().scaledToFill())
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .padding(4)
+                    }
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: 72)
+                    .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 6)
+                    .padding(6)
+                    if showsCheckmark && selected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 22, weight: .semibold))
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(.white, primary)
+                            .background(Circle().fill(.white))
+                            .transition(.scale.combined(with: .opacity))
+                    }
                 }
-                .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 6)
+                .animation(.spring(duration: 0.25), value: selected)
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(selected ? .semibold : .regular)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            .buttonStyle(PlainButtonStyle())
-
-            Text(title)
-                .font(.system(size: 13))
-                .fontWeight(selected ? .semibold : .regular)
-                .multilineTextAlignment(.center)
-                .onTapGesture(perform: onClick)
         }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+}
+
+#Preview {
+    HStack {
+        LayersItemView(
+            title: "Hiking Trails",
+            image: SharedRes.images().ic_layers_hiking.toUIImage()!,
+            selected: true,
+            showsCheckmark: true,
+            onClick: {}
+        )
+        LayersItemView(
+            title: "Satellite",
+            image: SharedRes.images().ic_layers_satellite.toUIImage()!,
+            selected: true,
+            onClick: {}
+        )
     }
 }

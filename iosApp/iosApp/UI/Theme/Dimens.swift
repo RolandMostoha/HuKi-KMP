@@ -158,8 +158,8 @@ enum Dimens {
 
     static let discoverDetentHeight: CGFloat = 400
 
-    static let layersDetentHeight: CGFloat = 360
-    static let layersPadDetentHeight: CGFloat = 400
+    static let layersDetentHeight: CGFloat = 410
+    static let layersPadDetentHeight: CGFloat = 450
 
     static let mapLabelScaleDetentHeight: CGFloat = 200
 

@@ -18,5 +18,6 @@
 ## What we needed to do
 
 - Mapbox base map: nothing, its servers send proper headers.
+- TuHu base map (`map.turistautak.hu`): nothing, it sends `Cache-Control: max-age=21600` (6 hours).
 - Hiking layer (`tile.openstreetmap.hu/tt`): add `Cache-Control` to simulate expiration dates
 - Fix: `OverlayTileCacheInterceptor` (Android + iOS) adds `Cache-Control: max-age` of 14 days

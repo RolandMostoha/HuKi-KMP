@@ -16,20 +16,24 @@ struct HikingTrailsMapContent: MapContent {
             .maxzoom(Double(layer.maxZoom))
             .prefetchZoomDelta(Double(layer.prefetchZoomDelta))
             .maxOverscaleFactorForParentTiles(Double(layer.maxOverscaleFactorForParentTiles))
-        if baseLayer == .outdoors {
+        // Own ids per slot, so switching styles re-adds the layer instead of moving it between slots.
+        switch baseLayer {
+        case .outdoors:
             // Classic styles have no slots, and only a slot layer can be placed at a custom position.
             SlotLayer(id: outdoorsSlotId)
                 .position(.below(MapConstants.shared.OUTDOORS_HIKING_LAYER_BELOW_ID))
-            rasterLayer
+            rasterLayer(id: "\(layer.layerId)-outdoors")
                 .slot(Slot(stringLiteral: outdoorsSlotId))
-        } else {
-            rasterLayer
+        case .tuhu:
+            rasterLayer(id: "\(layer.layerId)-tuhu")
+        default:
+            rasterLayer(id: layer.layerId)
                 .slot(.middle)
         }
     }
 
-    private var rasterLayer: RasterLayer {
-        RasterLayer(id: layer.layerId, source: layer.layerId)
+    private func rasterLayer(id: String) -> RasterLayer {
+        RasterLayer(id: id, source: layer.layerId)
             .rasterEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
     }
 }

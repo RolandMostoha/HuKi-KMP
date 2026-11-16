@@ -57,6 +57,7 @@ class MenuViewModel(
             MenuUiEvents.PrivacyPolicyClicked -> openPrivacyPolicy()
             MenuUiEvents.LocationIqClicked -> sendEffect(MenuUiEffects.NavigateToLocationIq)
             MenuUiEvents.GraphhopperClicked -> openGraphhopper()
+            MenuUiEvents.TuHuClicked -> openTuHu()
             MenuUiEvents.SupportClicked -> sendEffect(MenuUiEffects.NavigateToSupport)
         }
     }
@@ -84,6 +85,11 @@ class MenuViewModel(
     private fun openGraphhopper() {
         analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.GRAPHHOPPER))
         sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_graphhopper_url))
+    }
+
+    private fun openTuHu() {
+        analyticsService.logEvent(AnalyticsEvent.MenuLinkClicked(MenuLink.TUHU))
+        sendEffect(MenuUiEffects.OpenUrl(SharedRes.strings.menu_tuhu_url))
     }
 
     private fun openPrivacyPolicy() {

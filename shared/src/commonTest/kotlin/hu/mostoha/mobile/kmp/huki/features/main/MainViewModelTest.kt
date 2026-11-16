@@ -1079,6 +1079,55 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given OUTDOORS with hiking layer - When TuHu selected then hiking toggled then OUTDOORS selected - Then hiking layer follows TuHu`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.TUHU))
+
+                with(awaitItem().mapUiState) {
+                    baseLayer shouldBe BaseLayer.TUHU
+                    hikingLayerVisible shouldBe false
+                }
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe true
+
+                viewModel.onEvent(MainUiEvents.HikingLayerSelected)
+
+                awaitItem().mapUiState.hikingLayerVisible shouldBe false
+
+                viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.OUTDOORS))
+
+                with(awaitItem().mapUiState) {
+                    baseLayer shouldBe BaseLayer.OUTDOORS
+                    hikingLayerVisible shouldBe true
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Given stored TuHu base layer - When view model created - Then hiking layer is hidden`() {
+        runTest {
+            every { settingsRepository.settings } returns flowOf(UserPreferences.DEFAULTS.copy(baseLayer = BaseLayer.TUHU))
+
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            with(viewModel.uiState.value.mapUiState) {
+                baseLayer shouldBe BaseLayer.TUHU
+                hikingLayerVisible shouldBe false
+            }
+        }
+    }
+
+    @Test
     fun `When HikingLayerSelected - Then uiState has switched hiking layer visibility`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
@@ -2513,6 +2562,18 @@ class MainViewModelTest {
             viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.SATELLITE))
 
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.SATELLITE))
+        }
+    }
+
+    @Test
+    fun `Given TuHu selection - When onEvent - Then TuHu layer analytics event is logged`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.BaseLayerSelected(BaseLayer.TUHU))
+
+            analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.LayerSelected(Layer.TUHU))
         }
     }
 

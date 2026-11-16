@@ -184,6 +184,7 @@ fun MapContent(
                     baseLayer = mapUiState.baseLayer,
                     isDarkMode = isDarkMode,
                     isHikingLayerVisible = mapUiState.hikingLayerVisible,
+                    tileScaleFactor = mapUiState.labelScale.effectiveFactor(density.fontScale),
                 )
             },
             mapViewportState = mapViewportState,
