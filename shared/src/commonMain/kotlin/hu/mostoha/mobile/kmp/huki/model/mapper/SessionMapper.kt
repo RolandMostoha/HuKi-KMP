@@ -37,6 +37,7 @@ fun MainUiState.toMainSession(
         cameraPadding = cameraPadding,
         myLocationStatus = myLocationState.myLocationStatus,
         hikingLayerVisible = mapUiState.hikingLayerVisible,
+        bikeLayerVisible = mapUiState.bikeLayerVisible,
         feature = toFeatureSession(routePlannerSession),
     )
 
@@ -89,6 +90,7 @@ fun MainSession.toMainSessionSnapshot(): MainSessionSnapshot =
             MyLocationStatus.FollowingLiveCompass -> MY_LOCATION_STATUS_LIVE_COMPASS
         },
         hikingLayerVisible = hikingLayerVisible,
+        bikeLayerVisible = bikeLayerVisible,
         feature = feature?.toFeatureSnapshot(),
     )
 
@@ -144,6 +146,7 @@ fun MainSessionSnapshot.toMainSession(): MainSession? {
         cameraPadding = ContentPadding.entries.firstOrNull { it.name == camera.padding },
         myLocationStatus = status,
         hikingLayerVisible = hikingLayerVisible,
+        bikeLayerVisible = bikeLayerVisible,
         feature = feature?.let { it.toFeatureSession() ?: return null },
     )
 }

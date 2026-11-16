@@ -5,9 +5,11 @@ struct LayersSheetView: View {
     let strings: Strings
     let selectedBaseLayer: BaseLayer
     let isHikingLayerSelected: Bool
+    let isBikeLayerSelected: Bool
     let isGpxLayerSelected: Bool
     let onBaseLayerSelected: (BaseLayer) -> Void
     let onHikingLayerSelected: () -> Void
+    let onBikeLayerSelected: () -> Void
     let onGpxLayerSelected: () -> Void
     let onDismissRequest: () -> Void
 
@@ -39,7 +41,14 @@ struct LayersSheetView: View {
                 Divider()
                     .padding(.top, 16)
                 sectionTitle(strings.get(id: SharedRes.strings().layers_overlay_layers_title))
-                HStack(alignment: .top, spacing: 24) {
+                HStack(alignment: .top, spacing: 16) {
+                    LayersItemView(
+                        title: strings.get(id: SharedRes.strings().layers_overlay_bike_title),
+                        image: SharedRes.images().ic_layers_bike.toUIImage()!,
+                        selected: isBikeLayerSelected,
+                        showsCheckmark: true,
+                        onClick: { onBikeLayerSelected() }
+                    )
                     LayersItemView(
                         title: strings.get(id: SharedRes.strings().layers_overlay_hiking_title),
                         image: SharedRes.images().ic_layers_hiking.toUIImage()!,
@@ -75,9 +84,11 @@ struct LayersSheetView: View {
         strings: Strings(),
         selectedBaseLayer: .tuhu,
         isHikingLayerSelected: true,
+        isBikeLayerSelected: true,
         isGpxLayerSelected: false,
         onBaseLayerSelected: { _ in },
         onHikingLayerSelected: {},
+        onBikeLayerSelected: {},
         onGpxLayerSelected: {},
         onDismissRequest: {}
     )

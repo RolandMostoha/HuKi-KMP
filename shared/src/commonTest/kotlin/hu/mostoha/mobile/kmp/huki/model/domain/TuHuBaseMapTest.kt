@@ -14,7 +14,10 @@ class TuHuBaseMapTest {
         }
     }
 
-    private data class TestCase(val input: Float, val result: Long)
+    private data class TestCase(
+        val input: Float,
+        val result: Long,
+    )
 
     companion object {
         private fun testCases() =

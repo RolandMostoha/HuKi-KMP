@@ -92,6 +92,7 @@ sealed interface MainUiEvents {
     data object LayersClicked : MainUiEvents
     data class BaseLayerSelected(val baseLayer: BaseLayer) : MainUiEvents
     data object HikingLayerSelected : MainUiEvents
+    data object BikeLayerSelected : MainUiEvents
 
     /**
      * Map label scale events

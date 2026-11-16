@@ -760,9 +760,11 @@ private fun MainModalBottomSheet(uiState: MainUiState, sheetState: SheetState, o
                 sheetState = sheetState,
                 selectedBaseLayer = uiState.mapUiState.baseLayer,
                 isHikingLayerSelected = uiState.mapUiState.hikingLayerVisible,
+                isBikeLayerSelected = uiState.mapUiState.bikeLayerVisible,
                 isGpxLayerSelected = uiState.mapUiState.gpxLayerVisible,
                 onBaseLayerSelected = { onEvent(MainUiEvents.BaseLayerSelected(it)) },
                 onHikingLayerSelected = { onEvent(MainUiEvents.HikingLayerSelected) },
+                onBikeLayerSelected = { onEvent(MainUiEvents.BikeLayerSelected) },
                 onGpxLayerSelected = { onEvent(GpxUiEvents.GpxLayerSelected) },
                 onDismissRequest = dismissSheet,
             )

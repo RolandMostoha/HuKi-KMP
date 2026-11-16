@@ -224,6 +224,15 @@ extension MenuView {
                     testTag: TestTags.shared.MENU_ROW_TUHU,
                     action: { viewModel.onEvent(event: MenuUiEventsTuHuClicked.shared) }
                 )
+                divider
+                MenuItemView(
+                    icon: tintedIcon(SharedRes.images().ic_link.toUIImage()!),
+                    title: strings.get(id: SharedRes.strings().menu_item_waymarked_trails),
+                    description: strings.get(id: SharedRes.strings().menu_item_waymarked_trails_description),
+                    accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_waymarked_trails),
+                    testTag: TestTags.shared.MENU_ROW_WAYMARKED_TRAILS,
+                    action: { viewModel.onEvent(event: MenuUiEventsWaymarkedTrailsClicked.shared) }
+                )
             }
             .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, 16)

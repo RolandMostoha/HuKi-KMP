@@ -183,7 +183,7 @@ fun MapContent(
                 MapBaseStyle(
                     baseLayer = mapUiState.baseLayer,
                     isDarkMode = isDarkMode,
-                    isHikingLayerVisible = mapUiState.hikingLayerVisible,
+                    overlays = mapUiState.visibleOverlays,
                     tileScaleFactor = mapUiState.labelScale.effectiveFactor(density.fontScale),
                 )
             },

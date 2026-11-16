@@ -196,7 +196,7 @@ class MainViewModel(
      */
     val sessionSnapshots: Flow<String> = combine(_uiState, routePlannerSession) { uiState, routePlanner ->
         val session = uiState.toMainSession(mapCameraStore.cameraPosition, cameraPadding, routePlanner)
-        Triple(session.myLocationStatus, session.hikingLayerVisible, session.feature)
+        Triple(session.myLocationStatus, session.hikingLayerVisible to session.bikeLayerVisible, session.feature)
     }
         .distinctUntilChanged()
         .map { sessionSnapshot() }
@@ -286,6 +286,7 @@ class MainViewModel(
             MainUiEvents.LayersClicked -> showSheet(Sheet.Layers)
             is MainUiEvents.BaseLayerSelected -> selectBaseLayer(event.baseLayer)
             MainUiEvents.HikingLayerSelected -> toggleHikingLayer()
+            MainUiEvents.BikeLayerSelected -> toggleBikeLayer()
             // Map label scale events
             MainUiEvents.MapLabelScaleClicked -> showSheet(Sheet.MapLabelScale)
             is MainUiEvents.MapLabelScaleChanged -> previewMapLabelScale(event.factor)
@@ -853,7 +854,9 @@ class MainViewModel(
         crashlyticsService.log("Session: restoring ${restoredFeature.value}")
         mapCameraStore.update(session.camera)
         cameraPadding = session.cameraPadding
-        _uiState.updateMapUiState { it.copy(hikingLayerVisible = session.hikingLayerVisible) }
+        _uiState.updateMapUiState {
+            it.copy(hikingLayerVisible = session.hikingLayerVisible, bikeLayerVisible = session.bikeLayerVisible)
+        }
         when (val feature = session.feature) {
             is FeatureSession.Gpx -> restoreGpx(feature)
             is FeatureSession.Okt -> openOkt(feature.type, restored = feature)
@@ -1102,6 +1105,11 @@ class MainViewModel(
         _uiState.updateMapUiState {
             it.copy(hikingLayerVisible = it.hikingLayerVisible.not())
         }
+    }
+
+    private fun toggleBikeLayer() {
+        analyticsService.logEvent(AnalyticsEvent.LayerSelected(Layer.BIKE))
+        _uiState.updateMapUiState { it.copy(bikeLayerVisible = it.bikeLayerVisible.not()) }
     }
 
     private fun switchGpxLayer() {

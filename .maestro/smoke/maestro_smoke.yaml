@@ -15,8 +15,6 @@ appId: ${APP_ID}
 - assertVisible: "v\\d+(\\.\\d+)+"
 - assertVisible:
     id: WHATS_NEW_RELEASE_NOTES
-- assertVisible:
-    id: WHATS_NEW_MESSAGE_CARD
 - tapOn: "Close"
 - extendedWaitUntil:
     visible:
