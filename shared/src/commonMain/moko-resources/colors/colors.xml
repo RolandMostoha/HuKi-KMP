@@ -50,8 +50,8 @@
         <dark>#1A1A1A</dark>
     </color>
     <color name="accuracyRing">
-        <light>#1363138A</light>
-        <dark>#6BBA6F8A</dark>
+        <light>#13631326</light>
+        <dark>#6BBA6F66</dark>
     </color>
     <!-- Fixed color: used on the always-light glass surfaces of the GPX control menu -->
     <color name="errorOnMap">

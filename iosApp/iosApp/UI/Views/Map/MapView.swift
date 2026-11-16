@@ -137,7 +137,8 @@ struct MapView: View {
                         Puck2D(bearing: PuckBearingSource.puck)
                             .showsAccuracyRing(true)
                             .accuracyRingColor(SharedRes.colors().accuracyRing.getUIColor())
-                            .pulsing(.init(color: SharedRes.colors().primaryLight.getUIColor()))
+                            // A transparent border hides the whole accuracy ring, so the fill color masks it instead
+                            .accuracyRingBorderColor(SharedRes.colors().accuracyRing.getUIColor())
                             .topImage(SharedRes.images().ic_my_location_top_image.appearanceImage(for: colorScheme))
                             .bearingImage(SharedRes.images().ic_my_location_bearing.appearanceImage(for: colorScheme))
                             .shadowImage(SharedRes.images().ic_my_location_shadow.appearanceImage(for: colorScheme))

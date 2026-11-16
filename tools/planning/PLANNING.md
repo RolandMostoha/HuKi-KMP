@@ -102,7 +102,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | MyLocation | Instead of the arrow compass indicator in My Location marker, use cone shaped one. ![img_5.png](img_5.png). Legacy vs today for reference:![img_6.png](img_6.png)                                                                                                     |
+| `[x]`  | MyLocation | Instead of the arrow compass indicator in My Location marker, use cone shaped one. ![img_5.png](img_5.png). Legacy vs today for reference:![img_6.png](img_6.png)                                                                                                     |
 | `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
@@ -128,10 +128,11 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: GPX
 
-| Status | Scope | Task                                                                                                                                 |
-|--------|-------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPX   | Display waypoint comments in a window                                                                                                |
-| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                                     |
+| Status | Scope      | Task                                                                                                                                                    |
+|--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX        | Display waypoint comments in a window                                                                                                                   |
+| `[R]`  | GPXDetails | Add a button to hide - show route (Útvonal elrejtése), similarly to STARTED GPX ![img.png](img.png). Between Start route and Reverse direction buttons. |
+| `[?]`  | GPX        | Also: Auto-detect direction next to manual setup                                                                                                        |
 
 ### FEATURE: GPX Collection
 

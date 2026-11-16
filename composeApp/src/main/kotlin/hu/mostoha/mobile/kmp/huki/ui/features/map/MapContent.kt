@@ -243,7 +243,6 @@ fun MapContent(
             },
         ) {
             val primaryColor = mokoColor(SharedRes.colors.primary)
-            val primaryLightColor = mokoColor(SharedRes.colors.primaryLight)
             val mapStrokeColor = mokoColor(SharedRes.colors.mapStroke)
             val accuracyRingColor = mokoColor(SharedRes.colors.accuracyRing)
 
@@ -255,7 +254,6 @@ fun MapContent(
                     puckBearingEnabled = true
                     puckBearing = PuckBearing.HEADING
                     showAccuracyRing = true
-                    pulsingEnabled = true
                 }
                 val positionListener = object : OnIndicatorPositionChangedListener {
                     override fun onIndicatorPositionChanged(point: Point) {
@@ -284,7 +282,8 @@ fun MapContent(
                         scaleExpression = literal(MY_LOCATION_PUCK_SCALE).toJson(),
                     )
                     this.accuracyRingColor = accuracyRingColor.toArgb()
-                    pulsingColor = primaryLightColor.toArgb()
+                    // A transparent border hides the whole accuracy ring in Mapbox, so the fill color masks it instead
+                    this.accuracyRingBorderColor = accuracyRingColor.toArgb()
                 }
             }
             BaseLabelsVisibilityEffect(isHidden = mapUiState.isBaseLabelsHidden)
