@@ -152,14 +152,25 @@ fun RoutePlannerContent(
                         modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
                     ) {
                         Box {
-                            RoutePlannerWaypointList(
-                                uiState = uiState,
-                                detent = detent,
-                                onEvent = onEvent,
-                                onMoreStopsClick = onMoreStopsClick,
-                                rowHeight = rowHeight,
+                            Column(
                                 modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
-                            )
+                                verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+                            ) {
+                                RoutePlannerWaypointList(
+                                    uiState = uiState,
+                                    detent = detent,
+                                    onEvent = onEvent,
+                                    onMoreStopsClick = onMoreStopsClick,
+                                    rowHeight = rowHeight,
+                                    modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
+                                )
+                                RoutePlannerStopActions(
+                                    isAddStopEnabled = !uiState.isMaxStopsReached,
+                                    isRoundTripEnabled = uiState.isRoundTripEnabled,
+                                    onAddStopClick = { onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked()) },
+                                    onRoundTripClick = { onEvent(RoutePlannerUiEvents.RoundTripClicked) },
+                                )
+                            }
                             if (uiState.isRoutePlanLoading) {
                                 RoutePlannerLoading(modifier = Modifier.align(Alignment.Center))
                             }
@@ -172,7 +183,7 @@ fun RoutePlannerContent(
                     .fillMaxWidth()
                     .padding(
                         start = Dimens.ExtraLarge,
-                        top = Dimens.Large,
+                        top = Dimens.Medium,
                         end = Dimens.ExtraLarge,
                         bottom = navBarInset + Dimens.Large,
                     ),

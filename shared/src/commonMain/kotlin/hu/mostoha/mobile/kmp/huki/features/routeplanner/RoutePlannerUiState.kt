@@ -49,6 +49,11 @@ data class RoutePlannerUiState(
     val isMaxStopsReached: Boolean
         get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT
 
+    /**
+     * The last stop links down only to the max stops row that follows it.
+     */
+    fun hasConnectorBelow(index: Int): Boolean = index < stops.lastIndex || isMaxStopsReached
+
     val isSaveEnabled: Boolean
         get() = routePlan != null && !isRoutePlanLoading
 

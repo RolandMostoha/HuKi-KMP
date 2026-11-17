@@ -38,6 +38,7 @@ fun RoutePlannerWaypointRow(
     onRemoveClick: () -> Unit,
     onEmptyRowClick: () -> Unit,
     modifier: Modifier = Modifier,
+    hasConnectorBelow: Boolean = true,
     dragHandleModifier: Modifier = Modifier,
     rowHeight: Dp = Dimens.RoutePlannerRowHeight,
     isReorderable: Boolean = true,
@@ -50,6 +51,7 @@ fun RoutePlannerWaypointRow(
             RoutePlannerRowIcon(imageVector = mokoImage(waypointType.icon), tint = Color.Unspecified)
         },
         hasConnectorAbove = hasConnectorAbove,
+        hasConnectorBelow = hasConnectorBelow,
         rowHeight = rowHeight,
         modifier = modifier,
     ) {
@@ -122,6 +124,7 @@ private fun RoutePlannerWaypointRowPreview() {
                 waypoint = PreviewRoutePlanner.emptyWaypoint,
                 waypointType = WaypointType.END,
                 hasConnectorAbove = true,
+                hasConnectorBelow = false,
                 onRemoveClick = {},
                 onEmptyRowClick = {},
             )

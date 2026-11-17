@@ -82,7 +82,6 @@
     <string name="route_planner_profile_bike">Kerékpár</string>
     <string name="route_planner_my_location">Saját pozíció</string>
     <string name="route_planner_waypoint_empty">Válassz helyet</string>
-    <string name="route_planner_add_waypoint">Megálló hozzáadása</string>
     <string name="route_planner_round_trip">Körtúra</string>
     <string name="route_planner_more_stops">még %d megálló</string>
     <string name="route_planner_max_stops_reached">Elérted a megállók maximális számát (%d)</string>
@@ -99,7 +98,6 @@
     <string name="route_planner_a11y_settings">Útvonaltervező beállításai</string>
     <string name="route_planner_a11y_profiles">Útvonal típusa</string>
     <string name="route_planner_a11y_add_stop">Új megálló hozzáadása</string>
-    <string name="route_planner_a11y_round_trip">Körtúra készítése</string>
     <string name="route_planner_a11y_delete_stop">Megálló törlése</string>
     <string name="route_planner_a11y_move_up">Megálló mozgatása felfelé</string>
     <string name="route_planner_a11y_move_down">Megálló mozgatása lefelé</string>

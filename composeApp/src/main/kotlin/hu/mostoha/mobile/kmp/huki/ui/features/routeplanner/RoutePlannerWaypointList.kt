@@ -83,13 +83,6 @@ fun RoutePlannerWaypointList(
                 maxStopCount = RoutePlanConstants.MAX_WAYPOINT_COUNT,
                 rowHeight = rowHeight,
             )
-        } else {
-            RoutePlannerAddStopRow(
-                isRoundTripEnabled = uiState.isRoundTripEnabled,
-                onAddStopClick = { onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked()) },
-                onRoundTripClick = { onEvent(RoutePlannerUiEvents.RoundTripClicked) },
-                rowHeight = rowHeight,
-            )
         }
     }
 }
@@ -133,7 +126,7 @@ private fun ColumnScope.ReorderableStops(
             .fillMaxWidth()
             .then(
                 if (isFullScreen) {
-                    // Fills only what a long list needs, so the add stop row stays under the last stop.
+                    // Fills only what a long list needs, so the max stops row stays under the last stop.
                     Modifier.weight(weight = 1f, fill = false)
                 } else {
                     Modifier.heightIn(max = Dimens.RoutePlannerListMaxHeight)
@@ -147,6 +140,7 @@ private fun ColumnScope.ReorderableStops(
                 waypoint = stops[index],
                 waypointType = uiState.stopType(index),
                 hasConnectorAbove = index > 0,
+                hasConnectorBelow = uiState.hasConnectorBelow(index),
                 rowHeight = rowHeight,
                 emptyRowTestTag = TestTags.routePlannerEmptyStopRow(index),
                 onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stops[index].id)) },
@@ -228,6 +222,7 @@ private fun StopRow(
         waypoint = stop,
         waypointType = uiState.stopType(index),
         hasConnectorAbove = index > 0,
+        hasConnectorBelow = uiState.hasConnectorBelow(index),
         rowHeight = rowHeight,
         isReorderable = isReorderable,
         emptyRowTestTag = TestTags.routePlannerEmptyStopRow(index),

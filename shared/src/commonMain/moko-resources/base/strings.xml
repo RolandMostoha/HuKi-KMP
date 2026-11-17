@@ -82,7 +82,6 @@
     <string name="route_planner_profile_bike">Bike</string>
     <string name="route_planner_my_location">My location</string>
     <string name="route_planner_waypoint_empty">Choose a place</string>
-    <string name="route_planner_add_waypoint">Add stop</string>
     <string name="route_planner_round_trip">Round trip</string>
     <string name="route_planner_more_stops">%d more stops</string>
     <string name="route_planner_max_stops_reached">You’ve reached the maximum number of stops (%d)</string>
@@ -99,7 +98,6 @@
     <string name="route_planner_a11y_settings">Route planner settings</string>
     <string name="route_planner_a11y_profiles">Route type</string>
     <string name="route_planner_a11y_add_stop">Add a new stop</string>
-    <string name="route_planner_a11y_round_trip">Create a round trip</string>
     <string name="route_planner_a11y_delete_stop">Delete stop</string>
     <string name="route_planner_a11y_move_up">Move stop up</string>
     <string name="route_planner_a11y_move_down">Move stop down</string>

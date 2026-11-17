@@ -6,6 +6,7 @@ struct RoutePlannerWaypointRowView: View {
     let waypoint: RoutePlannerWaypoint
     let waypointType: WaypointType
     let hasConnectorAbove: Bool
+    var hasConnectorBelow = true
     var rowHeight: CGFloat = 44
     var onRemoveClicked: () -> Void = {}
     var onEmptyRowClicked: () -> Void = {}
@@ -13,7 +14,7 @@ struct RoutePlannerWaypointRowView: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            RoutePlannerWaypointIconColumn(hasConnectorAbove: hasConnectorAbove, hasConnectorBelow: true) {
+            RoutePlannerWaypointIconColumn(hasConnectorAbove: hasConnectorAbove, hasConnectorBelow: hasConnectorBelow) {
                 icon
             }
             if isEmpty {
@@ -106,7 +107,8 @@ struct RoutePlannerWaypointRowView: View {
             strings: Strings(),
             waypoint: RoutePlannerWaypoint(id: "3", name: nil, placeName: nil, location: nil),
             waypointType: .end,
-            hasConnectorAbove: true
+            hasConnectorAbove: true,
+            hasConnectorBelow: false
         )
     }
 }
