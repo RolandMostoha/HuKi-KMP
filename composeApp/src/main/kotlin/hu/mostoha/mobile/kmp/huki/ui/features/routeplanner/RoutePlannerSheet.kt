@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -49,6 +50,7 @@ fun RoutePlannerSheet(
     minimizedHeight: Dp,
     expandedHeight: Dp,
     modifier: Modifier = Modifier,
+    aboveSheet: @Composable () -> Unit = {},
     content: @Composable (sheetModifier: Modifier) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -93,6 +95,16 @@ fun RoutePlannerSheet(
                 .shadow(elevation = Dimens.Small, shape = SheetShape)
                 .background(color = MaterialTheme.colorScheme.surface, shape = SheetShape),
         )
+        Box(
+            modifier = Modifier.layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
+                layout(placeable.width, placeable.height) {
+                    placeable.place(x = 0, y = state.requireOffset().roundToInt() - placeable.height)
+                }
+            },
+        ) {
+            aboveSheet()
+        }
         content(
             Modifier
                 .offset { IntOffset(x = 0, y = state.requireOffset().roundToInt()) }

@@ -4,6 +4,7 @@ import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
+import hu.mostoha.mobile.kmp.huki.model.domain.Hint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -24,7 +25,14 @@ data class MainUiState(
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
     val alert: Alert? = null,
     val supporterAnimal: SupportAnimal? = null,
+    val dismissedHints: Set<Hint>? = null,
 ) {
+    /**
+     * Stays hidden until the dismissed hints load, so a dismissed hint never flashes up.
+     */
+    val isRoutePlannerLongPressHintVisible: Boolean
+        get() = sheet is Sheet.RoutePlanner && dismissedHints?.contains(Hint.ROUTE_PLANNER_LONG_PRESS) == false
+
     val isSearchBarVisible: Boolean
         get() = !mapUiState.isGpxShown &&
             mapUiState.okt == null &&

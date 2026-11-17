@@ -4,11 +4,16 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ButtonDefaults
@@ -32,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -80,6 +86,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.okt.rememberOktSheetHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerLongPressHint
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerPick
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
@@ -393,6 +400,7 @@ private fun MainContent(
                         onDispose { routePlannerDetent = RoutePlannerDetent.EXPANDED }
                     }
                     RoutePlannerSheetOverlay(
+                        isLongPressHintVisible = uiState.isRoutePlannerLongPressHintVisible,
                         stops = sheet.stops,
                         restored = sheet.restored,
                         pick = routePlannerPick,
@@ -501,6 +509,7 @@ private fun routePlannerMapInset(
 
 @Composable
 private fun RoutePlannerSheetOverlay(
+    isLongPressHintVisible: Boolean,
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
     pick: RoutePlannerPick?,
@@ -522,6 +531,24 @@ private fun RoutePlannerSheetOverlay(
             onDetentChange = onDetentChange,
             minimizedHeight = minimizedHeight,
             expandedHeight = expandedHeight,
+            aboveSheet = {
+                AnimatedVisibility(
+                    visible = isLongPressHintVisible && detent != RoutePlannerDetent.FULL_SCREEN,
+                    enter = fadeIn() + slideInVertically { it / 2 },
+                    exit = fadeOut() + slideOutVertically { it / 2 },
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        RoutePlannerLongPressHint(
+                            onDismiss = { onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed) },
+                        )
+                    }
+                }
+            },
         ) { sheetModifier ->
             RoutePlannerBottomSheet(
                 stops = stops,

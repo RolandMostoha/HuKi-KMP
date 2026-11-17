@@ -37,6 +37,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.GpxDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.Hint
 import hu.mostoha.mobile.kmp.huki.model.domain.IncomingLink
 import hu.mostoha.mobile.kmp.huki.model.domain.LandscapeOutlines
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
@@ -85,6 +86,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
+import hu.mostoha.mobile.kmp.huki.repository.HintRepository
 import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.LocationLinkResolver
@@ -172,6 +174,7 @@ class MainViewModel(
     private val incomingLinkStore: IncomingLinkStore,
     private val locationLinkResolver: LocationLinkResolver,
     private val supporterRepository: SupporterRepository,
+    private val hintRepository: HintRepository,
     private val analyticsService: AnalyticsService,
     private val crashlyticsService: CrashlyticsService,
     private val defaultDispatcher: CoroutineDispatcher,
@@ -230,6 +233,7 @@ class MainViewModel(
         observeSheetViews()
         observeIncomingLinks()
         observeSupporter()
+        observeHints()
     }
 
     fun sessionSnapshot(): String =
@@ -276,6 +280,7 @@ class MainViewModel(
             MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
             is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers, event.isAwaitingRoutePlan)
             is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession.value = event.session
+            MainUiEvents.RoutePlannerLongPressHintDismissed -> dismissRoutePlannerLongPressHint()
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -510,8 +515,12 @@ class MainViewModel(
 
     private fun handleMapLongClick(location: Location) {
         when (_uiState.value.sheet) {
-            is Sheet.RoutePlanner -> viewModelScope.launch {
-                sendEffect(MainUiEffects.RoutePlannerLocationPicked(location))
+            is Sheet.RoutePlanner -> {
+                // The user already knows the gesture, so the hint has nothing left to teach
+                dismissHint(Hint.ROUTE_PLANNER_LONG_PRESS)
+                viewModelScope.launch {
+                    sendEffect(MainUiEffects.RoutePlannerLocationPicked(location))
+                }
             }
             else -> showPlaceDetails(location)
         }
@@ -982,6 +991,29 @@ class MainViewModel(
             .filter { it != Screen.MAP }
             .onEach { analyticsService.logEvent(AnalyticsEvent.ScreenView(it)) }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeHints() {
+        hintRepository.dismissedHints
+            .onEach { hints -> _uiState.update { it.copy(dismissedHints = hints) } }
+            .launchIn(viewModelScope)
+    }
+
+    private fun dismissRoutePlannerLongPressHint() {
+        if (dismissHint(Hint.ROUTE_PLANNER_LONG_PRESS)) {
+            analyticsService.logEvent(AnalyticsEvent.RoutePlanLongPressHintDismissed)
+        }
+    }
+
+    /**
+     * Hides the hint right away, so repeated dismissals before the store emits are ignored.
+     */
+    private fun dismissHint(hint: Hint): Boolean {
+        val dismissedHints = _uiState.value.dismissedHints
+        if (dismissedHints == null || hint in dismissedHints) return false
+        _uiState.update { it.copy(dismissedHints = dismissedHints + hint) }
+        viewModelScope.launch { hintRepository.dismissHint(hint) }
+        return true
     }
 
     private fun observeSupporter() {

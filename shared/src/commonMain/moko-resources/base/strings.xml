@@ -103,6 +103,9 @@
     <string name="route_planner_a11y_delete_stop">Delete stop</string>
     <string name="route_planner_a11y_move_up">Move stop up</string>
     <string name="route_planner_a11y_move_down">Move stop down</string>
+    <string name="route_planner_long_press_hint_title">Long-press the map</string>
+    <string name="route_planner_long_press_hint_message">Long-press anywhere on the map to drop new stops.</string>
+    <string name="route_planner_a11y_dismiss_long_press_hint">Dismiss hint</string>
 
     <string name="place_details_loading">Looking up this place…</string>
     <string name="place_details_route_plan">Route plan</string>

@@ -18,6 +18,7 @@ struct MainView: View {
     @State var routePlannerHeights = RoutePlannerSheetHeights.initial
     @State var routePlannerDetent: RoutePlannerDetent = .expanded
     @State var routePlannerPick: RoutePlannerPick?
+    @State var routePlannerSheetTop = RoutePlannerSheetTop()
     @State var gpxShareItem: ShareItem?
     @State private var presentedSheet: Sheet?
     @State private var isRoutePlannerPresented = false
@@ -199,6 +200,7 @@ struct MainView: View {
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
                 landscapesResumeButton(uiState: uiState)
+                routePlannerLongPressHint(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

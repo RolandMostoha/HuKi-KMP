@@ -103,6 +103,9 @@
     <string name="route_planner_a11y_delete_stop">Megálló törlése</string>
     <string name="route_planner_a11y_move_up">Megálló mozgatása felfelé</string>
     <string name="route_planner_a11y_move_down">Megálló mozgatása lefelé</string>
+    <string name="route_planner_long_press_hint_title">Klikkelj hosszan a térképen</string>
+    <string name="route_planner_long_press_hint_message">A térképen hosszú klikkel bármikor rakhatsz le új pontokat.</string>
+    <string name="route_planner_a11y_dismiss_long_press_hint">Tipp bezárása</string>
 
     <string name="place_details_loading">Hely keresése…</string>
     <string name="place_details_route_plan">Útvonaltervezés</string>

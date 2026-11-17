@@ -5,15 +5,17 @@ struct GlassIconButton: View {
     let accessibilityLabel: String
     var accessibilityIdentifier: String?
     var iconSize: CGFloat?
+    var fontSize: CGFloat = 20
+    var padding: CGFloat = 12
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: fontSize, weight: .semibold))
                 .foregroundColor(.primary)
                 .frame(width: iconSize, height: iconSize)
-                .padding(12)
+                .padding(padding)
                 .glassBackground()
         }
         .accessibilityLabel(accessibilityLabel)

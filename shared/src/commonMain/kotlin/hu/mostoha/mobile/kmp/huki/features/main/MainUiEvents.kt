@@ -74,6 +74,7 @@ sealed interface MainUiEvents {
         val isAwaitingRoutePlan: Boolean = false,
     ) : MainUiEvents
     data class RoutePlannerStateChanged(val session: RoutePlannerSession) : MainUiEvents
+    data object RoutePlannerLongPressHintDismissed : MainUiEvents
 
     /**
      * My location events

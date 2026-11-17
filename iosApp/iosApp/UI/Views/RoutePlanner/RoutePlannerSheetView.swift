@@ -43,6 +43,7 @@ struct RoutePlannerSheetView: View {
     let onMinimizeRequest: () -> Void
     let onExpandAfterPickRequest: () -> Void
     let onInitialAppear: () -> Void
+    let onSheetTopChange: (CGFloat) -> Void
 
     @StateObject private var holder: ViewModelHolder<RoutePlannerViewModel>
     @State private var didAppear = false
@@ -64,7 +65,8 @@ struct RoutePlannerSheetView: View {
         onHeightsChange: @escaping (RoutePlannerSheetHeights) -> Void = { _ in },
         onMinimizeRequest: @escaping () -> Void = {},
         onExpandAfterPickRequest: @escaping () -> Void = {},
-        onInitialAppear: @escaping () -> Void = {}
+        onInitialAppear: @escaping () -> Void = {},
+        onSheetTopChange: @escaping (CGFloat) -> Void = { _ in }
     ) {
         self.strings = strings
         self.pick = pick
@@ -78,6 +80,7 @@ struct RoutePlannerSheetView: View {
         self.onMinimizeRequest = onMinimizeRequest
         self.onExpandAfterPickRequest = onExpandAfterPickRequest
         self.onInitialAppear = onInitialAppear
+        self.onSheetTopChange = onSheetTopChange
         _holder = StateObject(wrappedValue: ViewModelHolder { owner in
             KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops, restored: restored)
         })
@@ -87,6 +90,9 @@ struct RoutePlannerSheetView: View {
         // The effect stream and the one-shot seeding must not restart on every uiState change,
         // so they sit outside the Observing body that SwiftUI rebuilds.
         plannerContent
+            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { top in
+                onSheetTopChange(top)
+            }
             .onAppear {
                 guard !didAppear else { return }
                 didAppear = true

@@ -40,6 +40,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
+import hu.mostoha.mobile.kmp.huki.model.domain.Hint
 import hu.mostoha.mobile.kmp.huki.model.domain.IncomingLink
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
@@ -70,6 +71,7 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
+import hu.mostoha.mobile.kmp.huki.repository.FakeHintRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
@@ -186,6 +188,7 @@ class MainViewModelTest {
     }
     private val analyticsService = FakeAnalyticsService()
     private val supporterRepository = FakeSupporterRepository()
+    private val hintRepository = FakeHintRepository()
     private val crashlyticsService = FakeCrashlyticsService()
     private val incomingLinkStore = DefaultIncomingLinkStore()
     private val locationLinkResolver = FakeLocationLinkResolver()
@@ -412,6 +415,7 @@ class MainViewModelTest {
             incomingLinkStore = incomingLinkStore,
             locationLinkResolver = locationLinkResolver,
             supporterRepository = supporterRepository,
+            hintRepository = hintRepository,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
@@ -3547,6 +3551,89 @@ class MainViewModelTest {
                 sheet.shouldBeInstanceOf<Sheet.RoutePlanner>()
                 mapUiState.placeDetails shouldBe null
             }
+        }
+    }
+
+    @Test
+    fun `Given a not dismissed hint - When RoutePlannerClicked - Then the long press hint is visible`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a not dismissed hint and no Route Planner - When the state loads - Then the hint is hidden`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+
+            advanceUntilIdle()
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When RoutePlannerLongPressHintDismissed - Then the hint hides for good`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
+            hintRepository.dismissedHints.value shouldBe setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanLongPressHintDismissed
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When RoutePlannerLongPressHintDismissed twice - Then it is logged once`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
+            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
+            advanceUntilIdle()
+
+            analyticsService.loggedEvents.count { it == AnalyticsEvent.RoutePlanLongPressHintDismissed } shouldBe 1
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When MapLongClicked - Then the long press hint hides for good`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
+            hintRepository.dismissedHints.value shouldBe setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
+            analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanLongPressHintDismissed
+        }
+    }
+
+    @Test
+    fun `Given a dismissed hint - When RoutePlannerClicked - Then the long press hint is hidden`() {
+        runTest {
+            hintRepository.dismissedHints.value = setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
         }
     }
 

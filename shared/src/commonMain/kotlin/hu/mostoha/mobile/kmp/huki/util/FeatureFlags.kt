@@ -12,6 +12,7 @@ object FeatureFlags {
      * Debug only flags.
      */
     const val DEBUG_ALWAYS_SHOW_WHATSNEW = false
+    const val DEBUG_ALWAYS_SHOW_HINTS = false
     const val DEBUG_ENABLE_ANALYTICS = false
     const val DEBUG_ENABLE_CRASHLYTICS = false
     val DEBUG_ROUTING_MODE = RoutingMode.AUTO
