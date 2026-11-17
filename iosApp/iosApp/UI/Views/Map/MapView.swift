@@ -74,7 +74,7 @@ struct MapView: View {
                     if let okt = uiState.mapUiState.okt {
                         OktMapContent(
                             strings: strings,
-                            okt: okt,
+                            okt: okt, colorScheme: colorScheme,
                             onLineClicked: onOktLineClicked,
                             onMarkerClicked: onOktMarkerClicked,
                             onInfoWindowPlaceDetailsClicked: onOktInfoWindowPlaceDetailsClicked
@@ -121,8 +121,8 @@ struct MapView: View {
                     }
                     if isRoutePlanVisible {
                         RoutePlanMapContent(
-                            routePlan: uiState.mapUiState.routePlan,
-                            markers: uiState.mapUiState.routePlanMarkers
+                            routePlan: uiState.mapUiState.routePlan, markers: uiState.mapUiState.routePlanMarkers,
+                            colorScheme: colorScheme
                         )
                     }
                     if uiState.myLocationState.permissionState == PermissionState.granted {

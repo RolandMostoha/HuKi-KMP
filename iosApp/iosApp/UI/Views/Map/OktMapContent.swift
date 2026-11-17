@@ -5,6 +5,7 @@ import SwiftUI
 struct OktMapContent: MapContent {
     let strings: Strings
     let okt: OktUiState
+    let colorScheme: ColorScheme
     let onLineClicked: (Shared.Location) -> Void
     let onMarkerClicked: (OktMarker) -> Void
     let onInfoWindowPlaceDetailsClicked: () -> Void
@@ -23,9 +24,9 @@ struct OktMapContent: MapContent {
             .data(.string(okt.baseLine.geoJson))
         LineLayer(id: Self.baseLayerId, source: Self.baseSourceId)
             .lineWidth(SharedDimens.shared.OKT_BASE_LINE_WIDTH)
-            .lineColor(SharedRes.colors().oktBlue.getUIColor())
+            .lineColor(SharedRes.colors().oktBlue.getUIColor().resolved(for: colorScheme))
             .lineBorderWidth(SharedDimens.shared.MAP_LINE_STROKE_WIDTH)
-            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor().resolved(for: colorScheme))
             .lineCap(.round)
             .lineJoin(.round)
             .lineColorUseTheme(.none)
@@ -40,9 +41,9 @@ struct OktMapContent: MapContent {
             .data(.string(okt.selectedLine.geoJson))
         LineLayer(id: Self.selectedLayerId, source: Self.selectedSourceId)
             .lineWidth(SharedDimens.shared.OKT_SELECTED_LINE_WIDTH)
-            .lineColor(SharedRes.colors().oktBlue.getUIColor())
+            .lineColor(SharedRes.colors().oktBlue.getUIColor().resolved(for: colorScheme))
             .lineBorderWidth(SharedDimens.shared.MAP_LINE_STROKE_WIDTH)
-            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+            .lineBorderColor(SharedRes.colors().mapStroke.getUIColor().resolved(for: colorScheme))
             .lineCap(.round)
             .lineJoin(.round)
             .lineColorUseTheme(.none)

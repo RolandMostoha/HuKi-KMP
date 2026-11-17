@@ -5,6 +5,7 @@ import SwiftUI
 struct RoutePlanMapContent: MapContent {
     let routePlan: RoutePlan?
     let markers: [GpxWaypoint]
+    let colorScheme: ColorScheme
 
     private static let layerId = "route_plan"
 
@@ -17,9 +18,9 @@ struct RoutePlanMapContent: MapContent {
 
             LineLayer(id: Self.layerId, source: Self.layerId)
                 .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH)
-                .lineColor(SharedRes.colors().primary.getUIColor())
+                .lineColor(SharedRes.colors().primary.getUIColor().resolved(for: colorScheme))
                 .lineBorderWidth(SharedDimens.shared.MAP_LINE_STROKE_WIDTH)
-                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor().resolved(for: colorScheme))
                 .lineCap(.round)
                 .lineJoin(.round)
                 .lineColorUseTheme(.none)
