@@ -36,6 +36,11 @@ extension UIColor {
 }
 
 extension UIColor {
+    /// Mapbox reads a dynamic color once, so map layers pass the fixed variant to follow appearance changes.
+    func resolved(for colorScheme: ColorScheme) -> UIColor {
+        resolvedColor(with: UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light))
+    }
+
     /// `0xRRGGBB` of the color, as Kotlin `Int`, alpha dropped.
     var rgb: Int32 {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0

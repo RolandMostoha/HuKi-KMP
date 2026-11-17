@@ -412,6 +412,7 @@ private fun GpxLayer(
             sourceState = geoJsonSource,
             layerId = "${gpxDetails.layerId}$DIRECTION_LAYER_SUFFIX",
             arrowColor = routeStrokeColor,
+            arrowHaloColor = mokoColor(SharedRes.colors.mapStrokeContrast),
         )
     }
     WaypointMarkerOrder.sort(gpxDetails.waypoints).forEach { waypoint ->

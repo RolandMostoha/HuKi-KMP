@@ -17,11 +17,14 @@ object SharedDimens {
     const val GPX_JEL_SYMBOL_MARKER_RATIO = 0.46
     const val GPX_DIRECTION_ARROW_SPACING = 70.0
 
+    const val GPX_DIRECTION_ARROW_WIDTH = 10.0
+    const val GPX_DIRECTION_ARROW_LENGTH = 10.0
+    const val GPX_DIRECTION_ARROW_HALO_WIDTH = 1.5
+
     /**
-     * Narrower than the GPX line, so a strip of the line stays visible around the arrow.
+     * Room around the arrow in its SDF image for the halo, which can't draw past the image bounds.
      */
-    const val GPX_DIRECTION_ARROW_WIDTH = 7.0
-    const val GPX_DIRECTION_ARROW_LENGTH = 7.0
+    const val GPX_DIRECTION_ARROW_SDF_PADDING = 3.0
 
     /**
      * How deep the back of the arrowhead is cut in, as a share of its length.

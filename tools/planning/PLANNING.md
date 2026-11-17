@@ -59,7 +59,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Bug                                                                                                                                                                                                                        |
 |--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | Altitude   | iOS: Altitude is barely readable in dark mode, also scale bar                                                                                                                                                              |
+| `[x]`  | Altitude   | iOS: Altitude is barely readable in dark mode, also scale bar                                                                                                                                                              |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
 | `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
@@ -134,7 +134,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[ ]`  | GPX        | Display waypoint comments in a window                                                                                                                   |
 | `[x]`  | GPXDetails | Add a button to hide - show route (Útvonal elrejtése), similarly to STARTED GPX ![img.png](img.png). Between Start route and Reverse direction buttons. |
-| `[R]`  | GPX        | Arrow icons are rare in the route and barely visible. Brainstorm how can we improve it. Example Természetjáró ![img_1.png](img_1.png)                   |
+| `[x]`  | GPX        | Arrow icons are rare in the route and barely visible. Brainstorm how can we improve it. Example Természetjáró ![img_1.png](img_1.png)                   |
 | `[?]`  | GPX        | Also: Auto-detect direction next to manual setup                                                                                                        |
 
 ### FEATURE: GPX Collection

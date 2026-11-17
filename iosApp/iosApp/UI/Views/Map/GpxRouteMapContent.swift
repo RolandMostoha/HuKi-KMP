@@ -17,19 +17,23 @@ struct GpxRouteMapContent: MapContent {
             GeoJSONSource(id: slopeSourceId)
                 .data(.featureCollection(SlopeFeatureCache.shared.features(for: gpxDetails, colorScheme: colorScheme)))
             lineLayer(id: "\(gpxDetails.layerId)_slope_casing", source: gpxDetails.layerId)
-                .lineColor(SharedRes.colors().markerStroke.getUIColor())
+                .lineColor(SharedRes.colors().markerStroke.getUIColor().resolved(for: colorScheme))
             lineLayer(id: slopeSourceId, source: slopeSourceId)
                 .lineWidth(SharedDimens.shared.GPX_LINE_WIDTH - 2 * SharedDimens.shared.MAP_LINE_STROKE_WIDTH)
                 .lineColor(Exp(.get) { SlopeSegmentFeature.colorProperty })
         } else {
             lineLayer(id: gpxDetails.layerId, source: gpxDetails.layerId)
-                .lineColor(SharedRes.colors().primary.getUIColor())
+                .lineColor(SharedRes.colors().primary.getUIColor().resolved(for: colorScheme))
                 .lineBorderWidth(SharedDimens.shared.MAP_LINE_STROKE_WIDTH)
-                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor())
+                .lineBorderColor(SharedRes.colors().mapStroke.getUIColor().resolved(for: colorScheme))
                 .lineBorderColorUseTheme(.none)
         }
 
-        RouteDirectionMapContent(sourceId: gpxDetails.layerId, layerId: "\(gpxDetails.layerId)_direction")
+        RouteDirectionMapContent(
+            sourceId: gpxDetails.layerId,
+            layerId: "\(gpxDetails.layerId)_direction",
+            colorScheme: colorScheme
+        )
     }
 
     private func lineLayer(id: String, source: String) -> LineLayer {
@@ -61,8 +65,7 @@ private final class SlopeFeatureCache: @unchecked Sendable {
         let key = "\(gpxDetails.layerId)_\(colorScheme)"
         if key == self.key { return cached }
 
-        let traits = UITraitCollection(userInterfaceStyle: colorScheme == .dark ? .dark : .light)
-        let flatColor = SharedRes.colors().primary.getUIColor().resolvedColor(with: traits).rgb
+        let flatColor = SharedRes.colors().primary.getUIColor().resolved(for: colorScheme).rgb
         let colorScale = SlopeColorScale(flatColor: flatColor)
         cached = FeatureCollection(features: gpxDetails.slopeSegments.map { segment in
             var feature = Feature(geometry: .lineString(segment.locations.lineString))
@@ -79,6 +82,7 @@ private final class SlopeFeatureCache: @unchecked Sendable {
 struct RouteDirectionMapContent: MapContent {
     let sourceId: String
     let layerId: String
+    let colorScheme: ColorScheme
 
     var body: some MapContent {
         StyleImage(id: RouteDirectionArrow.imageId, image: RouteDirectionArrow.image, sdf: true)
@@ -89,8 +93,11 @@ struct RouteDirectionMapContent: MapContent {
             .symbolSpacing(SharedDimens.shared.GPX_DIRECTION_ARROW_SPACING)
             .iconImage(RouteDirectionArrow.imageId)
             // An SDF icon takes its color from iconColor, which can opt out of the dark map's color grading
-            .iconColor(SharedRes.colors().mapStroke.getUIColor())
+            .iconColor(SharedRes.colors().mapStroke.getUIColor().resolved(for: colorScheme))
             .iconColorUseTheme(.none)
+            .iconHaloColor(SharedRes.colors().mapStrokeContrast.getUIColor().resolved(for: colorScheme))
+            .iconHaloColorUseTheme(.none)
+            .iconHaloWidth(SharedDimens.shared.GPX_DIRECTION_ARROW_HALO_WIDTH)
             .iconEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
             .iconRotationAlignment(.map)
             // Upright icons flip on westbound segments, which would point arrows the wrong way
@@ -103,20 +110,36 @@ struct RouteDirectionMapContent: MapContent {
 private enum RouteDirectionArrow {
     static let imageId = "route_direction_arrow"
 
-    // A notched arrowhead pointing along +x, the direction of the line in a line-placed symbol
     static let image: UIImage = {
-        let length = SharedDimens.shared.GPX_DIRECTION_ARROW_LENGTH
-        let width = SharedDimens.shared.GPX_DIRECTION_ARROW_WIDTH
-        let notch = length * SharedDimens.shared.GPX_DIRECTION_ARROW_NOTCH_RATIO
-        return UIGraphicsImageRenderer(size: CGSize(width: length, height: width)).image { _ in
-            let arrowhead = UIBezierPath()
-            arrowhead.move(to: .zero)
-            arrowhead.addLine(to: CGPoint(x: length, y: width / 2))
-            arrowhead.addLine(to: CGPoint(x: 0, y: width))
-            arrowhead.addLine(to: CGPoint(x: notch, y: width / 2))
-            arrowhead.close()
-            UIColor.white.setFill()
-            arrowhead.fill()
+        let scale = UIGraphicsImageRendererFormat.preferred().scale
+        let sdf = DirectionArrowSdf.companion.create(density: Float(scale))
+        let width = Int(sdf.widthPx)
+        let height = Int(sdf.heightPx)
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        for index in 0..<width * height {
+            // Premultiplied white, so every channel equals the alpha
+            let alpha = UInt8(sdf.alpha.get(index: Int32(index)))
+            pixels[index * 4] = alpha
+            pixels[index * 4 + 1] = alpha
+            pixels[index * 4 + 2] = alpha
+            pixels[index * 4 + 3] = alpha
         }
+        guard
+            let provider = CGDataProvider(data: Data(pixels) as CFData),
+            let cgImage = CGImage(
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bitsPerPixel: 32,
+                bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+                provider: provider,
+                decode: nil,
+                shouldInterpolate: true,
+                intent: .defaultIntent
+            )
+        else { return UIImage() }
+        return UIImage(cgImage: cgImage, scale: scale, orientation: .up)
     }()
 }
