@@ -2987,6 +2987,58 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `Given streamed location - When MapLongClicked - Then the first loading PlaceDetails has the distance`() {
+        runTest {
+            val userLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
+            val updates = MutableSharedFlow<Location>(replay = 1)
+            val viewModel = createViewModel(
+                grantedPermission = true,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation = null, updates = updates),
+            )
+            advanceUntilIdle()
+            updates.emit(userLocation)
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                skipItems(1)
+
+                viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+
+                awaitItem().mapUiState.placeDetails shouldBe PlaceDetails.Loading(
+                    location = TEST_LONG_TAP_LOCATION,
+                    distance = "11.1 km",
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given fresher last known location - When MapLongClicked - Then PlaceDetails has its distance`() {
+        runTest {
+            val streamedLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.1, TEST_LONG_TAP_LOCATION.longitude)
+            val lastKnownLocation = Location(TEST_LONG_TAP_LOCATION.latitude - 0.2, TEST_LONG_TAP_LOCATION.longitude)
+            val updates = MutableSharedFlow<Location>(replay = 1)
+            val viewModel = createViewModel(
+                grantedPermission = true,
+                locationMonitoringService = locationMonitoringService(lastKnownLocation, updates = updates),
+            )
+            advanceUntilIdle()
+            updates.emit(streamedLocation)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                val placeDetails = awaitItem().mapUiState.placeDetails
+
+                placeDetails.shouldBeInstanceOf<PlaceDetails.PlaceLoaded>().place.distance shouldBe "22.2 km"
+            }
+        }
+    }
+
+    @Test
     fun `Given successful reverse geocode - When MapLongClicked - Then the long tapped place visit is recorded`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)

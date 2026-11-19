@@ -64,8 +64,8 @@ struct PlaceDetailsSheetView: View {
     @ViewBuilder
     private var content: some View {
         switch onEnum(of: placeDetails) {
-        case .loading:
-            loadingContent
+        case .loading(let loading):
+            loadingContent(distance: loading.distance)
         case .unresolved(let unresolved):
             unresolvedContent(for: unresolved)
         case .placeLoaded(let placeLoaded):
@@ -73,11 +73,16 @@ struct PlaceDetailsSheetView: View {
         }
     }
 
-    private var loadingContent: some View {
+    private func loadingContent(distance: String?) -> some View {
         HStack(spacing: 14) {
-            ProgressView()
-                .controlSize(.regular)
-                .frame(width: 40, height: 40)
+            VStack(spacing: 3) {
+                ProgressView()
+                    .controlSize(.regular)
+                    .frame(width: 40, height: 40)
+                if let distance, !distance.isEmpty {
+                    distanceText(distance, color: Color(.secondaryLabel))
+                }
+            }
             Text(strings.get(id: SharedRes.strings().place_details_loading))
                 .font(.system(size: 16))
                 .foregroundStyle(Color(.secondaryLabel))
@@ -127,13 +132,7 @@ struct PlaceDetailsSheetView: View {
                         .foregroundStyle(.white)
                 }
                 if let distance, !distance.isEmpty {
-                    Text(distance)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(SwiftUI.Color(iconBackgroundColor.categoryTint()))
-                        .lineLimit(1)
-                        .padding(.top, 2)
-                        .fixedSize()
-                        .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_DISTANCE)
+                    distanceText(distance, color: SwiftUI.Color(iconBackgroundColor.categoryTint()))
                 }
             }
             VStack(alignment: .leading, spacing: 3) {
@@ -152,6 +151,16 @@ struct PlaceDetailsSheetView: View {
                 }
             }
         }
+    }
+
+    private func distanceText(_ distance: String, color: SwiftUI.Color) -> some View {
+        Text(distance)
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .padding(.top, 2)
+            .fixedSize()
+            .accessibilityIdentifier(TestTags.shared.PLACE_DETAILS_DISTANCE)
     }
 
     private func backgroundColor(for place: Place) -> UIColor {
@@ -173,7 +182,8 @@ struct PlaceDetailsSheetView: View {
     PlaceDetailsSheetView(
         strings: Strings(),
         placeDetails: PlaceDetails.Loading(
-            location: Location(latitude: 47.7181, longitude: 18.8948, altitude: nil)
+            location: Location(latitude: 47.7181, longitude: 18.8948, altitude: nil),
+            distance: "12.4 km"
         ),
         onRoutePlanClick: {},
         onMapsNavigationClick: {},

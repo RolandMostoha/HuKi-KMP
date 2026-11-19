@@ -147,11 +147,12 @@ private fun PlaceDetailsHeader(placeDetails: PlaceDetails, onCloseClick: () -> U
         AnimatedContent(
             targetState = placeDetails,
             transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentKey = { it::class },
             label = "PlaceDetailsHeader",
             modifier = Modifier.weight(1f),
         ) { state ->
             when (state) {
-                is PlaceDetails.Loading -> LoadingContent()
+                is PlaceDetails.Loading -> LoadingContent(distance = state.distance)
                 is PlaceDetails.Unresolved -> UnresolvedContent(
                     location = state.location,
                     distance = state.distance,
@@ -175,7 +176,7 @@ private fun PlaceDetailsHeader(placeDetails: PlaceDetails, onCloseClick: () -> U
 }
 
 @Composable
-private fun LoadingContent(modifier: Modifier = Modifier) {
+private fun LoadingContent(distance: String?, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -183,11 +184,19 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier.size(Dimens.IconContainer),
-            contentAlignment = Alignment.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
         ) {
-            LoadingIndicator()
+            Box(
+                modifier = Modifier.size(Dimens.IconContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                LoadingIndicator()
+            }
+            if (!distance.isNullOrBlank()) {
+                PlaceDistanceText(distance = distance, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
         Text(
             text = mokoString(SharedRes.strings.place_details_loading),
@@ -260,13 +269,7 @@ private fun PlaceHeaderContent(
                 )
             }
             if (!distance.isNullOrBlank()) {
-                Text(
-                    text = distance,
-                    modifier = Modifier.testTag(TestTags.PLACE_DETAILS_DISTANCE),
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                    color = iconBackgroundColor.categoryTint(),
-                    maxLines = 1,
-                )
+                PlaceDistanceText(distance = distance, color = iconBackgroundColor.categoryTint())
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall)) {
@@ -295,12 +298,23 @@ private fun PlaceHeaderContent(
     }
 }
 
+@Composable
+private fun PlaceDistanceText(distance: String, color: Color, modifier: Modifier = Modifier) {
+    Text(
+        text = distance,
+        modifier = modifier.testTag(TestTags.PLACE_DETAILS_DISTANCE),
+        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+        color = color,
+        maxLines = 1,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun PlaceDetailsBottomSheetLoadingPreview() {
     HuKiTheme {
         PlaceDetailsBottomSheet(
-            placeDetails = PlaceDetails.Loading(Location(47.7181, 18.8948)),
+            placeDetails = PlaceDetails.Loading(Location(47.7181, 18.8948), distance = "12.4 km"),
             routePlanStopCount = 1,
             onRoutePlanClick = {},
             onMapsNavigationClick = {},

@@ -124,7 +124,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -444,8 +446,9 @@ class MainViewModel(
 
     private fun showPlace(place: Place, source: PlaceDetailsSource, moveCamera: Boolean = true) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
-        showPlaceDetailsSheet(PlaceDetails.PlaceLoaded(place))
-        fillPlaceDistance(place)
+        val shownPlace = place.withDistanceFrom(myLocation)
+        showPlaceDetailsSheet(PlaceDetails.PlaceLoaded(shownPlace))
+        fillPlaceDistance(shownPlace, refresh = place.distance == null)
         if (moveCamera) moveCameraToPlace(place)
         viewModelScope.launch {
             placeHistoryRepository.recordVisit(place)
@@ -516,26 +519,30 @@ class MainViewModel(
 
     private fun showPlaceDetails(location: Location, source: PlaceDetailsSource = PlaceDetailsSource.LONG_TAP) {
         analyticsService.logEvent(AnalyticsEvent.PlaceDetailsOpened(source))
-        showPlaceDetailsSheet(PlaceDetails.Loading(location))
+        // The live location gives the distance up front, so the sheet keeps its height when the place loads
+        val knownUserLocation = myLocation
+        showPlaceDetailsSheet(PlaceDetails.Loading(location, knownUserLocation?.formatDistanceTo(location)))
 
         launchPlaceDetailsLoad {
-            val result = geocodingRepository.reverseGeocode(location)
-            val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
-                locationMonitoringService.lastKnownLocation()
+            coroutineScope {
+                val geocoding = async { geocodingRepository.reverseGeocode(location) }
+                val userLocation = withTimeoutOrNull(PLACE_DETAILS_LOCATION_TIMEOUT) {
+                    locationMonitoringService.lastKnownLocation()
+                } ?: knownUserLocation
+                if (userLocation != knownUserLocation) {
+                    val loading = PlaceDetails.Loading(location, userLocation?.formatDistanceTo(location))
+                    _uiState.updateMapUiState { it.withShownPlace(loading) }
+                }
+                val result = geocoding.await()
+                val place = (result as? NetworkResult.Success)?.data?.toReverseGeocodedPlace(location, userLocation)
+                if (place == null) {
+                    analyticsService.logEvent(AnalyticsEvent.PlaceDetailsUnresolved)
+                }
+                val placeDetails = place?.let { PlaceDetails.PlaceLoaded(it) }
+                    ?: PlaceDetails.Unresolved(location = location, distance = userLocation?.formatDistanceTo(location))
+                _uiState.updateMapUiState { it.withShownPlace(placeDetails) }
+                place?.let { placeHistoryRepository.recordVisit(it) }
             }
-            val place = (result as? NetworkResult.Success)?.data?.toReverseGeocodedPlace(location, userLocation)
-            if (place == null) {
-                analyticsService.logEvent(AnalyticsEvent.PlaceDetailsUnresolved)
-            }
-            val placeDetails = place?.let { PlaceDetails.PlaceLoaded(it) }
-                ?: PlaceDetails.Unresolved(
-                    location = location,
-                    distance = userLocation?.let {
-                        DistanceFormatter.formatDistance(it.distanceBetween(location))
-                    },
-                )
-            _uiState.updateMapUiState { it.withShownPlace(placeDetails) }
-            place?.let { placeHistoryRepository.recordVisit(it) }
         }
     }
 
@@ -1825,6 +1832,9 @@ class MainViewModel(
         const val LANDSCAPES_SINGLE_DESTINATION_ZOOM = 11.0
     }
 }
+
+private fun Location.formatDistanceTo(target: Location): String =
+    DistanceFormatter.formatDistance(distanceBetween(target))
 
 /**
  * Every shown place stays as a route stop, refreshed in place when its details change.
