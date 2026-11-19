@@ -28,12 +28,5 @@ object MarkerIcons {
             SharedRes.images.ic_gpx_jel_marker_frame
         }
 
-    fun placeSymbol(isDarkMode: Boolean, baseLayer: BaseLayer): ImageResource =
-        if (isColorGraded(isDarkMode, baseLayer)) {
-            SharedRes.images.ic_marker_picker_outdoors_dark
-        } else {
-            SharedRes.images.ic_marker_picker
-        }
-
     private fun isColorGraded(isDarkMode: Boolean, baseLayer: BaseLayer) = isDarkMode && baseLayer == BaseLayer.OUTDOORS
 }

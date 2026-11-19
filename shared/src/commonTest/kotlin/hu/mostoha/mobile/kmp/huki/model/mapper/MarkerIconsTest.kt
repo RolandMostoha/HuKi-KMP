@@ -20,15 +20,6 @@ class MarkerIconsTest {
     }
 
     @Test
-    fun `Given appearance and base layer - When placeSymbol - Then pre-graded icon is only used on dark Outdoors`() {
-        placeTestCases().forEach { testCase ->
-            val actual = MarkerIcons.placeSymbol(testCase.isDarkMode, testCase.baseLayer)
-
-            actual shouldBe testCase.result
-        }
-    }
-
-    @Test
     fun `Given waypoint type and GPX jel symbol - When waypointJelSymbol - Then only edge markers carry it`() {
         jelTestCases().forEach { testCase ->
             val actual = MarkerIcons.waypointJelSymbol(testCase.type, testCase.jelSymbol)
@@ -94,16 +85,6 @@ class MarkerIconsTest {
                 PlaceTestCase(true, BaseLayer.CITY, SharedRes.images.ic_gpx_jel_marker_frame),
                 PlaceTestCase(true, BaseLayer.SATELLITE, SharedRes.images.ic_gpx_jel_marker_frame),
                 PlaceTestCase(false, BaseLayer.OUTDOORS, SharedRes.images.ic_gpx_jel_marker_frame),
-            )
-
-        private fun placeTestCases() =
-            listOf(
-                PlaceTestCase(true, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker_outdoors_dark),
-                PlaceTestCase(true, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
-                PlaceTestCase(true, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
-                PlaceTestCase(false, BaseLayer.OUTDOORS, SharedRes.images.ic_marker_picker),
-                PlaceTestCase(false, BaseLayer.CITY, SharedRes.images.ic_marker_picker),
-                PlaceTestCase(false, BaseLayer.SATELLITE, SharedRes.images.ic_marker_picker),
             )
     }
 }

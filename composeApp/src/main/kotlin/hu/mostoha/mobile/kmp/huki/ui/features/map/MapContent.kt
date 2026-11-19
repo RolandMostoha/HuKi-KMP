@@ -311,7 +311,7 @@ fun MapContent(
                     routeStrokeColor = mapStrokeColor,
                 )
             }
-            PlaceMarkersLayer(mapUiState = mapUiState, isDarkMode = isDarkMode, onEvent = onEvent)
+            PlaceMarkersLayer(mapUiState = mapUiState, onEvent = onEvent)
         }
         MapAltitude(
             altitude = altitude,

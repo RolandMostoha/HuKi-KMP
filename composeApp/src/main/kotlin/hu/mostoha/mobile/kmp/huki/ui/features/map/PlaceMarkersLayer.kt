@@ -29,9 +29,7 @@ import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
-import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.toDisplayName
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPoint
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens
@@ -43,7 +41,7 @@ import hu.mostoha.mobile.kmp.huki.util.testTagAsResourceId
 
 @Composable
 @MapboxMapComposable
-fun PlaceMarkersLayer(mapUiState: MapUiState, isDarkMode: Boolean, onEvent: (MainUiEvents) -> Unit) {
+fun PlaceMarkersLayer(mapUiState: MapUiState, onEvent: (MainUiEvents) -> Unit) {
     val shownPlace = mapUiState.placeDetails
     mapUiState.routeStops
         .filter { it.location != shownPlace?.location }
@@ -51,8 +49,6 @@ fun PlaceMarkersLayer(mapUiState: MapUiState, isDarkMode: Boolean, onEvent: (Mai
             key(stop.location) {
                 PlaceMarkerAnnotation(
                     location = stop.location,
-                    isDarkMode = isDarkMode,
-                    baseLayer = mapUiState.baseLayer,
                     accessibilityLabel = mokoString(SharedRes.strings.map_a11y_route_stop, stop.toDisplayName()),
                     onClick = { onEvent(MainUiEvents.RouteStopClicked(stop)) },
                 )
@@ -62,8 +58,6 @@ fun PlaceMarkersLayer(mapUiState: MapUiState, isDarkMode: Boolean, onEvent: (Mai
         key(placeDetails.location) {
             PlaceMarkerAnnotation(
                 location = placeDetails.location,
-                isDarkMode = isDarkMode,
-                baseLayer = mapUiState.baseLayer,
                 animateIn = true,
             )
         }
@@ -73,13 +67,11 @@ fun PlaceMarkersLayer(mapUiState: MapUiState, isDarkMode: Boolean, onEvent: (Mai
 @Composable
 private fun PlaceMarkerAnnotation(
     location: Location,
-    isDarkMode: Boolean,
-    baseLayer: BaseLayer,
     accessibilityLabel: String? = null,
     onClick: (() -> Unit)? = null,
     animateIn: Boolean = false,
 ) {
-    val painter = mokoPainter(MarkerIcons.placeSymbol(isDarkMode, baseLayer))
+    val painter = mokoPainter(SharedRes.images.ic_marker_picker)
     val markerSize =
         with(LocalDensity.current) { (painter.intrinsicSize * SharedDimens.PLACE_MARKER_SCALE.toFloat()).toDpSize() }
     // The annotation view clips its content, so the spring overshoot needs room above and beside the pin

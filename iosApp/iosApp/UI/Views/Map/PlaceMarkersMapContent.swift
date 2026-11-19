@@ -31,7 +31,6 @@ struct PlaceMarkersMapContent: MapContent {
     ) -> MapViewAnnotation {
         MapViewAnnotation(coordinate: location.coordinate) {
             PlaceMarkerView(
-                baseLayer: mapUiState.baseLayer,
                 colorScheme: colorScheme,
                 accessibilityName: accessibilityName,
                 animateIn: animateIn,
@@ -49,7 +48,6 @@ struct PlaceMarkersMapContent: MapContent {
 }
 
 private struct PlaceMarkerView: View {
-    let baseLayer: Shared.BaseLayer
     let colorScheme: ColorScheme
     let accessibilityName: String?
     let animateIn: Bool
@@ -60,9 +58,7 @@ private struct PlaceMarkerView: View {
     private let strings = Strings()
 
     var body: some View {
-        let image = MarkerIcons.shared
-            .placeSymbol(isDarkMode: colorScheme == .dark, baseLayer: baseLayer)
-            .appearanceImage(for: colorScheme)
+        let image = SharedRes.images().ic_marker_picker.appearanceImage(for: colorScheme)
         let scale = CGFloat(SharedDimens.shared.PLACE_MARKER_SCALE)
         Image(uiImage: image)
             .resizable()
