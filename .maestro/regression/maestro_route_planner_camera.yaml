@@ -1,0 +1,168 @@
+appId: ${APP_ID}
+name: Route planner camera regression
+---
+# Walks the route planner actions that move the map camera or the sheet and screenshots each settled state, so a
+# change can be checked for zoomed-out or covered routes; the runner script's recording covers the transitions. Keeps the app's state, so imported GPX files stay.
+# About 1 km west of Dobogókő, so the route has a real extent to frame
+- setLocation:
+    latitude: 47.7205
+    longitude: 18.8830
+- launchApp:
+    stopApp: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 10000
+# A restored session can reopen the planner
+- runFlow:
+    when:
+      visible:
+        id: ROUTE_PLANNER_SHEET
+    commands:
+      - tapOn:
+          id: ROUTE_PLANNER_CLOSE_BUTTON
+      - waitForAnimationToEnd
+
+# Open: my location to Dobogókő
+- tapOn:
+    id: MAIN_SEARCH_BAR
+- inputText: "Dobog"
+- tapOn: "Dobogókő"
+- tapOn:
+    id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: 01_opened_expanded
+
+# Minimize and expand
+- tapOn:
+    id: ROUTE_PLANNER_DETENT_BUTTON
+- waitForAnimationToEnd
+- takeScreenshot: 02_minimized
+- tapOn:
+    id: ROUTE_PLANNER_DETENT_BUTTON
+- waitForAnimationToEnd
+- takeScreenshot: 03_expanded_again
+
+# The detents by swiping the sheet. Maestro swipes are long, so one can skip a detent (minimized straight to full
+# screen): the screenshots show where each landed, the recording strips show how it got there
+- swipe:
+    from:
+      id: ROUTE_PLANNER_TITLE
+    direction: DOWN
+    duration: 600
+- waitForAnimationToEnd
+- assertNotVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+- takeScreenshot: 03a_swiped_minimized
+- swipe:
+    from:
+      id: ROUTE_PLANNER_TITLE
+    direction: UP
+    duration: 600
+- waitForAnimationToEnd
+- assertVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+- takeScreenshot: 03b_swiped_up
+- swipe:
+    from:
+      id: ROUTE_PLANNER_TITLE
+    direction: UP
+    duration: 600
+- waitForAnimationToEnd
+- takeScreenshot: 03c_swiped_up_again
+- swipe:
+    from:
+      id: ROUTE_PLANNER_TITLE
+    direction: DOWN
+    duration: 600
+- waitForAnimationToEnd
+- takeScreenshot: 03d_swiped_down
+# Whatever detent the swipes left, the steps below start from the expanded sheet
+- runFlow:
+    when:
+      notVisible:
+        id: ROUTE_PLANNER_PROFILE_PICKER
+    commands:
+      - tapOn:
+          id: ROUTE_PLANNER_DETENT_BUTTON
+      - waitForAnimationToEnd
+
+# Select the destination, then Move it: the sheet minimizes, the move hint shows and the camera centers the selected
+# stop by design, so the rest of the route can leave the screen
+- tapOn: "Dobogókő"
+- waitForAnimationToEnd
+- takeScreenshot: 04_stop_selected
+- tapOn:
+    id: "ROUTE_PLANNER_STOP_MOVE.*"
+- waitForAnimationToEnd
+- takeScreenshot: 05_move_hint
+# Deselecting ends the move
+- tapOn:
+    point: "50%,25%"
+- waitForAnimationToEnd
+- takeScreenshot: 06_move_ended
+- runFlow:
+    when:
+      notVisible:
+        id: ROUTE_PLANNER_PROFILE_PICKER
+    commands:
+      - tapOn:
+          id: ROUTE_PLANNER_DETENT_BUTTON
+      - waitForAnimationToEnd
+
+# Pick on map: the sheet minimizes and the long-press hint shows, then a long press adds the stop
+- tapOn:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+- tapOn: "On Map|Térképen"
+- waitForAnimationToEnd
+- takeScreenshot: 07_pick_on_map_hint
+- longPressOn:
+    point: "30%,30%"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: 08_picked_stop
+
+# Long press on the map adds one more stop
+- longPressOn:
+    point: "70%,30%"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: 09_long_press_stop
+
+# Remove the first stop: iOS folds the middle stops of a long list and its rows share one test tag, so the stop is
+# found by its delete button's label
+- runFlow:
+    when:
+      notVisible:
+        id: ROUTE_PLANNER_PROFILE_PICKER
+    commands:
+      - tapOn:
+          id: ROUTE_PLANNER_DETENT_BUTTON
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Delete stop|Megálló törlése"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 20000
+- waitForAnimationToEnd
+- takeScreenshot: 10_stop_removed
+
+- tapOn:
+    id: ROUTE_PLANNER_CLOSE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET

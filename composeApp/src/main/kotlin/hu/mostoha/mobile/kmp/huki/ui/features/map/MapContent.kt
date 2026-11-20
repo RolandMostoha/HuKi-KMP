@@ -65,6 +65,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
@@ -157,6 +158,7 @@ fun MapContent(
     LaunchedEffect(mapUiEffects) {
         styleLoaded.await()
         mapUiEffects.collect { effect ->
+            Logger.d { "Map: Camera effect ${effect.toLogString()}, planner inset=$currentRoutePlannerInset" }
             if (effect is MapUiEffects.UpdateCamera && effect.contentPadding == ContentPadding.MAP_ROUTE_PLANNER) {
                 lastRoutePlannerCamera = effect
                 // The planner camera waits for its sheet to settle, see RefitOnRoutePlannerResize
@@ -384,10 +386,23 @@ private fun RefitOnRoutePlannerResize(
                 if (camera === fit.camera && fit.inset.isCloseTo(inset)) return@collectLatest
                 fit.inset = inset
                 fit.camera = camera
+                Logger.d { "Map: Route planner camera fit, inset=$inset" }
                 mapViewportState.moveCamera(density, camera, isLandscape(), inset)
             }
     }
 }
+
+private fun MapUiEffects.toLogString(): String =
+    when (this) {
+        is MapUiEffects.UpdateCamera -> {
+            val target = when (val cameraTarget = target) {
+                is CameraTarget.Bounds -> "Bounds(${cameraTarget.locations.size} points)"
+                is CameraTarget.Center -> "Center(zoom=${cameraTarget.zoom})"
+            }
+            "UpdateCamera($target, padding=$contentPadding, animated=$animated, durationMs=$durationMs)"
+        }
+        else -> toString()
+    }
 
 private fun dismissInfoWindows(mapUiState: MapUiState, onEvent: (MainUiEvents) -> Unit): Boolean =
     when {
