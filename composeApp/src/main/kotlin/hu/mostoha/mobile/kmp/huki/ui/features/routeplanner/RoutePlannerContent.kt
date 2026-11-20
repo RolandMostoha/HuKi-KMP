@@ -3,8 +3,11 @@ package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,14 +42,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +73,7 @@ import hu.mostoha.mobile.kmp.huki.ui.components.PoweredByAttribution
 import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import kotlin.math.roundToInt
 
 @Composable
 fun RoutePlannerContent(
@@ -88,7 +95,15 @@ fun RoutePlannerContent(
     )
     val isFullScreen = detent == RoutePlannerDetent.FULL_SCREEN
     val rowHeight = if (isFullScreen) Dimens.RoutePlannerRowHeightExpanded else Dimens.RoutePlannerRowHeight
-    val plannerVisibility = remember { MutableTransitionState(!isMinimized) }.apply { targetState = !isMinimized }
+    val plannerFraction = rememberPlannerReveal(isMinimized)
+    val isPlannerCollapsed = isMinimized && !plannerFraction.isRunning
+    var cardHeight by remember { mutableStateOf(Dp.Unspecified) }
+    ReportSettledExpandedHeight(
+        cardHeight = cardHeight,
+        isExpanded = detent == RoutePlannerDetent.EXPANDED,
+        isRevealing = plannerFraction.isRunning,
+        onExpandedHeightMeasured = onExpandedHeightMeasured,
+    )
     var headerHeight by remember { mutableStateOf(Dp.Unspecified) }
     var footerHeight by remember { mutableStateOf(Dp.Unspecified) }
     var selectedStopHeight by remember { mutableStateOf(0.dp) }
@@ -106,11 +121,7 @@ fun RoutePlannerContent(
         modifier = modifier
             .fillMaxWidth()
             .testTag(TestTags.ROUTE_PLANNER_SHEET)
-            .onGloballyPositioned {
-                // Only the settled height counts, the map's camera would otherwise follow the stops sliding in
-                if (detent != RoutePlannerDetent.EXPANDED || !plannerVisibility.isIdle) return@onGloballyPositioned
-                onExpandedHeightMeasured(with(density) { it.size.height.toDp() })
-            },
+            .onGloballyPositioned { cardHeight = with(density) { it.size.height.toDp() } },
         shape = RoundedCornerShape(
             topStart = Dimens.ExtraLarge,
             topEnd = Dimens.ExtraLarge,
@@ -138,11 +149,11 @@ fun RoutePlannerContent(
                 )
             }
             // The sheet follows its content's height, so the planner block's own size animation moves the sheet
-            AnimatedVisibility(
-                visibleState = plannerVisibility,
-                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
-                modifier = Modifier.then(weightWhen(isFullScreen)),
+            Box(
+                modifier = Modifier
+                    .then(weightWhen(isFullScreen))
+                    .revealed(fraction = { plannerFraction.value })
+                    .then(if (isPlannerCollapsed) Modifier.clearAndSetSemantics {} else Modifier),
             ) {
                 Column(
                     modifier = Modifier
@@ -305,6 +316,42 @@ private fun RoutePlannerMinimizedSelectedStop(
         }
     }
 }
+
+@Composable
+private fun rememberPlannerReveal(isMinimized: Boolean): Animatable<Float, AnimationVector1D> {
+    // The block stays composed while minimized: building its stops on the release of a swipe takes several
+    // frames, which would make the settling sheet skip ahead
+    val fraction = remember { Animatable(if (isMinimized) 0f else 1f) }
+    LaunchedEffect(isMinimized) {
+        fraction.animateTo(if (isMinimized) 0f else 1f, spring(stiffness = Spring.StiffnessMediumLow))
+    }
+    return fraction
+}
+
+@Composable
+private fun ReportSettledExpandedHeight(
+    cardHeight: Dp,
+    isExpanded: Boolean,
+    isRevealing: Boolean,
+    onExpandedHeightMeasured: (Dp) -> Unit,
+) {
+    // Only the settled height counts, the map's camera would otherwise follow the stops sliding in
+    LaunchedEffect(cardHeight, isExpanded, isRevealing) {
+        if (isExpanded && !isRevealing && cardHeight != Dp.Unspecified) onExpandedHeightMeasured(cardHeight)
+    }
+}
+
+/**
+ * Shows the top [fraction] of the content's height, faded by the same fraction.
+ */
+private fun Modifier.revealed(fraction: () -> Float): Modifier =
+    clipToBounds().layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+        val visibleFraction = fraction().coerceIn(0f, 1f)
+        layout(placeable.width, (placeable.height * visibleFraction).roundToInt()) {
+            placeable.placeWithLayer(x = 0, y = 0) { alpha = visibleFraction }
+        }
+    }
 
 // Planning keeps the stop list in the layout so the sheet does not resize under the loading
 // indicator, which also means the rows it hides must stop taking taps.

@@ -184,7 +184,11 @@ private fun Modifier.sheetContentLayout(
         // keeps its bottom edge and follows it instead of sliding a content that already changed
         val followsContent = !interaction.isActive &&
             listOf(detent, state.currentValue, state.targetValue).none { it == RoutePlannerDetent.FULL_SCREEN }
-        sheetTop.px = if (followsContent) containerHeightPx - placeable.height else state.requireOffset()
+        sheetTop.px = if (followsContent) {
+            sheetTop.followContent(contentTop = containerHeightPx - placeable.height, contentHeight = placeable.height)
+        } else {
+            state.requireOffset().also { sheetTop.holdAt(it) }
+        }
         layout(placeable.width, placeable.height) {
             placeable.place(x = 0, y = sheetTop.px.roundToInt())
         }
@@ -195,6 +199,34 @@ private fun Modifier.sheetContentLayout(
  */
 private class SheetTop {
     var px by mutableFloatStateOf(0f)
+    private var heldPx: Float? = null
+    private var lastContentHeight = 0
+
+    /**
+     * Keeps the top where a drag or its settle left it, until the content following it catches up.
+     */
+    fun holdAt(top: Float) {
+        heldPx = top
+    }
+
+    /**
+     * A settle can end while the content still resizes towards the sheet, e.g. its stops revealing or folding,
+     * and following it right away would move the sheet back, so the top holds while the content catches up.
+     */
+    fun followContent(contentTop: Float, contentHeight: Int): Float {
+        val held = heldPx
+        val isCatchingUp = held != null &&
+            (
+                contentTop > held &&
+                    contentHeight > lastContentHeight ||
+                    contentTop < held &&
+                    contentHeight < lastContentHeight
+                )
+        lastContentHeight = contentHeight
+        if (isCatchingUp) return held
+        heldPx = null
+        return contentTop
+    }
 }
 
 /**
