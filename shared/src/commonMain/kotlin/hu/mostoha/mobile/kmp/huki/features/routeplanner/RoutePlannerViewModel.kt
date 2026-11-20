@@ -191,7 +191,14 @@ class RoutePlannerViewModel(
 
         // The new empty stop takes the highlight, so only one card is open at a time
         _uiState.update { uiState ->
-            uiState.withStops(uiState.stops + RoutePlannerWaypoint()).copy(
+            val stops = uiState.stops
+            // A round trip keeps returning to its start, so the new stop goes before the mirrored end
+            val updated = if (uiState.isRoundTrip) {
+                stops.toMutableList().apply { add(lastIndex, RoutePlannerWaypoint()) }
+            } else {
+                stops + RoutePlannerWaypoint()
+            }
+            uiState.withStops(updated).copy(
                 selectedStopId = null,
                 waypointSearchTargetId = null,
                 isPickingOnMap = false,
@@ -202,11 +209,13 @@ class RoutePlannerViewModel(
     /**
      * Clicking the collapsed empty stop clears the selection, which opens the empty stop again.
      */
-    private fun toggleStopSelection(waypointId: String) {
+    private fun toggleStopSelection(waypointId: String, logsSelection: Boolean = true) {
         val uiState = _uiState.value
         val isSelected = uiState.selectedStop?.id == waypointId
         val isEmptyStop = uiState.stops.any { it.id == waypointId && it.isEmpty }
-        if (!isSelected && !isEmptyStop) analyticsService.logEvent(AnalyticsEvent.RoutePlanStopSelected)
+        if (logsSelection && !isSelected && !isEmptyStop) {
+            analyticsService.logEvent(AnalyticsEvent.RoutePlanStopSelected)
+        }
 
         _uiState.update { it.copy(selectedStopId = if (isSelected) null else waypointId) }
     }
@@ -223,14 +232,17 @@ class RoutePlannerViewModel(
 
         analyticsService.logEvent(AnalyticsEvent.RoutePlanStopMarkerClicked)
 
-        toggleStopSelection(stop.id)
+        toggleStopSelection(stop.id, logsSelection = false)
     }
 
     /**
-     * Moving needs the selected stop, so a move in progress ends with it.
+     * Moving needs the selected stop, so a move in progress ends with it. An abandoned pick also drops its target, so a
+     * later long tap adds a stop instead of replacing the one the pick was for.
      */
     private fun deselectStop() {
-        _uiState.update { it.copy(selectedStopId = null, isMovingStop = false, isPickingOnMap = false) }
+        _uiState.update {
+            it.copy(selectedStopId = null, isMovingStop = false, isPickingOnMap = false, waypointSearchTargetId = null)
+        }
     }
 
     private fun startStopMove() {
@@ -255,9 +267,10 @@ class RoutePlannerViewModel(
 
         analyticsService.logEvent(AnalyticsEvent.RoutePlanStopDragged)
 
+        val targetIds = _uiState.value.mirroredStopIds(target.id)
         val movedIds = mutableSetOf<String>()
         val moved = stops.map { stop ->
-            if (stop.location != target.location) return@map stop
+            if (stop.id !in targetIds) return@map stop
             // My location's id belongs to the live location fix, which must not pull the moved stop back
             val id = if (stop.id == RoutePlannerUiState.MY_LOCATION_WAYPOINT_ID) Uuid.random().toString() else stop.id
             movedIds += id
@@ -460,14 +473,16 @@ class RoutePlannerViewModel(
 
         _uiState.update { uiState ->
             val stops = uiState.stops
-            val index = stops.indexOfFirst { it.id == id }
+            // Removing either end of a round trip drops its mirrored end, so the route keeps its start
+            val removedId = if (uiState.isRoundTrip && id == stops.first().id) stops.last().id else id
+            val index = stops.indexOfFirst { it.id == removedId }
             if (index == -1) {
                 return@update uiState
             }
 
             // Below the minimum the row itself has to stay, so it falls back to the empty "pick a place" state.
             val updated = if (stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT) {
-                stops.filterNot { it.id == id }
+                stops.filterNot { it.id == removedId }
             } else {
                 stops.toMutableList().apply { set(index, RoutePlannerWaypoint()) }
             }

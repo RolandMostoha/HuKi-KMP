@@ -96,7 +96,7 @@ fun RoutePlannerBottomSheet(
     // Back steps out of the planner one layer at a time instead of leaving the app with the unsaved plan
     BackHandler {
         when {
-            uiState.selectedStopId != null || uiState.isMovingStop || uiState.isPickingOnMap -> {
+            uiState.selectedStop != null || uiState.isMovingStop || uiState.isPickingOnMap -> {
                 viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
             }
             detent != RoutePlannerDetent.MINIMIZED -> onDetentChange(RoutePlannerDetent.MINIMIZED)

@@ -996,6 +996,99 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
+    fun `Given a replace pick - When StopDeselected and the map long tapped - Then a stop is added and the target kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
+            viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
+            val location = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(location))
+
+            val stops = viewModel.uiState.value.stops
+            stops.size shouldBe 3
+            stops[1] shouldBe stop
+            stops.last().location shouldBe location
+        }
+    }
+
+    @Test
+    fun `Given two stops at the same place - When one marker is dragged - Then only that stop moves`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Pilis", FAR_PLACE_LOCATION)))
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val target = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDragged(from = PLACE_LOCATION, to = target))
+
+            val stops = viewModel.uiState.value.stops
+            stops[1].location shouldBe target
+            stops[3].location shouldBe PLACE_LOCATION
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When AddEmptyStopClicked - Then the empty stop goes before the end and it stays a round trip`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", null, MY_LOCATION_NAME)
+            uiState.isRoundTrip shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its start is removed - Then the mirrored end is dropped and the start kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(viewModel.uiState.value.stops.first().id))
+
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+            uiState.isRoundTrip shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its end is removed - Then the start is kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(viewModel.uiState.value.stops.last().id))
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+        }
+    }
+
+    @Test
+    fun `Given a planned stop - When its marker is clicked - Then only the marker click is logged`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopMarkerClicked(PLACE_LOCATION))
+
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanStopMarkerClicked
+            analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanStopSelected
+        }
+    }
+
+    @Test
     fun `Given an abandoned replace pick - When an empty stop is added and the map long tapped - Then the empty stop is filled`() {
         runTest {
             val viewModel = createViewModel()
