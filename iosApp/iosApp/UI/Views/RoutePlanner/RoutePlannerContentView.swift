@@ -51,7 +51,6 @@ struct RoutePlannerContentView: View {
             }
         }
         .padding(.top, 20)
-        .padding(.bottom, 8)
         .fixedSize(horizontal: false, vertical: !isFullScreen || !showsPlanner)
     }
 

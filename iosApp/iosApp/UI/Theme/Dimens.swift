@@ -52,7 +52,7 @@ enum Dimens {
 
     static func routePlannerContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
         EdgeInsets(
-            top: 140,
+            top: 100,
             leading: 72,
             bottom: sheetHeight + 56,
             trailing: 72

@@ -335,8 +335,8 @@ private fun StopItem(
     isReorderable: Boolean,
     onEvent: (RoutePlannerUiEvents) -> Unit,
     modifier: Modifier = Modifier,
-    keepsDragHandleSpace: Boolean = false,
     dragHandleModifier: Modifier = Modifier,
+    keepsDragHandleSpace: Boolean = false,
 ) {
     val stop = uiState.stops[index]
     val hasConnectorBelow = uiState.hasConnectorBelow(index)

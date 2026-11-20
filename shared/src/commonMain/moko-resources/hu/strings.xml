@@ -99,7 +99,7 @@
     <string name="route_planner_empty_stop_pick_on_map">Térképen</string>
     <string name="route_planner_empty_stop_search">Keresőből</string>
     <string name="route_planner_stop_move">Áthelyezés</string>
-    <string name="route_planner_stop_replace">Csere</string>
+    <string name="route_planner_stop_replace">Kereső</string>
     <string name="route_planner_stop_rename">Átnevezés</string>
     <string name="route_planner_rename_title">%d. megálló</string>
     <string name="route_planner_rename_name">Név</string>

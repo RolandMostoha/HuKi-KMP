@@ -99,7 +99,7 @@
     <string name="route_planner_empty_stop_pick_on_map">On Map</string>
     <string name="route_planner_empty_stop_search">From Search</string>
     <string name="route_planner_stop_move">Move</string>
-    <string name="route_planner_stop_replace">Replace</string>
+    <string name="route_planner_stop_replace">Search</string>
     <string name="route_planner_stop_rename">Rename</string>
     <string name="route_planner_rename_title">Stop %d</string>
     <string name="route_planner_rename_name">Name</string>
