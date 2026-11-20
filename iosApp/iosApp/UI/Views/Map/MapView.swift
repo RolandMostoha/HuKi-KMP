@@ -248,7 +248,12 @@ struct MapView: View {
                 // An idle map only places a new view annotation on its next frame, so the pin would wait for a pan
                 .onChange(of: placeMarkerLocations) { proxy.map?.triggerRepaint() }
                 .onChange(of: routePlannerDetent) {
-                    refitRoutePlannerCamera()
+                    // A minimize can show the long-press hint, whose inset arrives a moment later than the detent.
+                    // The task's copy of the view is stale by then, so it refits with the tracked inset
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(50))
+                        refitRoutePlannerCamera(inset: routePlannerMapInset)
+                    }
                 }
 
                 if isCompassVisible {
@@ -361,11 +366,11 @@ extension MapView {
         ) ?? SwiftUI.EdgeInsets()
     }
 
-    func refitRoutePlannerCamera() {
+    func refitRoutePlannerCamera(inset: CGFloat? = nil) {
         guard routePlannerDetent != .fullScreen,
               uiState.mapUiState.routePlan != nil,
               let effect = lastRoutePlannerCamera else { return }
-        routePlannerMapInset = routePlannerSheetHeight
+        routePlannerMapInset = inset ?? routePlannerSheetHeight
         updateCamera(effect)
     }
 

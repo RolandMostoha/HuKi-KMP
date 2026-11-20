@@ -49,6 +49,11 @@ struct MainView: View {
         routePlannerDetent == .minimized ? routePlannerHeights.minimized : routePlannerHeights.expanded
     }
 
+    func routePlannerMapInset(uiState: MainUiState) -> CGFloat {
+        let isHintShown = uiState.isRoutePlannerLongPressHintVisible && routePlannerDetent != .fullScreen
+        return routePlannerSheetHeight + (isHintShown ? Dimens.routePlannerHintCameraOffset : 0)
+    }
+
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
     }
@@ -123,7 +128,7 @@ struct MainView: View {
                     onMapClicked: { viewModel.onEvent(event: MainUiEventsMapClicked.shared) },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
-                    routePlannerSheetHeight: routePlannerSheetHeight,
+                    routePlannerSheetHeight: routePlannerMapInset(uiState: uiState),
                     listSheetHeight: uiState.mapUiState.landscapes != nil ? landscapesDetentHeight : oktDetentHeight
                 )
                 VStack {
