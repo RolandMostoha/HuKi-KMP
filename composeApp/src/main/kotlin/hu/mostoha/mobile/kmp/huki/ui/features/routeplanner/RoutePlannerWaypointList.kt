@@ -1,29 +1,42 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
@@ -31,15 +44,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
+import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
-import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 private const val MAX_DEFAULT_STOP_COUNT = 3
 private const val SURFACE_ALPHA = 0.5f
@@ -60,16 +77,17 @@ fun RoutePlannerWaypointList(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.Large))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = SURFACE_ALPHA))
-            .padding(horizontal = Dimens.MediumLarge),
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = SURFACE_ALPHA)),
     ) {
         if (isCollapsed) {
-            CollapsedStops(
-                uiState = uiState,
-                rowHeight = rowHeight,
-                onEvent = onEvent,
-                onMoreStopsClick = onMoreStopsClick,
-            )
+            Column(modifier = Modifier.padding(horizontal = Dimens.MediumLarge)) {
+                CollapsedStops(
+                    uiState = uiState,
+                    rowHeight = rowHeight,
+                    onEvent = onEvent,
+                    onMoreStopsClick = onMoreStopsClick,
+                )
+            }
         } else {
             ReorderableStops(
                 uiState = uiState,
@@ -82,6 +100,7 @@ fun RoutePlannerWaypointList(
             RoutePlannerMaxStopsRow(
                 maxStopCount = RoutePlanConstants.MAX_WAYPOINT_COUNT,
                 rowHeight = rowHeight,
+                modifier = Modifier.padding(horizontal = Dimens.MediumLarge),
             )
         }
     }
@@ -95,13 +114,19 @@ private fun CollapsedStops(
     onMoreStopsClick: () -> Unit,
 ) {
     val stops = uiState.stops
-    StopRow(uiState = uiState, index = 0, rowHeight = rowHeight, isReorderable = false, onEvent = onEvent)
+    StopItem(uiState = uiState, index = 0, rowHeight = rowHeight, isReorderable = false, onEvent = onEvent)
     RoutePlannerMoreStopsRow(
         hiddenStopCount = stops.size - 2,
         onClick = onMoreStopsClick,
         rowHeight = rowHeight,
     )
-    StopRow(uiState = uiState, index = stops.lastIndex, rowHeight = rowHeight, isReorderable = false, onEvent = onEvent)
+    StopItem(
+        uiState = uiState,
+        index = stops.lastIndex,
+        rowHeight = rowHeight,
+        isReorderable = false,
+        onEvent = onEvent,
+    )
 }
 
 @Composable
@@ -112,16 +137,30 @@ private fun ColumnScope.ReorderableStops(
     onEvent: (RoutePlannerUiEvents) -> Unit,
 ) {
     val stops = uiState.stops
-    val density = LocalDensity.current
-    val rowHeightPx = with(density) { rowHeight.toPx() }
-    var draggingIndex by remember { mutableStateOf<Int?>(null) }
+    // A round trip's last stop mirrors its start, so neither end takes part in reordering
+    val movableIndices = remember(stops.size, uiState.isRoundTrip) {
+        if (uiState.isRoundTrip) 1 until stops.lastIndex else stops.indices
+    }
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    var drag by remember { mutableStateOf<StopDrag?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
+    val stopIds = remember(stops) { stops.map { it.id } }
+    // The drag gesture outlives reorders that keep its row's index, so it reads the order when a drag starts
+    val currentStopIds by rememberUpdatedState(stopIds)
+    // A drag belongs to the order it started on, so the reordered list never shows its offsets for a frame
+    val activeDrag = drag?.takeIf { it.stopIds == stopIds }
+    LaunchedEffect(stopIds) { drag = null }
+    val dropIndex by remember(activeDrag, movableIndices) {
+        derivedStateOf { activeDrag?.let { listState.dropIndex(it.index, dragOffset, movableIndices) } }
+    }
     val draggedRowShape = RoundedCornerShape(Dimens.Medium)
     val draggedRowElevation = 6.dp
     val moveUpLabel = mokoString(SharedRes.strings.route_planner_a11y_move_up)
     val moveDownLabel = mokoString(SharedRes.strings.route_planner_a11y_move_down)
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxWidth()
             .then(
@@ -135,47 +174,57 @@ private fun ColumnScope.ReorderableStops(
             .testTag(TestTags.ROUTE_PLANNER_WAYPOINT_LIST),
     ) {
         itemsIndexed(stops, key = { _, stop -> stop.id }) { index, _ ->
-            val isDragged = draggingIndex == index
-            RoutePlannerWaypointRow(
-                waypoint = stops[index],
-                waypointType = uiState.stopType(index),
-                hasConnectorAbove = index > 0,
-                hasConnectorBelow = uiState.hasConnectorBelow(index),
+            val isDragged = activeDrag?.index == index
+            val makeRoomOffset by animateFloatAsState(
+                targetValue = makeRoomOffset(index, activeDrag, dropIndex),
+                label = "stopMakeRoomOffset",
+            )
+            StopItem(
+                uiState = uiState,
+                index = index,
                 rowHeight = rowHeight,
-                emptyRowTestTag = TestTags.routePlannerEmptyStopRow(index),
-                onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stops[index].id)) },
-                onEmptyRowClick = {
-                    onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked(stops[index].id))
-                },
+                isReorderable = index in movableIndices,
+                keepsDragHandleSpace = true,
+                onEvent = onEvent,
                 dragHandleModifier = Modifier.pointerInput(index, stops.size) {
                     detectDragGesturesAfterLongPress(
                         onDragStart = {
-                            draggingIndex = index
                             dragOffset = 0f
+                            drag = StopDrag(
+                                index = index,
+                                size = listState.itemSize(index),
+                                stopIds = currentStopIds,
+                            )
                         },
                         onDrag = { change, dragAmount ->
                             change.consume()
                             dragOffset += dragAmount.y
                         },
                         onDragEnd = {
-                            val target = (index + (dragOffset / rowHeightPx).roundToInt())
-                                .coerceIn(0, stops.lastIndex)
-                            if (target != index) {
-                                onEvent(RoutePlannerUiEvents.WaypointMoved(index, target))
+                            val target = listState.dropIndex(index, dragOffset, movableIndices)
+                            coroutineScope.launch {
+                                // The row settles into its new slot before the list reorders under it
+                                animate(dragOffset, listState.slotOffset(index, target)) { value, _ ->
+                                    dragOffset = value
+                                }
+                                if (target != index) {
+                                    onEvent(RoutePlannerUiEvents.WaypointMoved(index, target))
+                                } else {
+                                    drag = null
+                                }
                             }
-                            draggingIndex = null
-                            dragOffset = 0f
                         },
-                        onDragCancel = {
-                            draggingIndex = null
-                            dragOffset = 0f
-                        },
+                        onDragCancel = { drag = null },
                     )
                 },
                 modifier = Modifier
                     .zIndex(if (isDragged) 1f else 0f)
                     .graphicsLayer {
-                        translationY = if (isDragged) dragOffset else 0f
+                        translationY = when {
+                            activeDrag == null -> 0f
+                            isDragged -> dragOffset
+                            else -> makeRoomOffset
+                        }
                         shadowElevation = if (isDragged) draggedRowElevation.toPx() else 0f
                         shape = draggedRowShape
                         clip = isDragged
@@ -186,7 +235,7 @@ private fun ColumnScope.ReorderableStops(
                     )
                     .semantics {
                         customActions = buildList {
-                            if (index > 0) {
+                            if (index in movableIndices && index - 1 in movableIndices) {
                                 add(
                                     CustomAccessibilityAction(moveUpLabel) {
                                         onEvent(RoutePlannerUiEvents.WaypointMoved(index, index - 1))
@@ -194,7 +243,7 @@ private fun ColumnScope.ReorderableStops(
                                     },
                                 )
                             }
-                            if (index < stops.lastIndex) {
+                            if (index in movableIndices && index + 1 in movableIndices) {
                                 add(
                                     CustomAccessibilityAction(moveDownLabel) {
                                         onEvent(RoutePlannerUiEvents.WaypointMoved(index, index + 1))
@@ -203,31 +252,145 @@ private fun ColumnScope.ReorderableStops(
                                 )
                             }
                         }
-                    },
+                    }
+                    // The stop card reaches past the row into this padding
+                    .padding(horizontal = Dimens.MediumLarge),
             )
         }
     }
 }
 
+/**
+ * A stop being dragged to a new place in the order of [stopIds].
+ */
+private data class StopDrag(
+    val index: Int,
+    val size: Int,
+    val stopIds: List<String>,
+)
+
+/**
+ * The rows between the dragged stop and its drop place step aside by the dragged row's height.
+ */
+private fun makeRoomOffset(index: Int, drag: StopDrag?, dropIndex: Int?): Float =
+    when {
+        drag == null || dropIndex == null || index == drag.index -> 0f
+        index in (drag.index + 1)..dropIndex -> -drag.size.toFloat()
+        index in dropIndex until drag.index -> drag.size.toFloat()
+        else -> 0f
+    }
+
+private fun LazyListState.itemSize(index: Int): Int =
+    layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }?.size ?: 0
+
+/**
+ * The stop whose row the dragged row's center is over.
+ */
+private fun LazyListState.dropIndex(index: Int, dragOffset: Float, movableIndices: IntRange): Int {
+    val items = layoutInfo.visibleItemsInfo
+    val dragged = items.firstOrNull { it.index == index } ?: return index
+    val center = dragged.offset + dragged.size / 2f + dragOffset
+    val target = items.firstOrNull { center < it.offset + it.size }?.index ?: items.last().index
+    return target.coerceIn(movableIndices)
+}
+
+/**
+ * How far the row at [index] moves to land in [target]'s place once the rows in between stepped aside.
+ */
+private fun LazyListState.slotOffset(index: Int, target: Int): Float {
+    val items = layoutInfo.visibleItemsInfo
+    val dragged = items.firstOrNull { it.index == index } ?: return 0f
+    val targetItem = items.firstOrNull { it.index == target } ?: return 0f
+    return when {
+        target > index -> (targetItem.offset + targetItem.size - dragged.offset - dragged.size).toFloat()
+        target < index -> (targetItem.offset - dragged.offset).toFloat()
+        else -> 0f
+    }
+}
+
 @Composable
-private fun StopRow(
+private fun StopItem(
     uiState: RoutePlannerUiState,
     index: Int,
     rowHeight: Dp,
     isReorderable: Boolean,
     onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+    keepsDragHandleSpace: Boolean = false,
+    dragHandleModifier: Modifier = Modifier,
 ) {
     val stop = uiState.stops[index]
-    RoutePlannerWaypointRow(
-        waypoint = stop,
-        waypointType = uiState.stopType(index),
-        hasConnectorAbove = index > 0,
-        hasConnectorBelow = uiState.hasConnectorBelow(index),
-        rowHeight = rowHeight,
-        isReorderable = isReorderable,
-        emptyRowTestTag = TestTags.routePlannerEmptyStopRow(index),
-        onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stop.id)) },
-        onEmptyRowClick = { onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked(stop.id)) },
+    val hasConnectorBelow = uiState.hasConnectorBelow(index)
+    val isExpanded = uiState.isStopExpanded(stop)
+    val dragHandle: (@Composable () -> Unit)? = when {
+        isReorderable -> {
+            { RoutePlannerDragHandle(rowHeight = rowHeight, modifier = dragHandleModifier) }
+        }
+        // A fixed stop among draggable ones keeps its remove button in line with theirs
+        keepsDragHandleSpace -> {
+            { Spacer(modifier = Modifier.width(Dimens.IconMedium)) }
+        }
+        else -> null
+    }
+    if (stop.isEmpty) {
+        RoutePlannerStopCard(
+            title = mokoString(SharedRes.strings.route_planner_add_stop_title),
+            hasConnectorAbove = index > 0,
+            hasConnectorBelow = hasConnectorBelow,
+            isRemovable = uiState.isEmptyStopRemovable,
+            actions = listOf(
+                RoutePlannerStopCardAction(
+                    iconResId = R.drawable.ic_recenter,
+                    title = mokoString(SharedRes.strings.route_planner_empty_stop_pick_on_map),
+                    testTag = TestTags.routePlannerEmptyStopPickOnMap(index),
+                    onClick = { onEvent(RoutePlannerUiEvents.PickOnMapClicked(stop.id)) },
+                ),
+                RoutePlannerStopCardAction(
+                    iconResId = R.drawable.ic_search,
+                    title = mokoString(SharedRes.strings.route_planner_empty_stop_search),
+                    testTag = TestTags.routePlannerEmptyStopRow(index),
+                    onClick = { onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked(stop.id)) },
+                ),
+            ),
+            onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stop.id)) },
+            isExpanded = isExpanded,
+            isTitleHighlighted = true,
+            // The search action takes over the row's tag once the card opens
+            titleTestTag = if (isExpanded) null else TestTags.routePlannerEmptyStopRow(index),
+            onTitleClickLabel = mokoString(SharedRes.strings.route_planner_a11y_add_stop),
+            onTitleClick = { onEvent(RoutePlannerUiEvents.StopClicked(stop.id)) },
+            rowHeight = rowHeight,
+            collapsedTrailing = dragHandle,
+            modifier = modifier,
+        ) {
+            RoutePlannerEmptyStopIcon()
+        }
+    } else {
+        RoutePlannerSelectedStopCard(
+            stop = stop,
+            waypointType = uiState.stopType(index),
+            hasConnectorAbove = index > 0,
+            hasConnectorBelow = hasConnectorBelow,
+            onEvent = onEvent,
+            isExpanded = isExpanded,
+            collapsedTrailing = dragHandle,
+            rowHeight = rowHeight,
+            modifier = modifier.then(
+                if (isExpanded) Modifier else Modifier.testTag(TestTags.routePlannerStopRow(index)),
+            ),
+        )
+    }
+}
+
+@Composable
+private fun RoutePlannerDragHandle(rowHeight: Dp, modifier: Modifier = Modifier) {
+    Icon(
+        imageVector = ImageVector.vectorResource(R.drawable.ic_drag_handle),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+            .width(Dimens.IconMedium)
+            .height(rowHeight),
     )
 }
 
@@ -268,5 +431,53 @@ private fun RoutePlannerWaypointListExpandedPreview() {
             rowHeight = Dimens.RoutePlannerRowHeightExpanded,
             onMoreStopsClick = {},
         )
+    }
+}
+
+@Composable
+fun RoutePlannerSelectedStopCard(
+    stop: RoutePlannerWaypoint,
+    waypointType: WaypointType,
+    hasConnectorAbove: Boolean,
+    hasConnectorBelow: Boolean,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean = true,
+    collapsedTrailing: (@Composable () -> Unit)? = null,
+    rowHeight: Dp = Dimens.RoutePlannerRowHeight,
+) {
+    RoutePlannerStopCard(
+        title = stop.displayName?.let { mokoString(it) } ?: mokoString(SharedRes.strings.route_planner_waypoint_empty),
+        hasConnectorAbove = hasConnectorAbove,
+        hasConnectorBelow = hasConnectorBelow,
+        isRemovable = true,
+        actions = listOf(
+            RoutePlannerStopCardAction(
+                iconResId = R.drawable.ic_open_with,
+                title = mokoString(SharedRes.strings.route_planner_stop_move),
+                testTag = TestTags.ROUTE_PLANNER_STOP_MOVE,
+                onClick = { onEvent(RoutePlannerUiEvents.StopMoveClicked(stop.id)) },
+            ),
+            RoutePlannerStopCardAction(
+                iconResId = R.drawable.ic_search,
+                title = mokoString(SharedRes.strings.route_planner_stop_replace),
+                testTag = TestTags.ROUTE_PLANNER_STOP_REPLACE,
+                onClick = { onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id)) },
+            ),
+            RoutePlannerStopCardAction(
+                iconResId = R.drawable.ic_edit_square,
+                title = mokoString(SharedRes.strings.route_planner_stop_rename),
+                testTag = TestTags.ROUTE_PLANNER_STOP_RENAME,
+                onClick = { onEvent(RoutePlannerUiEvents.StopRenameClicked(stop.id)) },
+            ),
+        ),
+        onTitleClick = { onEvent(RoutePlannerUiEvents.StopClicked(stop.id)) },
+        onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stop.id)) },
+        isExpanded = isExpanded,
+        collapsedTrailing = collapsedTrailing,
+        rowHeight = rowHeight,
+        modifier = modifier,
+    ) {
+        RoutePlannerRowIcon(imageVector = mokoImage(waypointType.icon), tint = Color.Unspecified)
     }
 }

@@ -20,6 +20,7 @@ interface GpxRepository {
         routePlan: RoutePlan,
         stopPlaceNames: List<String?>,
         routeProfile: RoutePlannerProfile,
+        stopComments: List<String?> = emptyList(),
     ): String
 
     suspend fun getGpxFiles(): List<GpxFileItem>

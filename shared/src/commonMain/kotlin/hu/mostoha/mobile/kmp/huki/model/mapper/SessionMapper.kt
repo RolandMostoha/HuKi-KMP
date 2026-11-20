@@ -199,6 +199,8 @@ fun RoutePlannerWaypoint.toWaypointSnapshot(): WaypointSnapshot {
         placeName = placeName,
         latitude = location?.latitude,
         longitude = location?.longitude,
+        customName = customName,
+        comment = comment,
     )
 }
 
@@ -212,5 +214,12 @@ fun WaypointSnapshot.toRoutePlannerWaypoint(): RoutePlannerWaypoint {
         isPlaceName && placeName != null -> StringDesc.Raw(placeName)
         else -> location?.toRoutePlannerWaypoint()?.name
     }
-    return RoutePlannerWaypoint(id = id, name = restoredName, placeName = placeName, location = location)
+    return RoutePlannerWaypoint(
+        id = id,
+        name = restoredName,
+        placeName = placeName,
+        location = location,
+        customName = customName,
+        comment = comment,
+    )
 }

@@ -27,6 +27,9 @@ data class RoutePlannerUiState(
     val isWaypointSearchVisible: Boolean = false,
     val waypointSearchTargetId: String? = null,
     val isPickingOnMap: Boolean = false,
+    val selectedStopId: String? = null,
+    val renamingStopId: String? = null,
+    val isMovingStop: Boolean = false,
     val myLocation: Location? = null,
 ) {
     val stops: List<RoutePlannerWaypoint>
@@ -48,6 +51,40 @@ data class RoutePlannerUiState(
 
     val isMaxStopsReached: Boolean
         get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT
+
+    /**
+     * A selection whose stop was removed or emptied simply resolves to nothing.
+     */
+    val selectedStop: RoutePlannerWaypoint?
+        get() = stops.firstOrNull { it.id == selectedStopId && !it.isEmpty }
+
+    val renamingStop: RoutePlannerWaypoint?
+        get() = stops.firstOrNull { it.id == renamingStopId && !it.isEmpty }
+
+    /**
+     * The filled stop the search result overwrites, null when the search fills an empty stop.
+     */
+    val replacedStop: RoutePlannerWaypoint?
+        get() = stops.firstOrNull { it.id == waypointSearchTargetId && !it.isEmpty }
+
+    /**
+     * The first empty stop shows its actions unless another stop is selected, so only one stop is open at a time.
+     */
+    fun isStopExpanded(stop: RoutePlannerWaypoint): Boolean =
+        if (stop.isEmpty) {
+            selectedStop == null && stops.firstOrNull { it.isEmpty }?.id == stop.id
+        } else {
+            stop.id == selectedStop?.id
+        }
+
+    /**
+     * Only one empty stop at a time, so the user fills it before asking for another.
+     */
+    val isAddStopEnabled: Boolean
+        get() = !isMaxStopsReached && stops.none { it.isEmpty }
+
+    val isEmptyStopRemovable: Boolean
+        get() = stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT
 
     /**
      * The last stop links down only to the max stops row that follows it.
@@ -76,8 +113,7 @@ data class RoutePlannerUiState(
         get() = (if (isRoundTrip) stops.dropLast(1) else stops)
             .mapIndexedNotNull { index, stop ->
                 stop.location?.let { location ->
-                    val type = if (index == 0 && isRoundTrip) WaypointType.ROUND_TRIP else stopType(index)
-                    GpxWaypoint(location, type)
+                    GpxWaypoint(location, stopType(index))
                 }
             }
 
@@ -89,6 +125,7 @@ data class RoutePlannerUiState(
 
     fun stopType(index: Int): WaypointType =
         when {
+            isRoundTrip && (index == 0 || index == stops.lastIndex) -> WaypointType.ROUND_TRIP
             index == 0 -> WaypointType.START
             index == stops.lastIndex -> WaypointType.END
             else -> WaypointType.INTERMEDIATE

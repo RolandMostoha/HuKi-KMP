@@ -27,6 +27,9 @@ appId: ${APP_ID}
 # Add a second stop through the stacked search sheet
 - tapOn:
     id: ROUTE_PLANNER_ADD_STOP_ROW
+# Add stop appends an empty stop card, whose Search action opens the search sheet
+- tapOn:
+    id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
 - assertVisible:
     id: ROUTE_PLANNER_SEARCH_SCREEN
 - tapOn:
@@ -100,6 +103,9 @@ appId: ${APP_ID}
     commands:
       - tapOn:
           id: ROUTE_PLANNER_ADD_STOP_ROW
+      # Add stop appends an empty stop card, whose Search action opens the search sheet
+      - tapOn:
+          id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
       # The sheet animates in, so wait for it before touching anything inside it
       - extendedWaitUntil:
           visible:

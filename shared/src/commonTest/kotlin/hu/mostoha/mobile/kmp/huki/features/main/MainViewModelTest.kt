@@ -40,7 +40,6 @@ import hu.mostoha.mobile.kmp.huki.model.domain.DestinationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
-import hu.mostoha.mobile.kmp.huki.model.domain.Hint
 import hu.mostoha.mobile.kmp.huki.model.domain.IncomingLink
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MapLabelScale
@@ -52,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -71,7 +71,6 @@ import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultMapCameraStore
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
-import hu.mostoha.mobile.kmp.huki.repository.FakeHintRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLandscapeRepository
 import hu.mostoha.mobile.kmp.huki.repository.FakeLocationLinkResolver
 import hu.mostoha.mobile.kmp.huki.repository.FakeOktRepository
@@ -188,7 +187,6 @@ class MainViewModelTest {
     }
     private val analyticsService = FakeAnalyticsService()
     private val supporterRepository = FakeSupporterRepository()
-    private val hintRepository = FakeHintRepository()
     private val crashlyticsService = FakeCrashlyticsService()
     private val incomingLinkStore = DefaultIncomingLinkStore()
     private val locationLinkResolver = FakeLocationLinkResolver()
@@ -415,7 +413,6 @@ class MainViewModelTest {
             incomingLinkStore = incomingLinkStore,
             locationLinkResolver = locationLinkResolver,
             supporterRepository = supporterRepository,
-            hintRepository = hintRepository,
             analyticsService = analyticsService,
             crashlyticsService = crashlyticsService,
             defaultDispatcher = testDispatcher,
@@ -1724,6 +1721,8 @@ class MainViewModelTest {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
                 viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
@@ -1751,6 +1750,108 @@ class MainViewModelTest {
             val mapUiState = viewModel.uiState.value.mapUiState
             mapUiState.routePlan shouldBe null
             mapUiState.routePlanMarkers.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given changed stops - When their plan arrives - Then the plan is pending until then`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(
+                MainUiEvents.RoutePlanUpdated(
+                    routePlan = null,
+                    markers = TEST_ROUTE_PLAN.toGpxWaypoints(),
+                    isAwaitingRoutePlan = true,
+                ),
+            )
+            val isPendingWhileAwaiting = viewModel.uiState.value.mapUiState.isRoutePlanPending
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+
+            isPendingWhileAwaiting shouldBe true
+            viewModel.uiState.value.mapUiState.isRoutePlanPending shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a replanning Route Planner - When the sheet is dismissed - Then the map is no longer loading`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(
+                MainUiEvents.RoutePlanUpdated(
+                    routePlan = TEST_ROUTE_PLAN,
+                    markers = TEST_ROUTE_PLAN.toGpxWaypoints(),
+                    isRoutePlanLoading = true,
+                ),
+            )
+
+            viewModel.onEvent(MainUiEvents.SheetDismissed)
+
+            viewModel.uiState.value.mapUiState.isRoutePlanLoading shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a closed Route Planner - When a late RoutePlanUpdated arrives - Then no markers are drawn`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.SheetDismissed)
+
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+
+            val mapUiState = viewModel.uiState.value.mapUiState
+            mapUiState.routePlan shouldBe null
+            mapUiState.routePlanMarkers.shouldBeEmpty()
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When RoutePlannerSelectedStopChanged - Then the map highlights the stop`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(TEST_LONG_TAP_LOCATION))
+
+            viewModel.uiState.value.mapUiState.selectedRoutePlanStop shouldBe TEST_LONG_TAP_LOCATION
+        }
+    }
+
+    @Test
+    fun `Given a planned route - When a stop is selected - Then its nearest snapped marker is highlighted`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            val markers = TEST_ROUTE_PLAN.toGpxWaypoints()
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, markers))
+            val stop = markers.last().location.let { Location(it.latitude + 0.0001, it.longitude + 0.0001) }
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(stop))
+
+            viewModel.uiState.value.mapUiState.selectedRoutePlanMarker shouldBe markers.last()
+        }
+    }
+
+    @Test
+    fun `Given a highlighted stop - When the sheet is dismissed - Then the highlight is cleared`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(TEST_LONG_TAP_LOCATION))
+
+            viewModel.onEvent(MainUiEvents.SheetDismissed)
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(TEST_LONG_TAP_LOCATION))
+
+            viewModel.uiState.value.mapUiState.selectedRoutePlanStop shouldBe null
         }
     }
 
@@ -1791,6 +1892,8 @@ class MainViewModelTest {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            advanceUntilIdle()
 
             viewModel.mapUiEffects.test {
                 viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
@@ -1816,6 +1919,8 @@ class MainViewModelTest {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            advanceUntilIdle()
             val marker = GpxWaypoint(TEST_ROUTE_PLAN.waypoints.first(), WaypointType.END)
 
             viewModel.onEvent(MainUiEvents.RoutePlanUpdated(routePlan = null, markers = listOf(marker)))
@@ -1830,6 +1935,8 @@ class MainViewModelTest {
     fun `Given a route plan is on its way - When stops change - Then the camera waits and frames only the plan`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             advanceUntilIdle()
             val (first, second) = TEST_ROUTE_PLAN.waypoints
             val stops = listOf(GpxWaypoint(first, WaypointType.START), GpxWaypoint(second, WaypointType.END))
@@ -1884,6 +1991,8 @@ class MainViewModelTest {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            advanceUntilIdle()
             val (first, second) = TEST_ROUTE_PLAN.waypoints
             val stops = listOf(GpxWaypoint(first, WaypointType.START), GpxWaypoint(second, WaypointType.END))
             viewModel.onEvent(MainUiEvents.RoutePlanUpdated(null, stops, isAwaitingRoutePlan = true))
@@ -1905,6 +2014,8 @@ class MainViewModelTest {
     fun `Given drawn stops - When only their roles change - Then the camera is not moved again`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             advanceUntilIdle()
             val (first, second) = TEST_ROUTE_PLAN.waypoints
             viewModel.onEvent(
@@ -1936,6 +2047,8 @@ class MainViewModelTest {
     fun `Given no route can be planned - When a single waypoint is drawn - Then the camera frames it`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             advanceUntilIdle()
             val marker = GpxWaypoint(TEST_ROUTE_PLAN.waypoints.first(), WaypointType.END)
 
@@ -3555,85 +3668,190 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Given a not dismissed hint - When RoutePlannerClicked - Then the long press hint is visible`() {
+    fun `Given open Route Planner - When RoutePlannerClicked - Then the long press hint is hidden`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
 
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When pick on map starts - Then the long press hint is visible`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
 
             viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe true
         }
     }
 
     @Test
-    fun `Given a not dismissed hint and no Route Planner - When the state loads - Then the hint is hidden`() {
+    fun `Given a shown hint - When pick on map ends - Then the long press hint is hidden`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
-
             advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = false))
 
             viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
         }
     }
 
     @Test
-    fun `Given open Route Planner - When RoutePlannerLongPressHintDismissed - Then the hint hides for good`() {
+    fun `Given a shown hint - When RoutePlannerHintDismissed - Then it hides and is logged once`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
 
-            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
-            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerHintDismissed)
+            viewModel.onEvent(MainUiEvents.RoutePlannerHintDismissed)
 
             viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
-            hintRepository.dismissedHints.value shouldBe setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
-            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanLongPressHintDismissed
-        }
-    }
-
-    @Test
-    fun `Given open Route Planner - When RoutePlannerLongPressHintDismissed twice - Then it is logged once`() {
-        runTest {
-            val viewModel = createViewModel(grantedPermission = true)
-            advanceUntilIdle()
-            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
-
-            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
-            viewModel.onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed)
-            advanceUntilIdle()
-
             analyticsService.loggedEvents.count { it == AnalyticsEvent.RoutePlanLongPressHintDismissed } shouldBe 1
         }
     }
 
     @Test
-    fun `Given open Route Planner - When MapLongClicked - Then the long press hint hides for good`() {
+    fun `Given a dismissed hint - When pick on map starts again - Then the long press hint shows again`() {
         runTest {
             val viewModel = createViewModel(grantedPermission = true)
             advanceUntilIdle()
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
+            viewModel.onEvent(MainUiEvents.RoutePlannerHintDismissed)
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = false))
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
+
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When stop moving starts - Then the camera centers on its marker`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints()))
+            val marker = TEST_ROUTE_PLAN.waypoints.last()
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(marker))
+            advanceUntilIdle()
+
+            viewModel.mapUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlannerMoveStopChanged(isMovingStop = true))
+                advanceUntilIdle()
+
+                expectMostRecentItem() shouldBe MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(marker),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `Given open Route Planner - When stop moving starts - Then the move hint is visible`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.onEvent(MainUiEvents.RoutePlannerMoveStopChanged(isMovingStop = true))
+
+            viewModel.uiState.value.visibleRoutePlannerHint shouldBe RoutePlannerHint.MOVE_STOP
+            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a move hint - When a marker is dragged - Then the hint hides and the planner gets the move`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerMoveStopChanged(isMovingStop = true))
+            val to = Location(47.7, 18.9)
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlanMarkerDragged(from = TEST_LONG_TAP_LOCATION, to = to))
+
+                awaitItem() shouldBe MainUiEffects.RoutePlannerStopDragged(TEST_LONG_TAP_LOCATION, to)
+                viewModel.uiState.value.visibleRoutePlannerHint shouldBe null
+            }
+        }
+    }
+
+    @Test
+    fun `Given an open Route Planner - When a marker is clicked - Then the planner gets the click`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.RoutePlanMarkerClicked(TEST_LONG_TAP_LOCATION))
+
+                awaitItem() shouldBe MainUiEffects.RoutePlannerMarkerClicked(TEST_LONG_TAP_LOCATION)
+            }
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When MapClicked - Then the planner deselects it`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(TEST_LONG_TAP_LOCATION))
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.MapClicked)
+
+                awaitItem() shouldBe MainUiEffects.RoutePlannerStopDeselected
+            }
+        }
+    }
+
+    @Test
+    fun `Given no selected stop - When MapClicked - Then nothing is sent to the planner`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+
+            viewModel.mainUiEffects.test {
+                viewModel.onEvent(MainUiEvents.MapClicked)
+
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Test
+    fun `Given a shown hint - When MapLongClicked - Then the long press hint hides`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(isPickingOnMap = true))
 
             viewModel.onEvent(MainUiEvents.MapLongClicked(TEST_LONG_TAP_LOCATION))
             advanceUntilIdle()
 
             viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
-            hintRepository.dismissedHints.value shouldBe setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
             analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanLongPressHintDismissed
-        }
-    }
-
-    @Test
-    fun `Given a dismissed hint - When RoutePlannerClicked - Then the long press hint is hidden`() {
-        runTest {
-            hintRepository.dismissedHints.value = setOf(Hint.ROUTE_PLANNER_LONG_PRESS)
-            val viewModel = createViewModel(grantedPermission = true)
-            advanceUntilIdle()
-
-            viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
-
-            viewModel.uiState.value.isRoutePlannerLongPressHintVisible shouldBe false
         }
     }
 

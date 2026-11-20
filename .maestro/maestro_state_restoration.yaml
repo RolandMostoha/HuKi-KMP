@@ -87,6 +87,9 @@ appId: ${APP_ID}
     id: PLACE_DETAILS_ROUTE_PLAN_BUTTON
 - tapOn:
     id: ROUTE_PLANNER_ADD_STOP_ROW
+# Add stop appends an empty stop card, whose Search action opens the search sheet
+- tapOn:
+    id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
 - tapOn:
     id: ROUTE_PLANNER_SEARCH_FIELD
 - inputText: "Ram-szakad"

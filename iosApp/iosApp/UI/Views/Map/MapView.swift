@@ -17,6 +17,9 @@ struct MapView: View {
     var onOktInfoWindowDismissed: () -> Void = {}
     var onLandscapesEvent: (LandscapesUiEvents) -> Void = { _ in }
     var onRouteStopClicked: (PlaceDetails) -> Void = { _ in }
+    var onRoutePlanMarkerDragged: (Shared.Location, Shared.Location) -> Void = { _, _ in }
+    var onRoutePlanMarkerClicked: (Shared.Location) -> Void = { _ in }
+    var onMapClicked: () -> Void = {}
     let mapUiEffects: SkieSwiftFlow<MapUiEffects>
     var routePlannerDetent: RoutePlannerDetent = .expanded
     var routePlannerSheetHeight: CGFloat = Dimens.routePlannerDetentHeight
@@ -35,10 +38,11 @@ struct MapView: View {
     @State private var cameraCenter = CLLocationCoordinate2D()
     @State private var isMapLandscape = false
     @State private var isDebugCameraPanelVisible = false
+    @State private var isDraggingRoutePlanMarker = false
     @State private var lastRoutePlannerCamera: MapUiEffectsUpdateCamera?
     @State var hiddenBaseLabelLayerIds: [String]?
 
-    @State private var routePlannerMapInset = Dimens.routePlannerDetentHeight
+    @State var routePlannerMapInset = Dimens.routePlannerDetentHeight
     @State private var listSheetMapInset = Dimens.oktDetentMinHeight
 
     // Panning turns the viewport idle and drops its padding while the camera keeps it, so it is tracked here
@@ -57,12 +61,10 @@ struct MapView: View {
                 Map(viewport: $viewport) {
                     BaseLayerMapContent(baseLayer: uiState.mapUiState.baseLayer, isDarkMode: isDarkMode,
                                         tileScaleFactor: tileScaleFactor)
-                    TapInteraction { _ in
-                        dismissInfoWindows()
-                        return false
-                    }
+                    TapInteraction { _ in handleMapTap() }
                     LongPressInteraction { context in
-                        onMapLongClicked(context.coordinate.location)
+                        // Holding a route plan marker starts its drag, which must not also drop a new stop
+                        if !isDraggingRoutePlanMarker { onMapLongClicked(context.coordinate.location) }
                         return true
                     }
                     if let landscapes = uiState.mapUiState.landscapes {
@@ -121,8 +123,10 @@ struct MapView: View {
                     }
                     if isRoutePlanVisible {
                         RoutePlanMapContent(
-                            routePlan: uiState.mapUiState.routePlan, markers: uiState.mapUiState.routePlanMarkers,
-                            colorScheme: colorScheme
+                            mapUiState: uiState.mapUiState, colorScheme: colorScheme,
+                            onMarkerDragChanged: { isDraggingRoutePlanMarker = $0 },
+                            onMarkerDropped: { dropRoutePlanMarker($0, from: $1, to: $2, map: proxy.map) },
+                            onMarkerTapped: { onRoutePlanMarkerClicked($0.location) }
                         )
                     }
                     if uiState.myLocationState.permissionState == PermissionState.granted {
@@ -139,6 +143,7 @@ struct MapView: View {
                 }
                 .mapStyle(uiState.mapUiState.baseLayer.mapStyle(isDarkMode: isDarkMode))
                 .gestureOptions(GestureOptions(
+                    panEnabled: !isDraggingRoutePlanMarker,
                     rotateEnabled: uiState.mapUiState.rotationEnabled
                 ))
                 .ornamentOptions(OrnamentOptions(
@@ -237,9 +242,8 @@ struct MapView: View {
                 .onGeometryChange(for: CGSize.self) { $0.size } action: {
                     isMapLandscape = AdaptiveLayout.isLandscapeViewport(mapSize: $0)
                 }
-                .onChange(of: routePlannerSheetHeight, initial: true) { _, newHeight in
-                    routePlannerMapInset = newHeight
-                }
+                .onChange(of: routePlannerSheetHeight, initial: true) { routePlannerMapInset = $1 }
+                .task(id: uiState.mapUiState.selectedRoutePlanStop == nil) { await refitAfterStopSelection() }
                 .onChange(of: listSheetHeight, initial: true) { listSheetMapInset = $1 }
                 // An idle map only places a new view annotation on its next frame, so the pin would wait for a pan
                 .onChange(of: placeMarkerLocations) { proxy.map?.triggerRepaint() }
@@ -265,7 +269,7 @@ struct MapView: View {
     }
 }
 
-private extension MapView {
+extension MapView {
     // Mirrors the Mapbox compass: always shown while the live compass drives the bearing,
     // otherwise only once the camera is rotated away from north.
     var isCompassVisible: Bool {
@@ -319,19 +323,6 @@ private extension MapView {
                 },
                 onClose: { isDebugCameraPanelVisible = false }
             )
-        }
-    }
-
-    func handleMapEffects(_ effect: MapUiEffects, proxy: MapProxy) {
-        switch onEnum(of: effect) {
-        case .updateCamera(let effect):
-            updateCamera(effect)
-        case .showMyLocation(let effect):
-            showMyLocation(effect, proxy: proxy)
-        case .zoom(let effect):
-            zoom(effect, proxy: proxy)
-        case .resetBearing:
-            resetBearing(proxy: proxy)
         }
     }
 

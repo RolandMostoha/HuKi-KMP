@@ -10,4 +10,5 @@ data class DistanceInfoWindowData(
     val distance: String?,
     val travelTime: StringDesc?,
     val priority: Int,
+    val description: String? = null,
 )

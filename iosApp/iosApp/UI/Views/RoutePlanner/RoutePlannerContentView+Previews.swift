@@ -1,11 +1,22 @@
 import Shared
 import SwiftUI
 
+private func previewStop(_ id: String, name: String? = nil) -> RoutePlannerWaypoint {
+    RoutePlannerWaypoint(
+        id: id,
+        name: name.map { RawStringDesc(string: $0) },
+        placeName: nil,
+        location: nil,
+        customName: nil,
+        comment: nil
+    )
+}
+
 private let previewWaypoints = [
-    RoutePlannerWaypoint(id: "1", name: RawStringDesc(string: "My location"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "2", name: RawStringDesc(string: "Ram-hegy"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "3", name: RawStringDesc(string: "Prédikálószék"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "4", name: nil, placeName: nil, location: nil)
+    previewStop("1", name: "My location"),
+    previewStop("2", name: "Ram-hegy"),
+    previewStop("3", name: "Prédikálószék"),
+    previewStop("4")
 ]
 
 private let previewRoundTripLocation = Location(latitude: 47.72, longitude: 18.89, altitude: nil)
@@ -15,45 +26,50 @@ private let previewRoundTripWaypoints = [
         id: "1",
         name: RawStringDesc(string: "My location"),
         placeName: nil,
-        location: previewRoundTripLocation
+        location: previewRoundTripLocation,
+        customName: nil,
+        comment: nil
     ),
-    RoutePlannerWaypoint(id: "2", name: RawStringDesc(string: "Ram-hegy"), placeName: nil, location: nil),
+    previewStop("2", name: "Ram-hegy"),
     RoutePlannerWaypoint(
         id: "3",
         name: RawStringDesc(string: "My location"),
         placeName: nil,
-        location: previewRoundTripLocation
+        location: previewRoundTripLocation,
+        customName: nil,
+        comment: nil
     ),
-    RoutePlannerWaypoint(id: "4", name: nil, placeName: nil, location: nil)
+    previewStop("4")
 ]
 
 private let previewManyWaypoints = [
-    RoutePlannerWaypoint(id: "1", name: RawStringDesc(string: "My location"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "2", name: RawStringDesc(string: "Ram-hegy"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "3", name: RawStringDesc(string: "Prédikálószék"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "4", name: RawStringDesc(string: "Vadálló-kövek"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "5", name: RawStringDesc(string: "Dobogókő"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "6", name: RawStringDesc(string: "Rám-szakadék"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "7", name: nil, placeName: nil, location: nil)
+    previewStop("1", name: "My location"),
+    previewStop("2", name: "Ram-hegy"),
+    previewStop("3", name: "Prédikálószék"),
+    previewStop("4", name: "Vadálló-kövek"),
+    previewStop("5", name: "Dobogókő"),
+    previewStop("6", name: "Rám-szakadék"),
+    previewStop("7")
 ]
 
 private let previewMaxStopCount = Int(RoutePlanConstants.shared.MAX_WAYPOINT_COUNT)
 
 private let previewMaxWaypoints: [RoutePlannerWaypoint] = (1...previewMaxStopCount).map { index in
-    RoutePlannerWaypoint(id: "\(index)", name: RawStringDesc(string: "Stop \(index)"), placeName: nil, location: nil)
-} + [RoutePlannerWaypoint(id: "spare", name: nil, placeName: nil, location: nil)]
+    previewStop("\(index)", name: "Stop \(index)")
+} + [previewStop("spare")]
 
 private let previewEmptyWaypoints = [
-    RoutePlannerWaypoint(id: "1", name: RawStringDesc(string: "My location"), placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "2", name: nil, placeName: nil, location: nil),
-    RoutePlannerWaypoint(id: "3", name: nil, placeName: nil, location: nil)
+    previewStop("1", name: "My location"),
+    previewStop("2"),
+    previewStop("3")
 ]
 
 private func previewUiState(
     profile: RoutePlannerProfile = .onTrails,
     waypoints: [RoutePlannerWaypoint],
     isLoading: Bool = false,
-    error: InfoViewData? = nil
+    error: InfoViewData? = nil,
+    selectedStopId: String? = nil
 ) -> RoutePlannerUiState {
     RoutePlannerUiState(
         routeProfile: profile,
@@ -64,6 +80,9 @@ private func previewUiState(
         isWaypointSearchVisible: false,
         waypointSearchTargetId: nil,
         isPickingOnMap: false,
+        selectedStopId: selectedStopId,
+        renamingStopId: nil,
+        isMovingStop: false,
         myLocation: nil
     )
 }
@@ -113,6 +132,15 @@ private func previewUiState(
     RoutePlannerContentView(
         strings: Strings(),
         uiState: previewUiState(waypoints: previewWaypoints, isLoading: true),
+        onEvent: { _ in },
+        detent: .minimized
+    )
+}
+
+#Preview("Minimized selected stop") {
+    RoutePlannerContentView(
+        strings: Strings(),
+        uiState: previewUiState(waypoints: previewWaypoints, selectedStopId: previewWaypoints.last?.id),
         onEvent: { _ in },
         detent: .minimized
     )

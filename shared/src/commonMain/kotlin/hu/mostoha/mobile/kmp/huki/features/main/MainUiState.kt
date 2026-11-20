@@ -4,9 +4,9 @@ import hu.mostoha.mobile.kmp.huki.features.map.LandscapesUiState
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
 import hu.mostoha.mobile.kmp.huki.features.map.OktUiState
 import hu.mostoha.mobile.kmp.huki.model.domain.Alert
-import hu.mostoha.mobile.kmp.huki.model.domain.Hint
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationState
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.ThemeMode
@@ -25,13 +25,13 @@ data class MainUiState(
     val themeMode: ThemeMode = UserPreferences.DEFAULTS.themeMode,
     val alert: Alert? = null,
     val supporterAnimal: SupportAnimal? = null,
-    val dismissedHints: Set<Hint>? = null,
+    val routePlannerHint: RoutePlannerHint? = null,
 ) {
-    /**
-     * Stays hidden until the dismissed hints load, so a dismissed hint never flashes up.
-     */
+    val visibleRoutePlannerHint: RoutePlannerHint?
+        get() = routePlannerHint.takeIf { sheet is Sheet.RoutePlanner }
+
     val isRoutePlannerLongPressHintVisible: Boolean
-        get() = sheet is Sheet.RoutePlanner && dismissedHints?.contains(Hint.ROUTE_PLANNER_LONG_PRESS) == false
+        get() = visibleRoutePlannerHint == RoutePlannerHint.LONG_PRESS
 
     val isSearchBarVisible: Boolean
         get() = !mapUiState.isGpxShown &&

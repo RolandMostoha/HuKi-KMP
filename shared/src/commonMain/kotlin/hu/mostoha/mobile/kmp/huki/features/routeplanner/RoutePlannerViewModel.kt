@@ -32,6 +32,7 @@ import hu.mostoha.mobile.kmp.huki.service.CrashlyticsService
 import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
+import hu.mostoha.mobile.kmp.huki.util.distanceBetween
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -98,17 +99,26 @@ class RoutePlannerViewModel(
             is RoutePlannerUiEvents.LocationAdded -> addLongTappedLocation(event.location)
             is RoutePlannerUiEvents.WaypointRemoved -> removeWaypoint(event.id)
             is RoutePlannerUiEvents.WaypointMoved -> moveWaypoint(event.fromIndex, event.toIndex)
+            RoutePlannerUiEvents.AddEmptyStopClicked -> addEmptyStop()
+            is RoutePlannerUiEvents.StopClicked -> toggleStopSelection(event.waypointId)
+            is RoutePlannerUiEvents.StopMoveClicked -> startStopMove()
+            is RoutePlannerUiEvents.StopDragged -> moveStop(event.from, event.to)
+            is RoutePlannerUiEvents.StopMarkerClicked -> selectStopAt(event.location)
+            RoutePlannerUiEvents.StopDeselected -> deselectStop()
+            is RoutePlannerUiEvents.StopReplaceClicked -> showStopReplaceSearch(event.waypointId)
+            is RoutePlannerUiEvents.StopRenameClicked -> showStopRename(event.waypointId)
+            is RoutePlannerUiEvents.StopRenamed -> renameStop(event.waypointId, event.name, event.comment)
+            RoutePlannerUiEvents.StopRenameDismissed -> _uiState.update { it.copy(renamingStopId = null) }
             is RoutePlannerUiEvents.AddStopFromSearchClicked -> showWaypointSearch(event.waypointId)
             RoutePlannerUiEvents.WaypointSearchDismissed -> hideWaypointSearch()
             is RoutePlannerUiEvents.SearchPlaceAdded -> addSearchPlace(event.place)
             is RoutePlannerUiEvents.SearchDestinationAdded -> addSearchDestination(event.destination)
             RoutePlannerUiEvents.MyLocationAdded -> addMyLocation()
-            RoutePlannerUiEvents.PickOnMapClicked -> pickOnMap()
+            is RoutePlannerUiEvents.PickOnMapClicked -> pickOnMap(event.waypointId)
             RoutePlannerUiEvents.RoundTripClicked -> addRoundTrip()
             RoutePlannerUiEvents.RetryClicked -> retryRoutePlan()
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
-            RoutePlannerUiEvents.SettingsClicked -> Unit
             RoutePlannerUiEvents.GraphhopperAttributionClicked -> openGraphhopper()
         }
     }
@@ -147,7 +157,6 @@ class RoutePlannerViewModel(
     }
 
     private fun addLongTappedLocation(location: Location) {
-        val wasPickingOnMap = _uiState.value.isPickingOnMap
         val waypoint = location.toRoutePlannerWaypoint()
         if (!addWaypoint(waypoint)) {
             return
@@ -155,9 +164,7 @@ class RoutePlannerViewModel(
 
         analyticsService.logEvent(AnalyticsEvent.RoutePlanWaypointLongTapped)
 
-        if (wasPickingOnMap) {
-            sendEffect(RoutePlannerUiEffects.ExpandSheet)
-        }
+        _uiState.update { it.copy(isMovingStop = false) }
 
         viewModelScope.launch {
             val result = geocodingRepository.reverseGeocode(location)
@@ -175,6 +182,160 @@ class RoutePlannerViewModel(
                 )
             }
         }
+    }
+
+    private fun addEmptyStop() {
+        if (!_uiState.value.isAddStopEnabled) return
+
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanEmptyStopAdded)
+
+        // The new empty stop takes the highlight, so only one card is open at a time
+        _uiState.update { uiState ->
+            uiState.withStops(uiState.stops + RoutePlannerWaypoint()).copy(
+                selectedStopId = null,
+                waypointSearchTargetId = null,
+                isPickingOnMap = false,
+            )
+        }
+    }
+
+    /**
+     * Clicking the collapsed empty stop clears the selection, which opens the empty stop again.
+     */
+    private fun toggleStopSelection(waypointId: String) {
+        val uiState = _uiState.value
+        val isSelected = uiState.selectedStop?.id == waypointId
+        val isEmptyStop = uiState.stops.any { it.id == waypointId && it.isEmpty }
+        if (!isSelected && !isEmptyStop) analyticsService.logEvent(AnalyticsEvent.RoutePlanStopSelected)
+
+        _uiState.update { it.copy(selectedStopId = if (isSelected) null else waypointId) }
+    }
+
+    /**
+     * A planned route snaps its markers away from the stops' own locations, so the nearest stop is the clicked one.
+     */
+    private fun selectStopAt(location: Location) {
+        val stop = _uiState.value.stops
+            .mapNotNull { stop -> stop.location?.let { stop to it.distanceBetween(location) } }
+            .minByOrNull { it.second }
+            ?.first
+            ?: return
+
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopMarkerClicked)
+
+        toggleStopSelection(stop.id)
+    }
+
+    /**
+     * Moving needs the selected stop, so a move in progress ends with it.
+     */
+    private fun deselectStop() {
+        _uiState.update { it.copy(selectedStopId = null, isMovingStop = false, isPickingOnMap = false) }
+    }
+
+    private fun startStopMove() {
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopMoveClicked)
+
+        _uiState.update { it.copy(isMovingStop = true, isPickingOnMap = false, waypointSearchTargetId = null) }
+
+        sendEffect(RoutePlannerUiEffects.MinimizeSheet)
+    }
+
+    /**
+     * Moves the stop under the dragged marker, which a planned route snaps away from the stop, so the nearest one is
+     * taken. A round trip's shared start and end move together.
+     */
+    private fun moveStop(from: Location, to: Location) {
+        val stops = _uiState.value.stops
+        val target = stops
+            .mapNotNull { stop -> stop.location?.let { stop to it.distanceBetween(from) } }
+            .minByOrNull { it.second }
+            ?.first
+            ?: return
+
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopDragged)
+
+        val movedIds = mutableSetOf<String>()
+        val moved = stops.map { stop ->
+            if (stop.location != target.location) return@map stop
+            // My location's id belongs to the live location fix, which must not pull the moved stop back
+            val id = if (stop.id == RoutePlannerUiState.MY_LOCATION_WAYPOINT_ID) Uuid.random().toString() else stop.id
+            movedIds += id
+            to.toRoutePlannerWaypoint().copy(id = id, customName = stop.customName, comment = stop.comment)
+        }
+
+        // A finished move also ends the selection, so the dropped marker stops pulsing
+        _uiState.update { uiState ->
+            uiState.withStops(moved).copy(isMovingStop = false, selectedStopId = null)
+        }
+
+        viewModelScope.launch {
+            val result = geocodingRepository.reverseGeocode(to)
+            val place = (result as? NetworkResult.Success)?.data?.toReverseGeocodedPlace(to) ?: return@launch
+
+            _uiState.update { uiState ->
+                uiState.copy(
+                    waypoints = uiState.waypoints.map { waypoint ->
+                        if (waypoint.id in movedIds && waypoint.location == to) {
+                            waypoint.copy(name = StringDesc.Raw(place.name), placeName = place.name)
+                        } else {
+                            waypoint
+                        }
+                    },
+                )
+            }
+        }
+    }
+
+    private fun showStopReplaceSearch(waypointId: String) {
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopReplaceClicked)
+
+        _uiState.update {
+            it.copy(
+                isWaypointSearchVisible = true,
+                waypointSearchTargetId = waypointId,
+                isPickingOnMap = false,
+                isMovingStop = false,
+            )
+        }
+    }
+
+    private fun showStopRename(waypointId: String) {
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopRenameClicked)
+
+        _uiState.update { it.copy(renamingStopId = waypointId) }
+    }
+
+    /**
+     * A blank name gives the stop its resolved name back.
+     */
+    private fun renameStop(waypointId: String, name: String, comment: String) {
+        analyticsService.logEvent(AnalyticsEvent.RoutePlanStopRenamed)
+
+        _uiState.update { uiState ->
+            val renamedIds = uiState.mirroredStopIds(waypointId)
+            uiState.copy(
+                waypoints = uiState.waypoints.map { waypoint ->
+                    if (waypoint.id in renamedIds) {
+                        waypoint.copy(
+                            customName = name.trim().ifEmpty { null },
+                            comment = comment.trim().ifEmpty { null },
+                        )
+                    } else {
+                        waypoint
+                    }
+                },
+                renamingStopId = null,
+            )
+        }
+    }
+
+    /**
+     * A round trip's last stop mirrors its start, so a change to either end goes to both.
+     */
+    private fun RoutePlannerUiState.mirroredStopIds(waypointId: String): Set<String> {
+        val ends = setOfNotNull(stops.firstOrNull()?.id, stops.lastOrNull()?.id)
+        return if (isRoundTrip && waypointId in ends) ends else setOf(waypointId)
     }
 
     private fun showWaypointSearch(waypointId: String?) {
@@ -231,10 +392,17 @@ class RoutePlannerViewModel(
         }
     }
 
-    private fun pickOnMap() {
+    private fun pickOnMap(waypointId: String?) {
         analyticsService.logEvent(AnalyticsEvent.RoutePlanPickOnMapClicked)
 
-        _uiState.update { it.copy(isWaypointSearchVisible = false, isPickingOnMap = true) }
+        _uiState.update {
+            it.copy(
+                isWaypointSearchVisible = false,
+                waypointSearchTargetId = waypointId ?: it.waypointSearchTargetId,
+                isPickingOnMap = true,
+                isMovingStop = false,
+            )
+        }
 
         sendEffect(RoutePlannerUiEffects.MinimizeSheet)
     }
@@ -246,8 +414,9 @@ class RoutePlannerViewModel(
             added = false
 
             val stops = uiState.stops
+            // The target is an empty stop to fill or a filled one to replace
             val targetIndex = stops
-                .indexOfFirst { it.id == uiState.waypointSearchTargetId && it.isEmpty }
+                .indexOfFirst { it.id == uiState.waypointSearchTargetId }
                 .takeIf { it != -1 }
                 ?: stops.indexOfFirst { it.isEmpty }
             if (targetIndex == -1 && uiState.isMaxStopsReached) {
@@ -256,10 +425,17 @@ class RoutePlannerViewModel(
 
             added = true
 
-            val updated = if (targetIndex == -1) {
-                stops + waypoint
-            } else {
-                stops.toMutableList().apply { set(targetIndex, waypoint) }
+            val updated = when {
+                targetIndex == -1 -> stops + waypoint
+                uiState.isRoundTrip && (targetIndex == 0 || targetIndex == stops.lastIndex) -> {
+                    // Replacing either end of a round trip moves both, so the route still returns to its start
+                    val otherEnd = if (targetIndex == 0) stops.lastIndex else 0
+                    stops.toMutableList().apply {
+                        set(targetIndex, waypoint)
+                        set(otherEnd, waypoint.copy(id = stops[otherEnd].id))
+                    }
+                }
+                else -> stops.toMutableList().apply { set(targetIndex, waypoint) }
             }
 
             uiState.withStops(updated).copy(
@@ -273,7 +449,10 @@ class RoutePlannerViewModel(
     }
 
     private fun removeWaypoint(id: String) {
-        if (_uiState.value.stops.none { it.id == id && !it.isEmpty }) {
+        val current = _uiState.value
+        val stop = current.stops.firstOrNull { it.id == id } ?: return
+        // An empty stop at the minimum would only be replaced by another empty one
+        if (stop.isEmpty && !current.isEmptyStopRemovable) {
             return
         }
 
@@ -325,10 +504,12 @@ class RoutePlannerViewModel(
         val uiState = _uiState.value
         val routePlan = uiState.routePlan
         if (!uiState.isSaveEnabled || routePlan == null) return
-        val stopPlaceNames = uiState.stops.filter { it.location != null }.map { it.placeName }
+        val routedStops = uiState.stops.filter { it.location != null }
+        val stopNames = routedStops.map { it.gpxName }
+        val stopComments = routedStops.map { it.comment }
 
         viewModelScope.launch {
-            runCatching { gpxRepository.saveRoutePlan(routePlan, stopPlaceNames, uiState.routeProfile) }
+            runCatching { gpxRepository.saveRoutePlan(routePlan, stopNames, uiState.routeProfile, stopComments) }
                 .onSuccess { fileUri ->
                     analyticsService.logEvent(AnalyticsEvent.RoutePlanSaved(uiState.routeProfile.toRouteProfile()))
                     sendEffect(RoutePlannerUiEffects.RoutePlanSaved(fileUri))

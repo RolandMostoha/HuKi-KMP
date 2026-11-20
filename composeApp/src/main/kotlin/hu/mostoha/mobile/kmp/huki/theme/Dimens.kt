@@ -25,6 +25,8 @@ object Dimens {
     val InfoWindowTailHeight = 8.dp
     val InfoWindowMarkerPadding = 1.dp
     val InfoWindowNameMaxWidth = 160.dp
+    val InfoWindowDescriptionMaxWidth = 220.dp
+    val InfoWindowCommentButtonSize = 32.dp
     val FloatingActionElevation = 1.dp
     val FloatingActionSize = 56.dp
     val FloatingActionSpacing = 14.dp
@@ -45,6 +47,12 @@ object Dimens {
     val RoutePlannerListMaxHeight = 400.dp
     val RoutePlannerWaypointIconColumnWidth = 20.dp
     val RoutePlannerConnectorWidth = 2.dp
+
+    /**
+     * How far the stop card reaches past its row, so its stop icon stays in line with the plain rows.
+     */
+    val RoutePlannerStopCardInset = 8.dp
+
     val SheetCameraBottomOffset = 20.dp
     val ModalSheetBottomPadding = 30.dp
     val OktSheetCameraBottomOffset = 44.dp
@@ -97,17 +105,24 @@ object Dimens {
         end = 60.dp,
     )
     val RoutePlannerContentPaddingPortrait = PaddingValues(
-        top = 100.dp,
-        start = 60.dp,
+        top = 140.dp,
+        start = 72.dp,
         bottom = 340.dp,
-        end = 60.dp,
+        end = 72.dp,
     )
     val RoutePlannerContentPaddingLandscape = PaddingValues(
-        top = 60.dp,
-        start = 60.dp,
-        bottom = 60.dp,
-        end = 60.dp,
+        top = 80.dp,
+        start = 80.dp,
+        bottom = 80.dp,
+        end = 80.dp,
     )
+    val RoutePlannerSheetCameraBottomOffset = 56.dp
+
+    /**
+     * Fixed room for the hint card above the planner sheet while it shows, so it never covers the route's last stops.
+     */
+    val RoutePlannerHintCameraOffset = 112.dp
+
     val OktContentPaddingPortrait = PaddingValues(
         top = 120.dp,
         start = 40.dp,

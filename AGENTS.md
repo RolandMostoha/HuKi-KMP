@@ -286,6 +286,9 @@ val [actual] = operation(X)
 - For shared test tags, use the `TestTags` object.
 - Important: the tests where GPX import is needed (e.g. maestro_gpx), use [platform]_upload_test_gpx_files.sh to pre-load GPX fixtures before running the tests.
 
+### General UI rules
+- **Map Camera: one move per user action.** - Avoid multiple map camera pulls and drags, use one camera animation per user action.
+
 ### Jetpack Compose - Android
 - Look as native as possible - Material3
 - Entry Point: `HuKiApplication` + `MainActivity` + `MainScreen`

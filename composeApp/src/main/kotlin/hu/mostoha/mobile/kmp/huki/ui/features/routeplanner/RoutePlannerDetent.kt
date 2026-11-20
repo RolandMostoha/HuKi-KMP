@@ -9,4 +9,10 @@ enum class RoutePlannerDetent {
 
     // Shows all stops and all content
     FULL_SCREEN,
+    ;
+
+    /**
+     * The header button switches between the map, where the sheet is minimized, and the stop list.
+     */
+    fun toggled(): RoutePlannerDetent = if (this == MINIMIZED) EXPANDED else MINIMIZED
 }

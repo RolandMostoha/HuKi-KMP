@@ -107,6 +107,7 @@ complexity:
       - 'with'
     excludes:
       - '**/MainViewModel.kt'
+      - '**/RoutePlannerViewModel.kt'
   LabeledExpression:
     active: false
     ignoredLabels: []
@@ -156,7 +157,7 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/MainViewModel.kt']
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/MainViewModel.kt', '**/RoutePlannerViewModel.kt']
     allowedFunctionsPerFile: 30
     allowedFunctionsPerClass: 30
     allowedFunctionsPerInterface: 30

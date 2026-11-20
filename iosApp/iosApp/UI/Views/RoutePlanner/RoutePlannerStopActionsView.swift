@@ -8,7 +8,7 @@ struct RoutePlannerStopActionsView: View {
     let onAddStopClicked: () -> Void
     let onRoundTripClicked: () -> Void
 
-    static let height: CGFloat = 44
+    static let height: CGFloat = 38
 
     var body: some View {
         HStack(spacing: 12) {

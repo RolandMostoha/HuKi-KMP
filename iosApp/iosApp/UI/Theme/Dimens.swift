@@ -16,7 +16,11 @@ enum Dimens {
     static let infoWindowLineSpacing: CGFloat = 2
     static let infoWindowNameFontSize: CGFloat = 13
     static let infoWindowNameMaxWidth: CGFloat = 160
+    static let infoWindowDescriptionMaxWidth: CGFloat = 220
     static let infoWindowDetailsFontSize: CGFloat = 13
+    static let infoWindowCommentButtonSize: CGFloat = 32
+    static let infoWindowCommentIconSize: CGFloat = 15
+    static let infoWindowCommentButtonSpacing: CGFloat = 12
 
     static let zoomControlIconSize: CGFloat = 20
 
@@ -48,17 +52,17 @@ enum Dimens {
 
     static func routePlannerContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
         EdgeInsets(
-            top: 100,
-            leading: 60,
-            bottom: sheetHeight + 20,
-            trailing: 60
+            top: 140,
+            leading: 72,
+            bottom: sheetHeight + 56,
+            trailing: 72
         )
     }
     static let routePlannerContentPaddingLandscape = EdgeInsets(
-        top: 60,
-        leading: 60,
-        bottom: 60,
-        trailing: 60
+        top: 80,
+        leading: 80,
+        bottom: 80,
+        trailing: 80
     )
 
     static func oktContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {

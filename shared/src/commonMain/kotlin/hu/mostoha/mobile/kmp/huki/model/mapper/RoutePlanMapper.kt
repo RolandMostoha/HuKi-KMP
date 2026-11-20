@@ -192,7 +192,13 @@ fun GpxDetails.toReplanStops(): List<RoutePlannerWaypoint> {
 }
 
 private fun GpxWaypoint.toReplanStop(): RoutePlannerWaypoint {
-    val placeName = name?.trim()?.ifEmpty { null } ?: return location.toRoutePlannerWaypoint()
+    val comment = description?.trim()?.ifEmpty { null }
+    val placeName = name?.trim()?.ifEmpty { null } ?: return location.toRoutePlannerWaypoint().copy(comment = comment)
 
-    return RoutePlannerWaypoint(name = StringDesc.Raw(placeName), placeName = placeName, location = location)
+    return RoutePlannerWaypoint(
+        name = StringDesc.Raw(placeName),
+        placeName = placeName,
+        location = location,
+        comment = comment,
+    )
 }

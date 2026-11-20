@@ -13,7 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
@@ -34,13 +40,13 @@ fun RoutePlannerWaypointIcon(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Connector(
+        RoutePlannerConnector(
             modifier = Modifier
                 .weight(1f)
                 .alpha(if (hasConnectorAbove) 1f else 0f),
         )
         icon()
-        Connector(
+        RoutePlannerConnector(
             modifier = Modifier
                 .weight(1f)
                 .alpha(if (hasConnectorBelow) 1f else 0f),
@@ -48,13 +54,35 @@ fun RoutePlannerWaypointIcon(
     }
 }
 
+/**
+ * Draws the connector from [top] to the bottom of the stop, under a [RoutePlannerWaypointIcon] placed at its start.
+ */
+fun Modifier.routePlannerConnectorBelow(top: Dp, color: Color): Modifier =
+    drawBehind {
+        val width = Dimens.RoutePlannerConnectorWidth.toPx()
+        val height = size.height - top.toPx()
+        if (height <= 0f) return@drawBehind
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(Dimens.RoutePlannerWaypointIconColumnWidth.toPx() / 2 - width / 2, top.toPx()),
+            size = Size(width, height),
+            cornerRadius = CornerRadius(width / 2),
+        )
+    }
+
+/**
+ * The color of the line connecting the stops.
+ */
+val routePlannerConnectorColor: Color
+    @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = CONNECTOR_ALPHA)
+
 @Composable
-private fun Connector(modifier: Modifier = Modifier) {
+fun RoutePlannerConnector(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .width(Dimens.RoutePlannerConnectorWidth)
             .background(
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = CONNECTOR_ALPHA),
+                color = routePlannerConnectorColor,
                 shape = RoundedCornerShape(percent = 50),
             ),
     )

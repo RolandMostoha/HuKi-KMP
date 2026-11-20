@@ -82,4 +82,6 @@ data class WaypointSnapshot(
     val placeName: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null,
+    val customName: String? = null,
+    val comment: String? = null,
 )

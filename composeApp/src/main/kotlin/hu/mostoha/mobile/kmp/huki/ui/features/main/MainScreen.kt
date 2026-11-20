@@ -60,11 +60,12 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
+import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -86,8 +87,8 @@ import hu.mostoha.mobile.kmp.huki.ui.features.okt.rememberOktSheetHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
-import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerLongPressHint
-import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerPick
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerHintCard
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerMapEvent
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
@@ -233,7 +234,7 @@ private fun MainContent(
     var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
     var routePlannerPeekHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
     var routePlannerExpandedHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
-    var routePlannerPick by remember { mutableStateOf<RoutePlannerPick?>(null) }
+    var routePlannerMapEvent by remember { mutableStateOf<RoutePlannerMapEvent?>(null) }
     val oktSheetHeight = rememberOktSheetHeight()
     val landscapesSheetHeights = rememberLandscapesSheetHeights()
 
@@ -270,7 +271,7 @@ private fun MainContent(
         if (sheet is Sheet.RoutePlanner) {
             routePlannerDetent = RoutePlannerDetent.EXPANDED
         } else {
-            routePlannerPick = null
+            routePlannerMapEvent = null
         }
         showModalBottomSheet = syncSheetStates(
             sheet = sheet,
@@ -284,8 +285,8 @@ private fun MainContent(
         onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
         onNavigateToDestinations = onDestinationsClicked,
         onNavigateToGpxGuide = onGpxGuideClicked,
-        onRoutePlannerLocationPicked = { location ->
-            routePlannerPick = RoutePlannerPick(id = (routePlannerPick?.id ?: 0L) + 1, location = location)
+        onRoutePlannerEvent = { event ->
+            routePlannerMapEvent = RoutePlannerMapEvent(id = (routePlannerMapEvent?.id ?: 0L) + 1, event = event)
         },
     )
 
@@ -325,8 +326,8 @@ private fun MainContent(
                     detent = routePlannerDetent,
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
+                    isHintShown = uiState.visibleRoutePlannerHint != null,
                 ),
-                routePlannerDetent = routePlannerDetent.takeIf { uiState.sheet is Sheet.RoutePlanner },
                 listSheetHeight = if (uiState.mapUiState.landscapes != null) {
                     landscapesSheetHeights.collapsed
                 } else {
@@ -400,10 +401,10 @@ private fun MainContent(
                         onDispose { routePlannerDetent = RoutePlannerDetent.EXPANDED }
                     }
                     RoutePlannerSheetOverlay(
-                        isLongPressHintVisible = uiState.isRoutePlannerLongPressHintVisible,
+                        hint = uiState.visibleRoutePlannerHint,
                         stops = sheet.stops,
                         restored = sheet.restored,
-                        pick = routePlannerPick,
+                        mapEvent = routePlannerMapEvent,
                         detent = routePlannerDetent,
                         onDetentChange = { routePlannerDetent = it },
                         minimizedHeight = routePlannerPeekHeight,
@@ -499,20 +500,23 @@ private fun routePlannerMapInset(
     detent: RoutePlannerDetent,
     minimizedHeight: Dp,
     expandedHeight: Dp,
-): Dp? =
-    when {
+    isHintShown: Boolean,
+): Dp? {
+    val hintOffset = if (isHintShown) Dimens.RoutePlannerHintCameraOffset else 0.dp
+    return when {
         sheet !is Sheet.RoutePlanner -> null
         detent == RoutePlannerDetent.FULL_SCREEN -> null
-        detent == RoutePlannerDetent.MINIMIZED -> minimizedHeight
-        else -> expandedHeight
+        detent == RoutePlannerDetent.MINIMIZED -> minimizedHeight + hintOffset
+        else -> expandedHeight + hintOffset
     }
+}
 
 @Composable
 private fun RoutePlannerSheetOverlay(
-    isLongPressHintVisible: Boolean,
+    hint: RoutePlannerHint?,
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
-    pick: RoutePlannerPick?,
+    mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
     minimizedHeight: Dp,
@@ -523,6 +527,9 @@ private fun RoutePlannerSheetOverlay(
     onExpandedHeightMeasured: (Dp) -> Unit,
 ) {
     val context = LocalContext.current
+    // Keeps the last hint while it animates out
+    var shownHint by remember { mutableStateOf(hint) }
+    if (hint != null && hint != shownHint) shownHint = hint
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
     ) {
@@ -533,7 +540,7 @@ private fun RoutePlannerSheetOverlay(
             expandedHeight = expandedHeight,
             aboveSheet = {
                 AnimatedVisibility(
-                    visible = isLongPressHintVisible && detent != RoutePlannerDetent.FULL_SCREEN,
+                    visible = hint != null && detent != RoutePlannerDetent.FULL_SCREEN,
                     enter = fadeIn() + slideInVertically { it / 2 },
                     exit = fadeOut() + slideOutVertically { it / 2 },
                 ) {
@@ -543,9 +550,12 @@ private fun RoutePlannerSheetOverlay(
                             .padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
                         contentAlignment = Alignment.Center,
                     ) {
-                        RoutePlannerLongPressHint(
-                            onDismiss = { onEvent(MainUiEvents.RoutePlannerLongPressHintDismissed) },
-                        )
+                        shownHint?.let {
+                            RoutePlannerHintCard(
+                                hint = it,
+                                onDismiss = { onEvent(MainUiEvents.RoutePlannerHintDismissed) },
+                            )
+                        }
                     }
                 }
             },
@@ -553,24 +563,27 @@ private fun RoutePlannerSheetOverlay(
             RoutePlannerBottomSheet(
                 stops = stops,
                 restored = restored,
-                pick = pick,
+                mapEvent = mapEvent,
                 detent = detent,
                 onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
+                onDetentChange = onDetentChange,
                 onLocationIqClick = onLocationIqClicked,
                 onMinimizedHeightMeasured = onMinimizedHeightMeasured,
                 onExpandedHeightMeasured = onExpandedHeightMeasured,
                 modifier = sheetModifier,
-                onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan ->
-                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan))
+                onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading ->
+                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading))
                 },
                 onSessionChanged = { session -> onEvent(MainUiEvents.RoutePlannerStateChanged(session)) },
+                onPickOnMapChanged = { onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(it)) },
+                onMoveStopChanged = { onEvent(MainUiEvents.RoutePlannerMoveStopChanged(it)) },
+                onSelectedStopChanged = { onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(it)) },
                 onEffect = { effect ->
                     when (effect) {
                         is RoutePlannerUiEffects.RoutePlanSaved -> {
                             onEvent(GpxUiEvents.RoutePlanGpxSaved(effect.fileUri))
                         }
                         RoutePlannerUiEffects.MinimizeSheet -> onDetentChange(RoutePlannerDetent.MINIMIZED)
-                        RoutePlannerUiEffects.ExpandSheet -> onDetentChange(RoutePlannerDetent.EXPANDED)
                         RoutePlannerUiEffects.Close -> onEvent(MainUiEvents.SheetDismissed)
                         RoutePlannerUiEffects.RoutePlanSaveFailed -> Unit
                         is RoutePlannerUiEffects.OpenUrl -> context.openUrl(effect.url)
@@ -756,7 +769,7 @@ private fun MainUiEffectHandler(
     onShowGpxFilePicker: () -> Unit,
     onNavigateToDestinations: () -> Unit,
     onNavigateToGpxGuide: () -> Unit,
-    onRoutePlannerLocationPicked: (Location) -> Unit,
+    onRoutePlannerEvent: (RoutePlannerUiEvents) -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(mainUiEffects) {
@@ -765,7 +778,13 @@ private fun MainUiEffectHandler(
                 MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
                 MainUiEffects.ShowGpxFilePicker -> onShowGpxFilePicker()
                 is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
-                is MainUiEffects.RoutePlannerLocationPicked -> onRoutePlannerLocationPicked(effect.location)
+                is MainUiEffects.RoutePlannerLocationPicked ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.LocationAdded(effect.location))
+                is MainUiEffects.RoutePlannerStopDragged ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.StopDragged(from = effect.from, to = effect.to))
+                is MainUiEffects.RoutePlannerMarkerClicked ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.StopMarkerClicked(effect.location))
+                MainUiEffects.RoutePlannerStopDeselected -> onRoutePlannerEvent(RoutePlannerUiEvents.StopDeselected)
                 is MainUiEffects.ShareGpxFile -> context.shareGpxFile(effect.fileUri, effect.fileName)
                 is MainUiEffects.OpenUrl -> context.openUrl(effect.url)
                 MainUiEffects.NavigateToDestinations -> onNavigateToDestinations()

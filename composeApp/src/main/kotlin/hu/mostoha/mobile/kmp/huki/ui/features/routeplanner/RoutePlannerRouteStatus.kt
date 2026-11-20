@@ -1,16 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
-import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.components.InfoView
 import hu.mostoha.mobile.kmp.huki.ui.components.RouteStatsRow
@@ -42,7 +40,14 @@ fun RoutePlannerRouteStatus(
                 .fillMaxWidth()
                 .testTag(TestTags.ROUTE_PLANNER_STATS),
         )
-        isPlanExpected -> Spacer(modifier = modifier.height(Dimens.RoutePlannerRowHeight))
+        // Keeps the stats' own height while the route loads, so the sheet does not grow when they arrive
+        isPlanExpected -> RouteStatsRow(
+            routeStats = null,
+            style = StatChipStyle.Compact,
+            modifier = modifier
+                .fillMaxWidth()
+                .alpha(0f),
+        )
     }
 }
 

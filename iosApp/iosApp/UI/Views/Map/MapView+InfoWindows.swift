@@ -1,6 +1,12 @@
 import Shared
 
 extension MapView {
+    func handleMapTap() -> Bool {
+        onMapClicked()
+        dismissInfoWindows()
+        return false
+    }
+
     func dismissInfoWindows() {
         if !uiState.mapUiState.distanceInfoWindows.isEmpty {
             onDistanceInfoWindowDismissed()

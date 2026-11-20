@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.ui.features.quickguide.DemoGesture
@@ -36,7 +37,7 @@ private val CloseButtonSize = 38.dp
 private val CloseIconSize = 20.dp
 
 @Composable
-fun RoutePlannerLongPressHint(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun RoutePlannerHintCard(hint: RoutePlannerHint, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .widthIn(max = HintMaxWidth)
@@ -56,15 +57,31 @@ fun RoutePlannerLongPressHint(onDismiss: () -> Unit, modifier: Modifier = Modifi
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
         ) {
-            GestureDemoFab(iconResId = R.drawable.ic_touch_long, gesture = DemoGesture.LONG_CLICK)
+            GestureDemoFab(
+                iconResId = when (hint) {
+                    RoutePlannerHint.LONG_PRESS -> R.drawable.ic_touch_long
+                    RoutePlannerHint.MOVE_STOP -> R.drawable.ic_drag_pan
+                },
+                gesture = DemoGesture.LONG_CLICK,
+            )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = mokoString(SharedRes.strings.route_planner_long_press_hint_title),
+                    text = mokoString(
+                        when (hint) {
+                            RoutePlannerHint.LONG_PRESS -> SharedRes.strings.route_planner_long_press_hint_title
+                            RoutePlannerHint.MOVE_STOP -> SharedRes.strings.route_planner_move_hint_title
+                        },
+                    ),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = mokoString(SharedRes.strings.route_planner_long_press_hint_message),
+                    text = mokoString(
+                        when (hint) {
+                            RoutePlannerHint.LONG_PRESS -> SharedRes.strings.route_planner_long_press_hint_message
+                            RoutePlannerHint.MOVE_STOP -> SharedRes.strings.route_planner_move_hint_message
+                        },
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -87,16 +104,24 @@ fun RoutePlannerLongPressHint(onDismiss: () -> Unit, modifier: Modifier = Modifi
 
 @Preview(locale = "hu")
 @Composable
-private fun RoutePlannerLongPressHintPreview() {
+private fun RoutePlannerHintCardPreview() {
     HuKiTheme {
-        RoutePlannerLongPressHint(onDismiss = {}, modifier = Modifier.padding(Dimens.Large))
+        RoutePlannerHintCard(
+            hint = RoutePlannerHint.LONG_PRESS,
+            onDismiss = {},
+            modifier = Modifier.padding(Dimens.Large),
+        )
     }
 }
 
 @Preview(locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun RoutePlannerLongPressHintDarkPreview() {
+private fun RoutePlannerHintCardMoveStopDarkPreview() {
     HuKiTheme {
-        RoutePlannerLongPressHint(onDismiss = {}, modifier = Modifier.padding(Dimens.Large))
+        RoutePlannerHintCard(
+            hint = RoutePlannerHint.MOVE_STOP,
+            onDismiss = {},
+            modifier = Modifier.padding(Dimens.Large),
+        )
     }
 }

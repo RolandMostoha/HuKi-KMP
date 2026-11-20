@@ -72,9 +72,20 @@ sealed interface MainUiEvents {
         val routePlan: RoutePlan?,
         val markers: List<GpxWaypoint>,
         val isAwaitingRoutePlan: Boolean = false,
+        val isRoutePlanLoading: Boolean = false,
     ) : MainUiEvents
     data class RoutePlannerStateChanged(val session: RoutePlannerSession) : MainUiEvents
-    data object RoutePlannerLongPressHintDismissed : MainUiEvents
+    data class RoutePlannerPickOnMapChanged(val isPickingOnMap: Boolean) : MainUiEvents
+    data class RoutePlannerSelectedStopChanged(val location: Location?) : MainUiEvents
+    data class RoutePlannerMoveStopChanged(val isMovingStop: Boolean) : MainUiEvents
+    data class RoutePlanMarkerDragged(
+        val from: Location,
+        val to: Location,
+    ) : MainUiEvents
+    data class RoutePlanMarkerClicked(val location: Location) : MainUiEvents
+    data object MapClicked : MainUiEvents
+
+    data object RoutePlannerHintDismissed : MainUiEvents
 
     /**
      * My location events

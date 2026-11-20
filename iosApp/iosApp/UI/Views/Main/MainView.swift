@@ -17,12 +17,12 @@ struct MainView: View {
     @State var whatsNewHeight: CGFloat = Dimens.whatsNewDetentHeight
     @State var routePlannerHeights = RoutePlannerSheetHeights.initial
     @State var routePlannerDetent: RoutePlannerDetent = .expanded
-    @State var routePlannerPick: RoutePlannerPick?
-    @State var routePlannerSheetTop = RoutePlannerSheetTop()
+    @State var routePlannerMapEvent: RoutePlannerMapEvent?
+    @State var routePlannerSheetFrame = RoutePlannerSheetFrame()
     @State var gpxShareItem: ShareItem?
     @State private var presentedSheet: Sheet?
     @State private var isRoutePlannerPresented = false
-    @State private var showFileImporter = false
+    @State var showFileImporter = false
     @State private var showAlert = false
     @State private var themeMode: ThemeMode = .system
 
@@ -114,6 +114,13 @@ struct MainView: View {
                     onRouteStopClicked: { stop in
                         viewModel.onEvent(event: MainUiEventsRouteStopClicked(stop: stop))
                     },
+                    onRoutePlanMarkerDragged: { origin, target in
+                        viewModel.onEvent(event: MainUiEventsRoutePlanMarkerDragged(from: origin, to: target))
+                    },
+                    onRoutePlanMarkerClicked: { location in
+                        viewModel.onEvent(event: MainUiEventsRoutePlanMarkerClicked(location: location))
+                    },
+                    onMapClicked: { viewModel.onEvent(event: MainUiEventsMapClicked.shared) },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
                     routePlannerSheetHeight: routePlannerSheetHeight,
@@ -200,7 +207,7 @@ struct MainView: View {
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
                 landscapesResumeButton(uiState: uiState)
-                routePlannerLongPressHint(uiState: uiState)
+                routePlannerHint(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -352,33 +359,10 @@ private extension MainView {
         }
     }
 
-    func handleMainEffects(_ effect: MainUiEffects) {
-        switch onEnum(of: effect) {
-        case .navigateToAppSettings:
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        case .showGpxFilePicker:
-            showFileImporter = true
-        case .openMapsNavigation(let effect):
-            MapsNavigator.openDirections(to: effect.location)
-        case .routePlannerLocationPicked(let effect):
-            routePlannerPick = RoutePlannerPick(location: effect.location)
-        case .shareGpxFile(let effect):
-            gpxShareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
-        case .openUrl(let effect):
-            if let url = URL(string: effect.url) {
-                UIApplication.shared.open(url)
-            }
-        case .navigateToDestinations:
-            navigationPath.append(DestinationsRoute.destinations)
-        case .navigateToGpxGuide:
-            navigationPath.append(GpxGuideRoute.gpxGuide)
-        }
-    }
-
     func handleSheetDismiss() {
         guard isRoutePlannerPresented else { return }
         isRoutePlannerPresented = false
-        routePlannerPick = nil
+        routePlannerMapEvent = nil
     }
 
     func handleIncomingGpx(_ url: URL) {

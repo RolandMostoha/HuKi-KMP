@@ -27,7 +27,6 @@ import hu.mostoha.mobile.kmp.huki.repository.DefaultDestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultGpxStorage
-import hu.mostoha.mobile.kmp.huki.repository.DefaultHintRepository
 import hu.mostoha.mobile.kmp.huki.repository.DefaultIncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeLocator
 import hu.mostoha.mobile.kmp.huki.repository.DefaultLandscapeRepository
@@ -46,7 +45,6 @@ import hu.mostoha.mobile.kmp.huki.repository.GpxMetadataStore
 import hu.mostoha.mobile.kmp.huki.repository.GpxRepository
 import hu.mostoha.mobile.kmp.huki.repository.GpxStorage
 import hu.mostoha.mobile.kmp.huki.repository.GraphhopperRoutePlannerRepository
-import hu.mostoha.mobile.kmp.huki.repository.HintRepository
 import hu.mostoha.mobile.kmp.huki.repository.HukiRoutingRoutePlannerRepository
 import hu.mostoha.mobile.kmp.huki.repository.IncomingLinkStore
 import hu.mostoha.mobile.kmp.huki.repository.LandscapeLocator
@@ -99,7 +97,6 @@ val appModule = module {
     single<PlaceHistoryRepository> { DefaultPlaceHistoryRepository(get(), get()) }
     single<SettingsRepository> { DefaultSettingsRepository(get()) }
     single<WhatsNewRepository> { DefaultWhatsNewRepository(get()) }
-    single<HintRepository> { DefaultHintRepository(get()) }
     single<SupporterRepository>(createdAtStart = true) {
         DefaultSupporterRepository(
             billingService = get(),
@@ -118,7 +115,7 @@ val viewModelModule = module {
     viewModel { params ->
         MainViewModel(
             get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(),
-            get(), get(),
+            get(),
             defaultDispatcher = get(named(Dispatcher.Default)),
             savedStateHandle = params.getOrNull() ?: get(),
         )

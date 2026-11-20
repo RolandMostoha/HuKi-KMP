@@ -8,43 +8,25 @@ struct RoutePlannerWaypointRowView: View {
     let hasConnectorAbove: Bool
     var hasConnectorBelow = true
     var rowHeight: CGFloat = 44
+    var onClicked: () -> Void = {}
     var onRemoveClicked: () -> Void = {}
-    var onEmptyRowClicked: () -> Void = {}
-    var emptyRowIdentifier: String = TestTags.shared.ROUTE_PLANNER_EMPTY_STOP_ROW
 
     var body: some View {
         HStack(spacing: 14) {
             RoutePlannerWaypointIconColumn(hasConnectorAbove: hasConnectorAbove, hasConnectorBelow: hasConnectorBelow) {
-                icon
+                RoutePlannerWaypointTypeIcon(type: waypointType)
             }
-            if isEmpty {
-                emptyTitleButton
-            } else {
-                Text(title)
-                    .font(.system(size: 15))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                removeButton
-                    .transition(.opacity)
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: rowHeight, alignment: .leading)
-        .animation(.toggle, value: isEmpty)
-    }
-
-    private var emptyTitleButton: some View {
-        Button(action: onEmptyRowClicked) {
             Text(title)
                 .font(.system(size: 15))
-                .foregroundStyle(Color(.secondaryLabel))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
-                .frame(maxWidth: .infinity, minHeight: rowHeight, alignment: .leading)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 .contentShape(.rect)
+                .onTapGesture(perform: onClicked)
+                .accessibilityAddTraits(.isButton)
+            removeButton
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(strings.get(id: SharedRes.strings().route_planner_a11y_add_stop))
-        .accessibilityIdentifier(emptyRowIdentifier)
+        .frame(maxWidth: .infinity, minHeight: rowHeight, alignment: .leading)
     }
 
     private var removeButton: some View {
@@ -60,22 +42,22 @@ struct RoutePlannerWaypointRowView: View {
         .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_DELETE_STOP_BUTTON)
     }
 
-    private var icon: some View {
-        Image(uiImage: waypointType.icon.toUIImage()!)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 20, height: 20)
-    }
-
-    private var isEmpty: Bool {
-        waypoint.isEmpty
-    }
-
     private var title: String {
-        guard let name = waypoint.name else {
+        guard let name = waypoint.displayName else {
             return strings.get(id: SharedRes.strings().route_planner_waypoint_empty)
         }
         return strings.get(desc: name)
+    }
+}
+
+struct RoutePlannerWaypointTypeIcon: View {
+    let type: WaypointType
+
+    var body: some View {
+        Image(uiImage: type.icon.toUIImage()!)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20, height: 20)
     }
 }
 
@@ -87,7 +69,9 @@ struct RoutePlannerWaypointRowView: View {
                 id: "1",
                 name: RawStringDesc(string: "My location"),
                 placeName: nil,
-                location: nil
+                location: nil,
+                customName: nil,
+                comment: nil
             ),
             waypointType: .start,
             hasConnectorAbove: false
@@ -98,14 +82,23 @@ struct RoutePlannerWaypointRowView: View {
                 id: "2",
                 name: RawStringDesc(string: "Ram-hegy"),
                 placeName: nil,
-                location: nil
+                location: nil,
+                customName: nil,
+                comment: nil
             ),
             waypointType: .intermediate,
             hasConnectorAbove: true
         )
         RoutePlannerWaypointRowView(
             strings: Strings(),
-            waypoint: RoutePlannerWaypoint(id: "3", name: nil, placeName: nil, location: nil),
+            waypoint: RoutePlannerWaypoint(
+                id: "3",
+                name: RawStringDesc(string: "Prédikálószék"),
+                placeName: nil,
+                location: nil,
+                customName: nil,
+                comment: nil
+            ),
             waypointType: .end,
             hasConnectorAbove: true,
             hasConnectorBelow: false

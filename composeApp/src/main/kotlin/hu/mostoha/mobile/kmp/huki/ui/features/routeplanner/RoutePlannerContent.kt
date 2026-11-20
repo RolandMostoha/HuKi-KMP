@@ -2,6 +2,8 @@ package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -73,6 +75,7 @@ fun RoutePlannerContent(
     onEvent: (RoutePlannerUiEvents) -> Unit,
     onMoreStopsClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onDetentChange: (RoutePlannerDetent) -> Unit = {},
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
     onExpandedHeightMeasured: (Dp) -> Unit = {},
 ) {
@@ -85,27 +88,28 @@ fun RoutePlannerContent(
     )
     val isFullScreen = detent == RoutePlannerDetent.FULL_SCREEN
     val rowHeight = if (isFullScreen) Dimens.RoutePlannerRowHeightExpanded else Dimens.RoutePlannerRowHeight
-    var cardHeight by remember { mutableStateOf(Dp.Unspecified) }
-    var plannerHeight by remember { mutableStateOf(Dp.Unspecified) }
-
-    // The minimized sheet is the card without the planner block, and the planner block only has a
-    // height while it is visible — so the peek is derived instead of measured on a hidden copy.
-    LaunchedEffect(cardHeight, plannerHeight, detent) {
-        val isMeasured = cardHeight != Dp.Unspecified && plannerHeight != Dp.Unspecified
-        if (detent != RoutePlannerDetent.EXPANDED || !isMeasured) {
-            return@LaunchedEffect
-        }
-        onMinimizedHeightMeasured(cardHeight - plannerHeight)
+    val plannerVisibility = remember { MutableTransitionState(!isMinimized) }.apply { targetState = !isMinimized }
+    var headerHeight by remember { mutableStateOf(Dp.Unspecified) }
+    var footerHeight by remember { mutableStateOf(Dp.Unspecified) }
+    var selectedStopHeight by remember { mutableStateOf(0.dp) }
+    // A moved stop is placed on the map, which its card would cover
+    val isSelectedStopShown = isMinimized && uiState.selectedStop != null && !uiState.isMovingStop
+    // The header and footer are shown in every detent, so the peek follows them live, e.g. when the
+    // route stats and the save button appear while the sheet is minimized.
+    LaunchedEffect(headerHeight, footerHeight, selectedStopHeight, isSelectedStopShown, navBarInset) {
+        if (headerHeight == Dp.Unspecified || footerHeight == Dp.Unspecified) return@LaunchedEffect
+        val selectedStopPeek = if (isSelectedStopShown) selectedStopHeight + Dimens.MediumLarge else 0.dp
+        val padding = Dimens.ExtraSmall + Dimens.Medium + navBarInset + Dimens.Large
+        onMinimizedHeightMeasured(headerHeight + footerHeight + selectedStopPeek + padding)
     }
     Card(
         modifier = modifier
             .fillMaxWidth()
             .testTag(TestTags.ROUTE_PLANNER_SHEET)
             .onGloballyPositioned {
-                if (detent != RoutePlannerDetent.EXPANDED) return@onGloballyPositioned
-                val height = with(density) { it.size.height.toDp() }
-                cardHeight = height
-                onExpandedHeightMeasured(height)
+                // Only the settled height counts, the map's camera would otherwise follow the stops sliding in
+                if (detent != RoutePlannerDetent.EXPANDED || !plannerVisibility.isIdle) return@onGloballyPositioned
+                onExpandedHeightMeasured(with(density) { it.size.height.toDp() })
             },
         shape = RoundedCornerShape(
             topStart = Dimens.ExtraLarge,
@@ -119,21 +123,31 @@ fun RoutePlannerContent(
                 .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier.wrapContentHeight())
                 .padding(top = Dimens.ExtraSmall),
         ) {
-            DragHandle(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                verticalPadding = Dimens.Small,
-            )
-            RoutePlannerHeader(
-                onSettingsClick = { onEvent(RoutePlannerUiEvents.SettingsClicked) },
-                onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
-                onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
-            )
-            if (!isMinimized) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { headerHeight = with(density) { it.size.height.toDp() } },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                DragHandle(verticalPadding = Dimens.Small)
+                RoutePlannerHeader(
+                    detent = detent,
+                    onDetentClick = { onDetentChange(detent.toggled()) },
+                    onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
+                    onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
+                )
+            }
+            // The sheet follows its content's height, so the planner block's own size animation moves the sheet
+            AnimatedVisibility(
+                visibleState = plannerVisibility,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+                modifier = Modifier.then(weightWhen(isFullScreen)),
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(weightWhen(isFullScreen))
-                        .onGloballyPositioned { plannerHeight = with(density) { it.size.height.toDp() } }
+                        .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier)
                         .padding(
                             start = Dimens.ExtraLarge,
                             top = Dimens.ExtraSmall,
@@ -165,9 +179,9 @@ fun RoutePlannerContent(
                                     modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
                                 )
                                 RoutePlannerStopActions(
-                                    isAddStopEnabled = !uiState.isMaxStopsReached,
+                                    isAddStopEnabled = uiState.isAddStopEnabled,
                                     isRoundTripEnabled = uiState.isRoundTripEnabled,
-                                    onAddStopClick = { onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked()) },
+                                    onAddStopClick = { onEvent(RoutePlannerUiEvents.AddEmptyStopClicked) },
                                     onRoundTripClick = { onEvent(RoutePlannerUiEvents.RoundTripClicked) },
                                 )
                             }
@@ -189,34 +203,105 @@ fun RoutePlannerContent(
                     ),
                 verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    RoutePlannerRouteStatus(
-                        error = uiState.routePlanError,
-                        routeStats = uiState.routeStats,
-                        isPlanExpected = uiState.isRoutePlanExpected,
-                        onRetryClick = { onEvent(RoutePlannerUiEvents.RetryClicked) },
-                        modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
-                    )
-                    if (isMinimized && uiState.isRoutePlanLoading) {
-                        RoutePlannerLoading(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
-                AnimatedVisibility(
-                    visible = uiState.isSaveButtonVisible,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically(),
-                ) {
-                    PrimaryButton(
-                        iconResId = R.drawable.ic_save,
-                        text = mokoString(SharedRes.strings.route_planner_save),
-                        onClick = { onEvent(RoutePlannerUiEvents.SaveRouteClicked) },
-                        enabled = uiState.isSaveEnabled,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag(TestTags.ROUTE_PLANNER_SAVE_BUTTON),
-                    )
+                RoutePlannerMinimizedSelectedStop(
+                    uiState = uiState,
+                    isVisible = isSelectedStopShown,
+                    onEvent = onEvent,
+                    onHeightMeasured = { selectedStopHeight = it },
+                )
+                RoutePlannerRouteFooter(
+                    uiState = uiState,
+                    isMinimized = isMinimized,
+                    stopListAlpha = stopListAlpha,
+                    onEvent = onEvent,
+                    modifier = Modifier.onGloballyPositioned {
+                        footerHeight = with(density) { it.size.height.toDp() }
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RoutePlannerRouteFooter(
+    uiState: RoutePlannerUiState,
+    isMinimized: Boolean,
+    stopListAlpha: Float,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+    ) {
+        // The stats replace a shorter placeholder once the route arrives, and the sheet follows this height
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
+        ) {
+            RoutePlannerRouteStatus(
+                error = uiState.routePlanError,
+                routeStats = uiState.routeStats,
+                isPlanExpected = uiState.isRoutePlanExpected,
+                onRetryClick = { onEvent(RoutePlannerUiEvents.RetryClicked) },
+                modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
+            )
+            if (isMinimized && uiState.isRoutePlanLoading) {
+                // Drawn over the stats' slot without resizing it, so the minimized sheet keeps its height
+                Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
+                    RoutePlannerLoading()
                 }
             }
+        }
+        AnimatedVisibility(
+            visible = uiState.isSaveButtonVisible,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically(),
+        ) {
+            PrimaryButton(
+                iconResId = R.drawable.ic_save,
+                text = mokoString(SharedRes.strings.route_planner_save),
+                onClick = { onEvent(RoutePlannerUiEvents.SaveRouteClicked) },
+                enabled = uiState.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestTags.ROUTE_PLANNER_SAVE_BUTTON),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RoutePlannerMinimizedSelectedStop(
+    uiState: RoutePlannerUiState,
+    isVisible: Boolean,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    onHeightMeasured: (Dp) -> Unit,
+) {
+    val density = LocalDensity.current
+    val selectedStop = uiState.selectedStop
+    // The stop stays drawn while the card shrinks away after the selection ends
+    var shownStop by remember { mutableStateOf(selectedStop) }
+    if (selectedStop != null) shownStop = selectedStop
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+    ) {
+        shownStop?.let { stop ->
+            RoutePlannerSelectedStopCard(
+                stop = stop,
+                waypointType = uiState.stopType(uiState.stops.indexOfFirst { it.id == stop.id }),
+                hasConnectorAbove = false,
+                hasConnectorBelow = false,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .onGloballyPositioned { onHeightMeasured(with(density) { it.size.height.toDp() }) }
+                    // Without plain rows to line up with, the card keeps to the sheet's content edges
+                    .padding(horizontal = Dimens.RoutePlannerStopCardInset),
+            )
         }
     }
 }
@@ -242,12 +327,11 @@ private fun Modifier.hiddenWhileLoading(isLoading: Boolean, alpha: Float): Modif
 
 // The full screen stage pins the stats and the save button to the bottom, so the stop list takes
 // whatever space is left instead of the sheet growing past the screen.
-private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true): Modifier =
-    if (isFullScreen) Modifier.weight(weight = 1f, fill = fill) else Modifier
 
 @Composable
 private fun RoutePlannerHeader(
-    onSettingsClick: () -> Unit,
+    detent: RoutePlannerDetent,
+    onDetentClick: () -> Unit,
     onCloseClick: () -> Unit,
     onGraphhopperClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -259,10 +343,20 @@ private fun RoutePlannerHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RoutePlannerHeaderButton(
-            iconResId = R.drawable.ic_settings,
-            contentDescription = mokoString(SharedRes.strings.route_planner_a11y_settings),
-            onClick = onSettingsClick,
-            modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_SETTINGS_BUTTON),
+            iconResId = if (detent == RoutePlannerDetent.MINIMIZED) {
+                R.drawable.ic_open_in_full
+            } else {
+                R.drawable.ic_close_fullscreen
+            },
+            contentDescription = mokoString(
+                if (detent == RoutePlannerDetent.MINIMIZED) {
+                    SharedRes.strings.route_planner_a11y_expand
+                } else {
+                    SharedRes.strings.route_planner_a11y_minimize
+                },
+            ),
+            onClick = onDetentClick,
+            modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_DETENT_BUTTON),
         )
         Column(
             modifier = Modifier
@@ -370,6 +464,20 @@ private fun RoutePlannerContentMinimizedPreview() {
 
 @Preview
 @Composable
+private fun RoutePlannerContentMinimizedSelectedStopPreview() {
+    val uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan)
+    HuKiTheme {
+        RoutePlannerContent(
+            uiState = uiState.copy(selectedStopId = uiState.stops.last().id),
+            detent = RoutePlannerDetent.MINIMIZED,
+            onEvent = {},
+            onMoreStopsClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun RoutePlannerContentFullScreenPreview() {
     HuKiTheme {
         RoutePlannerContent(
@@ -380,3 +488,6 @@ private fun RoutePlannerContentFullScreenPreview() {
         )
     }
 }
+
+private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true): Modifier =
+    if (isFullScreen) Modifier.weight(weight = 1f, fill = fill) else Modifier

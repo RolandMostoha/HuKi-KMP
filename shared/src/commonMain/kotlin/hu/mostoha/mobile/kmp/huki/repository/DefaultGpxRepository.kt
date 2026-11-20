@@ -116,6 +116,7 @@ open class DefaultGpxRepository(
         routePlan: RoutePlan,
         stopPlaceNames: List<String?>,
         routeProfile: RoutePlannerProfile,
+        stopComments: List<String?>,
     ): String =
         withContext(Dispatchers.IO) {
             val createdAt = Clock.System.now()
@@ -124,6 +125,7 @@ open class DefaultGpxRepository(
                 stopPlaceNames,
                 routeProfile,
                 createdAt,
+                stopComments,
             )
             val source = GpxFileSource(
                 fileName = stopPlaceNames.toRoutePlanFileName(randomFileNameToken()),
