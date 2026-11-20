@@ -23,8 +23,7 @@ struct LayersItemView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .padding(4)
                     }
-                    .aspectRatio(1, contentMode: .fit)
-                    .frame(maxWidth: 72)
+                    .frame(width: 72, height: 72)
                     .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 6)
                     .padding(6)
                     if showsCheckmark && selected {
@@ -37,17 +36,25 @@ struct LayersItemView: View {
                     }
                 }
                 .animation(.spring(duration: 0.25), value: selected)
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(selected ? .semibold : .regular)
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                ZStack {
+                    // Reserves the semibold width, so selecting doesn't resize the item and shift its neighbours
+                    label(weight: .semibold).hidden()
+                    label(weight: selected ? .semibold : .regular)
+                }
             }
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private func label(weight: Font.Weight) -> some View {
+        Text(title)
+            .font(.subheadline)
+            .fontWeight(weight)
+            .foregroundStyle(.primary)
+            .multilineTextAlignment(.center)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
     }
 }
 

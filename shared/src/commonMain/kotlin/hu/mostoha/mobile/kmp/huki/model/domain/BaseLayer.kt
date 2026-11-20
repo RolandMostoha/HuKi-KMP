@@ -8,6 +8,7 @@ enum class BaseLayer(
     val title: StringResource,
     val image: ImageResource,
     val hasDarkVariant: Boolean,
+    val rasterBaseMap: RasterBaseMap? = null,
 ) {
     OUTDOORS(
         title = SharedRes.strings.layers_base_outdoors_title,
@@ -28,6 +29,13 @@ enum class BaseLayer(
         title = SharedRes.strings.layers_base_tuhu_title,
         image = SharedRes.images.ic_layers_tuhu,
         hasDarkVariant = false,
+        rasterBaseMap = RasterBaseMap.TUHU,
+    ),
+    MAPNIK(
+        title = SharedRes.strings.layers_base_mapnik_title,
+        image = SharedRes.images.ic_layers_mapnik,
+        hasDarkVariant = false,
+        rasterBaseMap = RasterBaseMap.MAPNIK,
     ),
     ;
 

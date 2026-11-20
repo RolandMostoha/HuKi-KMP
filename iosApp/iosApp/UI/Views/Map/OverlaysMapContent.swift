@@ -17,14 +17,14 @@ struct OverlaysMapContent: MapContent {
             SlotLayer(id: outdoorsSlotId)
                 .position(.below(MapConstants.shared.OUTDOORS_HIKING_LAYER_BELOW_ID))
         }
-        // Own ids per slot, so switching styles re-adds the layers instead of moving them between slots.
+        // Own ids per slot and raster base map, so switching re-adds the layers above the new base layer.
         ForEvery(overlays, id: \.layerId) { overlay in
             switch baseLayer {
             case .outdoors:
                 rasterLayer(overlay, id: "\(overlay.layerId)-outdoors")
                     .slot(Slot(stringLiteral: outdoorsSlotId))
-            case .tuhu:
-                rasterLayer(overlay, id: "\(overlay.layerId)-tuhu")
+            case .tuhu, .mapnik:
+                rasterLayer(overlay, id: "\(overlay.layerId)-\(baseLayer.rasterBaseMap?.id ?? "raster")")
             default:
                 rasterLayer(overlay, id: overlay.layerId)
                     .slot(.middle)

@@ -25,6 +25,7 @@ fun BaseLayer.toLayer(): Layer =
         BaseLayer.CITY -> Layer.CITY
         BaseLayer.SATELLITE -> Layer.SATELLITE
         BaseLayer.TUHU -> Layer.TUHU
+        BaseLayer.MAPNIK -> Layer.MAPNIK
     }
 
 fun MyLocationStatus.toMyLocationMode(): MyLocationMode? =

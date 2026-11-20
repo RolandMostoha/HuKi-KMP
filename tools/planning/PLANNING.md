@@ -86,6 +86,7 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 |--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `[x]`  | Layers | Add back Tuhu baase layer from HuKi-Android                                                                                                                                                                    |
 | `[x]`  | Layers | Add Bike Routes overlay from Waymarked Trails cycling: https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png                                                                                                |
+| `[x]`  | Layers | Add MAPNIK to base layers. make the row horizontally scrollable since there are 5 elements.                                                                                                                    |
 | `[ ]`  | Layers | When GPX layer is clicked, raise a dialog / actions menu with: 3 most recent GPX files (+ show all) + 1 button "Import from file system". If there is no GPX in collection, raise the import flow right after. |
 
 ### FEATURE: Landscape orientation

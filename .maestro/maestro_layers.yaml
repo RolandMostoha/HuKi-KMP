@@ -19,5 +19,12 @@ appId: ${APP_ID}
 - tapOn: "Bike Routes"
 - tapOn: "Bike Routes"
 - tapOn: "TuHu"
+- swipe:
+    from: "TuHu"
+    direction: LEFT
+- tapOn: "Mapnik"
+- swipe:
+    from: "Mapnik"
+    direction: RIGHT
 - tapOn: "Outdoors"
 - tapOn: "Close"

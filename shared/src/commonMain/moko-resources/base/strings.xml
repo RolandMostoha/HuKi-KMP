@@ -59,6 +59,7 @@
     <string name="layers_base_city_title">City</string>
     <string name="layers_base_satellite_title">Satellite</string>
     <string name="layers_base_tuhu_title">TuHu</string>
+    <string name="layers_base_mapnik_title">Mapnik</string>
     <string name="layers_overlay_layers_title">Overlays</string>
     <string name="layers_overlay_hiking_title">Hiking Trails</string>
     <string name="layers_overlay_gpx_title">GPX Layer</string>

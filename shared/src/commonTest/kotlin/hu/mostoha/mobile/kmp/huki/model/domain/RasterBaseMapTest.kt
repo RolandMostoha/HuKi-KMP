@@ -3,12 +3,12 @@ package hu.mostoha.mobile.kmp.huki.model.domain
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
-class TuHuBaseMapTest {
+class RasterBaseMapTest {
 
     @Test
     fun `Given scale factors - When tileSize - Then normal tiles are used below 150 percent and doubled tiles from it`() {
         testCases().forEach { testCase ->
-            val actual = TuHuBaseMap.tileSize(testCase.input)
+            val actual = RasterBaseMap.TUHU.tileSize(testCase.input)
 
             actual shouldBe testCase.result
         }

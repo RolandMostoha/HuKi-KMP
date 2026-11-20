@@ -208,6 +208,7 @@ Token hardening in the LocationIQ dashboard: one token per platform, daily reque
 - Hungarian Hiking Layer (turistautak.openstreetmap.hu) - https://data2.openstreetmap.hu/
 - Turistautak - https://turistautak.openstreetmap.hu/
 - TuHu (turistautak.hu) - Base map - https://turistautak.hu/
+- OpenStreetMap Mapnik (tile.openstreetmap.org) - Base map - https://operations.osmfoundation.org/policies/tiles/
 - Waymarked Trails - Bike routes overlay (CC BY-SA 3.0) - https://waymarkedtrails.org/
 - Location IQ - Search engine -  https://locationiq.com/
 - GraphHopper - Route planner API - https://www.graphhopper.com/

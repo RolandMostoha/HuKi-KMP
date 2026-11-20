@@ -3,7 +3,7 @@ import Shared
 import SwiftUI
 
 extension MapView {
-    /// TuHu raster tiles follow the label scale, like the vector labels of the other base layers.
+    /// Raster base map tiles follow the label scale, like the vector labels of the other base layers.
     var tileScaleFactor: Float {
         uiState.mapUiState.labelScale.effectiveFactor(systemScale: dynamicTypeSize.mapboxSymbolScale)
     }

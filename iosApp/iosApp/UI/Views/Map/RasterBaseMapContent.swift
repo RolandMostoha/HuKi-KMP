@@ -2,12 +2,13 @@
 import Shared
 import SwiftUI
 
-struct TuHuMapContent: MapContent {
+struct RasterBaseMapContent: MapContent {
+    let rasterBaseMap: RasterBaseMap
     let scaleFactor: Float
 
     var body: some MapContent {
-        let tileSize = TuHuBaseMap.shared.tileSize(scaleFactor: scaleFactor)
-        let sourceId = TuHuBaseMap.shared.layerId(tileSize: tileSize)
+        let tileSize = rasterBaseMap.tileSize(scaleFactor: scaleFactor)
+        let sourceId = rasterBaseMap.layerId(tileSize: tileSize)
         source(id: sourceId, tileSize: tileSize)
         RasterLayer(id: sourceId, source: sourceId)
             .rasterEmissiveStrength(MapLighting.shared.OVERLAY_EMISSIVE_STRENGTH)
@@ -15,12 +16,12 @@ struct TuHuMapContent: MapContent {
 
     private func source(id: String, tileSize: Int64) -> RasterSource {
         var source = RasterSource(id: id)
-            .tiles(TuHuBaseMap.shared.tiles)
+            .tiles(rasterBaseMap.tiles)
             .tileSize(Double(tileSize))
-            .minzoom(Double(TuHuBaseMap.shared.MIN_ZOOM))
-            .maxzoom(Double(TuHuBaseMap.shared.MAX_ZOOM))
+            .minzoom(Double(rasterBaseMap.minZoom))
+            .maxzoom(Double(rasterBaseMap.maxZoom))
         // RasterSource has no attribution modifier
-        source.attribution = TuHuBaseMap.shared.ATTRIBUTION
+        source.attribution = rasterBaseMap.attribution
         return source
     }
 }

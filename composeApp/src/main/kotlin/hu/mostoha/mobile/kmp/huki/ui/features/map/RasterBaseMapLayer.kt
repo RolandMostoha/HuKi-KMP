@@ -9,21 +9,22 @@ import com.mapbox.maps.extension.compose.style.StringListValue
 import com.mapbox.maps.extension.compose.style.StringValue
 import com.mapbox.maps.extension.compose.style.layers.generated.RasterLayer
 import com.mapbox.maps.extension.compose.style.sources.generated.rememberRasterSourceState
-import hu.mostoha.mobile.kmp.huki.model.domain.TuHuBaseMap
+import hu.mostoha.mobile.kmp.huki.model.domain.RasterBaseMap
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 
 @Composable
 @MapboxMapComposable
-fun TuHuLayer(tileSize: Long) {
-    key(tileSize) {
+fun RasterBaseMapLayer(rasterBaseMap: RasterBaseMap, tileSize: Long) {
+    val layerId = rasterBaseMap.layerId(tileSize)
+    key(layerId) {
         RasterLayer(
-            layerId = TuHuBaseMap.layerId(tileSize),
-            sourceState = rememberRasterSourceState(sourceId = TuHuBaseMap.layerId(tileSize)) {
+            layerId = layerId,
+            sourceState = rememberRasterSourceState(sourceId = layerId) {
                 this.tileSize = LongValue(tileSize)
-                tiles = StringListValue(TuHuBaseMap.tiles)
-                minZoom = LongValue(TuHuBaseMap.MIN_ZOOM)
-                maxZoom = LongValue(TuHuBaseMap.MAX_ZOOM)
-                attribution = StringValue(TuHuBaseMap.ATTRIBUTION)
+                tiles = StringListValue(rasterBaseMap.tiles)
+                minZoom = LongValue(rasterBaseMap.minZoom)
+                maxZoom = LongValue(rasterBaseMap.maxZoom)
+                attribution = StringValue(rasterBaseMap.attribution)
             },
         ) {
             rasterEmissiveStrength = DoubleValue(MapLighting.OVERLAY_EMISSIVE_STRENGTH)

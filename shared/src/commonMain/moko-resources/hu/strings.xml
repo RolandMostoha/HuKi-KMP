@@ -59,6 +59,7 @@
     <string name="layers_base_city_title">Városi</string>
     <string name="layers_base_satellite_title">Műhold</string>
     <string name="layers_base_tuhu_title">TuHu</string>
+    <string name="layers_base_mapnik_title">Mapnik</string>
     <string name="layers_overlay_layers_title">Fedő rétegek</string>
     <string name="layers_overlay_hiking_title">Túraútvonalak</string>
     <string name="layers_overlay_gpx_title">GPX Réteg</string>

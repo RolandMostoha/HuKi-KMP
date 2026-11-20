@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -107,14 +109,30 @@ fun LayersItem(
             }
             LayersCheckmarkBadge(visible = showCheckmark && selected)
         }
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Box(contentAlignment = Alignment.Center) {
+            // Reserves the semibold width, so selecting doesn't resize the item and shift its neighbours
+            LayersItemLabel(
+                title = title,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .alpha(0f)
+                    .clearAndSetSemantics {},
+            )
+            LayersItemLabel(title = title, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal)
+        }
     }
+}
+
+@Composable
+private fun LayersItemLabel(title: String, fontWeight: FontWeight, modifier: Modifier = Modifier) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelLarge,
+        fontWeight = fontWeight,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+    )
 }
 
 @Composable

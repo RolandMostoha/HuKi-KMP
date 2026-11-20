@@ -21,10 +21,12 @@ class BaseLayerTest {
                 TestCase(BaseLayer.CITY, isDarkMode = true, result = true),
                 TestCase(BaseLayer.SATELLITE, isDarkMode = true, result = true),
                 TestCase(BaseLayer.TUHU, isDarkMode = true, result = false),
+                TestCase(BaseLayer.MAPNIK, isDarkMode = true, result = false),
                 TestCase(BaseLayer.OUTDOORS, isDarkMode = false, result = false),
                 TestCase(BaseLayer.CITY, isDarkMode = false, result = false),
                 TestCase(BaseLayer.SATELLITE, isDarkMode = false, result = false),
                 TestCase(BaseLayer.TUHU, isDarkMode = false, result = false),
+                TestCase(BaseLayer.MAPNIK, isDarkMode = false, result = false),
             )
     }
 

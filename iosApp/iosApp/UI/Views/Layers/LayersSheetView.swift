@@ -27,17 +27,22 @@ struct LayersSheetView: View {
                 }
                 .padding(.top, 20)
                 sectionTitle(strings.get(id: SharedRes.strings().layers_base_layers_title))
-                HStack(alignment: .top) {
-                    ForEach(BaseLayer.allCases, id: \.self) { baseLayer in
-                        LayersItemView(
-                            title: strings.get(id: baseLayer.title),
-                            image: baseLayer.image.toUIImage()!,
-                            selected: selectedBaseLayer == baseLayer,
-                            onClick: { onBaseLayerSelected(baseLayer) }
-                        )
-                        .frame(maxWidth: .infinity)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    // Narrower than the overlays, so the last item peeks in on common widths to show it scrolls
+                    HStack(alignment: .top, spacing: 12) {
+                        ForEach(BaseLayer.allCases, id: \.self) { baseLayer in
+                            LayersItemView(
+                                title: strings.get(id: baseLayer.title),
+                                image: baseLayer.image.toUIImage()!,
+                                selected: selectedBaseLayer == baseLayer,
+                                onClick: { onBaseLayerSelected(baseLayer) }
+                            )
+                        }
                     }
                 }
+                .contentMargins(.horizontal, 20, for: .scrollContent)
+                .scrollClipDisabled()
+                .padding(.horizontal, -20)
                 Divider()
                     .padding(.top, 16)
                 sectionTitle(strings.get(id: SharedRes.strings().layers_overlay_layers_title))

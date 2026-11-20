@@ -18,7 +18,7 @@ import com.mapbox.maps.extension.compose.style.standard.rememberStandardSatellit
 import com.mapbox.maps.extension.compose.style.standard.rememberStandardStyleState
 import hu.mostoha.mobile.kmp.huki.model.domain.BaseLayer
 import hu.mostoha.mobile.kmp.huki.model.domain.OverlayLayer
-import hu.mostoha.mobile.kmp.huki.model.domain.TuHuBaseMap
+import hu.mostoha.mobile.kmp.huki.model.domain.RasterBaseMap
 import hu.mostoha.mobile.kmp.huki.theme.OutdoorsColorTheme
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 
@@ -74,16 +74,17 @@ fun MapBaseStyle(
                 },
             )
         }
-        BaseLayer.TUHU -> {
-            val tileSize = TuHuBaseMap.tileSize(tileScaleFactor)
+        BaseLayer.TUHU, BaseLayer.MAPNIK -> {
+            val rasterBaseMap = requireNotNull(baseLayer.rasterBaseMap)
+            val tileSize = rasterBaseMap.tileSize(tileScaleFactor)
             GenericStyle(
-                style = TuHuBaseMap.STYLE_JSON,
-                layerPositionedContent = remember(overlays, tileSize) {
+                style = RasterBaseMap.STYLE_JSON,
+                layerPositionedContent = remember(rasterBaseMap, overlays, tileSize) {
                     layerPositionedContent {
-                        aboveLayer(TuHuBaseMap.BACKGROUND_LAYER_ID) {
-                            // Re-added with the overlays, or a new overlay lands under the TuHu tiles
-                            key(overlays) {
-                                TuHuLayer(tileSize)
+                        aboveLayer(RasterBaseMap.BACKGROUND_LAYER_ID) {
+                            // Re-added with the overlays, or a new overlay lands under the raster tiles
+                            key(rasterBaseMap, overlays) {
+                                RasterBaseMapLayer(rasterBaseMap, tileSize)
                                 OverlayTileLayers(overlays)
                             }
                         }

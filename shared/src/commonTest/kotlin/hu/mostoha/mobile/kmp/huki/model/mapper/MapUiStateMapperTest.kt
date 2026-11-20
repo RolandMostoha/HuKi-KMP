@@ -128,6 +128,8 @@ class MapUiStateMapperTest {
                 WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.OUTDOORS, hikingLayerVisible = false, expected = true),
                 WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.CITY, hikingLayerVisible = true, expected = true),
                 WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.TUHU, hikingLayerVisible = true, expected = true),
+                WithBaseLayerTestCase(BaseLayer.TUHU, BaseLayer.MAPNIK, hikingLayerVisible = false, expected = true),
+                WithBaseLayerTestCase(BaseLayer.MAPNIK, BaseLayer.TUHU, hikingLayerVisible = true, expected = false),
                 WithBaseLayerTestCase(BaseLayer.OUTDOORS, BaseLayer.CITY, hikingLayerVisible = false, expected = false),
                 WithBaseLayerTestCase(BaseLayer.CITY, BaseLayer.SATELLITE, hikingLayerVisible = true, expected = true),
             )

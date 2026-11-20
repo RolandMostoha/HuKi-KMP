@@ -2,7 +2,7 @@
 import Shared
 import SwiftUI
 
-/// Map content the base layer style doesn't carry itself: the Outdoors dark mode and the TuHu raster tiles.
+/// Map content the base layer style doesn't carry itself: the Outdoors dark mode and the raster tiles.
 struct BaseLayerMapContent: MapContent {
     let baseLayer: Shared.BaseLayer
     let isDarkMode: Bool
@@ -12,8 +12,8 @@ struct BaseLayerMapContent: MapContent {
         if isDarkMode && baseLayer == .outdoors {
             ColorTheme(base64: OutdoorsColorTheme.shared.DARK_MAP_LUT_BASE64)
         }
-        if baseLayer == .tuhu {
-            TuHuMapContent(scaleFactor: tileScaleFactor)
+        if let rasterBaseMap = baseLayer.rasterBaseMap {
+            RasterBaseMapContent(rasterBaseMap: rasterBaseMap, scaleFactor: tileScaleFactor)
         }
     }
 }

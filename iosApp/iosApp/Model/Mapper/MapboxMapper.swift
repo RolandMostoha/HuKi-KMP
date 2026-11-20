@@ -93,8 +93,8 @@ extension Shared.BaseLayer {
             return .standard(lightPreset: lightPreset)
         case .satellite:
             return .standardSatellite(lightPreset: lightPreset)
-        case .tuhu:
-            return MapStyle(json: TuHuBaseMap.shared.STYLE_JSON)
+        case .tuhu, .mapnik:
+            return MapStyle(json: RasterBaseMap.companion.STYLE_JSON)
         }
     }
 }

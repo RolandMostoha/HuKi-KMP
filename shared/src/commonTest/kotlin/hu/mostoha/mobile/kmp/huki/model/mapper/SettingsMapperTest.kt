@@ -128,6 +128,7 @@ class SettingsMapperTest {
                 BaseLayerTestCase(input = "CITY", expected = BaseLayer.CITY),
                 BaseLayerTestCase(input = "SATELLITE", expected = BaseLayer.SATELLITE),
                 BaseLayerTestCase(input = "TUHU", expected = BaseLayer.TUHU),
+                BaseLayerTestCase(input = "MAPNIK", expected = BaseLayer.MAPNIK),
                 BaseLayerTestCase(input = "satellite", expected = BaseLayer.OUTDOORS),
                 BaseLayerTestCase(input = "REMOVED_LAYER", expected = BaseLayer.OUTDOORS),
                 BaseLayerTestCase(input = "", expected = BaseLayer.OUTDOORS),
