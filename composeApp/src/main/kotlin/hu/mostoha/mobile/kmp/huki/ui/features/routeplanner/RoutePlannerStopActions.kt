@@ -34,6 +34,7 @@ private const val DISABLED_ALPHA = 0.4f
 @Composable
 fun RoutePlannerStopActions(
     isAddStopEnabled: Boolean,
+    isRoundTrip: Boolean,
     isRoundTripEnabled: Boolean,
     onAddStopClick: () -> Unit,
     onRoundTripClick: () -> Unit,
@@ -54,7 +55,13 @@ fun RoutePlannerStopActions(
         )
         StopActionButton(
             iconResId = R.drawable.ic_refresh,
-            text = mokoString(SharedRes.strings.route_planner_round_trip),
+            text = mokoString(
+                if (isRoundTrip) {
+                    SharedRes.strings.route_planner_round_trip_undo
+                } else {
+                    SharedRes.strings.route_planner_round_trip
+                },
+            ),
             enabled = isRoundTripEnabled,
             onClick = onRoundTripClick,
             modifier = Modifier
@@ -106,6 +113,7 @@ private fun RoutePlannerStopActionsPreview() {
     HuKiTheme {
         RoutePlannerStopActions(
             isAddStopEnabled = true,
+            isRoundTrip = false,
             isRoundTripEnabled = true,
             onAddStopClick = {},
             onRoundTripClick = {},
@@ -119,7 +127,22 @@ private fun RoutePlannerStopActionsDisabledPreview() {
     HuKiTheme {
         RoutePlannerStopActions(
             isAddStopEnabled = false,
+            isRoundTrip = false,
             isRoundTripEnabled = false,
+            onAddStopClick = {},
+            onRoundTripClick = {},
+        )
+    }
+}
+
+@Preview(locale = "hu")
+@Composable
+private fun RoutePlannerStopActionsRoundTripPreview() {
+    HuKiTheme {
+        RoutePlannerStopActions(
+            isAddStopEnabled = false,
+            isRoundTrip = true,
+            isRoundTripEnabled = true,
             onAddStopClick = {},
             onRoundTripClick = {},
         )

@@ -191,6 +191,7 @@ fun RoutePlannerContent(
                                 )
                                 RoutePlannerStopActions(
                                     isAddStopEnabled = uiState.isAddStopEnabled,
+                                    isRoundTrip = uiState.isRoundTrip,
                                     isRoundTripEnabled = uiState.isRoundTripEnabled,
                                     onAddStopClick = { onEvent(RoutePlannerUiEvents.AddEmptyStopClicked) },
                                     onRoundTripClick = { onEvent(RoutePlannerUiEvents.RoundTripClicked) },

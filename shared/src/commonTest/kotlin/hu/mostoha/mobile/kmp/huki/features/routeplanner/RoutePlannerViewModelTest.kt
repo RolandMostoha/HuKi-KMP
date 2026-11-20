@@ -1033,7 +1033,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a round trip - When AddEmptyStopClicked - Then the empty stop goes before the end and it stays a round trip`() {
+    fun `Given a round trip - When AddEmptyStopClicked - Then no stop is added`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -1042,8 +1042,24 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
 
             val uiState = viewModel.uiState.value
-            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", null, MY_LOCATION_NAME)
-            uiState.isRoundTrip shouldBe true
+            uiState.isAddStopEnabled shouldBe false
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", MY_LOCATION_NAME)
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When RoundTripClicked - Then its mirrored end is dropped`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+            uiState.isRoundTrip shouldBe false
+            uiState.isAddStopEnabled shouldBe true
         }
     }
 
@@ -1270,7 +1286,7 @@ class RoutePlannerViewModelTest {
 
             val uiState = viewModel.uiState.value
             uiState.isRoundTrip shouldBe true
-            uiState.isRoundTripEnabled shouldBe false
+            uiState.isRoundTripEnabled shouldBe true
             uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", "Ram-hegy", MY_LOCATION_NAME)
             uiState.stops.last().location shouldBe MY_LOCATION
         }
@@ -1302,20 +1318,6 @@ class RoutePlannerViewModelTest {
             uiState.stopType(0) shouldBe WaypointType.ROUND_TRIP
             uiState.stopType(1) shouldBe WaypointType.INTERMEDIATE
             uiState.stopType(uiState.stops.lastIndex) shouldBe WaypointType.ROUND_TRIP
-        }
-    }
-
-    @Test
-    fun `Given a round trip - When round trip clicked again - Then the route is unchanged`() {
-        runTest {
-            val viewModel = createViewModel()
-            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
-            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
-            val roundTripStops = viewModel.uiState.value.stops
-
-            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
-
-            viewModel.uiState.value.stops shouldBe roundTripStops
         }
     }
 

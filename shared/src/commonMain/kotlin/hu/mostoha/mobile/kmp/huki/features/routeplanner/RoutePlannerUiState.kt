@@ -46,8 +46,11 @@ data class RoutePlannerUiState(
             stops.first().location != null &&
             stops.first().location == stops.last().location
 
+    /**
+     * A round trip's button undoes it, otherwise it closes the route back to its start.
+     */
     val isRoundTripEnabled: Boolean
-        get() = !isRoundTrip && !isMaxStopsReached && stops.firstOrNull()?.location != null
+        get() = isRoundTrip || !isMaxStopsReached && stops.firstOrNull()?.location != null
 
     val isMaxStopsReached: Boolean
         get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT
@@ -78,10 +81,11 @@ data class RoutePlannerUiState(
         }
 
     /**
-     * Only one empty stop at a time, so the user fills it before asking for another.
+     * Only one empty stop at a time, so the user fills it before asking for another. A round trip has to be undone
+     * first, as its end mirrors the start.
      */
     val isAddStopEnabled: Boolean
-        get() = !isMaxStopsReached && stops.none { it.isEmpty }
+        get() = !isRoundTrip && !isMaxStopsReached && stops.none { it.isEmpty }
 
     val isEmptyStopRemovable: Boolean
         get() = stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT

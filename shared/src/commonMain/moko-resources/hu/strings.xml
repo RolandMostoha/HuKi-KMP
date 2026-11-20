@@ -83,6 +83,7 @@
     <string name="route_planner_my_location">Saját pozíció</string>
     <string name="route_planner_waypoint_empty">Válassz helyet</string>
     <string name="route_planner_round_trip">Körtúra</string>
+    <string name="route_planner_round_trip_undo">Körtúra felbontása</string>
     <string name="route_planner_more_stops">még %d megálló</string>
     <string name="route_planner_max_stops_reached">Elérted a megállók maximális számát (%d)</string>
     <string name="route_planner_save">Útvonal mentése</string>

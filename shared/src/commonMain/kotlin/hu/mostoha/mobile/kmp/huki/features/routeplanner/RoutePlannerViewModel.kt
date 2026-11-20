@@ -115,7 +115,7 @@ class RoutePlannerViewModel(
             is RoutePlannerUiEvents.SearchDestinationAdded -> addSearchDestination(event.destination)
             RoutePlannerUiEvents.MyLocationAdded -> addMyLocation()
             is RoutePlannerUiEvents.PickOnMapClicked -> pickOnMap(event.waypointId)
-            RoutePlannerUiEvents.RoundTripClicked -> addRoundTrip()
+            RoutePlannerUiEvents.RoundTripClicked -> toggleRoundTrip()
             RoutePlannerUiEvents.RetryClicked -> retryRoutePlan()
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
@@ -191,14 +191,7 @@ class RoutePlannerViewModel(
 
         // The new empty stop takes the highlight, so only one card is open at a time
         _uiState.update { uiState ->
-            val stops = uiState.stops
-            // A round trip keeps returning to its start, so the new stop goes before the mirrored end
-            val updated = if (uiState.isRoundTrip) {
-                stops.toMutableList().apply { add(lastIndex, RoutePlannerWaypoint()) }
-            } else {
-                stops + RoutePlannerWaypoint()
-            }
-            uiState.withStops(updated).copy(
+            uiState.withStops(uiState.stops + RoutePlannerWaypoint()).copy(
                 selectedStopId = null,
                 waypointSearchTargetId = null,
                 isPickingOnMap = false,
@@ -504,13 +497,20 @@ class RoutePlannerViewModel(
         }
     }
 
-    private fun addRoundTrip() {
+    /**
+     * Undoing a round trip drops its mirrored end.
+     */
+    private fun toggleRoundTrip() {
         _uiState.update { uiState ->
-            val first = uiState.stops.firstOrNull()
-            if (!uiState.isRoundTripEnabled || first == null) {
-                uiState
-            } else {
-                uiState.withStops(uiState.stops + first.copy(id = Uuid.random().toString()))
+            val stops = uiState.stops
+            val first = stops.firstOrNull()
+            when {
+                !uiState.isRoundTripEnabled || first == null -> uiState
+                uiState.isRoundTrip && stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT -> {
+                    uiState.withStops(stops.dropLast(1))
+                }
+                uiState.isRoundTrip -> uiState.withStops(stops.dropLast(1) + RoutePlannerWaypoint())
+                else -> uiState.withStops(stops + first.copy(id = Uuid.random().toString()))
             }
         }
     }

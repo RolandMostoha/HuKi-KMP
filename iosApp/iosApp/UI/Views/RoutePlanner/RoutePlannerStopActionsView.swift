@@ -4,6 +4,7 @@ import SwiftUI
 struct RoutePlannerStopActionsView: View {
     let strings: Strings
     let isAddStopEnabled: Bool
+    let isRoundTrip: Bool
     let isRoundTripEnabled: Bool
     let onAddStopClicked: () -> Void
     let onRoundTripClicked: () -> Void
@@ -21,7 +22,11 @@ struct RoutePlannerStopActionsView: View {
             .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_ADD_STOP_ROW)
             RoutePlannerStopActionButton(
                 systemImage: "arrow.trianglehead.counterclockwise",
-                title: strings.get(id: SharedRes.strings().route_planner_round_trip),
+                title: strings.get(
+                    id: isRoundTrip
+                        ? SharedRes.strings().route_planner_round_trip_undo
+                        : SharedRes.strings().route_planner_round_trip
+                ),
                 isEnabled: isRoundTripEnabled,
                 action: onRoundTripClicked
             )
@@ -59,6 +64,7 @@ private struct RoutePlannerStopActionButton: View {
         RoutePlannerStopActionsView(
             strings: Strings(),
             isAddStopEnabled: true,
+            isRoundTrip: false,
             isRoundTripEnabled: true,
             onAddStopClicked: {},
             onRoundTripClicked: {}
@@ -66,7 +72,8 @@ private struct RoutePlannerStopActionButton: View {
         RoutePlannerStopActionsView(
             strings: Strings(),
             isAddStopEnabled: false,
-            isRoundTripEnabled: false,
+            isRoundTrip: true,
+            isRoundTripEnabled: true,
             onAddStopClicked: {},
             onRoundTripClicked: {}
         )

@@ -212,6 +212,7 @@ struct RoutePlannerContentView: View {
         RoutePlannerStopActionsView(
             strings: strings,
             isAddStopEnabled: uiState.isAddStopEnabled,
+            isRoundTrip: uiState.isRoundTrip,
             isRoundTripEnabled: uiState.isRoundTripEnabled,
             onAddStopClicked: { onEvent(RoutePlannerUiEventsAddEmptyStopClicked.shared) },
             onRoundTripClicked: { onEvent(RoutePlannerUiEventsRoundTripClicked.shared) }
