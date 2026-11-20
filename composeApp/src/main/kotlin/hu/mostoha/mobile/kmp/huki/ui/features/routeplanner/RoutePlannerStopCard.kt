@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -168,10 +167,7 @@ fun RoutePlannerStopCard(
                         enter = fadeIn() + expandHorizontally(),
                         exit = fadeOut() + shrinkHorizontally(),
                     ) {
-                        Row {
-                            Spacer(modifier = Modifier.width(Dimens.SmallMedium))
-                            collapsedTrailing()
-                        }
+                        collapsedTrailing()
                     }
                 }
             }
@@ -233,14 +229,14 @@ fun RoutePlannerRemoveStopButton(onClick: () -> Unit, modifier: Modifier = Modif
     IconButton(
         onClick = onClick,
         modifier = modifier
-            .size(Dimens.IconContainer)
+            .size(Dimens.RoutePlannerStopActionSize)
             .testTag(TestTags.ROUTE_PLANNER_DELETE_STOP_BUTTON),
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_close),
             contentDescription = mokoString(SharedRes.strings.route_planner_a11y_delete_stop),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(Dimens.IconExtraSmall),
+            modifier = Modifier.size(Dimens.RoutePlannerRemoveStopIconSize),
         )
     }
 }

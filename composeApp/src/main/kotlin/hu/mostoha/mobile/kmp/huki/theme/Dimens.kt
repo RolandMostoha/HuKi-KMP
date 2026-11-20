@@ -47,6 +47,8 @@ object Dimens {
     val RoutePlannerListMaxHeight = 400.dp
     val RoutePlannerWaypointIconColumnWidth = 20.dp
     val RoutePlannerConnectorWidth = 2.dp
+    val RoutePlannerStopActionSize = 44.dp
+    val RoutePlannerRemoveStopIconSize = 20.dp
 
     /**
      * How far the stop card reaches past its row, so its stop icon stays in line with the plain rows.

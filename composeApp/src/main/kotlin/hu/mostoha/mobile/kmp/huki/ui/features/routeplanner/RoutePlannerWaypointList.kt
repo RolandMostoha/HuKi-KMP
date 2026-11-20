@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -29,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -60,6 +63,8 @@ import kotlinx.coroutines.launch
 
 private const val MAX_DEFAULT_STOP_COUNT = 3
 private const val SURFACE_ALPHA = 0.5f
+private val LiftedStopElevation = 4.dp
+private val LiftedStopShape = RoundedCornerShape(Dimens.Medium)
 
 @Composable
 fun RoutePlannerWaypointList(
@@ -154,8 +159,6 @@ private fun ColumnScope.ReorderableStops(
     val dropIndex by remember(activeDrag, movableIndices) {
         derivedStateOf { activeDrag?.let { listState.dropIndex(it.index, dragOffset, movableIndices) } }
     }
-    val draggedRowShape = RoundedCornerShape(Dimens.Medium)
-    val draggedRowElevation = 6.dp
     val moveUpLabel = mokoString(SharedRes.strings.route_planner_a11y_move_up)
     val moveDownLabel = mokoString(SharedRes.strings.route_planner_a11y_move_down)
 
@@ -179,60 +182,17 @@ private fun ColumnScope.ReorderableStops(
                 targetValue = makeRoomOffset(index, activeDrag, dropIndex),
                 label = "stopMakeRoomOffset",
             )
-            StopItem(
-                uiState = uiState,
-                index = index,
-                rowHeight = rowHeight,
-                isReorderable = index in movableIndices,
-                keepsDragHandleSpace = true,
-                onEvent = onEvent,
-                dragHandleModifier = Modifier.pointerInput(index, stops.size) {
-                    detectDragGesturesAfterLongPress(
-                        onDragStart = {
-                            dragOffset = 0f
-                            drag = StopDrag(
-                                index = index,
-                                size = listState.itemSize(index),
-                                stopIds = currentStopIds,
-                            )
-                        },
-                        onDrag = { change, dragAmount ->
-                            change.consume()
-                            dragOffset += dragAmount.y
-                        },
-                        onDragEnd = {
-                            val target = listState.dropIndex(index, dragOffset, movableIndices)
-                            coroutineScope.launch {
-                                // The row settles into its new slot before the list reorders under it
-                                animate(dragOffset, listState.slotOffset(index, target)) { value, _ ->
-                                    dragOffset = value
-                                }
-                                if (target != index) {
-                                    onEvent(RoutePlannerUiEvents.WaypointMoved(index, target))
-                                } else {
-                                    drag = null
-                                }
-                            }
-                        },
-                        onDragCancel = { drag = null },
-                    )
-                },
+            val lift by animateFloatAsState(targetValue = if (isDragged) 1f else 0f, label = "stopLift")
+            Box(
                 modifier = Modifier
-                    .zIndex(if (isDragged) 1f else 0f)
+                    .zIndex(if (isDragged || lift > 0f) 1f else 0f)
                     .graphicsLayer {
                         translationY = when {
                             activeDrag == null -> 0f
                             isDragged -> dragOffset
                             else -> makeRoomOffset
                         }
-                        shadowElevation = if (isDragged) draggedRowElevation.toPx() else 0f
-                        shape = draggedRowShape
-                        clip = isDragged
                     }
-                    .background(
-                        color = if (isDragged) MaterialTheme.colorScheme.surface else Color.Transparent,
-                        shape = draggedRowShape,
-                    )
                     .semantics {
                         customActions = buildList {
                             if (index in movableIndices && index - 1 in movableIndices) {
@@ -252,12 +212,71 @@ private fun ColumnScope.ReorderableStops(
                                 )
                             }
                         }
-                    }
+                    },
+            ) {
+                LiftedStopBackground(lift = { lift }, modifier = Modifier.matchParentSize())
+                StopItem(
+                    uiState = uiState,
+                    index = index,
+                    rowHeight = rowHeight,
+                    isReorderable = index in movableIndices,
+                    keepsDragHandleSpace = true,
+                    onEvent = onEvent,
+                    dragHandleModifier = Modifier.pointerInput(index, stops.size) {
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                dragOffset = 0f
+                                drag = StopDrag(
+                                    index = index,
+                                    size = listState.itemSize(index),
+                                    stopIds = currentStopIds,
+                                )
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                dragOffset += dragAmount.y
+                            },
+                            onDragEnd = {
+                                val target = listState.dropIndex(index, dragOffset, movableIndices)
+                                coroutineScope.launch {
+                                    // The row settles into its new slot before the list reorders under it
+                                    animate(dragOffset, listState.slotOffset(index, target)) { value, _ ->
+                                        dragOffset = value
+                                    }
+                                    if (target != index) {
+                                        onEvent(RoutePlannerUiEvents.WaypointMoved(index, target))
+                                    } else {
+                                        drag = null
+                                    }
+                                }
+                            },
+                            onDragCancel = { drag = null },
+                        )
+                    },
                     // The stop card reaches past the row into this padding
-                    .padding(horizontal = Dimens.MediumLarge),
-            )
+                    modifier = Modifier.padding(horizontal = Dimens.MediumLarge),
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun LiftedStopBackground(lift: () -> Float, modifier: Modifier = Modifier) {
+    val color = MaterialTheme.colorScheme.surface
+    Box(
+        modifier = modifier
+            // Inset from the clipping list background, so the lifted row's shadow shows on every side
+            .padding(horizontal = Dimens.Small, vertical = Dimens.ExtraSmall)
+            .graphicsLayer {
+                val fraction = lift()
+                alpha = fraction
+                shadowElevation = LiftedStopElevation.toPx() * fraction
+                shape = LiftedStopShape
+                clip = true
+            }
+            .background(color),
+    )
 }
 
 /**
@@ -328,7 +347,7 @@ private fun StopItem(
         }
         // A fixed stop among draggable ones keeps its remove button in line with theirs
         keepsDragHandleSpace -> {
-            { Spacer(modifier = Modifier.width(Dimens.IconMedium)) }
+            { Spacer(modifier = Modifier.width(Dimens.RoutePlannerStopActionSize)) }
         }
         else -> null
     }
@@ -384,14 +403,19 @@ private fun StopItem(
 
 @Composable
 private fun RoutePlannerDragHandle(rowHeight: Dp, modifier: Modifier = Modifier) {
-    Icon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_drag_handle),
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    Box(
         modifier = modifier
-            .width(Dimens.IconMedium)
+            .width(Dimens.RoutePlannerStopActionSize)
             .height(rowHeight),
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_drag_handle),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(Dimens.IconMedium),
+        )
+    }
 }
 
 @Preview
