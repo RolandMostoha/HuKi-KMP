@@ -32,9 +32,9 @@ struct RoutePlannerWaypointRowView: View {
     private var removeButton: some View {
         Button(action: onRemoveClicked) {
             Image(systemName: "xmark")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 15, weight: .regular))
                 .foregroundStyle(Color(.secondaryLabel))
-                .frame(width: 32, height: rowHeight)
+                .frame(width: 44, height: rowHeight)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
