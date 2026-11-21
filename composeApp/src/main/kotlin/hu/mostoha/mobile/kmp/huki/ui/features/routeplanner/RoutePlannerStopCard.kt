@@ -5,11 +5,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +53,7 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.LocalIsDarkTheme
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -65,9 +64,11 @@ private const val CARD_FADE_IN_MILLIS = 180
 private const val CARD_FADE_OUT_MILLIS = 100
 private val CardCornerRadius = 16.dp
 private val CardBottomPadding = 12.dp
-private val ActionHeight = 56.dp
-private val ActionIconSize = 22.dp
+private val ActionHeight = 50.dp
+private val ActionIconSize = 18.dp
 private val ActionCornerRadius = 12.dp
+private val EmptyStopFill = Color(0xFFFFFFF7)
+private val EmptyStopOutline = Color(0xFF1A1A1A)
 
 data class RoutePlannerStopCardAction(
     @param:DrawableRes val iconResId: Int,
@@ -91,7 +92,7 @@ fun RoutePlannerStopCard(
     onTitleClickLabel: String? = null,
     onTitleClick: (() -> Unit)? = null,
     rowHeight: Dp = Dimens.RoutePlannerRowHeight,
-    collapsedTrailing: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
     icon: @Composable () -> Unit,
 ) {
     val primary = MaterialTheme.colorScheme.primary
@@ -124,69 +125,64 @@ fun RoutePlannerStopCard(
             modifier = Modifier.height(rowHeight),
             icon = icon,
         )
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                modifier = Modifier.height(rowHeight),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .then(if (titleTestTag != null) Modifier.testTag(titleTestTag) else Modifier)
-                        .then(
-                            if (onTitleClick != null) {
-                                // The card opening is the feedback, a ripple would fill the title's bare rectangle
-                                Modifier.clickable(
-                                    interactionSource = null,
-                                    indication = null,
-                                    onClickLabel = onTitleClickLabel,
-                                    onClick = onTitleClick,
-                                )
-                            } else {
-                                Modifier
-                            },
-                        ),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (isTitleEmphasized) FontWeight.SemiBold else null,
-                        color = titleColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                if (isRemovable) {
-                    RoutePlannerRemoveStopButton(onClick = onRemoveClick)
-                }
-                if (collapsedTrailing != null) {
-                    AnimatedVisibility(
-                        visible = !isExpanded,
-                        enter = fadeIn() + expandHorizontally(),
-                        exit = fadeOut() + shrinkHorizontally(),
-                    ) {
-                        collapsedTrailing()
-                    }
-                }
-            }
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = fadeIn(tween(durationMillis = CARD_FADE_IN_MILLIS, delayMillis = CARD_FADE_OUT_MILLIS)) +
-                    expandVertically(expandFrom = Alignment.Top),
-                exit = fadeOut(tween(durationMillis = CARD_FADE_OUT_MILLIS)) +
-                    shrinkVertically(shrinkTowards = Alignment.Top),
-            ) {
+        Row(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Row(
-                    modifier = Modifier.padding(top = Dimens.ExtraSmall, bottom = CardBottomPadding),
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.SmallMedium),
+                    modifier = Modifier.height(rowHeight),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    actions.forEach { action ->
-                        StopCardActionTile(action = action, modifier = Modifier.weight(1f))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .then(if (titleTestTag != null) Modifier.testTag(titleTestTag) else Modifier)
+                            .then(
+                                if (onTitleClick != null) {
+                                    // The card opening is the feedback, a ripple would fill the title's bare rectangle
+                                    Modifier.clickable(
+                                        interactionSource = null,
+                                        indication = null,
+                                        onClickLabel = onTitleClickLabel,
+                                        onClick = onTitleClick,
+                                    )
+                                } else {
+                                    Modifier
+                                },
+                            ),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (isTitleEmphasized) FontWeight.SemiBold else null,
+                            color = titleColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    if (isRemovable) {
+                        RoutePlannerRemoveStopButton(onClick = onRemoveClick)
+                    }
+                }
+                AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = fadeIn(tween(durationMillis = CARD_FADE_IN_MILLIS, delayMillis = CARD_FADE_OUT_MILLIS)) +
+                        expandVertically(expandFrom = Alignment.Top),
+                    exit = fadeOut(tween(durationMillis = CARD_FADE_OUT_MILLIS)) +
+                        shrinkVertically(shrinkTowards = Alignment.Top),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(top = Dimens.ExtraSmall, bottom = CardBottomPadding),
+                        horizontalArrangement = Arrangement.spacedBy(Dimens.SmallMedium),
+                    ) {
+                        actions.forEach { action ->
+                            StopCardActionTile(action = action, modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }
+            // Centered on the whole card, so a stop can be dragged with its card open too
+            trailing?.let { Box(modifier = Modifier.align(Alignment.CenterVertically)) { it() } }
         }
     }
 }
@@ -199,7 +195,8 @@ private fun StopCardActionTile(action: RoutePlannerStopCardAction, modifier: Mod
             .heightIn(min = ActionHeight)
             .testTag(action.testTag),
         shape = RoundedCornerShape(ActionCornerRadius),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        // White on the tinted card, like the grouped buttons on iOS
+        color = if (LocalIsDarkTheme.current) MaterialTheme.colorScheme.surfaceVariant else Color.White,
         contentColor = MaterialTheme.colorScheme.primary,
     ) {
         Column(
@@ -243,15 +240,15 @@ fun RoutePlannerRemoveStopButton(onClick: () -> Unit, modifier: Modifier = Modif
 
 @Composable
 fun RoutePlannerEmptyStopIcon(modifier: Modifier = Modifier) {
-    val outline = MaterialTheme.colorScheme.onSurface
     Box(
         modifier = modifier
             .size(Dimens.RoutePlannerWaypointIconColumnWidth)
             .drawBehind {
                 val strokeWidth = 1.5.dp.toPx()
-                drawCircle(color = Color.White, radius = size.minDimension / 2 - strokeWidth / 2)
+                // Fixed colors like the waypoint markers, so the dashes stay visible on the white fill in dark mode too
+                drawCircle(color = EmptyStopFill, radius = size.minDimension / 2 - strokeWidth / 2)
                 drawCircle(
-                    color = outline,
+                    color = EmptyStopOutline,
                     radius = size.minDimension / 2 - strokeWidth / 2,
                     style = Stroke(
                         width = strokeWidth,

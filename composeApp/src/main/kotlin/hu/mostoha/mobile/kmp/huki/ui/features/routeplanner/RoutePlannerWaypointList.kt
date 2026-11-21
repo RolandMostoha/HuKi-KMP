@@ -451,7 +451,7 @@ private fun StopItem(
             onTitleClickLabel = mokoString(SharedRes.strings.route_planner_a11y_add_stop),
             onTitleClick = { onEvent(RoutePlannerUiEvents.StopClicked(stop.id)) },
             rowHeight = rowHeight,
-            collapsedTrailing = dragHandle,
+            trailing = dragHandle,
             modifier = modifier,
         ) {
             RoutePlannerEmptyStopIcon()
@@ -464,7 +464,7 @@ private fun StopItem(
             hasConnectorBelow = hasConnectorBelow,
             onEvent = onEvent,
             isExpanded = isExpanded,
-            collapsedTrailing = dragHandle,
+            trailing = dragHandle,
             rowHeight = rowHeight,
             modifier = modifier.then(
                 if (isExpanded) Modifier else Modifier.testTag(TestTags.routePlannerStopRow(index)),
@@ -521,7 +521,7 @@ fun RoutePlannerSelectedStopCard(
     onEvent: (RoutePlannerUiEvents) -> Unit,
     modifier: Modifier = Modifier,
     isExpanded: Boolean = true,
-    collapsedTrailing: (@Composable () -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
     rowHeight: Dp = Dimens.RoutePlannerRowHeight,
 ) {
     RoutePlannerStopCard(
@@ -552,7 +552,7 @@ fun RoutePlannerSelectedStopCard(
         onTitleClick = { onEvent(RoutePlannerUiEvents.StopClicked(stop.id)) },
         onRemoveClick = { onEvent(RoutePlannerUiEvents.WaypointRemoved(stop.id)) },
         isExpanded = isExpanded,
-        collapsedTrailing = collapsedTrailing,
+        trailing = trailing,
         rowHeight = rowHeight,
         modifier = modifier,
     ) {

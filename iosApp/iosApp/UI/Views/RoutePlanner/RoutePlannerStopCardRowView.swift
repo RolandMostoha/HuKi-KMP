@@ -9,7 +9,7 @@ struct RoutePlannerStopCardAction: Identifiable {
 }
 
 enum RoutePlannerStopCard {
-    static let actionsHeight: CGFloat = 56
+    static let actionsHeight: CGFloat = 50
     static let actionsSpacing: CGFloat = 4
     static let bottomPadding: CGFloat = 12
 
@@ -117,8 +117,8 @@ struct RoutePlannerStopCardRowView<Icon: View>: View {
             VStack(spacing: 4) {
                 // Symbols differ in their own height, so a shared box keeps the icons and titles on one line
                 Image(systemName: action.systemImage)
-                    .font(.system(size: 17, weight: .semibold))
-                    .frame(height: 22)
+                    .font(.system(size: 15, weight: .semibold))
+                    .frame(height: 18)
                 Text(action.title)
                     .font(.system(size: 12, weight: .semibold))
                     .lineLimit(1)
@@ -136,9 +136,10 @@ struct RoutePlannerStopCardRowView<Icon: View>: View {
 
 struct RoutePlannerEmptyStopIcon: View {
     var body: some View {
+        // Fixed colors like the waypoint markers, so the dashes stay visible on the white fill in dark mode too
         Circle()
-            .fill(.white)
-            .strokeBorder(Color(.label), style: StrokeStyle(lineWidth: 1.5, dash: [3, 2.5]))
+            .fill(Color(red: 1, green: 1, blue: 0.97))
+            .strokeBorder(Color(white: 0.1), style: StrokeStyle(lineWidth: 1.5, dash: [3, 2.5]))
             .frame(width: 20, height: 20)
     }
 }
