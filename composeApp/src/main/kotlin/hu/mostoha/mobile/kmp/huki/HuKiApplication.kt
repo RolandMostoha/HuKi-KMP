@@ -1,6 +1,8 @@
 package hu.mostoha.mobile.kmp.huki
 
 import android.app.Application
+import androidx.compose.ui.AndroidComposeUiFlags
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -28,9 +30,13 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 class HuKiApplication : Application() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate() {
         super.onCreate()
 
+        // Compose UI 1.12 runs a text field's stopInput before the next field's startInput, which hides and
+        // reshows the keyboard on every focus move between fields (b/513525072).
+        AndroidComposeUiFlags.isOutOfFrameSchedulerForTextInputEventsEnabled = false
         setDebugBuild(BuildConfig.DEBUG)
         MapboxOptions.accessToken = Secrets.MAPBOX_ACCESS_TOKEN
         HttpServiceFactory.setHttpServiceInterceptor(OverlayTileCacheInterceptor())
