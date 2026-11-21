@@ -27,6 +27,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -38,6 +39,7 @@ import org.koin.core.parameter.parametersOf
 fun RoutePlannerBottomSheet(
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
+    mode: RoutePlannerMode,
     mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
@@ -56,7 +58,7 @@ fun RoutePlannerBottomSheet(
     onSelectedStopChanged: (Location?) -> Unit = {},
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
     onExpandedHeightMeasured: (Dp) -> Unit = {},
-    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(stops, restored) },
+    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(stops, restored, mode) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showSaveError by remember { mutableStateOf(false) }

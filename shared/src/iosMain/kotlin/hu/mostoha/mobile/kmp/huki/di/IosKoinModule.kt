@@ -28,6 +28,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.support.SupportViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.repository.BundledFileReader
@@ -109,7 +110,8 @@ object KoinViewModelProvider : KoinComponent {
         owner: IosViewModelStoreOwner,
         stops: List<RoutePlannerWaypoint>,
         restored: RoutePlannerSession?,
-    ): RoutePlannerViewModel = owner.resolve { parametersOf(stops, restored) }
+        mode: RoutePlannerMode,
+    ): RoutePlannerViewModel = owner.resolve { parametersOf(stops, restored, mode) }
     fun getSettingsViewModel(owner: IosViewModelStoreOwner): SettingsViewModel = owner.resolve()
     fun getDestinationsViewModel(owner: IosViewModelStoreOwner): DestinationsViewModel = owner.resolve()
     fun getSupportViewModel(owner: IosViewModelStoreOwner): SupportViewModel = owner.resolve()

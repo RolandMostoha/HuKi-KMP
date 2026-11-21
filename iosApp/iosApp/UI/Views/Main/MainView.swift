@@ -323,6 +323,10 @@ private extension MainView {
                 viewModel.onEvent(event: MainUiEventsRoutePlannerClicked.shared)
                 navigationPath = NavigationPath()
             },
+            onRoundTripWizardClicked: {
+                viewModel.onEvent(event: MainUiEventsRoundTripWizardClicked.shared)
+                navigationPath = NavigationPath()
+            },
             onDiscoverClicked: {
                 viewModel.onEvent(event: MainUiEventsDiscoverClicked.shared)
                 navigationPath = NavigationPath()

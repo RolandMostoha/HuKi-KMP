@@ -60,6 +60,7 @@ struct RoutePlannerSheetView: View {
         strings: Strings,
         stops: [RoutePlannerWaypoint],
         restored: RoutePlannerSession?,
+        mode: RoutePlannerMode = .planner,
         mapEvent: RoutePlannerMapEvent?,
         onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint], _ isAwaiting: Bool, _ isLoading: Bool) -> Void,
         onSessionChanged: @escaping (RoutePlannerSession) -> Void,
@@ -93,7 +94,12 @@ struct RoutePlannerSheetView: View {
         self.onInitialAppear = onInitialAppear
         self.onSheetFrameChange = onSheetFrameChange
         _holder = StateObject(wrappedValue: ViewModelHolder { owner in
-            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops, restored: restored)
+            KoinViewModelProvider.shared.getRoutePlannerViewModel(
+                owner: owner,
+                stops: stops,
+                restored: restored,
+                mode: mode
+            )
         })
     }
 
@@ -121,17 +127,7 @@ struct RoutePlannerSheetView: View {
 
     private var plannerContent: some View {
         Observing(viewModel.uiState) { uiState in
-            RoutePlannerContentView(
-                strings: strings,
-                uiState: uiState,
-                onEvent: { event in
-                    viewModel.onEvent(event: event)
-                },
-                detent: detent,
-                maxExpandedHeight: maxExpandedHeight,
-                onDetentChange: onDetentChange,
-                onHeightsChange: onHeightsChange
-            )
+            content(uiState: uiState)
             .onChange(of: uiState.routePlanMarkers, initial: true) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.routePlan) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.isAwaitingRoutePlan) { notifyRoutePlanUpdated(uiState) }
@@ -168,6 +164,31 @@ struct RoutePlannerSheetView: View {
                     renameSheet(stop: stop, uiState: uiState)
                 }
             }
+        }
+    }
+
+    // The mode is fixed for a ViewModel, so the content keeps its identity
+    @ViewBuilder
+    private func content(uiState: RoutePlannerUiState) -> some View {
+        if uiState.isRoundTripWizard {
+            RoundTripWizardContentView(
+                strings: strings,
+                uiState: uiState,
+                onEvent: { event in viewModel.onEvent(event: event) },
+                detent: detent,
+                onDetentChange: onDetentChange,
+                onHeightsChange: onHeightsChange
+            )
+        } else {
+            RoutePlannerContentView(
+                strings: strings,
+                uiState: uiState,
+                onEvent: { event in viewModel.onEvent(event: event) },
+                detent: detent,
+                maxExpandedHeight: maxExpandedHeight,
+                onDetentChange: onDetentChange,
+                onHeightsChange: onHeightsChange
+            )
         }
     }
 

@@ -28,6 +28,16 @@ extension MenuView {
             )
             divider
             MenuItemView(
+                icon: tintedSymbol("arrow.trianglehead.counterclockwise", color: onPrimary),
+                title: strings.get(id: SharedRes.strings().menu_item_round_trip_wizard),
+                description: strings.get(id: SharedRes.strings().menu_item_round_trip_wizard_description),
+                iconBackgroundColor: primary,
+                accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_round_trip_wizard),
+                testTag: TestTags.shared.MENU_ROW_ROUND_TRIP_WIZARD,
+                action: { viewModel.onEvent(event: MenuUiEventsRoundTripWizardClicked.shared) }
+            )
+            divider
+            MenuItemView(
                 icon: tintedSymbol("backpack.fill", color: onPrimary),
                 title: strings.get(id: SharedRes.strings().menu_item_discover),
                 description: strings.get(id: SharedRes.strings().menu_item_discover_description),

@@ -206,6 +206,31 @@ sealed interface AnalyticsEvent {
         override val name = "route_plan_failed"
     }
 
+    data object MenuRoundTripWizardClicked : AnalyticsEvent {
+        override val name = "menu_round_trip_wizard_clicked"
+    }
+
+    data class RoundTripCreated(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "round_trip_created_${routeProfile.value}"
+    }
+
+    data class RoundTripSaved(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "round_trip_saved_${routeProfile.value}"
+    }
+
+    data object RoundTripRegenerated : AnalyticsEvent {
+        override val name = "round_trip_regenerated"
+    }
+
+    data class RoundTripDistanceChanged(val distanceKm: Int) : AnalyticsEvent {
+        override val name = "round_trip_distance_changed"
+        override val params = mapOf("distance_km" to distanceKm.toString())
+    }
+
+    data object RoundTripFailed : AnalyticsEvent {
+        override val name = "round_trip_failed"
+    }
+
     data object RoutePlanNoInternet : AnalyticsEvent {
         override val name = "route_plan_no_internet"
     }

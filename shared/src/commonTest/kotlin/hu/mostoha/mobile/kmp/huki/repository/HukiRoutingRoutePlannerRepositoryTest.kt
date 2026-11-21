@@ -1,6 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.network.NetworkHeaders
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
@@ -53,7 +54,7 @@ class HukiRoutingRoutePlannerRepositoryTest {
         }
         val repository = HukiRoutingRoutePlannerRepository(createHttpClient(engine), FakeCrashlyticsService())
 
-        repository.getRoutePlan(profile, listOf(Location(47.4979, 19.0402), Location(47.52, 19.0)))
+        repository.getRoutePlan(RoutePlanRequest(profile, listOf(Location(47.4979, 19.0402), Location(47.52, 19.0))))
 
         return request.shouldNotBeNull()
     }

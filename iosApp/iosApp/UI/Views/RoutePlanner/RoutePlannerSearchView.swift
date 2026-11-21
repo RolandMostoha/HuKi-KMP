@@ -202,7 +202,9 @@ struct RoutePlannerSearchView: View {
                 selectedStopId: nil,
                 renamingStopId: nil,
                 isMovingStop: false,
-                myLocation: Location(latitude: 47.72, longitude: 18.89, altitude: nil)
+                myLocation: Location(latitude: 47.72, longitude: 18.89, altitude: nil),
+                mode: .planner,
+                roundTrip: nil
             ),
             onEvent: { _ in }
         )
@@ -225,7 +227,9 @@ struct RoutePlannerSearchView: View {
                 selectedStopId: nil,
                 renamingStopId: nil,
                 isMovingStop: false,
-                myLocation: nil
+                myLocation: nil,
+                mode: .planner,
+                roundTrip: nil
             ),
             onEvent: { _ in }
         )

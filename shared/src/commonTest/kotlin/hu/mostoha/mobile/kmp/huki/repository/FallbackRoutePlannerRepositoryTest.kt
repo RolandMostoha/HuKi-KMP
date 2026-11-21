@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutingMode
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPath
@@ -28,7 +29,7 @@ class FallbackRoutePlannerRepositoryTest {
     @Test
     fun `Given no quota limit - When getRoutePlan - Then GraphHopper serves`() {
         runTest {
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe GRAPHHOPPER_SUCCESS
             hukiRoutingRepository.callCount shouldBe 0
@@ -41,7 +42,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             graphhopperRepository.result = NetworkResult.Error(NetworkError.RATE_LIMITED)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe HUKI_ROUTING_SUCCESS
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.RoutingHukiServed)
@@ -53,7 +54,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             graphhopperRepository.result = NetworkResult.Error(NetworkError.INTERNAL_SERVER_ERROR)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe HUKI_ROUTING_SUCCESS
         }
@@ -64,7 +65,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             graphhopperRepository.result = NetworkResult.Error(NetworkError.BAD_REQUEST)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.BAD_REQUEST)
             hukiRoutingRepository.callCount shouldBe 0
@@ -76,7 +77,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             graphhopperRepository.result = NetworkResult.Error(NetworkError.RATE_LIMITED)
 
-            val actual = repository().getRoutePlan(PROFILE, ABROAD_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, ABROAD_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.RATE_LIMITED)
             hukiRoutingRepository.callCount shouldBe 0
@@ -89,7 +90,7 @@ class FallbackRoutePlannerRepositoryTest {
             graphhopperRepository.result = NetworkResult.Error(NetworkError.RATE_LIMITED)
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.BAD_REQUEST)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.RATE_LIMITED)
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.RoutingHukiFailed)
@@ -101,7 +102,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.blockedUntil = NOW + 1.hours
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe HUKI_ROUTING_SUCCESS
             graphhopperRepository.callCount shouldBe 0
@@ -113,7 +114,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.blockedUntil = NOW + 1.hours
 
-            val actual = repository().getRoutePlan(PROFILE, ABROAD_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, ABROAD_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.RATE_LIMITED)
             graphhopperRepository.callCount shouldBe 0
@@ -127,7 +128,7 @@ class FallbackRoutePlannerRepositoryTest {
             routingQuotaStore.blockedUntil = NOW + 1.hours
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.BAD_REQUEST)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.RATE_LIMITED)
             graphhopperRepository.callCount shouldBe 0
@@ -140,7 +141,7 @@ class FallbackRoutePlannerRepositoryTest {
             routingQuotaStore.blockedUntil = NOW + 1.hours
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.NO_INTERNET)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.NO_INTERNET)
             analyticsService.loggedEvents.shouldBeEmpty()
@@ -152,7 +153,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.blockedUntil = NOW
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe GRAPHHOPPER_SUCCESS
             hukiRoutingRepository.callCount shouldBe 0
@@ -164,7 +165,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.reserveReachedUntil = NOW + 1.hours
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe HUKI_ROUTING_SUCCESS
             graphhopperRepository.callCount shouldBe 0
@@ -177,7 +178,7 @@ class FallbackRoutePlannerRepositoryTest {
             routingQuotaStore.reserveReachedUntil = NOW + 1.hours
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.INTERNAL_SERVER_ERROR)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe GRAPHHOPPER_SUCCESS
             analyticsService.loggedEvents shouldBe listOf(
@@ -193,7 +194,7 @@ class FallbackRoutePlannerRepositoryTest {
             routingQuotaStore.reserveReachedUntil = NOW + 1.hours
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.NO_INTERNET)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.NO_INTERNET)
             graphhopperRepository.callCount shouldBe 0
@@ -206,7 +207,7 @@ class FallbackRoutePlannerRepositoryTest {
             routingQuotaStore.reserveReachedUntil = NOW + 1.hours
             hukiRoutingRepository.result = NetworkResult.Error(NetworkError.REQUEST_TIMEOUT)
 
-            val actual = repository().getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.REQUEST_TIMEOUT)
             graphhopperRepository.callCount shouldBe 0
@@ -219,7 +220,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.reserveReachedUntil = NOW + 1.hours
 
-            val actual = repository().getRoutePlan(PROFILE, ABROAD_WAYPOINTS)
+            val actual = repository().getRoutePlan(RoutePlanRequest(PROFILE, ABROAD_WAYPOINTS))
 
             actual shouldBe GRAPHHOPPER_SUCCESS
             hukiRoutingRepository.callCount shouldBe 0
@@ -231,7 +232,7 @@ class FallbackRoutePlannerRepositoryTest {
         runTest {
             routingQuotaStore.blockedUntil = NOW + 1.hours
 
-            val actual = repository(RoutingMode.GRAPHHOPPER_ONLY).getRoutePlan(PROFILE, HUNGARY_WAYPOINTS)
+            val actual = repository(RoutingMode.GRAPHHOPPER_ONLY).getRoutePlan(RoutePlanRequest(PROFILE, HUNGARY_WAYPOINTS))
 
             actual shouldBe GRAPHHOPPER_SUCCESS
             hukiRoutingRepository.callCount shouldBe 0
@@ -241,7 +242,7 @@ class FallbackRoutePlannerRepositoryTest {
     @Test
     fun `Given HuKi-Routing only mode - When getRoutePlan abroad - Then HuKi-Routing serves`() {
         runTest {
-            val actual = repository(RoutingMode.HUKI_ROUTING_ONLY).getRoutePlan(PROFILE, ABROAD_WAYPOINTS)
+            val actual = repository(RoutingMode.HUKI_ROUTING_ONLY).getRoutePlan(RoutePlanRequest(PROFILE, ABROAD_WAYPOINTS))
 
             actual shouldBe HUKI_ROUTING_SUCCESS
             graphhopperRepository.callCount shouldBe 0

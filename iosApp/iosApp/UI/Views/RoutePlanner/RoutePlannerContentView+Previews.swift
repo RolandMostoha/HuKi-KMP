@@ -83,7 +83,9 @@ private func previewUiState(
         selectedStopId: selectedStopId,
         renamingStopId: nil,
         isMovingStop: false,
-        myLocation: nil
+        myLocation: nil,
+        mode: .planner,
+        roundTrip: nil
     )
 }
 

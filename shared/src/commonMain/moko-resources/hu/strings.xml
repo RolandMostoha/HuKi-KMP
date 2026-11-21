@@ -84,6 +84,14 @@
     <string name="route_planner_waypoint_empty">Válassz helyet</string>
     <string name="route_planner_round_trip">Körtúra</string>
     <string name="route_planner_round_trip_undo">Körtúra felbontása</string>
+    <string name="round_trip_wizard_title">Körtúra Varázsló</string>
+    <string name="round_trip_wizard_distance_title">Túra hossza</string>
+    <string name="round_trip_wizard_distance_value">%d km</string>
+    <string name="round_trip_wizard_regenerate">Újratervezés</string>
+    <string name="round_trip_wizard_save">Mentés</string>
+    <string name="round_trip_wizard_a11y_expand">Körtúra Varázsló kinyitása</string>
+    <string name="round_trip_wizard_a11y_minimize">Körtúra Varázsló kicsinyítése</string>
+    <string name="round_trip_wizard_a11y_start_actions">Kiindulópont műveletei</string>
     <string name="route_planner_max_stops_reached">Elérted a megállók maximális számát (%d)</string>
     <string name="route_planner_save">Útvonal mentése</string>
     <string name="route_planner_loading">Útvonal tervezése…</string>
@@ -167,8 +175,11 @@
     <string name="menu_item_settings_description">Alkalmazás beállításai</string>
     <string name="menu_a11y_open_settings">Beállítások megnyitása</string>
     <string name="menu_item_route_planner">Útvonaltervező</string>
-    <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
+    <string name="menu_item_route_planner_description">Útvonal több megálló megadásával</string>
     <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
+    <string name="menu_item_round_trip_wizard">Körtúra Varázsló</string>
+    <string name="menu_item_round_trip_wizard_description">Körtúra egyetlen pont és távolság megadásával</string>
+    <string name="menu_a11y_open_round_trip_wizard">Körtúra Varázsló megnyitása</string>
     <string name="menu_item_discover">Felfedező</string>
     <string name="menu_item_discover_description">Kirándulóhelyek és túraötletek</string>
     <string name="menu_a11y_open_discover">Felfedező megnyitása</string>

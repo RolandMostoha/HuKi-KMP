@@ -93,6 +93,7 @@ fun RoutePlannerStopCard(
     onTitleClick: (() -> Unit)? = null,
     rowHeight: Dp = Dimens.RoutePlannerRowHeight,
     trailing: (@Composable () -> Unit)? = null,
+    titleTrailing: (@Composable () -> Unit)? = null,
     icon: @Composable () -> Unit,
 ) {
     val primary = MaterialTheme.colorScheme.primary
@@ -163,6 +164,7 @@ fun RoutePlannerStopCard(
                     if (isRemovable) {
                         RoutePlannerRemoveStopButton(onClick = onRemoveClick)
                     }
+                    titleTrailing?.invoke()
                 }
                 AnimatedVisibility(
                     visible = isExpanded,

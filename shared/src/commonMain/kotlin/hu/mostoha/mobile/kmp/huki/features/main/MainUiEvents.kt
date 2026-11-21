@@ -11,6 +11,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 
@@ -68,11 +69,13 @@ sealed interface MainUiEvents {
      * Route Planner events
      */
     data object RoutePlannerClicked : MainUiEvents
+    data object RoundTripWizardClicked : MainUiEvents
     data class RoutePlanUpdated(
         val routePlan: RoutePlan?,
         val markers: List<GpxWaypoint>,
         val isAwaitingRoutePlan: Boolean = false,
         val isRoutePlanLoading: Boolean = false,
+        val mode: RoutePlannerMode = RoutePlannerMode.PLANNER,
     ) : MainUiEvents
     data class RoutePlannerStateChanged(val session: RoutePlannerSession) : MainUiEvents
     data class RoutePlannerPickOnMapChanged(val isPickingOnMap: Boolean) : MainUiEvents

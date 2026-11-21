@@ -6,8 +6,10 @@ import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewData
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -31,7 +33,24 @@ data class RoutePlannerUiState(
     val renamingStopId: String? = null,
     val isMovingStop: Boolean = false,
     val myLocation: Location? = null,
+    val mode: RoutePlannerMode = RoutePlannerMode.PLANNER,
+    val roundTrip: RoundTripOptions? = null,
 ) {
+    val isRoundTripWizard: Boolean
+        get() = mode == RoutePlannerMode.ROUND_TRIP_WIZARD
+
+    /**
+     * The wizard's single stop, which its loop starts from and returns to.
+     */
+    val roundTripStart: RoutePlannerWaypoint?
+        get() = stops.firstOrNull().takeIf { isRoundTripWizard }
+
+    /**
+     * Every loop costs a routing request, so a new one waits until the current one has arrived.
+     */
+    val isRegenerateEnabled: Boolean
+        get() = isRoundTripWizard && roundTripStart?.location != null && !isRoutePlanLoading
+
     val stops: List<RoutePlannerWaypoint>
         get() = waypoints.dropLast(1)
 
@@ -39,7 +58,12 @@ data class RoutePlannerUiState(
         get() = routePlan?.routeStats
 
     val session: RoutePlannerSession
-        get() = RoutePlannerSession(routeProfile = routeProfile, waypoints = waypoints)
+        get() = RoutePlannerSession(
+            routeProfile = routeProfile,
+            waypoints = waypoints,
+            mode = mode,
+            roundTrip = roundTrip,
+        )
 
     val isRoundTrip: Boolean
         get() = stops.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT &&
@@ -50,7 +74,7 @@ data class RoutePlannerUiState(
      * A round trip's button undoes it, otherwise it closes the route back to its start.
      */
     val isRoundTripEnabled: Boolean
-        get() = isRoundTrip || !isMaxStopsReached && stops.firstOrNull()?.location != null
+        get() = !isRoundTripWizard && (isRoundTrip || !isMaxStopsReached && stops.firstOrNull()?.location != null)
 
     val isMaxStopsReached: Boolean
         get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT
@@ -85,7 +109,7 @@ data class RoutePlannerUiState(
      * first, as its end mirrors the start.
      */
     val isAddStopEnabled: Boolean
-        get() = !isRoundTrip && !isMaxStopsReached && stops.none { it.isEmpty }
+        get() = !isRoundTripWizard && !isRoundTrip && !isMaxStopsReached && stops.none { it.isEmpty }
 
     val isEmptyStopRemovable: Boolean
         get() = stops.size > RoutePlanConstants.MIN_WAYPOINT_COUNT
@@ -99,7 +123,7 @@ data class RoutePlannerUiState(
         get() = routePlan != null && !isRoutePlanLoading
 
     val isRoutePlanExpected: Boolean
-        get() = routePlanRequest.waypoints.size >= RoutePlanConstants.MIN_WAYPOINT_COUNT
+        get() = routePlanRequest.isRoutable
 
     /**
      * The stops can be routed and the plan is on its way, so the map waits for it before moving the camera.
@@ -121,14 +145,26 @@ data class RoutePlannerUiState(
                 }
             }
 
+    /**
+     * The wizard routes a loop from its start alone.
+     */
     val routePlanRequest: RoutePlanRequest
-        get() = RoutePlanRequest(
-            routeProfile = routeProfile,
-            waypoints = stops.mapNotNull { it.location },
-        )
+        get() = if (isRoundTripWizard) {
+            RoutePlanRequest(
+                routeProfile = routeProfile,
+                waypoints = listOfNotNull(roundTripStart?.location),
+                roundTrip = roundTrip,
+            )
+        } else {
+            RoutePlanRequest(
+                routeProfile = routeProfile,
+                waypoints = stops.mapNotNull { it.location },
+            )
+        }
 
     fun stopType(index: Int): WaypointType =
         when {
+            isRoundTripWizard -> WaypointType.ROUND_TRIP
             isRoundTrip && (index == 0 || index == stops.lastIndex) -> WaypointType.ROUND_TRIP
             index == 0 -> WaypointType.START
             index == stops.lastIndex -> WaypointType.END
@@ -163,14 +199,12 @@ data class RoutePlannerUiState(
          */
         const val MY_LOCATION_WAYPOINT_ID = "my_location"
 
-        private val DEFAULT_WAYPOINTS = listOf(
-            RoutePlannerWaypoint(
-                id = MY_LOCATION_WAYPOINT_ID,
-                name = StringDesc.Resource(SharedRes.strings.route_planner_my_location),
-            ),
-            RoutePlannerWaypoint(),
-            RoutePlannerWaypoint(),
+        internal val MY_LOCATION_WAYPOINT = RoutePlannerWaypoint(
+            id = MY_LOCATION_WAYPOINT_ID,
+            name = StringDesc.Resource(SharedRes.strings.route_planner_my_location),
         )
+
+        private val DEFAULT_WAYPOINTS = listOf(MY_LOCATION_WAYPOINT, RoutePlannerWaypoint(), RoutePlannerWaypoint())
 
         val Default = RoutePlannerUiState()
     }

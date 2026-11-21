@@ -2,6 +2,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -32,7 +33,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given credits above reserve - When getRoutePlan - Then quota is not changed`() {
         runTest {
-            val actual = repository(HttpStatusCode.OK, remaining = "2000").getRoutePlan(PROFILE, WAYPOINTS)
+            val actual = repository(HttpStatusCode.OK, remaining = "2000").getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             actual.shouldBeInstanceOf<NetworkResult.Success<*>>()
             routingQuotaStore.reserveReachedUntil.shouldBeNull()
@@ -43,7 +44,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given credits below reserve - When getRoutePlan - Then reserve is reached until reset`() {
         runTest {
-            repository(HttpStatusCode.OK, remaining = "499").getRoutePlan(PROFILE, WAYPOINTS)
+            repository(HttpStatusCode.OK, remaining = "499").getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             routingQuotaStore.reserveReachedUntil shouldBe NOW + RESET_SECONDS.seconds
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.RoutingGraphhopperReserveReached)
@@ -56,7 +57,7 @@ class GraphhopperRoutePlannerRepositoryTest {
             val reserveReachedUntil = NOW + 1.hours
             routingQuotaStore.reserveReachedUntil = reserveReachedUntil
 
-            repository(HttpStatusCode.OK, remaining = "400").getRoutePlan(PROFILE, WAYPOINTS)
+            repository(HttpStatusCode.OK, remaining = "400").getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             routingQuotaStore.reserveReachedUntil shouldBe reserveReachedUntil
             analyticsService.loggedEvents.shouldBeEmpty()
@@ -66,7 +67,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given no rate limit headers - When getRoutePlan - Then quota is not changed`() {
         runTest {
-            repository(HttpStatusCode.OK, remaining = null, reset = null).getRoutePlan(PROFILE, WAYPOINTS)
+            repository(HttpStatusCode.OK, remaining = null, reset = null).getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             routingQuotaStore.reserveReachedUntil.shouldBeNull()
             routingQuotaStore.blockedUntil.shouldBeNull()
@@ -76,7 +77,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given daily limit reached - When getRoutePlan - Then blocked until reset`() {
         runTest {
-            val actual = repository(HttpStatusCode.TooManyRequests, remaining = "0").getRoutePlan(PROFILE, WAYPOINTS)
+            val actual = repository(HttpStatusCode.TooManyRequests, remaining = "0").getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             actual shouldBe NetworkResult.Error(NetworkError.RATE_LIMITED)
             routingQuotaStore.blockedUntil shouldBe NOW + RESET_SECONDS.seconds
@@ -87,7 +88,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given daily limit reached without reset header - When getRoutePlan - Then blocked until UTC midnight`() {
         runTest {
-            repository(HttpStatusCode.TooManyRequests, remaining = null, reset = null).getRoutePlan(PROFILE, WAYPOINTS)
+            repository(HttpStatusCode.TooManyRequests, remaining = null, reset = null).getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             routingQuotaStore.blockedUntil shouldBe Instant.parse("2026-10-11T00:00:00Z")
         }
@@ -96,7 +97,7 @@ class GraphhopperRoutePlannerRepositoryTest {
     @Test
     fun `Given rate limited with credits left - When getRoutePlan - Then not blocked`() {
         runTest {
-            repository(HttpStatusCode.TooManyRequests, remaining = "1200").getRoutePlan(PROFILE, WAYPOINTS)
+            repository(HttpStatusCode.TooManyRequests, remaining = "1200").getRoutePlan(RoutePlanRequest(PROFILE, WAYPOINTS))
 
             routingQuotaStore.blockedUntil.shouldBeNull()
             analyticsService.loggedEvents shouldBe listOf(AnalyticsEvent.RoutingGraphhopperLimitHit)

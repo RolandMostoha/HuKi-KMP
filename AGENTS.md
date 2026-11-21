@@ -186,6 +186,7 @@ commit-message convention.
 - Ktor: Networking, Rest APIs.
 - **Routing**: GraphHopper hosted API (`https://graphhopper.com/api/1/route`, `GRAPHHOPPER_API_KEY_ANDROID` / `_IOS` in `secrets.properties`) — used by the Route Planner.
   - **HuKi-Routing** fallback: self-hosted GraphHopper for Hungary only (`HUKI_ROUTING_API_KEY` in `secrets.properties`, sent as the `X-HuKi-Key` header, never as a query param). `FallbackRoutePlannerRepository` is a client-side circuit breaker: GraphHopper first, routes with all waypoints inside `RoutePlanConstants.HUKI_ROUTING_BOUNDING_BOX` move to HuKi-Routing once GraphHopper's daily credits drop below the reserve or hit 429 (`RoutingQuotaStore`, DataStore, until `X-RateLimit-Reset`).
+  - **Round-trip Wizard**: a `RoutePlannerMode.ROUND_TRIP_WIZARD` of the planner (Menu → Round-trip Wizard). One start + `algorithm=round_trip` with distance, seed and heading, always `ch.disable` (an algorithm limitation); the request carries only the start, so only it is checked against the HuKi-Routing box. Regenerate draws a new seed + heading (`nextRoundTripOptions`).
   - Debug: `FeatureFlags.DEBUG_ROUTING_MODE` forces `GRAPHHOPPER_ONLY` / `HUKI_ROUTING_ONLY` (keep `AUTO` on commit).
 - kotlin-serialization: Serialization. 
 - Spatial K

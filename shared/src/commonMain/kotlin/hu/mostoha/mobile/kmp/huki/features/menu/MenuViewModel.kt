@@ -45,6 +45,7 @@ class MenuViewModel(
             MenuUiEvents.BackClicked -> sendEffect(MenuUiEffects.NavigateBack)
             MenuUiEvents.SettingsClicked -> sendEffect(MenuUiEffects.NavigateToSettings)
             MenuUiEvents.RoutePlannerClicked -> openRoutePlanner()
+            MenuUiEvents.RoundTripWizardClicked -> openRoundTripWizard()
             MenuUiEvents.DiscoverClicked -> sendEffect(MenuUiEffects.NavigateToDiscover)
             MenuUiEvents.PlaceHistoryClicked -> sendEffect(MenuUiEffects.NavigateToPlaceHistory)
             MenuUiEvents.GpxCollectionClicked -> sendEffect(MenuUiEffects.NavigateToGpxCollection)
@@ -61,6 +62,11 @@ class MenuViewModel(
     private fun openRoutePlanner() {
         analyticsService.logEvent(AnalyticsEvent.MenuRoutePlanClicked)
         sendEffect(MenuUiEffects.NavigateToRoutePlanner)
+    }
+
+    private fun openRoundTripWizard() {
+        analyticsService.logEvent(AnalyticsEvent.MenuRoundTripWizardClicked)
+        sendEffect(MenuUiEffects.NavigateToRoundTripWizard)
     }
 
     private fun openEmail() {

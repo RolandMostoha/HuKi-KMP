@@ -55,6 +55,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -276,8 +277,9 @@ class MainViewModel(
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // Route Planner events
             MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
+            MainUiEvents.RoundTripWizardClicked -> showRoundTripWizard()
             is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event)
-            is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession.value = event.session
+            is MainUiEvents.RoutePlannerStateChanged -> updateRoutePlannerSession(event.session)
             is MainUiEvents.RoutePlannerPickOnMapChanged ->
                 showRoutePlannerHint(RoutePlannerHint.LONG_PRESS, event.isPickingOnMap)
             is MainUiEvents.RoutePlannerMoveStopChanged -> changeRoutePlannerStopMove(event.isMovingStop)
@@ -624,9 +626,31 @@ class MainViewModel(
     }
 
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
+        if (isRoutePlannerOpen(RoutePlannerMode.PLANNER)) return
         val waypoints = stops.map { it.toRoutePlannerWaypoint() }
         routePlannerSession.value = null
         openRoutePlannerSheet(Sheet.RoutePlanner(waypoints), waypoints)
+    }
+
+    private fun showRoundTripWizard() {
+        if (isRoutePlannerOpen(RoutePlannerMode.ROUND_TRIP_WIZARD)) return
+        routePlannerSession.value = null
+        openRoutePlannerSheet(Sheet.RoutePlanner(mode = RoutePlannerMode.ROUND_TRIP_WIZARD), emptyList())
+    }
+
+    /**
+     * Reopening the open mode keeps its sheet, whose state and restorable session must not be reset under it.
+     */
+    private fun isRoutePlannerOpen(mode: RoutePlannerMode): Boolean =
+        (_uiState.value.sheet as? Sheet.RoutePlanner)?.mode == mode
+
+    /**
+     * A closing planner can still report its state after the other mode opened, which must not become its session.
+     */
+    private fun updateRoutePlannerSession(session: RoutePlannerSession) {
+        val sheet = _uiState.value.sheet as? Sheet.RoutePlanner ?: return
+        if (sheet.mode != session.mode) return
+        routePlannerSession.value = session
     }
 
     private fun replanGpx(uri: String) {
@@ -689,8 +713,10 @@ class MainViewModel(
     }
 
     private fun showRoutePlan(event: MainUiEvents.RoutePlanUpdated) {
-        // The closing planner can still report a late plan or stop name, which must not put its markers back
-        if (_uiState.value.sheet !is Sheet.RoutePlanner) return
+        // The closing planner can still report a late plan or stop name, which must not put its markers back,
+        // neither after it closed nor under the other mode that replaced it
+        val sheet = _uiState.value.sheet as? Sheet.RoutePlanner ?: return
+        if (sheet.mode != event.mode) return
         val routePlan = event.routePlan
         val isNewPlan = _uiState.value.mapUiState.routePlan != routePlan
         _uiState.updateMapUiState {
@@ -906,7 +932,7 @@ class MainViewModel(
 
     private fun restoreRoutePlanner(session: RoutePlannerSession) {
         routePlannerSession.value = session
-        _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session)) }
+        _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session, mode = session.mode)) }
         onSessionRestored(FeatureSession.RoutePlanner(session))
     }
 

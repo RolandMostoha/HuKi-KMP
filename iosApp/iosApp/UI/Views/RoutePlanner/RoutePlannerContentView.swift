@@ -95,38 +95,16 @@ struct RoutePlannerContentView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 8) {
-            GlassIconButton(
-                systemName: detent == .minimized
-                    ? "arrow.up.left.and.arrow.down.right"
-                    : "arrow.down.right.and.arrow.up.left",
-                accessibilityLabel: strings.get(
-                    id: detent == .minimized
-                        ? SharedRes.strings().route_planner_a11y_expand
-                        : SharedRes.strings().route_planner_a11y_minimize
-                ),
-                accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_DETENT_BUTTON,
-                iconSize: Self.headerIconSize,
-                action: { onDetentChange(detent.toggled) }
-            )
-            VStack(spacing: 4) {
-                Text(strings.get(id: SharedRes.strings().route_planner_title))
-                    .font(.system(size: 24, weight: .bold))
-                    .lineLimit(1)
-                    .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_TITLE)
-                RoutePlannerGraphhopperAttributionView(
-                    strings: strings,
-                    action: { onEvent(RoutePlannerUiEventsGraphhopperAttributionClicked.shared) }
-                )
-            }
-            .frame(maxWidth: .infinity)
-            CloseButton(
-                action: { onEvent(RoutePlannerUiEventsCloseClicked.shared) },
-                accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_CLOSE_BUTTON,
-                iconSize: Self.headerIconSize
-            )
-        }
-        .padding(.horizontal, 16)
+        RoutePlannerHeaderView(
+            strings: strings,
+            title: strings.get(id: SharedRes.strings().route_planner_title),
+            expandAccessibilityLabel: strings.get(id: SharedRes.strings().route_planner_a11y_expand),
+            minimizeAccessibilityLabel: strings.get(id: SharedRes.strings().route_planner_a11y_minimize),
+            detent: detent,
+            onDetentChange: onDetentChange,
+            onAttributionClicked: { onEvent(RoutePlannerUiEventsGraphhopperAttributionClicked.shared) },
+            onCloseClicked: { onEvent(RoutePlannerUiEventsCloseClicked.shared) }
+        )
     }
 
     private var profilePicker: some View {
@@ -226,7 +204,6 @@ struct RoutePlannerContentView: View {
     private static let stackSpacing: CGFloat = 16
     private static let routeRegionSpacing: CGFloat = 10
     private static let stopActionsSpacing: CGFloat = 12
-    private static let headerIconSize: CGFloat = 24
     private static let rowHeight: CGFloat = 44
     static let minimizedRowHeight: CGFloat = 44
 

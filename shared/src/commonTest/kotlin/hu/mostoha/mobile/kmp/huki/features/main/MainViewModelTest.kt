@@ -52,6 +52,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -1713,6 +1714,35 @@ class MainViewModelTest {
                 )
                 ensureAllEventsConsumed()
             }
+        }
+    }
+
+    @Test
+    fun `Given the Round-trip Wizard - When the closing planner reports its route - Then the map ignores it`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+            advanceUntilIdle()
+
+            viewModel.onEvent(
+                MainUiEvents.RoutePlanUpdated(TEST_ROUTE_PLAN, TEST_ROUTE_PLAN.toGpxWaypoints(), mode = RoutePlannerMode.PLANNER),
+            )
+
+            viewModel.uiState.value.mapUiState.routePlan shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given the map - When RoundTripWizardClicked - Then the route planner opens in round-trip wizard mode`() {
+        runTest {
+            val viewModel = createViewModel(grantedPermission = true)
+            advanceUntilIdle()
+
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+            advanceUntilIdle()
+
+            viewModel.uiState.value.sheet shouldBe Sheet.RoutePlanner(mode = RoutePlannerMode.ROUND_TRIP_WIZARD)
         }
     }
 

@@ -11,11 +11,14 @@ import hu.mostoha.mobile.kmp.huki.model.domain.InfoViewType
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperAlgorithm
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperCustomModel
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPriority
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperProfile
@@ -43,6 +46,7 @@ private val ON_TRAILS_CUSTOM_MODEL = GraphhopperCustomModel(
 private const val LONGITUDE_INDEX = 0
 private const val LATITUDE_INDEX = 1
 private const val ALTITUDE_INDEX = 2
+private const val METERS_IN_KILOMETER = 1000
 
 private const val HEADER_RATE_LIMIT_REMAINING = "X-RateLimit-Remaining"
 private const val HEADER_RATE_LIMIT_RESET = "X-RateLimit-Reset"
@@ -93,6 +97,39 @@ fun RoutePlannerProfile.toHukiRoutingRouteRequest(waypoints: List<Location>): Gr
         elevation = true,
         instructions = false,
     )
+
+fun RoutePlanRequest.toRouteRequest(): GraphhopperRouteRequest =
+    routeProfile.toRouteRequest(waypoints).withRoundTrip(roundTrip)
+
+fun RoutePlanRequest.toHukiRoutingRouteRequest(): GraphhopperRouteRequest =
+    routeProfile.toHukiRoutingRouteRequest(waypoints).withRoundTrip(roundTrip)
+
+/**
+ * GraphHopper only builds round trips without contraction hierarchies, an algorithm limitation.
+ */
+private fun GraphhopperRouteRequest.withRoundTrip(options: RoundTripOptions?): GraphhopperRouteRequest =
+    if (options == null) {
+        this
+    } else {
+        copy(
+            algorithm = GraphhopperAlgorithm.ROUND_TRIP,
+            roundTripDistance = options.distanceKm * METERS_IN_KILOMETER,
+            roundTripSeed = options.seed,
+            headings = listOf(options.heading),
+            headingPenalty = RoutePlanConstants.ROUND_TRIP_HEADING_PENALTY,
+            chDisabled = true,
+        )
+    }
+
+/**
+ * GraphHopper can list a round trip's generated via points as snapped waypoints, so only its start is kept, at both
+ * ends, like the planner's own round trips.
+ */
+fun GraphhopperRouteResponse.toRoundTripPlan(): RoutePlan? =
+    toRoutePlan()?.let { plan ->
+        val start = plan.waypoints.firstOrNull() ?: plan.locations.first()
+        plan.copy(waypoints = listOf(start, start))
+    }
 
 fun Headers.toGraphhopperRateLimit(): GraphhopperRateLimit =
     GraphhopperRateLimit(

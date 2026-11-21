@@ -6,9 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -74,6 +77,8 @@ fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifi
         Column(
             modifier = Modifier
                 .animateContentSize()
+                // As wide as its widest line, so the comment button can sit at the end above a longer comment
+                .width(IntrinsicSize.Max)
                 .padding(
                     start = 8.dp,
                     top = 5.dp,
@@ -84,10 +89,11 @@ fun DistanceInfoWindow(info: DistanceInfoWindowData, modifier: Modifier = Modifi
         ) {
             if (description != null) {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column { DistanceInfoWindowHeader(info, isLeading = true) }
+                    Column(modifier = Modifier.weight(1f)) { DistanceInfoWindowHeader(info, isLeading = true) }
                     DistanceInfoWindowCommentButton(
                         isExpanded = isDescriptionExpanded,
                         onClick = { isDescriptionExpanded = !isDescriptionExpanded },

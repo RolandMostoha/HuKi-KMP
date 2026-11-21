@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.SupportAnimal
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
 import hu.mostoha.mobile.kmp.huki.repository.FakeSupporterRepository
 import hu.mostoha.mobile.kmp.huki.service.FakeAnalyticsService
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -70,6 +71,20 @@ class MenuViewModelTest {
                 val actual = awaitItem()
 
                 actual shouldBe MenuUiEffects.NavigateBack
+            }
+        }
+    }
+
+    @Test
+    fun `Given default state - When RoundTripWizardClicked event - Then NavigateToRoundTripWizard effect is emitted`() {
+        runTest {
+            menuViewModel.menuUiEffects.test {
+                menuViewModel.onEvent(MenuUiEvents.RoundTripWizardClicked)
+
+                val actual = awaitItem()
+
+                actual shouldBe MenuUiEffects.NavigateToRoundTripWizard
+                analyticsService.loggedEvents shouldContain AnalyticsEvent.MenuRoundTripWizardClicked
             }
         }
     }

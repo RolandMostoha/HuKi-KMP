@@ -72,6 +72,7 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -132,6 +133,8 @@ fun MainScreen(
     onOpenDestinationRouteConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
+    openRoundTripWizard: Boolean = false,
+    onOpenRoundTripWizardConsumed: () -> Unit = {},
     openDiscover: Boolean = false,
     onOpenDiscoverConsumed: () -> Unit = {},
     openMapLabelScale: Boolean = false,
@@ -182,6 +185,12 @@ fun MainScreen(
         if (openRoutePlanner) {
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             onOpenRoutePlannerConsumed()
+        }
+    }
+    LaunchedEffect(openRoundTripWizard) {
+        if (openRoundTripWizard) {
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+            onOpenRoundTripWizardConsumed()
         }
     }
 
@@ -408,7 +417,8 @@ private fun MainContent(
                 transitionSpec = {
                     (slideInVertically { it } togetherWith slideOutVertically { it }).using(null)
                 },
-                contentKey = { it != null },
+                // Each mode has its own ViewModel, so switching between them composes a new sheet
+                contentKey = { it?.mode },
                 label = "routePlannerSheet",
             ) { sheet ->
                 sheet?.let {
@@ -420,6 +430,7 @@ private fun MainContent(
                         hint = uiState.visibleRoutePlannerHint.takeUnless { isRoutePlannerAtMaxHeight },
                         stops = sheet.stops,
                         restored = sheet.restored,
+                        mode = sheet.mode,
                         mapEvent = routePlannerMapEvent,
                         detent = routePlannerDetent,
                         onDetentChange = { routePlannerDetent = it },
@@ -532,6 +543,7 @@ private fun RoutePlannerSheetOverlay(
     hint: RoutePlannerHint?,
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
+    mode: RoutePlannerMode,
     mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
@@ -581,6 +593,7 @@ private fun RoutePlannerSheetOverlay(
             RoutePlannerBottomSheet(
                 stops = stops,
                 restored = restored,
+                mode = mode,
                 mapEvent = mapEvent,
                 detent = detent,
                 onDetentChange = onDetentChange,
@@ -589,7 +602,15 @@ private fun RoutePlannerSheetOverlay(
                 onExpandedHeightMeasured = onExpandedHeightMeasured,
                 modifier = sheetModifier,
                 onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading ->
-                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading))
+                    onEvent(
+                        MainUiEvents.RoutePlanUpdated(
+                            routePlan,
+                            markers,
+                            isAwaitingRoutePlan,
+                            isRoutePlanLoading,
+                            mode,
+                        ),
+                    )
                 },
                 onSessionChanged = { session -> onEvent(MainUiEvents.RoutePlannerStateChanged(session)) },
                 onPickOnMapChanged = { onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(it)) },

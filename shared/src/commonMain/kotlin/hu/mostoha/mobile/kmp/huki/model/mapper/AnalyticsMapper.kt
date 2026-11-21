@@ -14,6 +14,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
 import hu.mostoha.mobile.kmp.huki.model.domain.HikeRecommendation
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.SupporterState
@@ -56,7 +57,10 @@ fun Sheet?.toScreen(): Screen =
         Sheet.Layers -> Screen.LAYERS
         is Sheet.Gpx -> Screen.GPX_DETAILS
         Sheet.PlaceDetails -> Screen.PLACE_DETAILS
-        is Sheet.RoutePlanner -> Screen.ROUTE_PLANNER
+        is Sheet.RoutePlanner -> when (mode) {
+            RoutePlannerMode.PLANNER -> Screen.ROUTE_PLANNER
+            RoutePlannerMode.ROUND_TRIP_WIZARD -> Screen.ROUND_TRIP_WIZARD
+        }
         is Sheet.WhatsNew -> Screen.WHATS_NEW
         Sheet.Discover -> Screen.DISCOVER
         Sheet.Okt -> Screen.OKT
@@ -83,7 +87,10 @@ fun FeatureSession?.toRestoredFeature(): RestoredFeature =
         is FeatureSession.Gpx -> RestoredFeature.GPX
         is FeatureSession.Okt -> RestoredFeature.OKT
         is FeatureSession.Landscapes -> RestoredFeature.LANDSCAPES
-        is FeatureSession.RoutePlanner -> RestoredFeature.ROUTE_PLANNER
+        is FeatureSession.RoutePlanner -> when (session.mode) {
+            RoutePlannerMode.PLANNER -> RestoredFeature.ROUTE_PLANNER
+            RoutePlannerMode.ROUND_TRIP_WIZARD -> RestoredFeature.ROUND_TRIP_WIZARD
+        }
         null -> RestoredFeature.MAP
     }
 

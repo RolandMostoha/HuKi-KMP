@@ -10,13 +10,16 @@ import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
 import hu.mostoha.mobile.kmp.huki.model.domain.Destination
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toMyLocationWaypoint
 import hu.mostoha.mobile.kmp.huki.model.mapper.toPlace
 import hu.mostoha.mobile.kmp.huki.model.mapper.toReverseGeocodedPlace
+import hu.mostoha.mobile.kmp.huki.model.mapper.toRoundTripPlan
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlan
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlanInfoViewData
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
@@ -33,6 +36,7 @@ import hu.mostoha.mobile.kmp.huki.service.LocationMonitoringService
 import hu.mostoha.mobile.kmp.huki.service.locations
 import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.distanceBetween
+import hu.mostoha.mobile.kmp.huki.util.nextRoundTripOptions
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -50,6 +54,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
@@ -63,6 +68,8 @@ class RoutePlannerViewModel(
     private val crashlyticsService: CrashlyticsService,
     initialStops: List<RoutePlannerWaypoint> = emptyList(),
     restoredSession: RoutePlannerSession? = null,
+    mode: RoutePlannerMode = RoutePlannerMode.PLANNER,
+    private val random: Random = Random.Default,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RoutePlannerUiState.Default)
@@ -82,6 +89,8 @@ class RoutePlannerViewModel(
     init {
         if (restoredSession != null) {
             restoreSession(restoredSession)
+        } else if (mode == RoutePlannerMode.ROUND_TRIP_WIZARD) {
+            _uiState.value = RoutePlannerUiState.roundTripWizard(newRoundTrip())
         } else {
             // Seeded before my location loads, so no state ever has my location as the only stop
             initialStops.forEach { addWaypoint(it, guardRange = true) }
@@ -116,6 +125,8 @@ class RoutePlannerViewModel(
             RoutePlannerUiEvents.MyLocationAdded -> addMyLocation()
             is RoutePlannerUiEvents.PickOnMapClicked -> pickOnMap(event.waypointId)
             RoutePlannerUiEvents.RoundTripClicked -> toggleRoundTrip()
+            is RoutePlannerUiEvents.RoundTripDistanceChanged -> changeRoundTripDistance(event.distanceKm)
+            RoutePlannerUiEvents.RoundTripRegenerateClicked -> regenerateRoundTrip()
             RoutePlannerUiEvents.RetryClicked -> retryRoutePlan()
             RoutePlannerUiEvents.SaveRouteClicked -> saveRoutePlan()
             RoutePlannerUiEvents.CloseClicked -> sendEffect(RoutePlannerUiEffects.Close)
@@ -127,8 +138,46 @@ class RoutePlannerViewModel(
         sendEffect(RoutePlannerUiEffects.OpenUrl(RoutePlanConstants.GRAPHHOPPER_URL))
     }
 
+    /**
+     * A restored wizard keeps its seed and heading, so it routes the same loop again.
+     */
     private fun restoreSession(session: RoutePlannerSession) {
-        _uiState.update { it.copy(routeProfile = session.routeProfile, waypoints = session.waypoints) }
+        val roundTrip = when (session.mode) {
+            RoutePlannerMode.ROUND_TRIP_WIZARD -> session.roundTrip ?: newRoundTrip()
+            RoutePlannerMode.PLANNER -> null
+        }
+        _uiState.update {
+            it.copy(
+                routeProfile = session.routeProfile,
+                waypoints = session.waypoints,
+                mode = session.mode,
+                roundTrip = roundTrip,
+            )
+        }
+    }
+
+    private fun newRoundTrip(): RoundTripOptions =
+        random.nextRoundTripOptions(RoutePlanConstants.ROUND_TRIP_DEFAULT_DISTANCE_KM)
+
+    private fun changeRoundTripDistance(distanceKm: Int) {
+        val current = _uiState.value
+        val updated = current.withRoundTripDistance(distanceKm)
+        if (updated.roundTrip == current.roundTrip) return
+        val newDistance = updated.roundTrip?.distanceKm ?: return
+
+        analyticsService.logEvent(AnalyticsEvent.RoundTripDistanceChanged(newDistance))
+
+        _uiState.update { it.withRoundTripDistance(distanceKm) }
+    }
+
+    private fun regenerateRoundTrip() {
+        val current = _uiState.value
+        val roundTrip = current.roundTrip
+        if (!current.isRegenerateEnabled || roundTrip == null) return
+
+        analyticsService.logEvent(AnalyticsEvent.RoundTripRegenerated)
+
+        _uiState.update { it.copy(roundTrip = random.nextRoundTripOptions(roundTrip.distanceKm, previous = roundTrip)) }
     }
 
     private fun selectProfile(routeProfile: RoutePlannerProfile) {
@@ -420,11 +469,11 @@ class RoutePlannerViewModel(
             added = false
 
             val stops = uiState.stops
-            // The target is an empty stop to fill or a filled one to replace
+            // The target is an empty stop to fill or a filled one to replace, the wizard only has its start
             val targetIndex = stops
                 .indexOfFirst { it.id == uiState.waypointSearchTargetId }
                 .takeIf { it != -1 }
-                ?: stops.indexOfFirst { it.isEmpty }
+                ?: if (uiState.isRoundTripWizard) 0 else stops.indexOfFirst { it.isEmpty }
             if (targetIndex == -1 && uiState.isMaxStopsReached) {
                 return@update uiState
             }
@@ -456,6 +505,7 @@ class RoutePlannerViewModel(
 
     private fun removeWaypoint(id: String) {
         val current = _uiState.value
+        if (current.isRoundTripWizard) return
         val stop = current.stops.firstOrNull { it.id == id } ?: return
         // An empty stop at the minimum would only be replaced by another empty one
         if (stop.isEmpty && !current.isEmptyStopRemovable) {
@@ -485,6 +535,7 @@ class RoutePlannerViewModel(
     }
 
     private fun moveWaypoint(fromIndex: Int, toIndex: Int) {
+        if (_uiState.value.isRoundTripWizard) return
         _uiState.update { uiState ->
             val stops = uiState.stops
             if (fromIndex !in stops.indices || toIndex !in stops.indices || fromIndex == toIndex) {
@@ -519,14 +570,22 @@ class RoutePlannerViewModel(
         val uiState = _uiState.value
         val routePlan = uiState.routePlan
         if (!uiState.isSaveEnabled || routePlan == null) return
+        // A wizard loop returns to its start, so its end is named after it too
         val routedStops = uiState.stops.filter { it.location != null }
+            .let { stops -> if (uiState.isRoundTripWizard) stops + stops else stops }
         val stopNames = routedStops.map { it.gpxName }
         val stopComments = routedStops.map { it.comment }
 
         viewModelScope.launch {
             runCatching { gpxRepository.saveRoutePlan(routePlan, stopNames, uiState.routeProfile, stopComments) }
                 .onSuccess { fileUri ->
-                    analyticsService.logEvent(AnalyticsEvent.RoutePlanSaved(uiState.routeProfile.toRouteProfile()))
+                    val profile = uiState.routeProfile.toRouteProfile()
+                    val event = if (uiState.isRoundTripWizard) {
+                        AnalyticsEvent.RoundTripSaved(profile)
+                    } else {
+                        AnalyticsEvent.RoutePlanSaved(profile)
+                    }
+                    analyticsService.logEvent(event)
                     sendEffect(RoutePlannerUiEffects.RoutePlanSaved(fileUri))
                 }
                 .onFailure { throwable ->
@@ -555,23 +614,34 @@ class RoutePlannerViewModel(
     }
 
     private suspend fun loadRoutePlan(request: RoutePlanRequest) {
-        if (request.waypoints.size < RoutePlanConstants.MIN_WAYPOINT_COUNT) {
+        if (!request.isRoutable) {
             _uiState.update { it.copy(routePlan = null, isRoutePlanLoading = false, routePlanError = null) }
             return
         }
 
         _uiState.update { it.copy(isRoutePlanLoading = true, routePlanError = null) }
 
+        val isRoundTrip = request.roundTrip != null
         delay(ROUTE_PLAN_DEBOUNCE)
+        // A new loop is a tap away, so each one takes a moment longer and the routing credits are not burnt through
+        if (isRoundTrip) delay(ROUND_TRIP_EXTRA_DELAY)
 
-        when (val result = routePlannerRepository.getRoutePlan(request.routeProfile, request.waypoints)) {
+        when (val result = routePlannerRepository.getRoutePlan(request)) {
             is NetworkResult.Success -> {
-                val routePlan = result.data.toRoutePlan()
+                val routePlan = if (isRoundTrip) result.data.toRoundTripPlan() else result.data.toRoutePlan()
                 if (routePlan == null) {
                     showRoutePlanError(NetworkError.NOT_FOUND)
                     return
                 }
-                analyticsService.logEvent(AnalyticsEvent.RoutePlanCreated(request.routeProfile.toRouteProfile()))
+                val profile = request.routeProfile.toRouteProfile()
+                val event = if (isRoundTrip) {
+                    AnalyticsEvent.RoundTripCreated(
+                        profile,
+                    )
+                } else {
+                    AnalyticsEvent.RoutePlanCreated(profile)
+                }
+                analyticsService.logEvent(event)
                 _uiState.update {
                     it.copy(routePlan = routePlan, isRoutePlanLoading = false, routePlanError = null)
                 }
@@ -581,9 +651,10 @@ class RoutePlannerViewModel(
     }
 
     private fun showRoutePlanError(error: NetworkError) {
-        val event = when (error) {
-            NetworkError.NO_INTERNET -> AnalyticsEvent.RoutePlanNoInternet
-            NetworkError.RATE_LIMITED -> AnalyticsEvent.RoutePlanDailyLimitReached
+        val event = when {
+            error == NetworkError.NO_INTERNET -> AnalyticsEvent.RoutePlanNoInternet
+            error == NetworkError.RATE_LIMITED -> AnalyticsEvent.RoutePlanDailyLimitReached
+            _uiState.value.isRoundTripWizard -> AnalyticsEvent.RoundTripFailed
             else -> AnalyticsEvent.RoutePlanFailed
         }
         analyticsService.logEvent(event)
@@ -608,5 +679,6 @@ class RoutePlannerViewModel(
 
     companion object {
         private val ROUTE_PLAN_DEBOUNCE = 300.milliseconds
+        private val ROUND_TRIP_EXTRA_DELAY = 500.milliseconds
     }
 }

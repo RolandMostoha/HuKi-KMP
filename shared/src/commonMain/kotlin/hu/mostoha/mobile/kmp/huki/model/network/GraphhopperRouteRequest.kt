@@ -19,4 +19,14 @@ data class GraphhopperRouteRequest(
     val customModel: GraphhopperCustomModel? = null,
     @SerialName("ch.disable")
     val chDisabled: Boolean? = null,
+    @SerialName("algorithm")
+    val algorithm: GraphhopperAlgorithm? = null,
+    @SerialName("round_trip.distance")
+    val roundTripDistance: Int? = null,
+    @SerialName("round_trip.seed")
+    val roundTripSeed: Int? = null,
+    @SerialName("headings")
+    val headings: List<Int>? = null,
+    @SerialName("heading_penalty")
+    val headingPenalty: Int? = null,
 )

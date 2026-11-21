@@ -5,6 +5,7 @@ sealed interface MenuUiEvents {
     data object BackClicked : MenuUiEvents
     data object SettingsClicked : MenuUiEvents
     data object RoutePlannerClicked : MenuUiEvents
+    data object RoundTripWizardClicked : MenuUiEvents
     data object DiscoverClicked : MenuUiEvents
     data object PlaceHistoryClicked : MenuUiEvents
     data object GpxCollectionClicked : MenuUiEvents

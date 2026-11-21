@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
@@ -102,8 +103,16 @@ fun RoutePlannerContent(
     var headerHeight by remember { mutableStateOf(Dp.Unspecified) }
     var footerHeight by remember { mutableStateOf(Dp.Unspecified) }
     var selectedStopHeight by remember { mutableStateOf(0.dp) }
+    // The wizard's start row and length slider read as one block, so no gap parts them while expanded
+    val footerTopPadding by animateDpAsState(
+        targetValue = if (uiState.isRoundTripWizard && !isMinimized) 0.dp else Dimens.Medium,
+        label = "footerTopPadding",
+    )
     // A moved stop is placed on the map, which its card would cover
-    val isSelectedStopShown = isMinimized && uiState.selectedStop != null && !uiState.isMovingStop
+    val isSelectedStopShown = isMinimized &&
+        uiState.selectedStop != null &&
+        !uiState.isMovingStop &&
+        !uiState.isRoundTripWizard
     // The header and footer are shown in every detent, so the peek follows them live, e.g. when the
     // route stats and the save button appear while the sheet is minimized.
     LaunchedEffect(headerHeight, footerHeight, selectedStopHeight, isSelectedStopShown, navBarInset) {
@@ -133,6 +142,7 @@ fun RoutePlannerContent(
             ) {
                 DragHandle(verticalPadding = Dimens.Small)
                 RoutePlannerHeader(
+                    isRoundTripWizard = uiState.isRoundTripWizard,
                     detent = detent,
                     onDetentClick = { onDetentChange(detent.toggled()) },
                     onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
@@ -161,8 +171,15 @@ fun RoutePlannerContent(
                         selectedProfile = uiState.routeProfile,
                         onProfileSelected = { onEvent(RoutePlannerUiEvents.ProfileSelected(it)) },
                     )
+                    uiState.roundTripStart?.let { start ->
+                        RoundTripWizardStartCard(
+                            start = start,
+                            isExpanded = uiState.isStopExpanded(start),
+                            onEvent = onEvent,
+                        )
+                    }
                     AnimatedVisibility(
-                        visible = uiState.isStopListVisible,
+                        visible = uiState.isStopListVisible && !uiState.isRoundTripWizard,
                         enter = fadeIn() + expandVertically(),
                         exit = fadeOut() + shrinkVertically(),
                         modifier = Modifier.weight(weight = 1f, fill = false),
@@ -197,7 +214,7 @@ fun RoutePlannerContent(
                     .fillMaxWidth()
                     .padding(
                         start = Dimens.ExtraLarge,
-                        top = Dimens.Medium,
+                        top = footerTopPadding,
                         end = Dimens.ExtraLarge,
                         bottom = navBarInset + Dimens.Large,
                     ),
@@ -209,7 +226,7 @@ fun RoutePlannerContent(
                     onEvent = onEvent,
                     onHeightMeasured = { selectedStopHeight = it },
                 )
-                RoutePlannerRouteFooter(
+                RoutePlannerFooter(
                     uiState = uiState,
                     isMinimized = isMinimized,
                     stopListAlpha = stopListAlpha,
@@ -220,6 +237,27 @@ fun RoutePlannerContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun RoutePlannerFooter(
+    uiState: RoutePlannerUiState,
+    isMinimized: Boolean,
+    stopListAlpha: Float,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (uiState.isRoundTripWizard) {
+        RoundTripWizardFooter(uiState = uiState, isJoinedToStart = !isMinimized, onEvent = onEvent, modifier = modifier)
+    } else {
+        RoutePlannerRouteFooter(
+            uiState = uiState,
+            isMinimized = isMinimized,
+            stopListAlpha = stopListAlpha,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
     }
 }
 
@@ -363,6 +401,7 @@ private fun Modifier.hiddenWhileLoading(isLoading: Boolean, alpha: Float): Modif
 
 @Composable
 private fun RoutePlannerHeader(
+    isRoundTripWizard: Boolean,
     detent: RoutePlannerDetent,
     onDetentClick: () -> Unit,
     onCloseClick: () -> Unit,
@@ -382,10 +421,12 @@ private fun RoutePlannerHeader(
                 R.drawable.ic_close_fullscreen
             },
             contentDescription = mokoString(
-                if (detent == RoutePlannerDetent.MINIMIZED) {
-                    SharedRes.strings.route_planner_a11y_expand
-                } else {
-                    SharedRes.strings.route_planner_a11y_minimize
+                when {
+                    detent == RoutePlannerDetent.MINIMIZED && isRoundTripWizard ->
+                        SharedRes.strings.round_trip_wizard_a11y_expand
+                    detent == RoutePlannerDetent.MINIMIZED -> SharedRes.strings.route_planner_a11y_expand
+                    isRoundTripWizard -> SharedRes.strings.round_trip_wizard_a11y_minimize
+                    else -> SharedRes.strings.route_planner_a11y_minimize
                 },
             ),
             onClick = onDetentClick,
@@ -398,7 +439,13 @@ private fun RoutePlannerHeader(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = mokoString(SharedRes.strings.route_planner_title),
+                text = mokoString(
+                    if (isRoundTripWizard) {
+                        SharedRes.strings.round_trip_wizard_title
+                    } else {
+                        SharedRes.strings.route_planner_title
+                    },
+                ),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,

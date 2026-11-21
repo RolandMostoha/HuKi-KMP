@@ -12,21 +12,19 @@ extension MainView {
         routePlannerDetent == .expanded && routePlannerHeights.expanded >= routePlannerMaxExpandedHeight - 1
     }
 
-    func routePlannerSheet(stops: [RoutePlannerWaypoint], restored: RoutePlannerSession?) -> some View {
+    func routePlannerSheet(
+        stops: [RoutePlannerWaypoint],
+        restored: RoutePlannerSession?,
+        mode: RoutePlannerMode
+    ) -> some View {
         RoutePlannerSheetView(
             strings: strings,
             stops: stops,
             restored: restored,
+            mode: mode,
             mapEvent: routePlannerMapEvent,
-            onRoutePlanUpdated: { routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading in
-                viewModel.onEvent(
-                    event: MainUiEventsRoutePlanUpdated(
-                        routePlan: routePlan,
-                        markers: markers,
-                        isAwaitingRoutePlan: isAwaitingRoutePlan,
-                        isRoutePlanLoading: isRoutePlanLoading
-                    )
-                )
+            onRoutePlanUpdated: { routePlan, markers, isAwaiting, isLoading in
+                onRoutePlanUpdated(routePlan, markers, isAwaiting: isAwaiting, isLoading: isLoading, mode: mode)
             },
             onSessionChanged: { session in
                 viewModel.onEvent(event: MainUiEventsRoutePlannerStateChanged(session: session))
@@ -62,6 +60,25 @@ extension MainView {
         .interactiveDismissDisabled()
         .background(RoutePlannerDetentInvalidator(heights: routePlannerHeights))
         .onDisappear { routePlannerSheetFrame.value = nil }
+    }
+
+    // The mode lets the map drop a late plan from the closing sheet of the other mode
+    private func onRoutePlanUpdated(
+        _ routePlan: RoutePlan?,
+        _ markers: [GpxWaypoint],
+        isAwaiting: Bool,
+        isLoading: Bool,
+        mode: RoutePlannerMode
+    ) {
+        viewModel.onEvent(
+            event: MainUiEventsRoutePlanUpdated(
+                routePlan: routePlan,
+                markers: markers,
+                isAwaitingRoutePlan: isAwaiting,
+                isRoutePlanLoading: isLoading,
+                mode: mode
+            )
+        )
     }
 
     func routePlannerHint(uiState: MainUiState) -> some View {

@@ -84,6 +84,14 @@
     <string name="route_planner_waypoint_empty">Choose a place</string>
     <string name="route_planner_round_trip">Round trip</string>
     <string name="route_planner_round_trip_undo">Undo round trip</string>
+    <string name="round_trip_wizard_title">Round-trip Wizard</string>
+    <string name="round_trip_wizard_distance_title">Route length</string>
+    <string name="round_trip_wizard_distance_value">%d km</string>
+    <string name="round_trip_wizard_regenerate">Regenerate</string>
+    <string name="round_trip_wizard_save">Save</string>
+    <string name="round_trip_wizard_a11y_expand">Expand Round-trip Wizard</string>
+    <string name="round_trip_wizard_a11y_minimize">Minimize Round-trip Wizard</string>
+    <string name="round_trip_wizard_a11y_start_actions">Start point actions</string>
     <string name="route_planner_max_stops_reached">You’ve reached the maximum number of stops (%d)</string>
     <string name="route_planner_save">Save Route</string>
     <string name="route_planner_loading">Planning the route…</string>
@@ -167,8 +175,11 @@
     <string name="menu_item_settings_description">App preferences</string>
     <string name="menu_a11y_open_settings">Open Settings</string>
     <string name="menu_item_route_planner">Route planner</string>
-    <string name="menu_item_route_planner_description">Plan on hiking trails or off them</string>
+    <string name="menu_item_route_planner_description">A route through the stops you choose</string>
     <string name="menu_a11y_open_route_planner">Open Route planner</string>
+    <string name="menu_item_round_trip_wizard">Round-trip Wizard</string>
+    <string name="menu_item_round_trip_wizard_description">A loop from a single point and a distance</string>
+    <string name="menu_a11y_open_round_trip_wizard">Open Round-trip Wizard</string>
     <string name="menu_item_discover">Discover</string>
     <string name="menu_item_discover_description">Destinations and hike ideas</string>
     <string name="menu_a11y_open_discover">Open Discover</string>

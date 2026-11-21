@@ -75,7 +75,7 @@ struct RoutePlannerStopCardRowView<Icon: View>: View {
                 titleRow
                 HStack(spacing: 10) {
                     ForEach(actions) { action in
-                        actionButton(action)
+                        RoutePlannerStopCardActionButton(action: action)
                     }
                 }
                 .padding(.bottom, RoutePlannerStopCard.bottomPadding)
@@ -111,8 +111,14 @@ struct RoutePlannerStopCardRowView<Icon: View>: View {
         }
         .frame(height: rowHeight)
     }
+}
 
-    private func actionButton(_ action: RoutePlannerStopCardAction) -> some View {
+struct RoutePlannerStopCardActionButton: View {
+    let action: RoutePlannerStopCardAction
+
+    private let primaryColor = Color(SharedRes.colors().primary.getUIColor())
+
+    var body: some View {
         Button(action: action.action) {
             VStack(spacing: 4) {
                 // Symbols differ in their own height, so a shared box keeps the icons and titles on one line

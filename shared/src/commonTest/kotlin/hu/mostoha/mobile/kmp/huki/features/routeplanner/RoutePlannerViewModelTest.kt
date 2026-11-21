@@ -11,6 +11,7 @@ import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
@@ -25,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -81,7 +83,7 @@ class RoutePlannerViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { locationMonitoringService.locationUpdates } returns locationUpdates
         everySuspend { locationMonitoringService.lastKnownLocation() } returns MY_LOCATION
-        everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+        everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
             NetworkResult.Success(ROUTE_RESPONSE)
         everySuspend { geocodingRepository.reverseGeocode(any()) } returns NetworkResult.Success(null)
         everySuspend { placeHistoryRepository.recordVisit(any()) } returns Unit
@@ -1526,9 +1528,9 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.ProfileSelected(RoutePlannerProfile.BIKE))
             testDispatcher.scheduler.advanceUntilIdle()
 
-            verifySuspend(exactly(1)) { routePlannerRepository.getRoutePlan(RoutePlannerProfile.BIKE, any()) }
+            verifySuspend(exactly(1)) { routePlannerRepository.getRoutePlan(matches { it.routeProfile == RoutePlannerProfile.BIKE }) }
             verifySuspend(exactly(0)) {
-                routePlannerRepository.getRoutePlan(RoutePlannerProfile.SHORTEST_ROUTE, any())
+                routePlannerRepository.getRoutePlan(matches { it.routeProfile == RoutePlannerProfile.SHORTEST_ROUTE })
             }
         }
     }
@@ -1536,7 +1538,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given no internet - When route is planned - Then the error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel()
 
@@ -1555,7 +1557,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given rate limited response - When route is planned - Then the daily limit error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.RATE_LIMITED)
             val viewModel = createViewModel()
 
@@ -1577,7 +1579,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given an empty route response - When route is planned - Then the not found error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Success(GraphhopperRouteResponse())
             val viewModel = createViewModel()
 
@@ -1591,12 +1593,12 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given a failed route plan - When retry clicked - Then the route is planned again`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
             testDispatcher.scheduler.advanceUntilIdle()
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Success(ROUTE_RESPONSE)
 
             viewModel.onEvent(RoutePlannerUiEvents.RetryClicked)
@@ -1774,7 +1776,7 @@ class RoutePlannerViewModelTest {
 
             viewModel.uiState.value.session shouldBe session
             verifySuspend {
-                routePlannerRepository.getRoutePlan(RoutePlannerProfile.BIKE, listOf(FAR_PLACE_LOCATION, PLACE_LOCATION))
+                routePlannerRepository.getRoutePlan(RoutePlanRequest(RoutePlannerProfile.BIKE, listOf(FAR_PLACE_LOCATION, PLACE_LOCATION)))
             }
         }
     }

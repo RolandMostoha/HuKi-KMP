@@ -41,6 +41,8 @@ sealed interface RoutePlannerUiEvents {
     data object MyLocationAdded : RoutePlannerUiEvents
     data class PickOnMapClicked(val waypointId: String? = null) : RoutePlannerUiEvents
     data object RoundTripClicked : RoutePlannerUiEvents
+    data class RoundTripDistanceChanged(val distanceKm: Int) : RoutePlannerUiEvents
+    data object RoundTripRegenerateClicked : RoutePlannerUiEvents
     data object RetryClicked : RoutePlannerUiEvents
     data object SaveRouteClicked : RoutePlannerUiEvents
     data object CloseClicked : RoutePlannerUiEvents
