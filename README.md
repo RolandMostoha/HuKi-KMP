@@ -54,6 +54,8 @@ Refer to [AGENTS.md](AGENTS.md). It's the best place for humans too.
 
 ## Supporters
 
+### GraphHopper
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="tools/assets/graphhopper_logo_dark.svg">
   <img src="tools/assets/graphhopper_logo_light.svg" alt="GraphHopper" width="200"/>
@@ -67,6 +69,8 @@ shortest walking route and bike routes, all with elevation data for the distance
 Kudos to the GraphHopper team, I appreciate it!
 
 Website link: https://www.graphhopper.com/
+
+### LocationIQ
 
 <img src="shared/src/commonMain/moko-resources/images/ic_location_iq_logo%403x.png" alt="LocationIQ" width="200"/>
 
