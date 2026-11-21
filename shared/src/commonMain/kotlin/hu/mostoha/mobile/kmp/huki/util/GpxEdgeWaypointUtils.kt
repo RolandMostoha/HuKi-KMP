@@ -5,8 +5,9 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
 
 /**
- * Names the edge markers after the named waypoints lying exactly on the track's first or last point, which are then
- * dropped so they aren't drawn twice. A nearby waypoint (e.g. an OKT stamp point) is a different place, so it stays.
+ * Names the edge markers after the named or described waypoints lying exactly on the track's first or last point,
+ * which are then dropped so they aren't drawn twice.
+ * A nearby waypoint (e.g. an OKT stamp point) is a different place, so it stays.
  */
 fun List<GpxWaypoint>.withNamedEdges(edges: List<GpxWaypoint>, locations: List<Location>): List<GpxWaypoint> {
     val consumedIndices = mutableSetOf<Int>()
@@ -17,12 +18,13 @@ fun List<GpxWaypoint>.withNamedEdges(edges: List<GpxWaypoint>, locations: List<L
         }
         val matchIndices = indices.filter { index ->
             val waypoint = get(index)
-            !waypoint.name.isNullOrBlank() && edgeLocations.any { it.hasSameCoordinates(waypoint.location) }
+            val hasLabel = !waypoint.name.isNullOrBlank() || !waypoint.description.isNullOrBlank()
+            hasLabel && edgeLocations.any { it.hasSameCoordinates(waypoint.location) }
         }
         consumedIndices += matchIndices
         matchIndices.firstOrNull()
             ?.let { get(it) }
-            ?.let { match -> edge.copy(name = match.name, description = match.description) }
+            ?.let { match -> edge.copy(name = match.name?.takeIf { it.isNotBlank() }, description = match.description) }
             ?: edge
     }
     return filterIndexed { index, _ -> index !in consumedIndices } + namedEdges

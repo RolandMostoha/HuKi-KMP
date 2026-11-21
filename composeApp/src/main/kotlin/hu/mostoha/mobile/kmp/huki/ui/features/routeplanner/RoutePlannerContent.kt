@@ -1,7 +1,14 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,17 +16,14 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,19 +41,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
@@ -63,14 +72,15 @@ import hu.mostoha.mobile.kmp.huki.ui.components.PoweredByAttribution
 import hu.mostoha.mobile.kmp.huki.ui.components.PrimaryButton
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
+import kotlin.math.roundToInt
 
 @Composable
 fun RoutePlannerContent(
     uiState: RoutePlannerUiState,
     detent: RoutePlannerDetent,
     onEvent: (RoutePlannerUiEvents) -> Unit,
-    onMoreStopsClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onDetentChange: (RoutePlannerDetent) -> Unit = {},
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
     onExpandedHeightMeasured: (Dp) -> Unit = {},
 ) {
@@ -81,30 +91,41 @@ fun RoutePlannerContent(
         targetValue = if (uiState.isRoutePlanLoading) 0f else 1f,
         label = "stopListAlpha",
     )
-    val isFullScreen = detent == RoutePlannerDetent.FULL_SCREEN
-    val rowHeight = if (isFullScreen) Dimens.RoutePlannerRowHeightExpanded else Dimens.RoutePlannerRowHeight
+    val plannerFraction = rememberPlannerReveal(isMinimized)
+    val isPlannerCollapsed = isMinimized && !plannerFraction.isRunning
     var cardHeight by remember { mutableStateOf(Dp.Unspecified) }
-    var plannerHeight by remember { mutableStateOf(Dp.Unspecified) }
-
-    // The minimized sheet is the card without the planner block, and the planner block only has a
-    // height while it is visible — so the peek is derived instead of measured on a hidden copy.
-    LaunchedEffect(cardHeight, plannerHeight, detent) {
-        val isMeasured = cardHeight != Dp.Unspecified && plannerHeight != Dp.Unspecified
-        if (detent != RoutePlannerDetent.EXPANDED || !isMeasured) {
-            return@LaunchedEffect
-        }
-        onMinimizedHeightMeasured(cardHeight - plannerHeight)
+    ReportSettledExpandedHeight(
+        cardHeight = cardHeight,
+        isExpanded = detent == RoutePlannerDetent.EXPANDED,
+        isRevealing = plannerFraction.isRunning,
+        onExpandedHeightMeasured = onExpandedHeightMeasured,
+    )
+    var headerHeight by remember { mutableStateOf(Dp.Unspecified) }
+    var footerHeight by remember { mutableStateOf(Dp.Unspecified) }
+    var selectedStopHeight by remember { mutableStateOf(0.dp) }
+    // The wizard's start row and length slider read as one block, so no gap parts them while expanded
+    val footerTopPadding by animateDpAsState(
+        targetValue = if (uiState.isRoundTripWizard && !isMinimized) 0.dp else Dimens.Medium,
+        label = "footerTopPadding",
+    )
+    // A moved stop is placed on the map, which its card would cover
+    val isSelectedStopShown = isMinimized &&
+        uiState.selectedStop != null &&
+        !uiState.isMovingStop &&
+        !uiState.isRoundTripWizard
+    // The header and footer are shown in every detent, so the peek follows them live, e.g. when the
+    // route stats and the save button appear while the sheet is minimized.
+    LaunchedEffect(headerHeight, footerHeight, selectedStopHeight, isSelectedStopShown, navBarInset) {
+        if (headerHeight == Dp.Unspecified || footerHeight == Dp.Unspecified) return@LaunchedEffect
+        val selectedStopPeek = if (isSelectedStopShown) selectedStopHeight + Dimens.MediumLarge else 0.dp
+        val padding = Dimens.ExtraSmall + Dimens.Medium + navBarInset + Dimens.Large
+        onMinimizedHeightMeasured(headerHeight + footerHeight + selectedStopPeek + padding)
     }
     Card(
         modifier = modifier
             .fillMaxWidth()
             .testTag(TestTags.ROUTE_PLANNER_SHEET)
-            .onGloballyPositioned {
-                if (detent != RoutePlannerDetent.EXPANDED) return@onGloballyPositioned
-                val height = with(density) { it.size.height.toDp() }
-                cardHeight = height
-                onExpandedHeightMeasured(height)
-            },
+            .onGloballyPositioned { cardHeight = with(density) { it.size.height.toDp() } },
         shape = RoundedCornerShape(
             topStart = Dimens.ExtraLarge,
             topEnd = Dimens.ExtraLarge,
@@ -112,28 +133,36 @@ fun RoutePlannerContent(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier.wrapContentHeight())
-                .padding(top = Dimens.Small),
-        ) {
-            DragHandle(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                verticalPadding = Dimens.SmallMedium,
-            )
-            RoutePlannerHeader(
-                onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
-                onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
-            )
-            if (!isMinimized) {
+        Column(modifier = Modifier.padding(top = Dimens.ExtraSmall)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { headerHeight = with(density) { it.size.height.toDp() } },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                DragHandle(verticalPadding = Dimens.Small)
+                RoutePlannerHeader(
+                    isRoundTripWizard = uiState.isRoundTripWizard,
+                    detent = detent,
+                    onDetentClick = { onDetentChange(detent.toggled()) },
+                    onCloseClick = { onEvent(RoutePlannerUiEvents.CloseClicked) },
+                    onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
+                )
+            }
+            // The sheet follows its content's height, so the planner block's own size animation moves the sheet.
+            // Under the sheet's height cap the stop list takes what is left and scrolls.
+            Box(
+                modifier = Modifier
+                    .weight(weight = 1f, fill = false)
+                    .revealed(fraction = { plannerFraction.value })
+                    .then(if (isPlannerCollapsed) Modifier.clearAndSetSemantics {} else Modifier),
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(weightWhen(isFullScreen))
-                        .onGloballyPositioned { plannerHeight = with(density) { it.size.height.toDp() } }
                         .padding(
                             start = Dimens.ExtraLarge,
-                            top = Dimens.Medium,
+                            top = Dimens.ExtraSmall,
                             end = Dimens.ExtraLarge,
                         ),
                     verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
@@ -142,21 +171,37 @@ fun RoutePlannerContent(
                         selectedProfile = uiState.routeProfile,
                         onProfileSelected = { onEvent(RoutePlannerUiEvents.ProfileSelected(it)) },
                     )
+                    uiState.roundTripStart?.let { start ->
+                        RoundTripWizardStartCard(
+                            start = start,
+                            isExpanded = uiState.isStopExpanded(start),
+                            onEvent = onEvent,
+                        )
+                    }
                     AnimatedVisibility(
-                        visible = uiState.isStopListVisible,
+                        visible = uiState.isStopListVisible && !uiState.isRoundTripWizard,
                         enter = fadeIn() + expandVertically(),
                         exit = fadeOut() + shrinkVertically(),
-                        modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
+                        modifier = Modifier.weight(weight = 1f, fill = false),
                     ) {
                         Box {
-                            RoutePlannerWaypointList(
-                                uiState = uiState,
-                                detent = detent,
-                                onEvent = onEvent,
-                                onMoreStopsClick = onMoreStopsClick,
-                                rowHeight = rowHeight,
+                            Column(
                                 modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
-                            )
+                                verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+                            ) {
+                                RoutePlannerWaypointList(
+                                    uiState = uiState,
+                                    onEvent = onEvent,
+                                    modifier = Modifier.weight(weight = 1f, fill = false),
+                                )
+                                RoutePlannerStopActions(
+                                    isAddStopEnabled = uiState.isAddStopEnabled,
+                                    isRoundTrip = uiState.isRoundTrip,
+                                    isRoundTripEnabled = uiState.isRoundTripEnabled,
+                                    onAddStopClick = { onEvent(RoutePlannerUiEvents.AddEmptyStopClicked) },
+                                    onRoundTripClick = { onEvent(RoutePlannerUiEvents.RoundTripClicked) },
+                                )
+                            }
                             if (uiState.isRoutePlanLoading) {
                                 RoutePlannerLoading(modifier = Modifier.align(Alignment.Center))
                             }
@@ -169,43 +214,171 @@ fun RoutePlannerContent(
                     .fillMaxWidth()
                     .padding(
                         start = Dimens.ExtraLarge,
-                        top = Dimens.Large,
+                        top = footerTopPadding,
                         end = Dimens.ExtraLarge,
                         bottom = navBarInset + Dimens.Large,
                     ),
                 verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    RoutePlannerRouteStatus(
-                        error = uiState.routePlanError,
-                        routeStats = uiState.routeStats,
-                        isPlanExpected = uiState.isRoutePlanExpected,
-                        onRetryClick = { onEvent(RoutePlannerUiEvents.RetryClicked) },
-                        modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
-                    )
-                    if (isMinimized && uiState.isRoutePlanLoading) {
-                        RoutePlannerLoading(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
-                AnimatedVisibility(
-                    visible = uiState.isSaveButtonVisible,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically(),
-                ) {
-                    PrimaryButton(
-                        iconResId = R.drawable.ic_save,
-                        text = mokoString(SharedRes.strings.route_planner_save),
-                        onClick = { onEvent(RoutePlannerUiEvents.SaveRouteClicked) },
-                        enabled = uiState.isSaveEnabled,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag(TestTags.ROUTE_PLANNER_SAVE_BUTTON),
-                    )
-                }
+                RoutePlannerMinimizedSelectedStop(
+                    uiState = uiState,
+                    isVisible = isSelectedStopShown,
+                    onEvent = onEvent,
+                    onHeightMeasured = { selectedStopHeight = it },
+                )
+                RoutePlannerFooter(
+                    uiState = uiState,
+                    isMinimized = isMinimized,
+                    stopListAlpha = stopListAlpha,
+                    onEvent = onEvent,
+                    modifier = Modifier.onGloballyPositioned {
+                        footerHeight = with(density) { it.size.height.toDp() }
+                    },
+                )
             }
         }
     }
 }
+
+@Composable
+private fun RoutePlannerFooter(
+    uiState: RoutePlannerUiState,
+    isMinimized: Boolean,
+    stopListAlpha: Float,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (uiState.isRoundTripWizard) {
+        RoundTripWizardFooter(uiState = uiState, isJoinedToStart = !isMinimized, onEvent = onEvent, modifier = modifier)
+    } else {
+        RoutePlannerRouteFooter(
+            uiState = uiState,
+            isMinimized = isMinimized,
+            stopListAlpha = stopListAlpha,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun RoutePlannerRouteFooter(
+    uiState: RoutePlannerUiState,
+    isMinimized: Boolean,
+    stopListAlpha: Float,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
+    ) {
+        // The stats replace a shorter placeholder once the route arrives, and the sheet follows this height
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
+        ) {
+            RoutePlannerRouteStatus(
+                error = uiState.routePlanError,
+                routeStats = uiState.routeStats,
+                isPlanExpected = uiState.isRoutePlanExpected,
+                onRetryClick = { onEvent(RoutePlannerUiEvents.RetryClicked) },
+                modifier = Modifier.hiddenWhileLoading(uiState.isRoutePlanLoading, stopListAlpha),
+            )
+            if (isMinimized && uiState.isRoutePlanLoading) {
+                // Drawn over the stats' slot without resizing it, so the minimized sheet keeps its height
+                Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
+                    RoutePlannerLoading()
+                }
+            }
+        }
+        AnimatedVisibility(
+            visible = uiState.isSaveButtonVisible,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically(),
+        ) {
+            PrimaryButton(
+                iconResId = R.drawable.ic_save,
+                text = mokoString(SharedRes.strings.route_planner_save),
+                onClick = { onEvent(RoutePlannerUiEvents.SaveRouteClicked) },
+                enabled = uiState.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestTags.ROUTE_PLANNER_SAVE_BUTTON),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RoutePlannerMinimizedSelectedStop(
+    uiState: RoutePlannerUiState,
+    isVisible: Boolean,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+    onHeightMeasured: (Dp) -> Unit,
+) {
+    val density = LocalDensity.current
+    val selectedStop = uiState.selectedStop
+    // The stop stays drawn while the card shrinks away after the selection ends
+    var shownStop by remember { mutableStateOf(selectedStop) }
+    if (selectedStop != null) shownStop = selectedStop
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+    ) {
+        shownStop?.let { stop ->
+            RoutePlannerSelectedStopCard(
+                stop = stop,
+                waypointType = uiState.stopType(uiState.stops.indexOfFirst { it.id == stop.id }),
+                hasConnectorAbove = false,
+                hasConnectorBelow = false,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .onGloballyPositioned { onHeightMeasured(with(density) { it.size.height.toDp() }) }
+                    // Without plain rows to line up with, the card keeps to the sheet's content edges
+                    .padding(horizontal = Dimens.RoutePlannerStopCardInset),
+            )
+        }
+    }
+}
+
+@Composable
+private fun rememberPlannerReveal(isMinimized: Boolean): Animatable<Float, AnimationVector1D> {
+    // The block stays composed while minimized: building its stops on the release of a swipe takes several
+    // frames, which would make the settling sheet skip ahead
+    val fraction = remember { Animatable(if (isMinimized) 0f else 1f) }
+    LaunchedEffect(isMinimized) {
+        fraction.animateTo(if (isMinimized) 0f else 1f, spring(stiffness = Spring.StiffnessMediumLow))
+    }
+    return fraction
+}
+
+@Composable
+private fun ReportSettledExpandedHeight(
+    cardHeight: Dp,
+    isExpanded: Boolean,
+    isRevealing: Boolean,
+    onExpandedHeightMeasured: (Dp) -> Unit,
+) {
+    // Only the settled height counts, the map's camera would otherwise follow the stops sliding in
+    LaunchedEffect(cardHeight, isExpanded, isRevealing) {
+        if (isExpanded && !isRevealing && cardHeight != Dp.Unspecified) onExpandedHeightMeasured(cardHeight)
+    }
+}
+
+/**
+ * Shows the top [fraction] of the content's height, faded by the same fraction.
+ */
+private fun Modifier.revealed(fraction: () -> Float): Modifier =
+    clipToBounds().layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+        val visibleFraction = fraction().coerceIn(0f, 1f)
+        layout(placeable.width, (placeable.height * visibleFraction).roundToInt()) {
+            placeable.placeWithLayer(x = 0, y = 0) { alpha = visibleFraction }
+        }
+    }
 
 // Planning keeps the stop list in the layout so the sheet does not resize under the loading
 // indicator, which also means the rows it hides must stop taking taps.
@@ -226,13 +399,11 @@ private fun Modifier.hiddenWhileLoading(isLoading: Boolean, alpha: Float): Modif
             },
         )
 
-// The full screen stage pins the stats and the save button to the bottom, so the stop list takes
-// whatever space is left instead of the sheet growing past the screen.
-private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true): Modifier =
-    if (isFullScreen) Modifier.weight(weight = 1f, fill = fill) else Modifier
-
 @Composable
 private fun RoutePlannerHeader(
+    isRoundTripWizard: Boolean,
+    detent: RoutePlannerDetent,
+    onDetentClick: () -> Unit,
     onCloseClick: () -> Unit,
     onGraphhopperClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -240,42 +411,94 @@ private fun RoutePlannerHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = Dimens.ExtraLarge, end = Dimens.Large),
+            .padding(horizontal = Dimens.Large),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        RoutePlannerHeaderButton(
+            iconResId = if (detent == RoutePlannerDetent.MINIMIZED) {
+                R.drawable.ic_open_in_full
+            } else {
+                R.drawable.ic_close_fullscreen
+            },
+            contentDescription = mokoString(
+                when {
+                    detent == RoutePlannerDetent.MINIMIZED && isRoundTripWizard ->
+                        SharedRes.strings.round_trip_wizard_a11y_expand
+                    detent == RoutePlannerDetent.MINIMIZED -> SharedRes.strings.route_planner_a11y_expand
+                    isRoundTripWizard -> SharedRes.strings.round_trip_wizard_a11y_minimize
+                    else -> SharedRes.strings.route_planner_a11y_minimize
+                },
+            ),
+            onClick = onDetentClick,
+            modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_DETENT_BUTTON),
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = Dimens.Small),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Text(
-                text = mokoString(SharedRes.strings.route_planner_title),
+                text = mokoString(
+                    if (isRoundTripWizard) {
+                        SharedRes.strings.round_trip_wizard_title
+                    } else {
+                        SharedRes.strings.route_planner_title
+                    },
+                ),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_TITLE),
             )
-            PoweredByAttribution(
-                logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
-                logoHeight = 10.dp,
-                logoTint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
-                onClick = onGraphhopperClick,
-                modifier = Modifier
-                    .offset(x = -Dimens.ExtraSmall)
-                    .testTag(TestTags.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION),
-            )
+            GraphhopperAttribution(onClick = onGraphhopperClick)
         }
-        IconButton(
+        RoutePlannerHeaderButton(
+            iconResId = R.drawable.ic_close,
+            contentDescription = mokoString(SharedRes.strings.a11y_close),
             onClick = onCloseClick,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
             modifier = Modifier.testTag(TestTags.ROUTE_PLANNER_CLOSE_BUTTON),
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close),
-                contentDescription = mokoString(SharedRes.strings.a11y_close),
-            )
-        }
+        )
     }
+}
+
+@Composable
+private fun RoutePlannerHeaderButton(
+    @DrawableRes iconResId: Int,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IconButton(
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(iconResId),
+            contentDescription = contentDescription,
+        )
+    }
+}
+
+private const val SECONDARY_TEXT_ALPHA = 0.6f
+
+@Composable
+private fun GraphhopperAttribution(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    PoweredByAttribution(
+        logo = painterResource(id = SharedRes.images.img_graphhopper_logo.drawableResId),
+        logoHeight = 9.dp,
+        logoTint = MaterialTheme.colorScheme.onSurface,
+        textStyle = MaterialTheme.typography.bodySmall.copy(
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = SECONDARY_TEXT_ALPHA),
+            fontSize = 9.sp,
+        ),
+        contentDescription = mokoString(SharedRes.strings.route_planner_a11y_open_graphhopper),
+        onClick = onClick,
+        modifier = modifier.testTag(TestTags.ROUTE_PLANNER_GRAPHHOPPER_ATTRIBUTION),
+    )
 }
 
 @Preview
@@ -286,7 +509,6 @@ private fun RoutePlannerContentPreview() {
             uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan),
             detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
@@ -301,7 +523,6 @@ private fun RoutePlannerContentErrorPreview() {
             ),
             detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
@@ -314,20 +535,32 @@ private fun RoutePlannerContentMinimizedPreview() {
             uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan),
             detent = RoutePlannerDetent.MINIMIZED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
 
 @Preview
 @Composable
-private fun RoutePlannerContentFullScreenPreview() {
+private fun RoutePlannerContentMinimizedSelectedStopPreview() {
+    val uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan)
     HuKiTheme {
         RoutePlannerContent(
-            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(6)),
-            detent = RoutePlannerDetent.FULL_SCREEN,
+            uiState = uiState.copy(selectedStopId = uiState.stops.last().id),
+            detent = RoutePlannerDetent.MINIMIZED,
             onEvent = {},
-            onMoreStopsClick = {},
+        )
+    }
+}
+
+@Preview(heightDp = 640)
+@Composable
+private fun RoutePlannerContentManyStopsPreview() {
+    HuKiTheme {
+        RoutePlannerContent(
+            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(12)),
+            detent = RoutePlannerDetent.EXPANDED,
+            onEvent = {},
+            modifier = Modifier.heightIn(max = 640.dp),
         )
     }
 }

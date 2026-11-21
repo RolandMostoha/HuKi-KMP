@@ -186,6 +186,7 @@ commit-message convention.
 - Ktor: Networking, Rest APIs.
 - **Routing**: GraphHopper hosted API (`https://graphhopper.com/api/1/route`, `GRAPHHOPPER_API_KEY_ANDROID` / `_IOS` in `secrets.properties`) — used by the Route Planner.
   - **HuKi-Routing** fallback: self-hosted GraphHopper for Hungary only (`HUKI_ROUTING_API_KEY` in `secrets.properties`, sent as the `X-HuKi-Key` header, never as a query param). `FallbackRoutePlannerRepository` is a client-side circuit breaker: GraphHopper first, routes with all waypoints inside `RoutePlanConstants.HUKI_ROUTING_BOUNDING_BOX` move to HuKi-Routing once GraphHopper's daily credits drop below the reserve or hit 429 (`RoutingQuotaStore`, DataStore, until `X-RateLimit-Reset`).
+  - **Round-trip Wizard**: a `RoutePlannerMode.ROUND_TRIP_WIZARD` of the planner (Menu → Round-trip Wizard). One start + `algorithm=round_trip` with distance, seed and heading, always `ch.disable` (an algorithm limitation); the request carries only the start, so only it is checked against the HuKi-Routing box. Regenerate draws a new seed + heading (`nextRoundTripOptions`).
   - Debug: `FeatureFlags.DEBUG_ROUTING_MODE` forces `GRAPHHOPPER_ONLY` / `HUKI_ROUTING_ONLY` (keep `AUTO` on commit).
 - kotlin-serialization: Serialization. 
 - Spatial K
@@ -286,6 +287,9 @@ val [actual] = operation(X)
 - For shared test tags, use the `TestTags` object.
 - Important: the tests where GPX import is needed (e.g. maestro_gpx), use [platform]_upload_test_gpx_files.sh to pre-load GPX fixtures before running the tests.
 
+### General UI rules
+- **Map Camera: one move per user action.** - Avoid multiple map camera pulls and drags, use one camera animation per user action.
+
 ### Jetpack Compose - Android
 - Look as native as possible - Material3
 - Entry Point: `HuKiApplication` + `MainActivity` + `MainScreen`
@@ -303,6 +307,8 @@ val [actual] = operation(X)
 - Use icons from the official Google Font icon set: https://fonts.google.com/icons. 
   - Download the Android vector drawable directly, never hand-write path data: `https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/<icon_name>/default/24px.xml` → `res/drawable/ic_<icon_name>.xml`.
 - Prefer official Material3 components instead of custom views
+- Sheets opened on top of another sheet (e.g. the route planner's rename and stop search) use `secondarySheetColor` as background.
+- Text fields share `HuKiTextFieldDefaults` (`ui/components`): white pill, hairline outline, light hint.
 - Whenever makes sense, extract UI components to separate classes -> `@Composable` functions.
 
 ### SwiftUI - iOS
@@ -388,4 +394,5 @@ val [actual] = operation(X)
 ### Cross-platform
 - `android_run_all_maestro_tests.sh [device-serial]` — run all `.maestro/maestro_*.yaml` tests against the Android app. Defaults to the first connected adb device. Use for: "run maestro tests (Android)", "run E2E tests (Android)".
 - `ios_run_all_maestro_tests.sh [simulator-udid]` — run all `.maestro/maestro_*.yaml` tests against the iOS app. Defaults to the currently booted simulator. Use for: "run maestro tests (iOS)", "run E2E tests (iOS)".
+- `shared_run_route_planner_regression.sh [android|ios|both] [android-serial] [ios-udid]` — run `.maestro/regression/maestro_route_planner_camera.yaml` (open, minimize/expand by button and by swipe, select, Move, Pick on map, long-press add, remove stop) without clearing app state, while recording the screen and the device log (`device_log.txt`: logcat / the app's unified log, with `Map:` camera lines on Android). Builds a contact sheet of the settled screenshots and a frame strip per action (`shared_build_action_strips.py`, for double camera moves, sheet jumps, flashes) per platform under `build/regression/route_planner/`. Defaults to the first emulator and the booted simulator. Run it before reporting any route planner / sheet / map camera change. Use for: "route planner regression", "check the planner camera".
 - `shared_run_maestro_tests.sh <APP_ID> <DEVICE_ID>` — engine that runs all `.maestro/maestro_*.yaml` tests against the given app and device, auto-uploading GPX fixtures based on whether `APP_ID` contains `.ios.` or `.android.`. Prefer the platform wrappers above, which fill in the APP_ID and booted device for you.

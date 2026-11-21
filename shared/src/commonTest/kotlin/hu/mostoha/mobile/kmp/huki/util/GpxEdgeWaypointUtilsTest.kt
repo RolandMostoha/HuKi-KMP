@@ -43,12 +43,21 @@ class GpxEdgeWaypointUtilsTest {
     }
 
     @Test
-    fun `Given an unnamed waypoint on an edge - When withNamedEdges - Then it is kept as an intermediate marker`() {
+    fun `Given an unnamed waypoint with a description on an edge - When withNamedEdges - Then it describes the edge`() {
         val unnamed = GpxWaypoint(track.first(), WaypointType.INTERMEDIATE, name = " ", description = "Parkoló")
 
         val actual = listOf(unnamed).withNamedEdges(listOf(start, end), track)
 
-        actual shouldBe listOf(unnamed, start, end)
+        actual shouldBe listOf(start.copy(description = "Parkoló"), end)
+    }
+
+    @Test
+    fun `Given an unlabelled waypoint on an edge - When withNamedEdges - Then it is kept as an intermediate marker`() {
+        val unlabelled = GpxWaypoint(track.first(), WaypointType.INTERMEDIATE, name = " ")
+
+        val actual = listOf(unlabelled).withNamedEdges(listOf(start, end), track)
+
+        actual shouldBe listOf(unlabelled, start, end)
     }
 
     @Test

@@ -1,14 +1,24 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ButtonDefaults
@@ -32,8 +42,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,11 +66,13 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainViewModel
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
+import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.model.analytics.GpxSource
 import hu.mostoha.mobile.kmp.huki.model.analytics.SearchSection
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxMapsNavigationType
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
@@ -80,8 +94,10 @@ import hu.mostoha.mobile.kmp.huki.ui.features.okt.rememberOktSheetHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.placedetails.PlaceDetailsBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
-import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerPick
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerHintCard
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerMapEvent
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.routePlannerMaxExpandedHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -117,6 +133,8 @@ fun MainScreen(
     onOpenDestinationRouteConsumed: () -> Unit = {},
     openRoutePlanner: Boolean = false,
     onOpenRoutePlannerConsumed: () -> Unit = {},
+    openRoundTripWizard: Boolean = false,
+    onOpenRoundTripWizardConsumed: () -> Unit = {},
     openDiscover: Boolean = false,
     onOpenDiscoverConsumed: () -> Unit = {},
     openMapLabelScale: Boolean = false,
@@ -167,6 +185,12 @@ fun MainScreen(
         if (openRoutePlanner) {
             viewModel.onEvent(MainUiEvents.RoutePlannerClicked)
             onOpenRoutePlannerConsumed()
+        }
+    }
+    LaunchedEffect(openRoundTripWizard) {
+        if (openRoundTripWizard) {
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+            onOpenRoundTripWizardConsumed()
         }
     }
 
@@ -226,7 +250,7 @@ private fun MainContent(
     var gpxSheetPeekHeight by remember { mutableStateOf(300.dp) }
     var routePlannerPeekHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
     var routePlannerExpandedHeight by remember { mutableStateOf(Dimens.RoutePlannerPeekHeight) }
-    var routePlannerPick by remember { mutableStateOf<RoutePlannerPick?>(null) }
+    var routePlannerMapEvent by remember { mutableStateOf<RoutePlannerMapEvent?>(null) }
     val oktSheetHeight = rememberOktSheetHeight()
     val landscapesSheetHeights = rememberLandscapesSheetHeights()
 
@@ -263,7 +287,7 @@ private fun MainContent(
         if (sheet is Sheet.RoutePlanner) {
             routePlannerDetent = RoutePlannerDetent.EXPANDED
         } else {
-            routePlannerPick = null
+            routePlannerMapEvent = null
         }
         showModalBottomSheet = syncSheetStates(
             sheet = sheet,
@@ -277,8 +301,8 @@ private fun MainContent(
         onShowGpxFilePicker = { gpxFilePickerLauncher.launch(arrayOf("*/*")) },
         onNavigateToDestinations = onDestinationsClicked,
         onNavigateToGpxGuide = onGpxGuideClicked,
-        onRoutePlannerLocationPicked = { location ->
-            routePlannerPick = RoutePlannerPick(id = (routePlannerPick?.id ?: 0L) + 1, location = location)
+        onRoutePlannerEvent = { event ->
+            routePlannerMapEvent = RoutePlannerMapEvent(id = (routePlannerMapEvent?.id ?: 0L) + 1, event = event)
         },
     )
 
@@ -305,9 +329,17 @@ private fun MainContent(
         },
         containerColor = Color.Transparent,
     ) { _ ->
-        Box(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxSize(),
         ) {
+            val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+            val routePlannerMaxHeight = routePlannerMaxExpandedHeight(
+                containerHeight = maxHeight,
+                statusBarInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+                isLandscape = isLandscape,
+            )
+            val isRoutePlannerAtMaxHeight = routePlannerDetent == RoutePlannerDetent.EXPANDED &&
+                routePlannerExpandedHeight >= routePlannerMaxHeight - 1.dp
             MapContent(
                 mapUiState = uiState.mapUiState,
                 mapUiEffects = mapUiEffects,
@@ -318,8 +350,9 @@ private fun MainContent(
                     detent = routePlannerDetent,
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
+                    isHintShown = uiState.visibleRoutePlannerHint != null && !isRoutePlannerAtMaxHeight,
+                    maxInset = maxHeight * Dimens.ROUTE_PLANNER_MAX_CAMERA_INSET_FRACTION,
                 ),
-                routePlannerDetent = routePlannerDetent.takeIf { uiState.sheet is Sheet.RoutePlanner },
                 listSheetHeight = if (uiState.mapUiState.landscapes != null) {
                     landscapesSheetHeights.collapsed
                 } else {
@@ -384,7 +417,8 @@ private fun MainContent(
                 transitionSpec = {
                     (slideInVertically { it } togetherWith slideOutVertically { it }).using(null)
                 },
-                contentKey = { it != null },
+                // Each mode has its own ViewModel, so switching between them composes a new sheet
+                contentKey = { it?.mode },
                 label = "routePlannerSheet",
             ) { sheet ->
                 sheet?.let {
@@ -393,13 +427,16 @@ private fun MainContent(
                         onDispose { routePlannerDetent = RoutePlannerDetent.EXPANDED }
                     }
                     RoutePlannerSheetOverlay(
+                        hint = uiState.visibleRoutePlannerHint.takeUnless { isRoutePlannerAtMaxHeight },
                         stops = sheet.stops,
                         restored = sheet.restored,
-                        pick = routePlannerPick,
+                        mode = sheet.mode,
+                        mapEvent = routePlannerMapEvent,
                         detent = routePlannerDetent,
                         onDetentChange = { routePlannerDetent = it },
                         minimizedHeight = routePlannerPeekHeight,
                         expandedHeight = routePlannerExpandedHeight,
+                        maxExpandedHeight = routePlannerMaxHeight,
                         onEvent = onEvent,
                         onLocationIqClicked = onLocationIqClicked,
                         onMinimizedHeightMeasured = { routePlannerPeekHeight = it },
@@ -491,29 +528,37 @@ private fun routePlannerMapInset(
     detent: RoutePlannerDetent,
     minimizedHeight: Dp,
     expandedHeight: Dp,
-): Dp? =
-    when {
-        sheet !is Sheet.RoutePlanner -> null
-        detent == RoutePlannerDetent.FULL_SCREEN -> null
-        detent == RoutePlannerDetent.MINIMIZED -> minimizedHeight
-        else -> expandedHeight
-    }
+    isHintShown: Boolean,
+    maxInset: Dp,
+): Dp? {
+    if (sheet !is Sheet.RoutePlanner) return null
+    val hintOffset = if (isHintShown) Dimens.RoutePlannerHintCameraOffset else 0.dp
+    val sheetHeight = if (detent == RoutePlannerDetent.MINIMIZED) minimizedHeight else expandedHeight
+    // Past this the route would only shrink into a thin strip, so it frames higher and runs under the sheet
+    return minOf(sheetHeight + hintOffset, maxInset)
+}
 
 @Composable
 private fun RoutePlannerSheetOverlay(
+    hint: RoutePlannerHint?,
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
-    pick: RoutePlannerPick?,
+    mode: RoutePlannerMode,
+    mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
     onDetentChange: (RoutePlannerDetent) -> Unit,
     minimizedHeight: Dp,
     expandedHeight: Dp,
+    maxExpandedHeight: Dp,
     onEvent: (MainUiEvents) -> Unit,
     onLocationIqClicked: () -> Unit,
     onMinimizedHeightMeasured: (Dp) -> Unit,
     onExpandedHeightMeasured: (Dp) -> Unit,
 ) {
     val context = LocalContext.current
+    // Keeps the last hint while it animates out
+    var shownHint by remember { mutableStateOf(hint) }
+    if (hint != null && hint != shownHint) shownHint = hint
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides rememberViewModelStoreOwner(),
     ) {
@@ -522,28 +567,61 @@ private fun RoutePlannerSheetOverlay(
             onDetentChange = onDetentChange,
             minimizedHeight = minimizedHeight,
             expandedHeight = expandedHeight,
+            maxExpandedHeight = maxExpandedHeight,
+            aboveSheet = {
+                AnimatedVisibility(
+                    visible = hint != null,
+                    enter = fadeIn() + slideInVertically { it / 2 },
+                    exit = fadeOut() + slideOutVertically { it / 2 },
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Dimens.Large, vertical = Dimens.Medium),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        shownHint?.let {
+                            RoutePlannerHintCard(
+                                hint = it,
+                                onDismiss = { onEvent(MainUiEvents.RoutePlannerHintDismissed) },
+                            )
+                        }
+                    }
+                }
+            },
         ) { sheetModifier ->
             RoutePlannerBottomSheet(
                 stops = stops,
                 restored = restored,
-                pick = pick,
+                mode = mode,
+                mapEvent = mapEvent,
                 detent = detent,
-                onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
+                onDetentChange = onDetentChange,
                 onLocationIqClick = onLocationIqClicked,
                 onMinimizedHeightMeasured = onMinimizedHeightMeasured,
                 onExpandedHeightMeasured = onExpandedHeightMeasured,
                 modifier = sheetModifier,
-                onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan ->
-                    onEvent(MainUiEvents.RoutePlanUpdated(routePlan, markers, isAwaitingRoutePlan))
+                onRoutePlanUpdated = { routePlan, markers, isAwaitingRoutePlan, isRoutePlanLoading ->
+                    onEvent(
+                        MainUiEvents.RoutePlanUpdated(
+                            routePlan,
+                            markers,
+                            isAwaitingRoutePlan,
+                            isRoutePlanLoading,
+                            mode,
+                        ),
+                    )
                 },
                 onSessionChanged = { session -> onEvent(MainUiEvents.RoutePlannerStateChanged(session)) },
+                onPickOnMapChanged = { onEvent(MainUiEvents.RoutePlannerPickOnMapChanged(it)) },
+                onMoveStopChanged = { onEvent(MainUiEvents.RoutePlannerMoveStopChanged(it)) },
+                onSelectedStopChanged = { onEvent(MainUiEvents.RoutePlannerSelectedStopChanged(it)) },
                 onEffect = { effect ->
                     when (effect) {
                         is RoutePlannerUiEffects.RoutePlanSaved -> {
                             onEvent(GpxUiEvents.RoutePlanGpxSaved(effect.fileUri))
                         }
                         RoutePlannerUiEffects.MinimizeSheet -> onDetentChange(RoutePlannerDetent.MINIMIZED)
-                        RoutePlannerUiEffects.ExpandSheet -> onDetentChange(RoutePlannerDetent.EXPANDED)
                         RoutePlannerUiEffects.Close -> onEvent(MainUiEvents.SheetDismissed)
                         RoutePlannerUiEffects.RoutePlanSaveFailed -> Unit
                         is RoutePlannerUiEffects.OpenUrl -> context.openUrl(effect.url)
@@ -729,7 +807,7 @@ private fun MainUiEffectHandler(
     onShowGpxFilePicker: () -> Unit,
     onNavigateToDestinations: () -> Unit,
     onNavigateToGpxGuide: () -> Unit,
-    onRoutePlannerLocationPicked: (Location) -> Unit,
+    onRoutePlannerEvent: (RoutePlannerUiEvents) -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(mainUiEffects) {
@@ -738,7 +816,13 @@ private fun MainUiEffectHandler(
                 MainUiEffects.NavigateToAppSettings -> context.navigateToAppSettings()
                 MainUiEffects.ShowGpxFilePicker -> onShowGpxFilePicker()
                 is MainUiEffects.OpenMapsNavigation -> context.navigateToDirections(effect.location)
-                is MainUiEffects.RoutePlannerLocationPicked -> onRoutePlannerLocationPicked(effect.location)
+                is MainUiEffects.RoutePlannerLocationPicked ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.LocationAdded(effect.location))
+                is MainUiEffects.RoutePlannerStopDragged ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.StopDragged(from = effect.from, to = effect.to))
+                is MainUiEffects.RoutePlannerMarkerClicked ->
+                    onRoutePlannerEvent(RoutePlannerUiEvents.StopMarkerClicked(effect.location))
+                MainUiEffects.RoutePlannerStopDeselected -> onRoutePlannerEvent(RoutePlannerUiEvents.StopDeselected)
                 is MainUiEffects.ShareGpxFile -> context.shareGpxFile(effect.fileUri, effect.fileName)
                 is MainUiEffects.OpenUrl -> context.openUrl(effect.url)
                 MainUiEffects.NavigateToDestinations -> onNavigateToDestinations()

@@ -12,16 +12,18 @@ struct MainView: View {
     @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var landscapesDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var screenHeight: CGFloat = 0
+    @State var topSafeAreaInset: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
     @State var whatsNewHeight: CGFloat = Dimens.whatsNewDetentHeight
     @State var routePlannerHeights = RoutePlannerSheetHeights.initial
     @State var routePlannerDetent: RoutePlannerDetent = .expanded
-    @State var routePlannerPick: RoutePlannerPick?
+    @State var routePlannerMapEvent: RoutePlannerMapEvent?
+    @State var routePlannerSheetFrame = RoutePlannerSheetFrame()
     @State var gpxShareItem: ShareItem?
     @State private var presentedSheet: Sheet?
     @State private var isRoutePlannerPresented = false
-    @State private var showFileImporter = false
+    @State var showFileImporter = false
     @State private var showAlert = false
     @State private var themeMode: ThemeMode = .system
 
@@ -46,6 +48,14 @@ struct MainView: View {
 
     var routePlannerSheetHeight: CGFloat {
         routePlannerDetent == .minimized ? routePlannerHeights.minimized : routePlannerHeights.expanded
+    }
+
+    func routePlannerMapInset(uiState: MainUiState) -> CGFloat {
+        let isHintShown = uiState.isRoutePlannerLongPressHintVisible && !isRoutePlannerAtMaxHeight
+        let inset = routePlannerSheetHeight + (isHintShown ? Dimens.routePlannerHintCameraOffset : 0)
+        // Past this the route would only shrink into a thin strip, so it frames higher and runs under the sheet
+        guard screenHeight > 0 else { return inset }
+        return min(inset, screenHeight * Dimens.routePlannerMaxCameraInsetFraction)
     }
 
     init(viewModel: MainViewModel) {
@@ -113,9 +123,16 @@ struct MainView: View {
                     onRouteStopClicked: { stop in
                         viewModel.onEvent(event: MainUiEventsRouteStopClicked(stop: stop))
                     },
+                    onRoutePlanMarkerDragged: { origin, target in
+                        viewModel.onEvent(event: MainUiEventsRoutePlanMarkerDragged(from: origin, to: target))
+                    },
+                    onRoutePlanMarkerClicked: { location in
+                        viewModel.onEvent(event: MainUiEventsRoutePlanMarkerClicked(location: location))
+                    },
+                    onMapClicked: { viewModel.onEvent(event: MainUiEventsMapClicked.shared) },
                     mapUiEffects: viewModel.mapUiEffects,
                     routePlannerDetent: routePlannerDetent,
-                    routePlannerSheetHeight: routePlannerSheetHeight,
+                    routePlannerSheetHeight: routePlannerMapInset(uiState: uiState),
                     listSheetHeight: uiState.mapUiState.landscapes != nil ? landscapesDetentHeight : oktDetentHeight
                 )
                 VStack {
@@ -199,6 +216,7 @@ struct MainView: View {
                 gpxControlMenu(uiState: uiState)
                 oktResumeButton(uiState: uiState)
                 landscapesResumeButton(uiState: uiState)
+                routePlannerHint(uiState: uiState)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -219,6 +237,9 @@ struct MainView: View {
             proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
         } action: { height in
             screenHeight = height
+        }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { inset in
+            topSafeAreaInset = inset
         }
     }
 
@@ -302,6 +323,10 @@ private extension MainView {
                 viewModel.onEvent(event: MainUiEventsRoutePlannerClicked.shared)
                 navigationPath = NavigationPath()
             },
+            onRoundTripWizardClicked: {
+                viewModel.onEvent(event: MainUiEventsRoundTripWizardClicked.shared)
+                navigationPath = NavigationPath()
+            },
             onDiscoverClicked: {
                 viewModel.onEvent(event: MainUiEventsDiscoverClicked.shared)
                 navigationPath = NavigationPath()
@@ -350,33 +375,10 @@ private extension MainView {
         }
     }
 
-    func handleMainEffects(_ effect: MainUiEffects) {
-        switch onEnum(of: effect) {
-        case .navigateToAppSettings:
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        case .showGpxFilePicker:
-            showFileImporter = true
-        case .openMapsNavigation(let effect):
-            MapsNavigator.openDirections(to: effect.location)
-        case .routePlannerLocationPicked(let effect):
-            routePlannerPick = RoutePlannerPick(location: effect.location)
-        case .shareGpxFile(let effect):
-            gpxShareItem = ShareItem(url: URL(fileURLWithPath: effect.fileUri))
-        case .openUrl(let effect):
-            if let url = URL(string: effect.url) {
-                UIApplication.shared.open(url)
-            }
-        case .navigateToDestinations:
-            navigationPath.append(DestinationsRoute.destinations)
-        case .navigateToGpxGuide:
-            navigationPath.append(GpxGuideRoute.gpxGuide)
-        }
-    }
-
     func handleSheetDismiss() {
         guard isRoutePlannerPresented else { return }
         isRoutePlannerPresented = false
-        routePlannerPick = nil
+        routePlannerMapEvent = nil
     }
 
     func handleIncomingGpx(_ url: URL) {

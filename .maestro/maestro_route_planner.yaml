@@ -27,6 +27,9 @@ appId: ${APP_ID}
 # Add a second stop through the stacked search sheet
 - tapOn:
     id: ROUTE_PLANNER_ADD_STOP_ROW
+# Add stop appends an empty stop card, whose Search action opens the search sheet
+- tapOn:
+    id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
 - assertVisible:
     id: ROUTE_PLANNER_SEARCH_SCREEN
 - tapOn:
@@ -94,47 +97,49 @@ appId: ${APP_ID}
     text: "Distance, .*"
 - assertTrue: ${maestro.copiedText != output.firstDistance}
 
-# Past a few stops the list collapses, and the "more stops" row opens the full screen stage
+# Past a few stops the list collapses, and the "more stops" row opens the full screen stage.
+# Searched stops, as my location as a stop would close the route into a round trip, which takes no new stops.
 - repeat:
     times: 3
     commands:
       - tapOn:
           id: ROUTE_PLANNER_ADD_STOP_ROW
+      # Add stop appends an empty stop card, whose Search action opens the search sheet
+      - tapOn:
+          id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
       # The sheet animates in, so wait for it before touching anything inside it
       - extendedWaitUntil:
           visible:
             id: ROUTE_PLANNER_SEARCH_SCREEN
           timeout: 10000
-      # iOS only: the autofocused keyboard covers the actions, and Maestro reads the button as
-      # visible from its hierarchy bounds, so the tap lands on a key. On Android hideKeyboard is a
-      # BACK press, which closes the sheet whenever the keyboard is not up.
-      - runFlow:
-          when:
-            platform: iOS
-          commands:
-            - hideKeyboard
-      - scrollUntilVisible:
-          element:
-            id: ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON
-          direction: DOWN
       - tapOn:
-          id: ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON
+          id: ROUTE_PLANNER_SEARCH_FIELD
+      # The search keeps its last query
+      - eraseText
+      - inputText: "Dobog"
+      - tapOn: "Dobogókő"
       - assertVisible:
           id: ROUTE_PLANNER_SHEET
-- assertVisible:
-    id: ROUTE_PLANNER_MORE_STOPS_ROW
-- tapOn:
-    id: ROUTE_PLANNER_MORE_STOPS_ROW
-- extendedWaitUntil:
-    notVisible:
-      id: ROUTE_PLANNER_MORE_STOPS_ROW
-    timeout: 5000
 - assertVisible:
     id: ROUTE_PLANNER_WAYPOINT_LIST
 - assertVisible:
     id: ROUTE_PLANNER_ADD_STOP_ROW
 - assertVisible:
     id: ROUTE_PLANNER_SAVE_BUTTON
+
+# A round trip takes no new stops until it is undone, which drops its mirrored end
+- tapOn:
+    id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
+- assertVisible: "Undo round trip|Körtúra felbontása"
+- assertVisible:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+    enabled: false
+- tapOn:
+    id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
+- assertVisible: "Round trip|Körtúra"
+- assertVisible:
+    id: ROUTE_PLANNER_ADD_STOP_ROW
+    enabled: true
 - tapOn:
     id: ROUTE_PLANNER_CLOSE_BUTTON
 - assertNotVisible:

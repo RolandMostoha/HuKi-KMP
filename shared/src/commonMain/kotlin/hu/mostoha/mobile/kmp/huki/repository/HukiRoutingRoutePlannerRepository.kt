@@ -1,8 +1,7 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
 import hu.mostoha.mobile.kmp.huki.Secrets
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.mapper.toHukiRoutingRouteRequest
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
@@ -27,15 +26,12 @@ class HukiRoutingRoutePlannerRepository(
         private const val URL_ROUTE = "https://huki-routing-550684341915.europe-west1.run.app/route"
     }
 
-    override suspend fun getRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> =
+    override suspend fun getRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> =
         handleNetworkCall(crashlyticsService) {
             httpClient.post(urlString = URL_ROUTE) {
                 header(NetworkHeaders.HUKI_ROUTING_API_KEY, Secrets.HUKI_ROUTING_API_KEY)
                 contentType(ContentType.Application.Json)
-                setBody(profile.toHukiRoutingRouteRequest(waypoints))
+                setBody(request.toHukiRoutingRouteRequest())
             }
         }
 }

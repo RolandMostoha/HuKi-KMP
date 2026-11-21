@@ -68,8 +68,21 @@ sealed interface FeatureSnapshot {
     data class RoutePlanner(
         val routeProfile: String,
         val waypoints: List<WaypointSnapshot>,
-    ) : FeatureSnapshot
+        val mode: String = PLANNER_MODE,
+        val roundTrip: RoundTripSnapshot? = null,
+    ) : FeatureSnapshot {
+        companion object {
+            const val PLANNER_MODE = "PLANNER"
+        }
+    }
 }
+
+@Serializable
+data class RoundTripSnapshot(
+    val distanceKm: Int,
+    val seed: Int,
+    val heading: Int,
+)
 
 /**
  * @property isPlaceName the stop is named by [placeName], otherwise the name is derived (My location, coordinates).
@@ -82,4 +95,6 @@ data class WaypointSnapshot(
     val placeName: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null,
+    val customName: String? = null,
+    val comment: String? = null,
 )

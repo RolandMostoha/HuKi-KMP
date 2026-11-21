@@ -2,8 +2,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutingMode
 import hu.mostoha.mobile.kmp.huki.model.domain.contains
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
@@ -33,64 +32,51 @@ class FallbackRoutePlannerRepository(
         private val HUKI_ROUTING_CLIENT_ERRORS = setOf(NetworkError.NO_INTERNET, NetworkError.REQUEST_TIMEOUT)
     }
 
-    override suspend fun getRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> =
+    override suspend fun getRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> =
         when (routingMode) {
-            RoutingMode.AUTO -> getRoutePlanWithFallback(profile, waypoints)
-            RoutingMode.GRAPHHOPPER_ONLY -> graphhopperRepository.getRoutePlan(profile, waypoints)
-            RoutingMode.HUKI_ROUTING_ONLY -> hukiRoutingRepository.getRoutePlan(profile, waypoints)
+            RoutingMode.AUTO -> getRoutePlanWithFallback(request)
+            RoutingMode.GRAPHHOPPER_ONLY -> graphhopperRepository.getRoutePlan(request)
+            RoutingMode.HUKI_ROUTING_ONLY -> hukiRoutingRepository.getRoutePlan(request)
         }
 
-    private suspend fun getRoutePlanWithFallback(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> {
+    private suspend fun getRoutePlanWithFallback(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> {
         val quotaState = routingQuotaStore.getQuotaState(clock.now())
-        val isInHukiRoutingArea = waypoints.all { RoutePlanConstants.HUKI_ROUTING_BOUNDING_BOX.contains(it) }
+        val isInHukiRoutingArea = request.waypoints.all { RoutePlanConstants.HUKI_ROUTING_BOUNDING_BOX.contains(it) }
 
         return when {
-            quotaState.isBlocked && isInHukiRoutingArea -> getHukiRoutingRoutePlan(profile, waypoints).orLimitReached()
+            quotaState.isBlocked && isInHukiRoutingArea -> getHukiRoutingRoutePlan(request).orLimitReached()
             quotaState.isBlocked -> NetworkResult.Error(NetworkError.RATE_LIMITED)
-            quotaState.isReserveReached && isInHukiRoutingArea -> getReserveRoutePlan(profile, waypoints)
-            else -> getGraphhopperRoutePlan(profile, waypoints, isInHukiRoutingArea)
+            quotaState.isReserveReached && isInHukiRoutingArea -> getReserveRoutePlan(request)
+            else -> getGraphhopperRoutePlan(request, isInHukiRoutingArea)
         }
     }
 
-    private suspend fun getReserveRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> {
-        val hukiRoutingResult = getHukiRoutingRoutePlan(profile, waypoints)
+    private suspend fun getReserveRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> {
+        val hukiRoutingResult = getHukiRoutingRoutePlan(request)
         if (hukiRoutingResult is NetworkResult.Success || hukiRoutingResult.isClientError()) {
             return hukiRoutingResult
         }
 
         analyticsService.logEvent(AnalyticsEvent.RoutingGraphhopperAfterHukiFailure)
 
-        return graphhopperRepository.getRoutePlan(profile, waypoints)
+        return graphhopperRepository.getRoutePlan(request)
     }
 
     private suspend fun getGraphhopperRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
+        request: RoutePlanRequest,
         isInHukiRoutingArea: Boolean,
     ): NetworkResult<GraphhopperRouteResponse> {
-        val graphhopperResult = graphhopperRepository.getRoutePlan(profile, waypoints)
+        val graphhopperResult = graphhopperRepository.getRoutePlan(request)
         if (graphhopperResult !is NetworkResult.Error) return graphhopperResult
         if (graphhopperResult.error !in GRAPHHOPPER_FALLBACK_ERRORS || !isInHukiRoutingArea) return graphhopperResult
 
-        val hukiRoutingResult = getHukiRoutingRoutePlan(profile, waypoints)
+        val hukiRoutingResult = getHukiRoutingRoutePlan(request)
 
         return if (hukiRoutingResult is NetworkResult.Success) hukiRoutingResult else graphhopperResult
     }
 
-    private suspend fun getHukiRoutingRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> {
-        val result = hukiRoutingRepository.getRoutePlan(profile, waypoints)
+    private suspend fun getHukiRoutingRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> {
+        val result = hukiRoutingRepository.getRoutePlan(request)
 
         when (result) {
             is NetworkResult.Success -> analyticsService.logEvent(AnalyticsEvent.RoutingHukiServed)

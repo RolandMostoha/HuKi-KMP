@@ -29,6 +29,7 @@ sealed class Sheet {
     data class RoutePlanner(
         val stops: List<RoutePlannerWaypoint> = emptyList(),
         val restored: RoutePlannerSession? = null,
+        val mode: RoutePlannerMode = RoutePlannerMode.PLANNER,
     ) : Sheet()
 
     /**

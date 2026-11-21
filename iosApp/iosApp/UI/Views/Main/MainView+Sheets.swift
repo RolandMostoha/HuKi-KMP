@@ -14,7 +14,7 @@ extension MainView {
         case .placeDetails:
             placeDetailsSheet(uiState: uiState)
         case .routePlanner(let sheet):
-            routePlannerSheet(stops: sheet.stops, restored: sheet.restored)
+            routePlannerSheet(stops: sheet.stops, restored: sheet.restored, mode: sheet.mode)
         case .whatsNew(let sheet):
             whatsNewSheet(whatsNew: sheet.whatsNew, supporterAnimal: uiState.supporterAnimal)
         case .discover:

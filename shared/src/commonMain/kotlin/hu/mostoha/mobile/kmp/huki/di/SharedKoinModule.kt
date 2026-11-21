@@ -20,6 +20,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.features.support.SupportViewModel
 import hu.mostoha.mobile.kmp.huki.features.trailsymbolsguide.TrailSymbolsGuideViewModel
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutingMode
 import hu.mostoha.mobile.kmp.huki.network.createHttpClient
@@ -141,6 +142,7 @@ val viewModelModule = module {
             get(),
             initialStops = params.getOrNull<List<RoutePlannerWaypoint>>().orEmpty(),
             restoredSession = params.getOrNull(),
+            mode = params.getOrNull<RoutePlannerMode>() ?: RoutePlannerMode.PLANNER,
         )
     }
     viewModelOf(::SettingsViewModel)

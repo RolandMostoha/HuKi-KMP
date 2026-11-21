@@ -16,7 +16,11 @@ enum Dimens {
     static let infoWindowLineSpacing: CGFloat = 2
     static let infoWindowNameFontSize: CGFloat = 13
     static let infoWindowNameMaxWidth: CGFloat = 160
+    static let infoWindowDescriptionMaxWidth: CGFloat = 220
     static let infoWindowDetailsFontSize: CGFloat = 13
+    static let infoWindowCommentButtonSize: CGFloat = 32
+    static let infoWindowCommentIconSize: CGFloat = 15
+    static let infoWindowCommentButtonSpacing: CGFloat = 12
 
     static let zoomControlIconSize: CGFloat = 20
 
@@ -49,16 +53,16 @@ enum Dimens {
     static func routePlannerContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
         EdgeInsets(
             top: 100,
-            leading: 60,
-            bottom: sheetHeight + 20,
-            trailing: 60
+            leading: 72,
+            bottom: sheetHeight + 56,
+            trailing: 72
         )
     }
     static let routePlannerContentPaddingLandscape = EdgeInsets(
-        top: 60,
-        leading: 60,
-        bottom: 60,
-        trailing: 60
+        top: 80,
+        leading: 80,
+        bottom: 80,
+        trailing: 80
     )
 
     static func oktContentPaddingPortrait(sheetHeight: CGFloat) -> EdgeInsets {
@@ -148,6 +152,12 @@ enum Dimens {
 
     static let routePlannerDetentHeight: CGFloat = 520
     static let routePlannerMinimizedDetentHeight: CGFloat = 190
+    /// Map left visible below the safe area above a fully grown planner sheet.
+    static let routePlannerMapPeekHeight: CGFloat = 100
+    /// Share of the screen the planner sheet may at most take from the route's camera frame.
+    static let routePlannerMaxCameraInsetFraction: CGFloat = 0.55
+    /// Fixed room for the long-press hint above the planner sheet, so it never covers the route's stops.
+    static let routePlannerHintCameraOffset: CGFloat = 112
 
     static let whatsNewDetentHeight: CGFloat = 350
 }

@@ -29,5 +29,6 @@ fun GpxWaypoint.toDistanceInfoWindow(id: Int, progress: RouteProgress?): Distanc
             WaypointType.START -> 2
             WaypointType.INTERMEDIATE -> 1
         },
+        description = description?.trim()?.takeIf { it.isNotEmpty() },
     )
 }

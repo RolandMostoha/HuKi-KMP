@@ -49,6 +49,37 @@ class RoutePlanGpxMapperTest {
     }
 
     @Test
+    fun `Given stop comments - When mapped to a GPX document - Then each waypoint carries its comment`() {
+        val comments = listOf("Parkoló", null, " Forrás ")
+
+        val document = routePlan().toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT, comments)
+
+        document.waypoints.map { it.comment } shouldBe listOf("Parkoló", null, "Forrás")
+    }
+
+    @Test
+    fun `Given an unnamed edge stop with a comment - When mapped to a GPX document - Then it is written`() {
+        val names = listOf(null, "Rám-szakadék", "Pilisszentkereszt")
+
+        val document = routePlan().toGpxDocument(TITLE, names, RoutePlannerProfile.ON_TRAILS, CREATED_AT, listOf("Start"))
+
+        document.waypoints.map { it.name to it.comment } shouldBe listOf(
+            null to "Start",
+            "Rám-szakadék" to null,
+            "Pilisszentkereszt" to null,
+        )
+    }
+
+    @Test
+    fun `Given an unnamed edge stop without a comment - When mapped to a GPX document - Then it is not written`() {
+        val names = listOf(null, "Rám-szakadék", "Pilisszentkereszt")
+
+        val document = routePlan().toGpxDocument(TITLE, names, RoutePlannerProfile.ON_TRAILS, CREATED_AT)
+
+        document.waypoints.map { it.name } shouldBe listOf("Rám-szakadék", "Pilisszentkereszt")
+    }
+
+    @Test
     fun `Given named stops - When mapped to a GPX document - Then every stop becomes a named waypoint`() {
         val document = routePlan().toGpxDocument(TITLE, STOP_NAMES, RoutePlannerProfile.ON_TRAILS, CREATED_AT)
 

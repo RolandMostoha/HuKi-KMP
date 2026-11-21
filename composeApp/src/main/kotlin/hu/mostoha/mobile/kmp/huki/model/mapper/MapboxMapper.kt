@@ -94,7 +94,8 @@ fun ContentPadding.toEdgeInset(
         ContentPadding.MAP_ROUTE_PLANNER -> if (isLandscape) {
             Dimens.RoutePlannerContentPaddingLandscape
         } else {
-            Dimens.RoutePlannerContentPaddingPortrait.withBottom(routePlannerBottomInset)
+            Dimens.RoutePlannerContentPaddingPortrait
+                .withBottom(routePlannerBottomInset, Dimens.RoutePlannerSheetCameraBottomOffset)
         }.toEdgeInset(density)
     }
 

@@ -82,9 +82,16 @@
     <string name="route_planner_profile_bike">Bike</string>
     <string name="route_planner_my_location">My location</string>
     <string name="route_planner_waypoint_empty">Choose a place</string>
-    <string name="route_planner_add_waypoint">Add stop</string>
     <string name="route_planner_round_trip">Round trip</string>
-    <string name="route_planner_more_stops">%d more stops</string>
+    <string name="route_planner_round_trip_undo">Undo round trip</string>
+    <string name="round_trip_wizard_title">Round-trip Wizard</string>
+    <string name="round_trip_wizard_distance_title">Route length</string>
+    <string name="round_trip_wizard_distance_value">%d km</string>
+    <string name="round_trip_wizard_regenerate">Regenerate</string>
+    <string name="round_trip_wizard_save">Save</string>
+    <string name="round_trip_wizard_a11y_expand">Expand Round-trip Wizard</string>
+    <string name="round_trip_wizard_a11y_minimize">Minimize Round-trip Wizard</string>
+    <string name="round_trip_wizard_a11y_start_actions">Start point actions</string>
     <string name="route_planner_max_stops_reached">You’ve reached the maximum number of stops (%d)</string>
     <string name="route_planner_save">Save Route</string>
     <string name="route_planner_loading">Planning the route…</string>
@@ -94,14 +101,34 @@
     <string name="route_planner_daily_limit_error_title">Daily limit reached</string>
     <string name="route_planner_daily_limit_error_message">We’ve reached the route planner service daily limit. Please try it tomorrow.</string>
     <string name="route_planner_add_stop_title">Add new stop</string>
+    <string name="route_planner_replace_stop_title">Replace stop</string>
+    <string name="route_planner_replace_stop_subtitle">Overwrites: %s</string>
+    <string name="route_planner_empty_stop_pick_on_map">On Map</string>
+    <string name="route_planner_empty_stop_search">From Search</string>
+    <string name="route_planner_stop_move">Move</string>
+    <string name="route_planner_stop_replace">Search</string>
+    <string name="route_planner_stop_rename">Rename</string>
+    <string name="route_planner_rename_title">Stop %d</string>
+    <string name="route_planner_rename_name">Name</string>
+    <string name="route_planner_rename_address">Original address: %s</string>
+    <string name="route_planner_rename_comment">Comment</string>
+    <string name="route_planner_rename_comment_placeholder">E.g. nice view, a good place to rest</string>
+    <string name="route_planner_rename_cancel">Cancel</string>
+    <string name="route_planner_rename_save">Save</string>
     <string name="route_planner_pick_my_location">My actual location</string>
-    <string name="route_planner_pick_on_map">Select on map with long tap</string>
+    <string name="route_planner_a11y_expand">Expand route planner</string>
+    <string name="route_planner_a11y_minimize">Minimize route planner</string>
     <string name="route_planner_a11y_profiles">Route type</string>
     <string name="route_planner_a11y_add_stop">Add a new stop</string>
-    <string name="route_planner_a11y_round_trip">Create a round trip</string>
     <string name="route_planner_a11y_delete_stop">Delete stop</string>
+    <string name="route_planner_a11y_select_stop">Select stop</string>
     <string name="route_planner_a11y_move_up">Move stop up</string>
     <string name="route_planner_a11y_move_down">Move stop down</string>
+    <string name="route_planner_long_press_hint_title">Long-press the map</string>
+    <string name="route_planner_long_press_hint_message">Long-press anywhere on the map to drop several stops one after another.</string>
+    <string name="route_planner_move_hint_title">Drag a stop to move it</string>
+    <string name="route_planner_move_hint_message">Long-press any stop on the map and drag it to a new place, anytime.</string>
+    <string name="route_planner_a11y_dismiss_long_press_hint">Dismiss hint</string>
 
     <string name="place_details_loading">Looking up this place…</string>
     <string name="place_details_route_plan">Route plan</string>
@@ -113,6 +140,8 @@
 
     <string name="gpx_distance_info_window_start">Start</string>
     <string name="gpx_distance_info_window_end">End</string>
+    <string name="gpx_distance_info_window_a11y_show_comment">Show comment</string>
+    <string name="gpx_distance_info_window_a11y_hide_comment">Hide comment</string>
 
     <string name="gpx_control_a11y_fab">GPX controls</string>
     <string name="gpx_control_route_visibility_show">Show the route line</string>
@@ -146,8 +175,11 @@
     <string name="menu_item_settings_description">App preferences</string>
     <string name="menu_a11y_open_settings">Open Settings</string>
     <string name="menu_item_route_planner">Route planner</string>
-    <string name="menu_item_route_planner_description">Plan on hiking trails or off them</string>
+    <string name="menu_item_route_planner_description">A route through the stops you choose</string>
     <string name="menu_a11y_open_route_planner">Open Route planner</string>
+    <string name="menu_item_round_trip_wizard">Round-trip Wizard</string>
+    <string name="menu_item_round_trip_wizard_description">A loop from a single point and a distance</string>
+    <string name="menu_a11y_open_round_trip_wizard">Open Round-trip Wizard</string>
     <string name="menu_item_discover">Discover</string>
     <string name="menu_item_discover_description">Destinations and hike ideas</string>
     <string name="menu_a11y_open_discover">Open Discover</string>

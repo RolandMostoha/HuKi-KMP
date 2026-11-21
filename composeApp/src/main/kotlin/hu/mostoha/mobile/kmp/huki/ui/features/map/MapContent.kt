@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,6 +65,7 @@ import hu.mostoha.mobile.kmp.huki.features.main.MainUiEvents
 import hu.mostoha.mobile.kmp.huki.features.main.OktUiEvents
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiEffects
 import hu.mostoha.mobile.kmp.huki.features.map.MapUiState
+import hu.mostoha.mobile.kmp.huki.model.domain.CameraTarget
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
 import hu.mostoha.mobile.kmp.huki.model.mapper.MarkerIcons
 import hu.mostoha.mobile.kmp.huki.model.mapper.WaypointMarkerOrder
@@ -88,7 +90,6 @@ import hu.mostoha.mobile.kmp.huki.theme.LocalThemedContext
 import hu.mostoha.mobile.kmp.huki.theme.MapLighting
 import hu.mostoha.mobile.kmp.huki.theme.SharedDimens.MY_LOCATION_PUCK_SCALE
 import hu.mostoha.mobile.kmp.huki.theme.SlopeColorScale
-import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
 import hu.mostoha.mobile.kmp.huki.util.FeatureFlags
 import hu.mostoha.mobile.kmp.huki.util.MapConstants
 import hu.mostoha.mobile.kmp.huki.util.TestTags
@@ -96,11 +97,19 @@ import hu.mostoha.mobile.kmp.huki.util.mokoColor
 import hu.mostoha.mobile.kmp.huki.util.mokoPainter
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlin.math.abs
 
 private const val SCALE_BAR_RATIO_PORTRAIT = 0.5f
+private const val ROUTE_PLANNER_SETTLE_FRAMES = 2
+
+/**
+ * A sheet that resizes by less than this keeps the camera, as such a shift does not change what the route shows.
+ */
+private val RoutePlannerInsetTolerance = 12.dp
 private const val SCALE_BAR_RATIO_LANDSCAPE = 0.25f
 private val ALTITUDE_TOP_PADDING = 32.dp
 private const val DIRECTION_LAYER_SUFFIX = "_direction"
@@ -113,7 +122,6 @@ fun MapContent(
     onEvent: (MainUiEvents) -> Unit,
     modifier: Modifier = Modifier,
     routePlannerBottomInset: Dp? = null,
-    routePlannerDetent: RoutePlannerDetent? = null,
     listSheetHeight: Dp? = null,
     altitude: Int? = null,
 ) {
@@ -131,7 +139,9 @@ fun MapContent(
     val styleLoaded = remember { CompletableDeferred<Unit>() }
     var isCameraPanelVisible by remember { mutableStateOf(false) }
     var lastRoutePlannerCamera by remember { mutableStateOf<MapUiEffects.UpdateCamera?>(null) }
+    val routePlannerFit = remember { RoutePlannerFit() }
     val currentRoutePlannerInset by rememberUpdatedState(routePlannerBottomInset)
+    val isRoutePlanPending by rememberUpdatedState(mapUiState.isRoutePlanPending)
     val currentListSheetHeight by rememberUpdatedState(listSheetHeight)
 
     LaunchedEffect(mapUiState.rotationEnabled) {
@@ -148,8 +158,11 @@ fun MapContent(
     LaunchedEffect(mapUiEffects) {
         styleLoaded.await()
         mapUiEffects.collect { effect ->
+            Logger.d { "Map: Camera effect ${effect.toLogString()}, planner inset=$currentRoutePlannerInset" }
             if (effect is MapUiEffects.UpdateCamera && effect.contentPadding == ContentPadding.MAP_ROUTE_PLANNER) {
                 lastRoutePlannerCamera = effect
+                // The planner camera waits for its sheet to settle, see RefitOnRoutePlannerResize
+                if (currentRoutePlannerInset != null) return@collect
             }
             mapViewportState.handleMapEffect(
                 effect,
@@ -167,12 +180,14 @@ fun MapContent(
         }
     }
 
-    // The sheet height changes several times while its content loads, refitting on each would restart the camera
-    LaunchedEffect(routePlannerDetent) {
-        val effect = lastRoutePlannerCamera ?: return@LaunchedEffect
-        val inset = currentRoutePlannerInset ?: return@LaunchedEffect
-        mapViewportState.moveCamera(density, effect, isLandscape, inset)
-    }
+    RefitOnRoutePlannerResize(
+        fit = routePlannerFit,
+        routePlannerInset = { currentRoutePlannerInset },
+        routePlannerCamera = { lastRoutePlannerCamera },
+        isRoutePlanPending = { isRoutePlanPending },
+        mapViewportState = mapViewportState,
+        isLandscape = { isLandscape },
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         MapboxMap(
@@ -189,7 +204,10 @@ fun MapContent(
             },
             mapViewportState = mapViewportState,
             mapState = mapState,
-            onMapClickListener = OnMapClickListener { dismissInfoWindows(mapUiState, onEvent) },
+            onMapClickListener = OnMapClickListener {
+                onEvent(MainUiEvents.MapClicked)
+                dismissInfoWindows(mapUiState, onEvent)
+            },
             onMapLongClickListener = OnMapLongClickListener { point ->
                 onEvent(MainUiEvents.MapLongClicked(point.toLocation()))
                 true
@@ -307,8 +325,12 @@ fun MapContent(
                 RoutePlanLayer(
                     routePlan = mapUiState.routePlan,
                     markers = mapUiState.routePlanMarkers,
+                    selectedMarker = mapUiState.selectedRoutePlanMarker,
+                    isRoutePlanLoading = mapUiState.isRoutePlanLoading,
                     routeColor = primaryColor,
                     routeStrokeColor = mapStrokeColor,
+                    onMarkerDropped = { from, to -> onEvent(MainUiEvents.RoutePlanMarkerDragged(from, to)) },
+                    onMarkerClick = { onEvent(MainUiEvents.RoutePlanMarkerClicked(it)) },
                 )
             }
             PlaceMarkersLayer(mapUiState = mapUiState, onEvent = onEvent)
@@ -331,6 +353,56 @@ fun MapContent(
         )
     }
 }
+
+/**
+ * The planner sheet inset and camera request the route planner camera was last fitted to.
+ */
+private class RoutePlannerFit {
+    var inset: Dp? = null
+    var camera: MapUiEffects.UpdateCamera? = null
+}
+
+private fun Dp?.isCloseTo(other: Dp): Boolean =
+    this != null && abs(value - other.value) < RoutePlannerInsetTolerance.value
+
+@Composable
+private fun RefitOnRoutePlannerResize(
+    fit: RoutePlannerFit,
+    routePlannerInset: () -> Dp?,
+    routePlannerCamera: () -> MapUiEffects.UpdateCamera?,
+    isRoutePlanPending: () -> Boolean,
+    mapViewportState: MapViewportState,
+    isLandscape: () -> Boolean,
+) {
+    val density = LocalDensity.current
+    LaunchedEffect(mapViewportState) {
+        // One action can change the inset in steps a frame apart, e.g. the sheet minimizes and then its hint
+        // shows, so the camera moves once the inset holds for a couple of frames, and once after an animation
+        // Changed stops are one action with the plan they wait for, so the camera holds until that plan frames it
+        snapshotFlow { Triple(routePlannerInset(), routePlannerCamera(), isRoutePlanPending()) }
+            .collectLatest { (inset, camera, isPending) ->
+                repeat(ROUTE_PLANNER_SETTLE_FRAMES) { withFrameNanos { } }
+                if (inset == null || camera == null || isPending) return@collectLatest
+                if (camera === fit.camera && fit.inset.isCloseTo(inset)) return@collectLatest
+                fit.inset = inset
+                fit.camera = camera
+                Logger.d { "Map: Route planner camera fit, inset=$inset" }
+                mapViewportState.moveCamera(density, camera, isLandscape(), inset)
+            }
+    }
+}
+
+private fun MapUiEffects.toLogString(): String =
+    when (this) {
+        is MapUiEffects.UpdateCamera -> {
+            val target = when (val cameraTarget = target) {
+                is CameraTarget.Bounds -> "Bounds(${cameraTarget.locations.size} points)"
+                is CameraTarget.Center -> "Center(zoom=${cameraTarget.zoom})"
+            }
+            "UpdateCamera($target, padding=$contentPadding, animated=$animated, durationMs=$durationMs)"
+        }
+        else -> toString()
+    }
 
 private fun dismissInfoWindows(mapUiState: MapUiState, onEvent: (MainUiEvents) -> Unit): Boolean =
     when {

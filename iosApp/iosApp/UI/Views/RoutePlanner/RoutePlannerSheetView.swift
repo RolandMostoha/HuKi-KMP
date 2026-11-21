@@ -1,12 +1,12 @@
 import Shared
 import SwiftUI
 
-/// A map location picked for the planner, identified so that repeated picks of the same point still register.
-struct RoutePlannerPick: Equatable {
+/// A map interaction for the planner, identified so that long-tapping the same point twice still adds two stops.
+struct RoutePlannerMapEvent: Equatable {
     let id = UUID()
-    let location: Shared.Location
+    let event: RoutePlannerUiEvents
 
-    static func == (lhs: RoutePlannerPick, rhs: RoutePlannerPick) -> Bool {
+    static func == (lhs: RoutePlannerMapEvent, rhs: RoutePlannerMapEvent) -> Bool {
         lhs.id == rhs.id
     }
 }
@@ -24,25 +24,31 @@ struct RoutePlannerSheetHeights: Equatable {
 enum RoutePlannerDetent {
     /// Keeps only the title, stats and save button
     case minimized
-    /// Shows all content but keeps only a few stops
+    /// Fits all stops up to a height cap, past which the stop list scrolls
     case expanded
-    /// Shows all stops and all content
-    case fullScreen
+
+    var toggled: RoutePlannerDetent {
+        self == .minimized ? .expanded : .minimized
+    }
 }
 
 struct RoutePlannerSheetView: View {
     let strings: Strings
-    let pick: RoutePlannerPick?
-    let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint], Bool) -> Void
+    let mapEvent: RoutePlannerMapEvent?
+    let onRoutePlanUpdated: (RoutePlan?, [GpxWaypoint], _ isAwaiting: Bool, _ isLoading: Bool) -> Void
     let onSessionChanged: (RoutePlannerSession) -> Void
+    let onPickOnMapChanged: (Bool) -> Void
+    let onMoveStopChanged: (Bool) -> Void
+    let onSelectedStopChanged: (Location?) -> Void
     let onRoutePlanSaved: (String) -> Void
     let onDismissRequest: () -> Void
     let detent: RoutePlannerDetent
-    let onExpandRequest: () -> Void
+    let maxExpandedHeight: CGFloat
+    let onDetentChange: (RoutePlannerDetent) -> Void
     let onHeightsChange: (RoutePlannerSheetHeights) -> Void
     let onMinimizeRequest: () -> Void
-    let onExpandAfterPickRequest: () -> Void
     let onInitialAppear: () -> Void
+    let onSheetFrameChange: (CGRect) -> Void
 
     @StateObject private var holder: ViewModelHolder<RoutePlannerViewModel>
     @State private var didAppear = false
@@ -54,32 +60,46 @@ struct RoutePlannerSheetView: View {
         strings: Strings,
         stops: [RoutePlannerWaypoint],
         restored: RoutePlannerSession?,
-        pick: RoutePlannerPick?,
-        onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint], Bool) -> Void,
+        mode: RoutePlannerMode = .planner,
+        mapEvent: RoutePlannerMapEvent?,
+        onRoutePlanUpdated: @escaping (RoutePlan?, [GpxWaypoint], _ isAwaiting: Bool, _ isLoading: Bool) -> Void,
         onSessionChanged: @escaping (RoutePlannerSession) -> Void,
+        onPickOnMapChanged: @escaping (Bool) -> Void = { _ in },
+        onMoveStopChanged: @escaping (Bool) -> Void = { _ in },
+        onSelectedStopChanged: @escaping (Location?) -> Void = { _ in },
         onRoutePlanSaved: @escaping (String) -> Void,
         onDismissRequest: @escaping () -> Void,
         detent: RoutePlannerDetent = .expanded,
-        onExpandRequest: @escaping () -> Void = {},
+        maxExpandedHeight: CGFloat = .infinity,
+        onDetentChange: @escaping (RoutePlannerDetent) -> Void = { _ in },
         onHeightsChange: @escaping (RoutePlannerSheetHeights) -> Void = { _ in },
         onMinimizeRequest: @escaping () -> Void = {},
-        onExpandAfterPickRequest: @escaping () -> Void = {},
-        onInitialAppear: @escaping () -> Void = {}
+        onInitialAppear: @escaping () -> Void = {},
+        onSheetFrameChange: @escaping (CGRect) -> Void = { _ in }
     ) {
         self.strings = strings
-        self.pick = pick
+        self.mapEvent = mapEvent
         self.onRoutePlanUpdated = onRoutePlanUpdated
         self.onSessionChanged = onSessionChanged
+        self.onPickOnMapChanged = onPickOnMapChanged
+        self.onMoveStopChanged = onMoveStopChanged
+        self.onSelectedStopChanged = onSelectedStopChanged
         self.onRoutePlanSaved = onRoutePlanSaved
         self.onDismissRequest = onDismissRequest
         self.detent = detent
-        self.onExpandRequest = onExpandRequest
+        self.maxExpandedHeight = maxExpandedHeight
+        self.onDetentChange = onDetentChange
         self.onHeightsChange = onHeightsChange
         self.onMinimizeRequest = onMinimizeRequest
-        self.onExpandAfterPickRequest = onExpandAfterPickRequest
         self.onInitialAppear = onInitialAppear
+        self.onSheetFrameChange = onSheetFrameChange
         _holder = StateObject(wrappedValue: ViewModelHolder { owner in
-            KoinViewModelProvider.shared.getRoutePlannerViewModel(owner: owner, stops: stops, restored: restored)
+            KoinViewModelProvider.shared.getRoutePlannerViewModel(
+                owner: owner,
+                stops: stops,
+                restored: restored,
+                mode: mode
+            )
         })
     }
 
@@ -87,6 +107,9 @@ struct RoutePlannerSheetView: View {
         // The effect stream and the one-shot seeding must not restart on every uiState change,
         // so they sit outside the Observing body that SwiftUI rebuilds.
         plannerContent
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
+                onSheetFrameChange(frame)
+            }
             .onAppear {
                 guard !didAppear else { return }
                 didAppear = true
@@ -97,28 +120,24 @@ struct RoutePlannerSheetView: View {
                     handleEffect(effect)
                 }
             }
-            .onChange(of: pick) { _, newPick in
-                guard let newPick else { return }
-                viewModel.onEvent(event: RoutePlannerUiEventsLocationAdded(location: newPick.location))
+            .onChange(of: mapEvent) { _, newMapEvent in
+                if let newMapEvent { viewModel.onEvent(event: newMapEvent.event) }
             }
     }
 
     private var plannerContent: some View {
         Observing(viewModel.uiState) { uiState in
-            RoutePlannerContentView(
-                strings: strings,
-                uiState: uiState,
-                onEvent: { event in
-                    viewModel.onEvent(event: event)
-                },
-                detent: detent,
-                onExpandRequest: onExpandRequest,
-                onHeightsChange: onHeightsChange
-            )
+            content(uiState: uiState)
             .onChange(of: uiState.routePlanMarkers, initial: true) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.routePlan) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.isAwaitingRoutePlan) { notifyRoutePlanUpdated(uiState) }
+            .onChange(of: uiState.isRoutePlanLoading) { notifyRoutePlanUpdated(uiState) }
             .onChange(of: uiState.session, initial: true) { onSessionChanged(uiState.session) }
+            .onChange(of: uiState.isPickingOnMap, initial: true) { onPickOnMapChanged(uiState.isPickingOnMap) }
+            .onChange(of: uiState.isMovingStop, initial: true) { onMoveStopChanged(uiState.isMovingStop) }
+            .onChange(of: uiState.selectedStop?.location, initial: true) {
+                onSelectedStopChanged(uiState.selectedStop?.location)
+            }
             .alert(
                 strings.get(id: SharedRes.strings().route_planner_save_error_title),
                 isPresented: $showsSaveError
@@ -140,11 +159,76 @@ struct RoutePlannerSheetView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
             }
+            .sheet(isPresented: renameBinding(uiState: uiState)) {
+                if let stop = uiState.renamingStop {
+                    renameSheet(stop: stop, uiState: uiState)
+                }
+            }
         }
     }
 
+    // The mode is fixed for a ViewModel, so the content keeps its identity
+    @ViewBuilder
+    private func content(uiState: RoutePlannerUiState) -> some View {
+        if uiState.isRoundTripWizard {
+            RoundTripWizardContentView(
+                strings: strings,
+                uiState: uiState,
+                onEvent: { event in viewModel.onEvent(event: event) },
+                detent: detent,
+                onDetentChange: onDetentChange,
+                onHeightsChange: onHeightsChange
+            )
+        } else {
+            RoutePlannerContentView(
+                strings: strings,
+                uiState: uiState,
+                onEvent: { event in viewModel.onEvent(event: event) },
+                detent: detent,
+                maxExpandedHeight: maxExpandedHeight,
+                onDetentChange: onDetentChange,
+                onHeightsChange: onHeightsChange
+            )
+        }
+    }
+
+    private func renameSheet(stop: RoutePlannerWaypoint, uiState: RoutePlannerUiState) -> some View {
+        let resolvedName = stop.name.map { strings.get(desc: $0) } ?? ""
+        return RoutePlannerRenameStopView(
+            strings: strings,
+            stopNumber: (uiState.stops.firstIndex { $0.id == stop.id } ?? 0) + 1,
+            resolvedName: resolvedName,
+            currentName: stop.customName ?? resolvedName,
+            currentComment: stop.comment ?? "",
+            address: stop.placeName,
+            onDone: { name, comment in
+                // Keeping the resolved name as typed is no rename, so the stop follows later geocoding
+                let customName = name == resolvedName ? "" : name
+                viewModel.onEvent(
+                    event: RoutePlannerUiEventsStopRenamed(waypointId: stop.id, name: customName, comment: comment)
+                )
+            },
+            onCancel: { viewModel.onEvent(event: RoutePlannerUiEventsStopRenameDismissed.shared) }
+        )
+    }
+
     private func notifyRoutePlanUpdated(_ uiState: RoutePlannerUiState) {
-        onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan)
+        onRoutePlanUpdated(
+            uiState.routePlan,
+            uiState.routePlanMarkers,
+            uiState.isAwaitingRoutePlan,
+            uiState.isRoutePlanLoading
+        )
+    }
+
+    private func renameBinding(uiState: RoutePlannerUiState) -> Binding<Bool> {
+        Binding(
+            get: { uiState.renamingStop != nil },
+            set: { isVisible in
+                guard !isVisible else { return }
+                viewModel.onEvent(event: RoutePlannerUiEventsStopRenameDismissed.shared)
+            }
+        )
     }
 
     private func searchBinding(uiState: RoutePlannerUiState) -> Binding<Bool> {
@@ -165,8 +249,6 @@ struct RoutePlannerSheetView: View {
             showsSaveError = true
         case .minimizeSheet:
             onMinimizeRequest()
-        case .expandSheet:
-            onExpandAfterPickRequest()
         case .close:
             onDismissRequest()
         case .openUrl(let effect):

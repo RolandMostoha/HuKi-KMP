@@ -8,7 +8,6 @@ struct RoutePlannerWaypointIconColumn<Icon: View>: View {
 
     private let columnWidth: CGFloat = 20
     private let iconPadding: CGFloat = 2
-    private let connectorWidth: CGFloat = 2
 
     var body: some View {
         VStack(spacing: iconPadding) {
@@ -22,9 +21,15 @@ struct RoutePlannerWaypointIconColumn<Icon: View>: View {
     }
 
     private var connector: some View {
+        RoutePlannerWaypointConnector()
+    }
+}
+
+struct RoutePlannerWaypointConnector: View {
+    var body: some View {
         Capsule()
             .fill(Color(.tertiaryLabel))
-            .frame(width: connectorWidth)
+            .frame(width: 2)
             .frame(maxHeight: .infinity)
     }
 }

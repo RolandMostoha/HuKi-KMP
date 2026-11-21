@@ -30,7 +30,7 @@ struct RoutePlannerMaxStopsRowView: View {
 
 #Preview {
     List {
-        RoutePlannerMaxStopsRowView(strings: Strings(), maxStopCount: 10)
-        RoutePlannerMaxStopsRowView(strings: Strings(), maxStopCount: 10, rowHeight: 56)
+        RoutePlannerMaxStopsRowView(strings: Strings(), maxStopCount: 15)
+        RoutePlannerMaxStopsRowView(strings: Strings(), maxStopCount: 15, rowHeight: 56)
     }
 }

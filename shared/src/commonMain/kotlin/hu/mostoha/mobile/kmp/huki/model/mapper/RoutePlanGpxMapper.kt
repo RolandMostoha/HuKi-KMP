@@ -37,6 +37,7 @@ fun RoutePlan.toGpxDocument(
     stopPlaceNames: List<String?>,
     routeProfile: RoutePlannerProfile,
     createdAt: Instant,
+    stopComments: List<String?> = emptyList(),
 ): Document =
     Document(
         creator = "$GPX_AUTHOR_NAME ${WhatsNewContent.currentVersion}",
@@ -52,7 +53,7 @@ fun RoutePlan.toGpxDocument(
                 segments = listOf(TrackSegment(points = locations.map { it.toGpxWaypoint() })),
             ),
         ),
-        waypoints = toStopGpxWaypoints(stopPlaceNames),
+        waypoints = toStopGpxWaypoints(stopPlaceNames, stopComments),
     )
 
 /**
@@ -85,22 +86,36 @@ fun List<String?>.toRoutePlanFileName(token: Int): String {
     return "$destination$FILE_NAME_SEPARATOR$flag"
 }
 
-private fun RoutePlan.toStopGpxWaypoints(stopPlaceNames: List<String?>): List<Waypoint> {
-    val start = locations.firstOrNull()?.toNamedGpxWaypoint(stopPlaceNames.firstOrNull())
-    val end = locations.lastOrNull()?.takeIf { waypoints.size > 1 }?.toNamedGpxWaypoint(stopPlaceNames.lastOrNull())
+private fun RoutePlan.toStopGpxWaypoints(stopPlaceNames: List<String?>, stopComments: List<String?>): List<Waypoint> {
+    val lastIndex = waypoints.lastIndex
+    val start = locations.firstOrNull()
+        ?.toNamedGpxWaypoint(stopPlaceNames.firstOrNull(), stopComments.firstOrNull())
+    val end = locations.lastOrNull()
+        ?.takeIf { waypoints.size > 1 }
+        ?.toNamedGpxWaypoint(stopPlaceNames.getOrNull(lastIndex), stopComments.getOrNull(lastIndex))
     val intermediates = waypoints.mapIndexedNotNull { index, location ->
-        if (index == 0 || index == waypoints.lastIndex) {
+        if (index == 0 || index == lastIndex) {
             null
         } else {
-            location.toGpxWaypoint().copy(name = stopPlaceNames.getOrNull(index).toPlaceNameOrNull())
+            location.toGpxWaypoint().copy(
+                name = stopPlaceNames.getOrNull(index).toPlaceNameOrNull(),
+                comment = stopComments.getOrNull(index).toPlaceNameOrNull(),
+            )
         }
     }
 
     return listOfNotNull(start) + intermediates + listOfNotNull(end)
 }
 
-private fun Location.toNamedGpxWaypoint(placeName: String?): Waypoint? =
-    placeName.toPlaceNameOrNull()?.let { toGpxWaypoint().copy(name = it) }
+/**
+ * An edge stop is written only with a name or a comment, as reading matches edge waypoints to the track's ends by them.
+ */
+private fun Location.toNamedGpxWaypoint(placeName: String?, comment: String?): Waypoint? {
+    val name = placeName.toPlaceNameOrNull()
+    val trimmedComment = comment.toPlaceNameOrNull()
+    if (name == null && trimmedComment == null) return null
+    return toGpxWaypoint().copy(name = name, comment = trimmedComment)
+}
 
 private fun String?.toPlaceNameOrNull(): String? = this?.trim()?.ifEmpty { null }
 

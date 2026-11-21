@@ -57,7 +57,7 @@ fun RoutePlannerProfilePicker(
                 onCheckedChange = { onProfileSelected(profile) },
                 shapes = shapes,
                 colors = colors,
-                contentPadding = PaddingValues(horizontal = Dimens.Small, vertical = Dimens.Medium),
+                contentPadding = PaddingValues(horizontal = Dimens.Small, vertical = Dimens.Small),
                 modifier = Modifier.weight(1f),
             ) {
                 Text(

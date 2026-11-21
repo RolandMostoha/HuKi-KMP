@@ -30,3 +30,15 @@ fun MapUiState.withBaseLayer(baseLayer: BaseLayer): MapUiState {
     }
     return copy(baseLayer = baseLayer, hikingLayerVisible = hikingLayerVisible)
 }
+
+/**
+ * Clears everything the route planner draws on the map, including a replan still in flight.
+ */
+fun MapUiState.withoutRoutePlan(): MapUiState =
+    copy(
+        routePlan = null,
+        routePlanWaypoints = emptyList(),
+        selectedRoutePlanStop = null,
+        isRoutePlanLoading = false,
+        isRoutePlanPending = false,
+    )

@@ -3,16 +3,20 @@ package hu.mostoha.mobile.kmp.huki.model.mapper
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RouteStats
 import hu.mostoha.mobile.kmp.huki.model.domain.WaypointType
+import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperAlgorithm
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPath
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperPoints
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperProfile
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRateLimit
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkError
+import hu.mostoha.mobile.kmp.huki.util.RoutePlanConstants
 import hu.mostoha.mobile.kmp.huki.util.calculateTravelTime
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -64,6 +68,68 @@ class RoutePlanMapperTest {
             actual.chDisabled.shouldBeNull()
             actual.points shouldBe listOf(listOf(18.9, 47.7), listOf(19.0, 47.8))
         }
+    }
+
+    @Test
+    fun `Given a round trip request - When toRouteRequest - Then round trip parameters are sent without contraction hierarchies`() {
+        RoutePlannerProfile.entries.forEach { profile ->
+            val request = RoutePlanRequest(profile, listOf(START), ROUND_TRIP)
+
+            val actual = request.toRouteRequest()
+
+            actual.algorithm shouldBe GraphhopperAlgorithm.ROUND_TRIP
+            actual.roundTripDistance shouldBe 12000
+            actual.roundTripSeed shouldBe 7
+            actual.headings shouldBe listOf(90)
+            actual.headingPenalty shouldBe RoutePlanConstants.ROUND_TRIP_HEADING_PENALTY
+            actual.chDisabled shouldBe true
+            actual.points shouldBe listOf(listOf(18.9, 47.7))
+        }
+    }
+
+    @Test
+    fun `Given an on trails round trip - When toHukiRoutingRouteRequest - Then hike_huki is sent without a custom model`() {
+        val request = RoutePlanRequest(RoutePlannerProfile.ON_TRAILS, listOf(START), ROUND_TRIP)
+
+        val actual = request.toHukiRoutingRouteRequest()
+
+        actual.profile shouldBe GraphhopperProfile.HIKE_HUKI
+        actual.customModel.shouldBeNull()
+        actual.chDisabled shouldBe true
+        actual.algorithm shouldBe GraphhopperAlgorithm.ROUND_TRIP
+    }
+
+    @Test
+    fun `Given a route between stops - When toRouteRequest - Then no round trip parameters are sent`() {
+        val actual = RoutePlanRequest(RoutePlannerProfile.SHORTEST_ROUTE, WAYPOINTS).toRouteRequest()
+
+        actual.algorithm.shouldBeNull()
+        actual.roundTripDistance.shouldBeNull()
+        actual.headings.shouldBeNull()
+        actual.chDisabled.shouldBeNull()
+    }
+
+    @Test
+    fun `Given a round trip response with via points - When toRoundTripPlan - Then only the start is kept at both ends`() {
+        val response = GraphhopperRouteResponse(
+            paths = listOf(
+                GraphhopperPath(
+                    distance = 12000.0,
+                    time = 3_600_000,
+                    ascend = 100.0,
+                    descend = 100.0,
+                    points = GraphhopperPoints(coordinates = listOf(listOf(18.9, 47.7), listOf(19.0, 47.8), listOf(18.9, 47.7))),
+                    snappedWaypoints = GraphhopperPoints(
+                        coordinates = listOf(listOf(18.9, 47.7), listOf(19.0, 47.8), listOf(18.9, 47.7)),
+                    ),
+                ),
+            ),
+        )
+
+        val actual = response.toRoundTripPlan()
+
+        actual?.waypoints shouldBe listOf(START, START)
+        actual?.waypoints?.toGpxWaypoints()?.map { it.type } shouldBe listOf(WaypointType.ROUND_TRIP)
     }
 
     @Test
@@ -217,6 +283,8 @@ class RoutePlanMapperTest {
     )
 
     companion object {
+        private val START = Location(47.7, 18.9)
+        private val ROUND_TRIP = RoundTripOptions(distanceKm = 12, seed = 7, heading = 90)
         private fun hukiRoutingProfileTestCases() =
             listOf(
                 TestCase(RoutePlannerProfile.ON_TRAILS, GraphhopperProfile.HIKE_HUKI),

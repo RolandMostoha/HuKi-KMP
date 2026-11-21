@@ -63,7 +63,7 @@ Refer to [AGENTS.md](AGENTS.md). It's the best place for humans too.
 
 GraphHopper gives HuKi a very generous free plan to its Routing API.
 
-The Routing API calculates hiking routes between up to 10 stops, with a custom model that prefers Hungarian marked trails, the
+The Routing API calculates hiking routes between stops, with a custom model that prefers Hungarian marked trails, the
 shortest walking route and bike routes, all with elevation data for the distance, ascent and descent stats.
 
 Kudos to the GraphHopper team, I appreciate it!

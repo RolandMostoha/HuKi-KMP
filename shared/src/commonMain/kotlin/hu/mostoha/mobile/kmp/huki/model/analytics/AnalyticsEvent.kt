@@ -206,6 +206,31 @@ sealed interface AnalyticsEvent {
         override val name = "route_plan_failed"
     }
 
+    data object MenuRoundTripWizardClicked : AnalyticsEvent {
+        override val name = "menu_round_trip_wizard_clicked"
+    }
+
+    data class RoundTripCreated(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "round_trip_created_${routeProfile.value}"
+    }
+
+    data class RoundTripSaved(val routeProfile: RouteProfile) : AnalyticsEvent {
+        override val name = "round_trip_saved_${routeProfile.value}"
+    }
+
+    data object RoundTripRegenerated : AnalyticsEvent {
+        override val name = "round_trip_regenerated"
+    }
+
+    data class RoundTripDistanceChanged(val distanceKm: Int) : AnalyticsEvent {
+        override val name = "round_trip_distance_changed"
+        override val params = mapOf("distance_km" to distanceKm.toString())
+    }
+
+    data object RoundTripFailed : AnalyticsEvent {
+        override val name = "round_trip_failed"
+    }
+
     data object RoutePlanNoInternet : AnalyticsEvent {
         override val name = "route_plan_no_internet"
     }
@@ -234,6 +259,42 @@ sealed interface AnalyticsEvent {
         override val name = "routing_gh_after_huki_failure"
     }
 
+    data object RoutePlanStopMoveClicked : AnalyticsEvent {
+        override val name = "route_plan_stop_move_clicked"
+    }
+
+    data object RoutePlanStopDragged : AnalyticsEvent {
+        override val name = "route_plan_stop_dragged"
+    }
+
+    data object RoutePlanMoveHintDismissed : AnalyticsEvent {
+        override val name = "route_plan_move_hint_dismissed"
+    }
+
+    data object RoutePlanStopReplaceClicked : AnalyticsEvent {
+        override val name = "route_plan_stop_replace_clicked"
+    }
+
+    data object RoutePlanStopRenameClicked : AnalyticsEvent {
+        override val name = "route_plan_stop_rename_clicked"
+    }
+
+    data object RoutePlanStopRenamed : AnalyticsEvent {
+        override val name = "route_plan_stop_renamed"
+    }
+
+    data object RoutePlanStopSelected : AnalyticsEvent {
+        override val name = "route_plan_stop_selected"
+    }
+
+    data object RoutePlanStopMarkerClicked : AnalyticsEvent {
+        override val name = "route_plan_stop_marker_clicked"
+    }
+
+    data object RoutePlanEmptyStopAdded : AnalyticsEvent {
+        override val name = "route_plan_empty_stop_added"
+    }
+
     data object RoutePlanAddStopFromSearchClicked : AnalyticsEvent {
         override val name = "route_plan_add_stop_from_search_clicked"
     }
@@ -256,6 +317,10 @@ sealed interface AnalyticsEvent {
 
     data object RoutePlanWaypointRemoved : AnalyticsEvent {
         override val name = "route_plan_waypoint_removed"
+    }
+
+    data object RoutePlanLongPressHintDismissed : AnalyticsEvent {
+        override val name = "route_plan_long_press_hint_dismissed"
     }
 
     data class HikeRecommendationSelected(val recommender: HikeRecommender) : AnalyticsEvent {

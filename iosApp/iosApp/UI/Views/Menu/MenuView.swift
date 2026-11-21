@@ -8,6 +8,7 @@ enum MenuRoute: Hashable {
 struct MenuView: View {
     let onSettingsClicked: () -> Void
     let onRoutePlannerClicked: () -> Void
+    let onRoundTripWizardClicked: () -> Void
     let onDiscoverClicked: () -> Void
     let onGpxCollectionClicked: () -> Void
     let onGpxGuideClicked: () -> Void
@@ -154,6 +155,7 @@ private extension MenuView {
     func featureNavigationAction(for effect: MenuUiEffects) -> (() -> Void)? {
         switch onEnum(of: effect) {
         case .navigateToRoutePlanner: return onRoutePlannerClicked
+        case .navigateToRoundTripWizard: return onRoundTripWizardClicked
         case .navigateToDiscover: return onDiscoverClicked
         case .navigateToPlaceHistory: return onPlaceHistoryClicked
         case .navigateToGpxCollection: return onGpxCollectionClicked

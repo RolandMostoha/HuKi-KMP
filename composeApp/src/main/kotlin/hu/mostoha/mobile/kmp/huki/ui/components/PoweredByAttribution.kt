@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ fun PoweredByAttribution(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     logoTint: Color = Color.Unspecified,
+    textStyle: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
     Row(
         modifier = modifier
@@ -46,8 +49,8 @@ fun PoweredByAttribution(
     ) {
         Text(
             text = mokoString(SharedRes.strings.search_powered_by),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = textStyle,
+            color = textStyle.color.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant },
         )
         Spacer(modifier = Modifier.width(Dimens.Small))
         Icon(

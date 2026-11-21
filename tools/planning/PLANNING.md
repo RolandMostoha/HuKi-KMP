@@ -164,23 +164,52 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Route Planner
 
-| Status | Scope        | Task                                                                                                                                                                                           |
-|--------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[R]`  | RoutePlanner | Add RoundTrip option to route planner as 4th element in the segmented control. It brings up one destination, and distance tweaker                                                              |
-| `[R]`  | RoutePlanner | Make route plans max 15 WPs instead of 10                                                                                                                                                      |
-| `[R]`  | RoutePlanner | If the waypoint is clicked again, it highlihts the selected one and you should be able to edit the actual waypoint (override with a new entry)                                                 |
-| `[R]`  | RoutePlanner | Make the waypoints clickable from the map. which highlights and shows and selects the WP in the sheet                                                                                          |
-| `[R]`  | RoutePlanner | Add comment possibility to route planner. Also show the GPX comments in the infowindow                                                                                                         |
-| `[R]`  | RoutePlanner | One-time hint when the planner opens: "Long-press the map to add a stop" (only 128 of ~300 planner users found the long-press)                                                                 |
-| `[R]`  | RoutePlanner | Add title for "make a roundtrip" button for visibility ![img_10.png](img_10.png)                                                                                                               |
-| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                          |
-| `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                           |
-| `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                           |
-| `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not open in the middle, but in the bottom left corner.                                                                                                |
-| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly. |
-| `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.      |
-| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                   |
-| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                             |
+lets disjoin new waypoint and round trip actions to dedicated buttons below the WPs ![img_7.png](img_7.png)
+
+if user clicks on new waypoint, instead of immediately raising the search sheet, lets add an "empty waypoint". ![img_12.png](img_12.png)
+
+The empty waypoint can be also re-dragged, moved and has 2 actions: select on map and select from search.
+
+When select from search -> original sheet behavior
+When select on map -> minimize the RP sheet, and place the POI on next long click.
+
+Lets implement the waypoint edit option. when the user clicks on the waypoint with a single click, it gets highlighted as the empty WP.
+
+3 actions reveal: ![img_13.png](img_13.png). "Move" "Search" "Rename"
+
+1. Move - sheet is minimized. we show a hint similar like select on map hint, which explains that it can be moved with long tap drag (anytime). Also implement that any WP can be drag and dropped, not just the selected.
+2. Search - opens the search sheet and a selection overrides the WP
+3. Rename - ![img_14.png](img_14.png). Use our LG styling. WP name can be renamed (useful for long geocoded names). also GPX comment can be added.
+
+Show gpx comments in the info window ![img_15.png](img_15.png)
+
+| Status | Scope        | Task                                                                                                                                                                                                                                                                                                     |
+|--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[x]`  | RoutePlanner | Header: settings button left, centered title with "Powered by GraphHopper" below it, close button right. Compact sheet on Android                                                                                                                                                                        |
+| `[x]`  | RoutePlanner | README: "The Routing API calculates hiking routes between up to 10 stops," - remove up to 10 stops part                                                                                                                                                                                                  |
+| `[x]`  | RoutePlanner | Make route plans max 15 WPs instead of 10                                                                                                                                                                                                                                                                |
+| `[x]`  | RoutePlanner | Contextual hints above the planner sheet: "Klikkelj hosszan a térképen" while picking a stop on the map, "Drag a stop to move it" while moving one. Each shows while its mode is on and goes away when the mode ends or is dismissed. Reuses the Quick guide long-tap animation. ![img_3.png](img_3.png) |
+| `[x]`  | RoutePlanner | lets disjoin new waypoint and round trip actions to dedicated buttons below the WPs ![img_7.png](img_7.png)                                                                                                                                                                                              |
+| `[x]`  | RoutePlanner | Add rename and comment possibility to route planner.                                                                                                                                                                                                                                                     |
+| `[x]`  | RoutePlanner | Use a matching grey color for edit name sheet bg. Make the edit text hint a bit lighter text color so it indicates it just a hint not a filled input. ![img_16.png](img_16.png)                                                                                                                          |
+| `[x]`  | RoutePlanner | Android: add some content padding so the hint doesnt cover the WPs on the bottom. Just add some hardcoded extra, avoid recalculations and unnecessary draggings pullings. ![img_18.png](img_18.png)                                                                                                      |
+| `[x]`  | RoutePlanner | Android: one map camera move per action — no double pulls on Pick on map, long-press add, remove stop (also minimized + selected)                                                                                                                                                                        |
+| `[x]`  | RoutePlanner | Android: larger touch area (44dp) for the route plan markers, so long-press drag is easier, marker size unchanged                                                                                                                                                                                        |
+| `[x]`  | RoutePlanner | iOS: hint padding for the map camera (first try was reverted: Select stop → Move zoomed the camera far out)                                                                                                                                                                                              |
+| `[x]`  | RoutePlanner | Its really hard to properly drag the sheet, it also has a sudden flashy jump. /Users/mostoha.roland/Desktop/Screen_recording_20261120_071844.mp4                                                                                                                                                         |
+| `[x]`  | RoutePlanner | Route planner list row drag and drop touch feedback weird boxy.                                                                                                                                                                                                                                          |
+| `[x]`  | RoutePlanner | Add "Round-trip Wizard" to menu. It brings up a similar like RoutePlanner sheet with one destination, and a distance slider. Check HuKi-Android for the BE implementation.  ![img_19.png](img_19.png)     ![img_20.png](img_20.png) ![img_21.png](img_21.png)                                            |
+| `[ ]`  | RoutePlanner | For both route planner and round trip wizard. In minimized state add an "eye" fab above-right the sheet, which does the same as GPX eye icon, temporarily hides the route so we can see behind the route and check hiking routes while planning.                                                         |
+| `[ ]`  | RoutePlanner | When the roundtrip brings back you in the same route, lets mark the "turning back" point somehow                                                                                                                                                                                                         |
+| `[ ]`  | RoutePlanner | Landscape mode: the expanded sheet is taller than the screen, its header slides under the status bar, the stats squash and Save Route is cut off, no map is left visible. Needs a landscape layout (e.g. side panel) on both platforms                                                                   |
+| `[ ]`  | RoutePlanner | Add an eye icon to route plan so you can "look behind" the plan and see where the hikings routes are.                                                                                                                                                                                                    |
+| `[ ]`  | RoutePlanner | Add guard if "Route Plan" next destination is too far away >50km -> Show a warning message, the stop is too far away                                                                                                                                                                                     |
+| `[ ]`  | RoutePlanner | In-memory LRU cache keyed by RoutePlanRequest (profile + waypoints),                                                                                                                                                                                                                                     |
+| `[ ]`  | RoutePlanner | Dedicated iPad support so the sheet does not xopen in the middle, but in the bottom left corner.                                                                                                                                                                                                         |
+| `[?]`  | RoutePlanner | Android: a long/fast swipe down on the planner sheet targets Hidden, which the dismiss guard rejects, so it snaps back to expanded instead of minimizing. A moderate drag minimizes correctly.                                                                                                           |
+| `[?]`  | RoutePlanner | Add support for converting to round trip through MAP. If users click on the START WP, there should be a toolbar "Finish with round trip" button, which adds the first wp as the last one.                                                                                                                |
+| `[?]`  | RoutePlanner | Pre-warm: call `/health` once remaining drops below the reserve, to hide the ~6 s cold start                                                                                                                                                                                                             |
+| `[?]`  | RoutePlanner | Remote Config (`routing_mode`, `gh_credit_reserve`) — needs Firebase Remote Config on both Android and iOS first; defaults in code                                                                                                                                                                       |
 
 
 ### FEATURE: Discover

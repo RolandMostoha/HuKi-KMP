@@ -24,8 +24,11 @@ import hu.mostoha.mobile.kmp.huki.model.domain.FeatureSession
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.model.domain.Sheet
 import hu.mostoha.mobile.kmp.huki.model.domain.UserPreferences
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRoutePlannerWaypoint
@@ -274,6 +277,28 @@ class MainViewModelSessionTest {
             val restored = restoreViewModel(viewModel.sessionSnapshot())
 
             restored.uiState.value.sheet shouldBe Sheet.RoutePlanner(restored = routePlannerSession)
+        }
+    }
+
+    @Test
+    fun `Given an open Round-trip Wizard - When it is opened again from the menu - Then its session is kept`() {
+        runTest {
+            val wizardSession = RoutePlannerSession(
+                routeProfile = RoutePlannerProfile.ON_TRAILS,
+                waypoints = listOf(Location(47.76, 18.96).toRoutePlannerWaypoint(), RoutePlannerWaypoint()),
+                mode = RoutePlannerMode.ROUND_TRIP_WIZARD,
+                roundTrip = RoundTripOptions(distanceKm = 12, seed = 5, heading = 45),
+            )
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+            viewModel.onEvent(MainUiEvents.RoutePlannerStateChanged(wizardSession))
+
+            viewModel.onEvent(MainUiEvents.RoundTripWizardClicked)
+
+            val restored = restoreViewModel(viewModel.sessionSnapshot())
+            restored.uiState.value.sheet shouldBe
+                Sheet.RoutePlanner(restored = wizardSession, mode = RoutePlannerMode.ROUND_TRIP_WIZARD)
         }
     }
 

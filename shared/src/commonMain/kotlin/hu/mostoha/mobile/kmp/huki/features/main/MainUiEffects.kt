@@ -9,6 +9,13 @@ sealed interface MainUiEffects : UiEffect {
     data object ShowGpxFilePicker : MainUiEffects
     data class OpenMapsNavigation(val location: Location) : MainUiEffects
     data class RoutePlannerLocationPicked(val location: Location) : MainUiEffects
+    data class RoutePlannerStopDragged(
+        val from: Location,
+        val to: Location,
+    ) : MainUiEffects
+    data class RoutePlannerMarkerClicked(val location: Location) : MainUiEffects
+    data object RoutePlannerStopDeselected : MainUiEffects
+
     data class OpenUrl(val url: String) : MainUiEffects
     data object NavigateToDestinations : MainUiEffects
     data object NavigateToGpxGuide : MainUiEffects

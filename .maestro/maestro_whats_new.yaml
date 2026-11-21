@@ -15,9 +15,10 @@ appId: ${APP_ID}
 - assertVisible:
     id: WHATS_NEW_RELEASE_NOTES
 
-# Personal message card, its text changes with every release
+# Personal message card, only in releases whose metadata.json has a message, and its text changes with every release
 - assertVisible:
     id: WHATS_NEW_MESSAGE_CARD
+    optional: true
 
 # Close the sheet → back to the map
 - tapOn: "Close"

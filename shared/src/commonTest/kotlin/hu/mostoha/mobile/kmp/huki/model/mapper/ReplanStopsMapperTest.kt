@@ -102,14 +102,14 @@ class ReplanStopsMapperTest {
                     ),
                 ),
                 TestCase(
-                    input = List(12) { index ->
+                    input = List(17) { index ->
                         GpxWaypoint(Location(47.0 + index / 100.0, 19.0), WaypointType.INTERMEDIATE, name = "$index")
                     } + listOf(
                         GpxWaypoint(DOBOGOKO, WaypointType.START, name = "Dobogókő"),
                         GpxWaypoint(SZENTENDRE, WaypointType.END, name = "Szentendre"),
                     ),
                     result = listOf(Stop("Dobogókő", DOBOGOKO)) +
-                        List(8) { index -> Stop("$index", Location(47.0 + index / 100.0, 19.0)) } +
+                        List(13) { index -> Stop("$index", Location(47.0 + index / 100.0, 19.0)) } +
                         listOf(Stop("Szentendre", SZENTENDRE)),
                 ),
                 TestCase(

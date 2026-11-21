@@ -6,4 +6,5 @@ enum class RestoredFeature(val value: String) {
     OKT("okt"),
     LANDSCAPES("landscapes"),
     ROUTE_PLANNER("route_planner"),
+    ROUND_TRIP_WIZARD("round_trip_wizard"),
 }

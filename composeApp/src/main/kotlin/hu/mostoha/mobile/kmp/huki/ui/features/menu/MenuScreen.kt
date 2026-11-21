@@ -73,6 +73,7 @@ fun MenuScreen(
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
+    onRoundTripWizardClicked: () -> Unit,
     onDiscoverClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -92,6 +93,7 @@ fun MenuScreen(
         onBack = onBack,
         onSettingsClicked = onSettingsClicked,
         onRoutePlannerClicked = onRoutePlannerClicked,
+        onRoundTripWizardClicked = onRoundTripWizardClicked,
         onDiscoverClicked = onDiscoverClicked,
         onGpxCollectionClicked = onGpxCollectionClicked,
         onGpxGuideClicked = onGpxGuideClicked,
@@ -112,6 +114,7 @@ private fun MenuContent(
     onBack: () -> Unit,
     onSettingsClicked: () -> Unit,
     onRoutePlannerClicked: () -> Unit,
+    onRoundTripWizardClicked: () -> Unit,
     onDiscoverClicked: () -> Unit,
     onGpxCollectionClicked: () -> Unit,
     onGpxGuideClicked: () -> Unit,
@@ -128,6 +131,7 @@ private fun MenuContent(
                 MenuUiEffects.NavigateBack -> onBack()
                 MenuUiEffects.NavigateToSettings -> onSettingsClicked()
                 MenuUiEffects.NavigateToRoutePlanner -> onRoutePlannerClicked()
+                MenuUiEffects.NavigateToRoundTripWizard -> onRoundTripWizardClicked()
                 MenuUiEffects.NavigateToDiscover -> onDiscoverClicked()
                 MenuUiEffects.NavigateToPlaceHistory -> onPlaceHistoryClicked()
                 MenuUiEffects.NavigateToGpxCollection -> onGpxCollectionClicked()
@@ -218,6 +222,21 @@ private fun MenuContent(
                 ) {
                     TintedRowIcon(
                         drawableResId = R.drawable.ic_route,
+                        tint = mokoColor(SharedRes.colors.onPrimary),
+                    )
+                }
+                MenuRowDivider()
+                MenuRow(
+                    title = mokoString(SharedRes.strings.menu_item_round_trip_wizard),
+                    valueText = null,
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_round_trip_wizard),
+                    testTag = TestTags.MENU_ROW_ROUND_TRIP_WIZARD,
+                    onClick = { onEvent(MenuUiEvents.RoundTripWizardClicked) },
+                    description = mokoString(SharedRes.strings.menu_item_round_trip_wizard_description),
+                    iconBackgroundColor = mokoColor(SharedRes.colors.primary),
+                ) {
+                    TintedRowIcon(
+                        drawableResId = R.drawable.ic_cycle,
                         tint = mokoColor(SharedRes.colors.onPrimary),
                     )
                 }
@@ -609,6 +628,7 @@ private fun MenuContentPreview() {
             onBack = {},
             onSettingsClicked = {},
             onRoutePlannerClicked = {},
+            onRoundTripWizardClicked = {},
             onDiscoverClicked = {},
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},
@@ -632,6 +652,7 @@ private fun MenuContentSupporterPreview() {
             onBack = {},
             onSettingsClicked = {},
             onRoutePlannerClicked = {},
+            onRoundTripWizardClicked = {},
             onDiscoverClicked = {},
             onGpxCollectionClicked = {},
             onGpxGuideClicked = {},

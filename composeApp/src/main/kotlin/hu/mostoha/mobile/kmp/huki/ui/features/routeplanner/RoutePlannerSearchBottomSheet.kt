@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,7 +41,9 @@ import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderUiState
 import hu.mostoha.mobile.kmp.huki.features.placefinder.PlaceFinderViewModel
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.secondarySheetColor
 import hu.mostoha.mobile.kmp.huki.ui.components.SearchField
 import hu.mostoha.mobile.kmp.huki.ui.components.SecondaryButton
 import hu.mostoha.mobile.kmp.huki.ui.features.search.DestinationsSection
@@ -56,6 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun RoutePlannerSearchBottomSheet(
     sheetState: SheetState,
     myLocation: Location?,
+    replacedStop: RoutePlannerWaypoint?,
     onEvent: (RoutePlannerUiEvents) -> Unit,
     onLocationIqClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -65,13 +69,14 @@ fun RoutePlannerSearchBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(RoutePlannerUiEvents.WaypointSearchDismissed) },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = secondarySheetColor,
         dragHandle = null,
         modifier = modifier,
     ) {
         RoutePlannerSearchContent(
             uiState = uiState,
             myLocation = myLocation,
+            replacedStop = replacedStop,
             onEvent = onEvent,
             onPlaceFinderEvent = viewModel::onEvent,
             onLocationIqClick = onLocationIqClick,
@@ -83,6 +88,7 @@ fun RoutePlannerSearchBottomSheet(
 private fun RoutePlannerSearchContent(
     uiState: PlaceFinderUiState,
     myLocation: Location?,
+    replacedStop: RoutePlannerWaypoint?,
     onEvent: (RoutePlannerUiEvents) -> Unit,
     onPlaceFinderEvent: (PlaceFinderUiEvents) -> Unit,
     onLocationIqClick: () -> Unit,
@@ -109,14 +115,7 @@ private fun RoutePlannerSearchContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
         ) {
-            Text(
-                text = mokoString(SharedRes.strings.route_planner_add_stop_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
+            RoutePlannerSearchTitle(replacedStop = replacedStop, modifier = Modifier.weight(1f))
             IconButton(
                 onClick = { onEvent(RoutePlannerUiEvents.WaypointSearchDismissed) },
                 modifier = Modifier.testTagAsResourceId(TestTags.ROUTE_PLANNER_SEARCH_CLOSE_BUTTON),
@@ -148,6 +147,49 @@ private fun RoutePlannerSearchContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
         )
+    }
+}
+
+@Composable
+private fun RoutePlannerSearchTitle(replacedStop: RoutePlannerWaypoint?, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(
+            text = mokoString(
+                if (replacedStop == null) {
+                    SharedRes.strings.route_planner_add_stop_title
+                } else {
+                    SharedRes.strings.route_planner_replace_stop_title
+                },
+            ),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (replacedStop != null) {
+            Row(
+                modifier = Modifier.testTagAsResourceId(TestTags.ROUTE_PLANNER_SEARCH_REPLACED_STOP),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Dimens.ExtraSmall),
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_sync),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(Dimens.IconExtraSmall),
+                )
+                Text(
+                    text = mokoString(
+                        SharedRes.strings.route_planner_replace_stop_subtitle,
+                        replacedStop.displayName?.let { mokoString(it) }.orEmpty(),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 
@@ -217,26 +259,13 @@ private fun RoutePlannerSearchActions(
     onEvent: (RoutePlannerUiEvents) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Dimens.MediumLarge),
-    ) {
-        SecondaryButton(
-            iconResId = R.drawable.ic_my_location,
-            text = mokoString(SharedRes.strings.route_planner_pick_my_location),
-            onClick = { onEvent(RoutePlannerUiEvents.MyLocationAdded) },
-            enabled = myLocation != null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTagAsResourceId(TestTags.ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON),
-        )
-        SecondaryButton(
-            iconResId = R.drawable.ic_touch_long,
-            text = mokoString(SharedRes.strings.route_planner_pick_on_map),
-            onClick = { onEvent(RoutePlannerUiEvents.PickOnMapClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTagAsResourceId(TestTags.ROUTE_PLANNER_SEARCH_PICK_ON_MAP_BUTTON),
-        )
-    }
+    SecondaryButton(
+        iconResId = R.drawable.ic_my_location,
+        text = mokoString(SharedRes.strings.route_planner_pick_my_location),
+        onClick = { onEvent(RoutePlannerUiEvents.MyLocationAdded) },
+        enabled = myLocation != null,
+        modifier = modifier
+            .fillMaxWidth()
+            .testTagAsResourceId(TestTags.ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON),
+    )
 }

@@ -49,6 +49,18 @@ class DistanceInfoWindowMapperTest {
     }
 
     @Test
+    fun `Given waypoint descriptions - When toDistanceInfoWindow - Then they are trimmed and blanks dropped`() {
+        val descriptions = listOf(" Forrás a nyereg alatt ", "  ", null)
+
+        val actual = descriptions.map { description ->
+            GpxWaypoint(LOCATION, WaypointType.INTERMEDIATE, description = description)
+                .toDistanceInfoWindow(id = 0, progress = null)
+        }
+
+        actual.map { it.description } shouldBe listOf("Forrás a nyereg alatt", null, null)
+    }
+
+    @Test
     fun `Given waypoint names - When toDistanceInfoWindow - Then names are trimmed and blanks dropped`() {
         val names = listOf(" Dobogókő ", "  ", null)
 

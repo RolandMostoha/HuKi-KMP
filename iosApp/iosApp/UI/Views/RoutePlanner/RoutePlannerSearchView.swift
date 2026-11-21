@@ -124,32 +124,29 @@ struct RoutePlannerSearchView: View {
     }
 
     private var actions: some View {
-        VStack(spacing: 12) {
-            SecondaryButton(
-                icon: .system("location.fill"),
-                title: strings.get(id: SharedRes.strings().route_planner_pick_my_location),
-                action: { onEvent(RoutePlannerUiEventsMyLocationAdded.shared) }
-            )
-            .disabled(uiState.myLocation == nil)
-            .opacity(uiState.myLocation == nil ? 0.5 : 1)
-            .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON)
-            SecondaryButton(
-                icon: .system("hand.tap.fill"),
-                title: strings.get(id: SharedRes.strings().route_planner_pick_on_map),
-                action: { onEvent(RoutePlannerUiEventsPickOnMapClicked.shared) }
-            )
-            .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SEARCH_PICK_ON_MAP_BUTTON)
-        }
+        SecondaryButton(
+            icon: .system("location.fill"),
+            title: strings.get(id: SharedRes.strings().route_planner_pick_my_location),
+            action: { onEvent(RoutePlannerUiEventsMyLocationAdded.shared) }
+        )
+        .disabled(uiState.myLocation == nil)
+        .opacity(uiState.myLocation == nil ? 0.5 : 1)
+        .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SEARCH_MY_LOCATION_BUTTON)
         .padding(.horizontal, 16)
         .padding(.top, Dimens.sectionSpacing)
     }
 
     private var header: some View {
         HStack(spacing: 14) {
-            Text(strings.get(id: SharedRes.strings().route_planner_add_stop_title))
-                .font(.system(size: 24, weight: .bold))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(strings.get(id: title))
+                    .font(.system(size: 24, weight: .bold))
+                    .lineLimit(1)
+                if let replacedStop = uiState.replacedStop {
+                    replacedStopLabel(replacedStop)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             CloseButton(
                 action: { onEvent(RoutePlannerUiEventsWaypointSearchDismissed.shared) },
                 accessibilityIdentifier: TestTags.shared.ROUTE_PLANNER_SEARCH_CLOSE_BUTTON
@@ -158,6 +155,24 @@ struct RoutePlannerSearchView: View {
         .padding(.leading, 24)
         .padding(.trailing, 16)
         .padding(.top, 20)
+    }
+
+    private var title: StringResource {
+        uiState.replacedStop == nil
+            ? SharedRes.strings().route_planner_add_stop_title
+            : SharedRes.strings().route_planner_replace_stop_title
+    }
+
+    private func replacedStopLabel(_ stop: RoutePlannerWaypoint) -> some View {
+        let name = stop.displayName.map { strings.get(desc: $0) } ?? ""
+        return Label(
+            strings.get(id: SharedRes.strings().route_planner_replace_stop_subtitle, args: [name]),
+            systemImage: "arrow.triangle.2.circlepath"
+        )
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SEARCH_REPLACED_STOP)
     }
 
     private func addPlace(_ place: Place) {
@@ -184,7 +199,12 @@ struct RoutePlannerSearchView: View {
                 isWaypointSearchVisible: true,
                 waypointSearchTargetId: nil,
                 isPickingOnMap: false,
-                myLocation: Location(latitude: 47.72, longitude: 18.89, altitude: nil)
+                selectedStopId: nil,
+                renamingStopId: nil,
+                isMovingStop: false,
+                myLocation: Location(latitude: 47.72, longitude: 18.89, altitude: nil),
+                mode: .planner,
+                roundTrip: nil
             ),
             onEvent: { _ in }
         )
@@ -204,7 +224,12 @@ struct RoutePlannerSearchView: View {
                 isWaypointSearchVisible: true,
                 waypointSearchTargetId: nil,
                 isPickingOnMap: false,
-                myLocation: nil
+                selectedStopId: nil,
+                renamingStopId: nil,
+                isMovingStop: false,
+                myLocation: nil,
+                mode: .planner,
+                roundTrip: nil
             ),
             onEvent: { _ in }
         )

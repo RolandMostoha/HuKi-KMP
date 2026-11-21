@@ -54,6 +54,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceDetails
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerHint
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -81,6 +83,7 @@ import hu.mostoha.mobile.kmp.huki.model.mapper.withBaseLayer
 import hu.mostoha.mobile.kmp.huki.model.mapper.withDistanceFrom
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutGpx
 import hu.mostoha.mobile.kmp.huki.model.mapper.withoutLandscapes
+import hu.mostoha.mobile.kmp.huki.model.mapper.withoutRoutePlan
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 import hu.mostoha.mobile.kmp.huki.repository.DestinationRepository
 import hu.mostoha.mobile.kmp.huki.repository.GeocodingRepository
@@ -274,8 +277,17 @@ class MainViewModel(
             MainUiEvents.PlaceDetailsMapsNavigationClicked -> openPlaceMapsNavigation()
             // Route Planner events
             MainUiEvents.RoutePlannerClicked -> showRoutePlanner(_uiState.value.mapUiState.routeStops)
-            is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event.routePlan, event.markers, event.isAwaitingRoutePlan)
-            is MainUiEvents.RoutePlannerStateChanged -> routePlannerSession.value = event.session
+            MainUiEvents.RoundTripWizardClicked -> showRoundTripWizard()
+            is MainUiEvents.RoutePlanUpdated -> showRoutePlan(event)
+            is MainUiEvents.RoutePlannerStateChanged -> updateRoutePlannerSession(event.session)
+            is MainUiEvents.RoutePlannerPickOnMapChanged ->
+                showRoutePlannerHint(RoutePlannerHint.LONG_PRESS, event.isPickingOnMap)
+            is MainUiEvents.RoutePlannerMoveStopChanged -> changeRoutePlannerStopMove(event.isMovingStop)
+            is MainUiEvents.RoutePlanMarkerDragged -> dragRoutePlanMarker(event.from, event.to)
+            is MainUiEvents.RoutePlanMarkerClicked -> clickRoutePlanMarker(event.location)
+            MainUiEvents.MapClicked -> deselectRoutePlanStop()
+            is MainUiEvents.RoutePlannerSelectedStopChanged -> showSelectedRoutePlanStop(event.location)
+            MainUiEvents.RoutePlannerHintDismissed -> dismissRoutePlannerHint()
             // My location events
             MainUiEvents.MyLocationClicked -> enableMyLocation()
             MainUiEvents.MyLocationLongClicked -> enableMyLocation(MyLocationStatus.FollowingLiveCompass)
@@ -393,10 +405,8 @@ class MainViewModel(
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = sheet,
-                mapUiState = uiState.mapUiState.copy(
+                mapUiState = uiState.mapUiState.withoutRoutePlan().copy(
                     placeDetails = null,
-                    routePlan = null,
-                    routePlanWaypoints = emptyList(),
                 ),
             )
         }
@@ -409,10 +419,9 @@ class MainViewModel(
         _uiState.update { uiState ->
             uiState.copy(
                 sheet = null,
-                mapUiState = uiState.mapUiState.copy(
+                routePlannerHint = null,
+                mapUiState = uiState.mapUiState.withoutRoutePlan().copy(
                     placeDetails = null,
-                    routePlan = null,
-                    routePlanWaypoints = emptyList(),
                 ),
             )
         }
@@ -510,8 +519,11 @@ class MainViewModel(
 
     private fun handleMapLongClick(location: Location) {
         when (_uiState.value.sheet) {
-            is Sheet.RoutePlanner -> viewModelScope.launch {
-                sendEffect(MainUiEffects.RoutePlannerLocationPicked(location))
+            is Sheet.RoutePlanner -> {
+                _uiState.update { it.copy(routePlannerHint = null) }
+                viewModelScope.launch {
+                    sendEffect(MainUiEffects.RoutePlannerLocationPicked(location))
+                }
             }
             else -> showPlaceDetails(location)
         }
@@ -614,9 +626,31 @@ class MainViewModel(
     }
 
     private fun showRoutePlanner(stops: List<PlaceDetails>) {
+        if (isRoutePlannerOpen(RoutePlannerMode.PLANNER)) return
         val waypoints = stops.map { it.toRoutePlannerWaypoint() }
         routePlannerSession.value = null
         openRoutePlannerSheet(Sheet.RoutePlanner(waypoints), waypoints)
+    }
+
+    private fun showRoundTripWizard() {
+        if (isRoutePlannerOpen(RoutePlannerMode.ROUND_TRIP_WIZARD)) return
+        routePlannerSession.value = null
+        openRoutePlannerSheet(Sheet.RoutePlanner(mode = RoutePlannerMode.ROUND_TRIP_WIZARD), emptyList())
+    }
+
+    /**
+     * Reopening the open mode keeps its sheet, whose state and restorable session must not be reset under it.
+     */
+    private fun isRoutePlannerOpen(mode: RoutePlannerMode): Boolean =
+        (_uiState.value.sheet as? Sheet.RoutePlanner)?.mode == mode
+
+    /**
+     * A closing planner can still report its state after the other mode opened, which must not become its session.
+     */
+    private fun updateRoutePlannerSession(session: RoutePlannerSession) {
+        val sheet = _uiState.value.sheet as? Sheet.RoutePlanner ?: return
+        if (sheet.mode != session.mode) return
+        routePlannerSession.value = session
     }
 
     private fun replanGpx(uri: String) {
@@ -664,28 +698,40 @@ class MainViewModel(
             uiState.copy(
                 sheet = sheet,
                 isOktLoading = false,
+                routePlannerHint = null,
                 mapUiState = uiState.mapUiState
                     .withoutGpx()
                     .withoutLandscapes()
+                    .withoutRoutePlan()
                     .copy(
                         okt = null,
                         placeDetails = null,
-                        routePlan = null,
-                        routePlanWaypoints = emptyList(),
                         routeStops = emptyList(),
                     ),
             )
         }
     }
 
-    private fun showRoutePlan(routePlan: RoutePlan?, markers: List<GpxWaypoint>, isAwaitingRoutePlan: Boolean) {
+    private fun showRoutePlan(event: MainUiEvents.RoutePlanUpdated) {
+        // The closing planner can still report a late plan or stop name, which must not put its markers back,
+        // neither after it closed nor under the other mode that replaced it
+        val sheet = _uiState.value.sheet as? Sheet.RoutePlanner ?: return
+        if (sheet.mode != event.mode) return
+        val routePlan = event.routePlan
         val isNewPlan = _uiState.value.mapUiState.routePlan != routePlan
-        _uiState.updateMapUiState { it.copy(routePlan = routePlan, routePlanWaypoints = markers) }
+        _uiState.updateMapUiState {
+            it.copy(
+                routePlan = routePlan,
+                routePlanWaypoints = event.markers,
+                isRoutePlanLoading = event.isRoutePlanLoading,
+                isRoutePlanPending = event.isAwaitingRoutePlan || event.isRoutePlanLoading,
+            )
+        }
         when {
             routePlan != null -> if (isNewPlan) frameRoutePlan(routePlan)
             // Each intermediate stop set (e.g. my location joining) would pull the camera before the plan lands
-            isAwaitingRoutePlan -> Unit
-            else -> frameRouteStops(markers.map { it.location })
+            event.isAwaitingRoutePlan -> Unit
+            else -> frameRouteStops(event.markers.map { it.location })
         }
     }
 
@@ -886,7 +932,7 @@ class MainViewModel(
 
     private fun restoreRoutePlanner(session: RoutePlannerSession) {
         routePlannerSession.value = session
-        _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session)) }
+        _uiState.update { it.copy(sheet = Sheet.RoutePlanner(restored = session, mode = session.mode)) }
         onSessionRestored(FeatureSession.RoutePlanner(session))
     }
 
@@ -982,6 +1028,76 @@ class MainViewModel(
             .filter { it != Screen.MAP }
             .onEach { analyticsService.logEvent(AnalyticsEvent.ScreenView(it)) }
             .launchIn(viewModelScope)
+    }
+
+    private fun showSelectedRoutePlanStop(location: Location?) {
+        if (_uiState.value.sheet !is Sheet.RoutePlanner) return
+        _uiState.updateMapUiState { it.copy(selectedRoutePlanStop = location) }
+    }
+
+    /**
+     * The planner's padding makes the sheet's minimizing refit keep the moved stop centered too.
+     */
+    private fun changeRoutePlannerStopMove(isMovingStop: Boolean) {
+        showRoutePlannerHint(RoutePlannerHint.MOVE_STOP, isMovingStop)
+        val marker = _uiState.value.mapUiState.selectedRoutePlanMarker
+        if (!isMovingStop || marker == null) return
+        viewModelScope.launch {
+            sendEffect(
+                MapUiEffects.UpdateCamera(
+                    target = CameraTarget.Center(marker.location),
+                    contentPadding = ContentPadding.MAP_ROUTE_PLANNER,
+                ),
+            )
+        }
+    }
+
+    private fun showRoutePlannerHint(hint: RoutePlannerHint, isShown: Boolean) {
+        if (isShown) {
+            _uiState.update { it.copy(routePlannerHint = hint) }
+        } else {
+            hideRoutePlannerHint(hint)
+        }
+    }
+
+    private fun hideRoutePlannerHint(hint: RoutePlannerHint) {
+        _uiState.update { if (it.routePlannerHint == hint) it.copy(routePlannerHint = null) else it }
+    }
+
+    private fun dismissRoutePlannerHint() {
+        val hint = _uiState.value.routePlannerHint ?: return
+
+        analyticsService.logEvent(
+            when (hint) {
+                RoutePlannerHint.LONG_PRESS -> AnalyticsEvent.RoutePlanLongPressHintDismissed
+                RoutePlannerHint.MOVE_STOP -> AnalyticsEvent.RoutePlanMoveHintDismissed
+            },
+        )
+
+        _uiState.update { it.copy(routePlannerHint = null) }
+    }
+
+    private fun dragRoutePlanMarker(from: Location, to: Location) {
+        if (_uiState.value.sheet !is Sheet.RoutePlanner) return
+        hideRoutePlannerHint(RoutePlannerHint.MOVE_STOP)
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.RoutePlannerStopDragged(from, to))
+        }
+    }
+
+    private fun clickRoutePlanMarker(location: Location) {
+        if (_uiState.value.sheet !is Sheet.RoutePlanner) return
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.RoutePlannerMarkerClicked(location))
+        }
+    }
+
+    private fun deselectRoutePlanStop() {
+        val uiState = _uiState.value
+        if (uiState.sheet !is Sheet.RoutePlanner || uiState.mapUiState.selectedRoutePlanStop == null) return
+        viewModelScope.launch {
+            sendEffect(MainUiEffects.RoutePlannerStopDeselected)
+        }
     }
 
     private fun observeSupporter() {
@@ -1210,11 +1326,9 @@ class MainViewModel(
                     oktTrail = null
                     _uiState.update { uiState ->
                         uiState.copy(
-                            mapUiState = uiState.mapUiState.withoutLandscapes().copy(
+                            mapUiState = uiState.mapUiState.withoutLandscapes().withoutRoutePlan().copy(
                                 gpxDetails = gpxDetails,
                                 placeDetails = null,
-                                routePlan = null,
-                                routePlanWaypoints = emptyList(),
                                 routeStops = emptyList(),
                                 gpxLayerVisible = restored?.isLayerVisible ?: true,
                                 gpxRouteVisible = restored?.isRouteVisible ?: true,
@@ -1364,10 +1478,9 @@ class MainViewModel(
                 mapUiState = uiState.mapUiState
                     .withoutGpx()
                     .withoutLandscapes()
+                    .withoutRoutePlan()
                     .copy(
                         placeDetails = null,
-                        routePlan = null,
-                        routePlanWaypoints = emptyList(),
                         routeStops = emptyList(),
                         okt = OktUiState(
                             type = trail.type,
@@ -1632,10 +1745,9 @@ class MainViewModel(
                 uiState.copy(
                     mapUiState = uiState.mapUiState
                         .withoutGpx()
+                        .withoutRoutePlan()
                         .copy(
                             placeDetails = null,
-                            routePlan = null,
-                            routePlanWaypoints = emptyList(),
                             routeStops = emptyList(),
                             okt = null,
                             hikingLayerVisible = false,

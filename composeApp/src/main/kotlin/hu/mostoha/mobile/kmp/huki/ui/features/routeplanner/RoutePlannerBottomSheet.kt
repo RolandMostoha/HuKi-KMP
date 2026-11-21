@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.routeplanner
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +25,9 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEffects
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerViewModel
 import hu.mostoha.mobile.kmp.huki.model.domain.GpxWaypoint
+import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlan
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -36,17 +39,26 @@ import org.koin.core.parameter.parametersOf
 fun RoutePlannerBottomSheet(
     stops: List<RoutePlannerWaypoint>,
     restored: RoutePlannerSession?,
-    pick: RoutePlannerPick?,
+    mode: RoutePlannerMode,
+    mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
-    onMoreStopsClick: () -> Unit,
-    onRoutePlanUpdated: (RoutePlan?, List<GpxWaypoint>, Boolean) -> Unit,
+    onDetentChange: (RoutePlannerDetent) -> Unit,
+    onRoutePlanUpdated: (
+        routePlan: RoutePlan?,
+        markers: List<GpxWaypoint>,
+        isAwaitingRoutePlan: Boolean,
+        isRoutePlanLoading: Boolean,
+    ) -> Unit,
     onSessionChanged: (RoutePlannerSession) -> Unit,
     onEffect: (RoutePlannerUiEffects) -> Unit,
     onLocationIqClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onPickOnMapChanged: (Boolean) -> Unit = {},
+    onMoveStopChanged: (Boolean) -> Unit = {},
+    onSelectedStopChanged: (Location?) -> Unit = {},
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
     onExpandedHeightMeasured: (Dp) -> Unit = {},
-    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(stops, restored) },
+    viewModel: RoutePlannerViewModel = koinViewModel { parametersOf(stops, restored, mode) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showSaveError by remember { mutableStateOf(false) }
@@ -54,14 +66,43 @@ fun RoutePlannerBottomSheet(
     var isSearchSheetShown by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan) {
-        onRoutePlanUpdated(uiState.routePlan, uiState.routePlanMarkers, uiState.isAwaitingRoutePlan)
+    LaunchedEffect(
+        uiState.routePlan,
+        uiState.routePlanMarkers,
+        uiState.isAwaitingRoutePlan,
+        uiState.isRoutePlanLoading,
+    ) {
+        onRoutePlanUpdated(
+            uiState.routePlan,
+            uiState.routePlanMarkers,
+            uiState.isAwaitingRoutePlan,
+            uiState.isRoutePlanLoading,
+        )
     }
     LaunchedEffect(uiState.session) {
         onSessionChanged(uiState.session)
     }
-    LaunchedEffect(pick) {
-        pick?.let { viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(it.location)) }
+    LaunchedEffect(uiState.isPickingOnMap) {
+        onPickOnMapChanged(uiState.isPickingOnMap)
+    }
+    LaunchedEffect(uiState.isMovingStop) {
+        onMoveStopChanged(uiState.isMovingStop)
+    }
+    LaunchedEffect(uiState.selectedStop?.location) {
+        onSelectedStopChanged(uiState.selectedStop?.location)
+    }
+    LaunchedEffect(mapEvent) {
+        mapEvent?.let { viewModel.onEvent(it.event) }
+    }
+    // Back steps out of the planner one layer at a time instead of leaving the app with the unsaved plan
+    BackHandler {
+        when {
+            uiState.selectedStop != null || uiState.isMovingStop || uiState.isPickingOnMap -> {
+                viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
+            }
+            detent != RoutePlannerDetent.MINIMIZED -> onDetentChange(RoutePlannerDetent.MINIMIZED)
+            else -> viewModel.onEvent(RoutePlannerUiEvents.CloseClicked)
+        }
     }
     LaunchedEffect(Unit) {
         viewModel.uiEffects.collect { effect ->
@@ -76,7 +117,7 @@ fun RoutePlannerBottomSheet(
         uiState = uiState,
         detent = detent,
         onEvent = viewModel::onEvent,
-        onMoreStopsClick = onMoreStopsClick,
+        onDetentChange = onDetentChange,
         onMinimizedHeightMeasured = onMinimizedHeightMeasured,
         onExpandedHeightMeasured = onExpandedHeightMeasured,
         modifier = modifier,
@@ -97,8 +138,16 @@ fun RoutePlannerBottomSheet(
         RoutePlannerSearchBottomSheet(
             sheetState = searchSheetState,
             myLocation = uiState.myLocation,
+            replacedStop = uiState.replacedStop,
             onEvent = viewModel::onEvent,
             onLocationIqClick = onLocationIqClick,
+        )
+    }
+    uiState.renamingStop?.let { stop ->
+        RoutePlannerRenameStopSheet(
+            stop = stop,
+            stopNumber = uiState.stops.indexOfFirst { it.id == stop.id } + 1,
+            onEvent = viewModel::onEvent,
         )
     }
     if (showSaveError) {
@@ -129,4 +178,26 @@ fun RoutePlannerBottomSheet(
             },
         )
     }
+}
+
+@Composable
+private fun RoutePlannerRenameStopSheet(
+    stop: RoutePlannerWaypoint,
+    stopNumber: Int,
+    onEvent: (RoutePlannerUiEvents) -> Unit,
+) {
+    val resolvedName = stop.name?.let { mokoString(it) }.orEmpty()
+    RoutePlannerRenameStopBottomSheet(
+        stopNumber = stopNumber,
+        resolvedName = resolvedName,
+        currentName = stop.customName ?: resolvedName,
+        currentComment = stop.comment.orEmpty(),
+        address = stop.placeName,
+        onDone = { name, comment ->
+            // Keeping the resolved name as typed is no rename, so the stop follows later geocoding
+            val customName = if (name == resolvedName) "" else name
+            onEvent(RoutePlannerUiEvents.StopRenamed(waypointId = stop.id, name = customName, comment = comment))
+        },
+        onDismiss = { onEvent(RoutePlannerUiEvents.StopRenameDismissed) },
+    )
 }

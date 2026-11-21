@@ -1,7 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.repository
 
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRouteResponse
 import hu.mostoha.mobile.kmp.huki.model.network.NetworkResult
 
@@ -11,11 +10,12 @@ class FakeRoutePlannerRepository(
     var callCount = 0
         private set
 
-    override suspend fun getRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> {
+    var lastRequest: RoutePlanRequest? = null
+        private set
+
+    override suspend fun getRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> {
         callCount++
+        lastRequest = request
         return result
     }
 }

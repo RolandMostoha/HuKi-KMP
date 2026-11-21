@@ -3,8 +3,7 @@ package hu.mostoha.mobile.kmp.huki.repository
 import co.touchlab.kermit.Logger
 import hu.mostoha.mobile.kmp.huki.Secrets
 import hu.mostoha.mobile.kmp.huki.model.analytics.AnalyticsEvent
-import hu.mostoha.mobile.kmp.huki.model.domain.Location
-import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.mapper.toGraphhopperRateLimit
 import hu.mostoha.mobile.kmp.huki.model.mapper.toRouteRequest
 import hu.mostoha.mobile.kmp.huki.model.network.GraphhopperRateLimit
@@ -36,17 +35,14 @@ class GraphhopperRoutePlannerRepository(
         private const val URL_ROUTE = "https://graphhopper.com/api/1/route"
     }
 
-    override suspend fun getRoutePlan(
-        profile: RoutePlannerProfile,
-        waypoints: List<Location>,
-    ): NetworkResult<GraphhopperRouteResponse> {
+    override suspend fun getRoutePlan(request: RoutePlanRequest): NetworkResult<GraphhopperRouteResponse> {
         var rateLimit: GraphhopperRateLimit? = null
 
         val result = handleNetworkCall<GraphhopperRouteResponse>(crashlyticsService) {
             httpClient.post(urlString = URL_ROUTE) {
                 parameter("key", Secrets.GRAPHHOPPER_API_KEY)
                 contentType(ContentType.Application.Json)
-                setBody(profile.toRouteRequest(waypoints))
+                setBody(request.toRouteRequest())
             }.also { response -> rateLimit = response.headers.toGraphhopperRateLimit() }
         }
 

@@ -2,21 +2,18 @@ package hu.mostoha.mobile.kmp.huki.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
@@ -39,12 +36,9 @@ fun SearchField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        // Its sheet is tinted, so a light shadow sets the borderless pill apart
         modifier = modifier
-            .shadow(
-                elevation = 1.dp,
-                shape = RoundedCornerShape(32.dp),
-                clip = false,
-            )
+            .shadow(elevation = 1.dp, shape = HuKiTextFieldDefaults.singleLineShape, clip = false)
             .focusRequester(focusRequester),
         placeholder = {
             Text(text = mokoString(SharedRes.strings.search_input_placeholder))
@@ -70,15 +64,14 @@ fun SearchField(
             }
         },
         singleLine = true,
-        shape = CircleShape,
+        shape = HuKiTextFieldDefaults.singleLineShape,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Search,
             keyboardType = KeyboardType.Text,
         ),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = MaterialTheme.colorScheme.surface,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        colors = HuKiTextFieldDefaults.colors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
         ),
     )
 }

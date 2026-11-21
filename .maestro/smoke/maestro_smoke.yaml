@@ -150,6 +150,9 @@ appId: ${APP_ID}
     id: ROUTE_PLANNER_SAVE_BUTTON
 - tapOn:
     id: ROUTE_PLANNER_ADD_STOP_ROW
+# Add stop appends an empty stop card, whose Search action opens the search sheet
+- tapOn:
+    id: "ROUTE_PLANNER_EMPTY_STOP_ROW_\\d+"
 - extendedWaitUntil:
     visible:
       id: ROUTE_PLANNER_SEARCH_SCREEN

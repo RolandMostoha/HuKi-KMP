@@ -13,6 +13,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MainSession
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -61,6 +63,26 @@ class SessionMapperTest {
     }
 
     @Test
+    fun `Given a route planner session saved before the wizard - When decoded - Then it is a planner session`() {
+        val planner = FeatureSession.RoutePlanner(RoutePlannerSession(RoutePlannerProfile.BIKE, WAYPOINTS))
+        val json = SESSION.copy(feature = planner).encodeSession()
+
+        val actual = decodeSession(json)?.feature as? FeatureSession.RoutePlanner
+
+        actual?.session?.mode shouldBe RoutePlannerMode.PLANNER
+        actual?.session?.roundTrip.shouldBeNull()
+    }
+
+    @Test
+    fun `Given a route planner session with an unknown mode - When decoded - Then its feature is dropped`() {
+        val json = SESSION.copy(feature = ROUND_TRIP_FEATURE).encodeSession().replace("\"ROUND_TRIP_WIZARD\"", "\"UNKNOWN\"")
+
+        val actual = decodeSession(json)
+
+        actual?.feature.shouldBeNull()
+    }
+
+    @Test
     fun `Given malformed JSON - When decoded - Then it is dropped`() {
         val json = "{not json"
 
@@ -88,6 +110,14 @@ class SessionMapperTest {
             selectedSectionId = "OKT-01",
             reversedSectionIds = setOf("OKT-01"),
             isSheetVisible = false,
+        )
+        private val ROUND_TRIP_FEATURE = FeatureSession.RoutePlanner(
+            RoutePlannerSession(
+                routeProfile = RoutePlannerProfile.ON_TRAILS,
+                waypoints = listOf(RoutePlannerWaypoint(id = "start", name = StringDesc.Raw("Dobogókő"), placeName = "Dobogókő", location = Location(47.72, 18.89)), RoutePlannerWaypoint(id = "sentinel")),
+                mode = RoutePlannerMode.ROUND_TRIP_WIZARD,
+                roundTrip = RoundTripOptions(distanceKm = 14, seed = 33, heading = 270),
+            ),
         )
         private val WAYPOINTS = listOf(
             RoutePlannerWaypoint(
@@ -134,6 +164,7 @@ class SessionMapperTest {
                 FeatureSession.RoutePlanner(
                     RoutePlannerSession(routeProfile = RoutePlannerProfile.BIKE, waypoints = WAYPOINTS),
                 ).toTestCase(),
+                ROUND_TRIP_FEATURE.toTestCase(),
             )
 
         private fun FeatureSession.toTestCase() =

@@ -9,6 +9,7 @@ import hu.mostoha.mobile.kmp.huki.features.map.LandscapesGrouping
 import hu.mostoha.mobile.kmp.huki.model.data.CameraSnapshot
 import hu.mostoha.mobile.kmp.huki.model.data.FeatureSnapshot
 import hu.mostoha.mobile.kmp.huki.model.data.MainSessionSnapshot
+import hu.mostoha.mobile.kmp.huki.model.data.RoundTripSnapshot
 import hu.mostoha.mobile.kmp.huki.model.data.WaypointSnapshot
 import hu.mostoha.mobile.kmp.huki.model.domain.CameraPosition
 import hu.mostoha.mobile.kmp.huki.model.domain.ContentPadding
@@ -17,6 +18,8 @@ import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.MainSession
 import hu.mostoha.mobile.kmp.huki.model.domain.MyLocationStatus
 import hu.mostoha.mobile.kmp.huki.model.domain.OktType
+import hu.mostoha.mobile.kmp.huki.model.domain.RoundTripOptions
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerMode
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -121,6 +124,8 @@ private fun FeatureSession.toFeatureSnapshot(): FeatureSnapshot =
         is FeatureSession.RoutePlanner -> FeatureSnapshot.RoutePlanner(
             routeProfile = session.routeProfile.name,
             waypoints = session.waypoints.map { it.toWaypointSnapshot() },
+            mode = session.mode.name,
+            roundTrip = session.roundTrip?.let { RoundTripSnapshot(it.distanceKm, it.seed, it.heading) },
         )
     }
 
@@ -179,16 +184,21 @@ private fun FeatureSnapshot.toFeatureSession(): FeatureSession? =
                 isSheetVisible = isSheetVisible,
             )
         }
-        is FeatureSnapshot.RoutePlanner -> RoutePlannerProfile.entries.firstOrNull { it.name == routeProfile }
-            ?.let { profile ->
-                FeatureSession.RoutePlanner(
-                    RoutePlannerSession(
-                        routeProfile = profile,
-                        waypoints = waypoints.map { it.toRoutePlannerWaypoint() },
-                    ),
-                )
-            }
+        is FeatureSnapshot.RoutePlanner -> toRoutePlannerFeatureSession()
     }
+
+private fun FeatureSnapshot.RoutePlanner.toRoutePlannerFeatureSession(): FeatureSession.RoutePlanner? {
+    val profile = RoutePlannerProfile.entries.firstOrNull { it.name == routeProfile } ?: return null
+    val plannerMode = RoutePlannerMode.entries.firstOrNull { it.name == mode } ?: return null
+    return FeatureSession.RoutePlanner(
+        RoutePlannerSession(
+            routeProfile = profile,
+            waypoints = waypoints.map { it.toRoutePlannerWaypoint() },
+            mode = plannerMode,
+            roundTrip = roundTrip?.let { RoundTripOptions(it.distanceKm, it.seed, it.heading) },
+        ),
+    )
+}
 
 fun RoutePlannerWaypoint.toWaypointSnapshot(): WaypointSnapshot {
     val isMyLocation = name == StringDesc.Resource(SharedRes.strings.route_planner_my_location)
@@ -199,6 +209,8 @@ fun RoutePlannerWaypoint.toWaypointSnapshot(): WaypointSnapshot {
         placeName = placeName,
         latitude = location?.latitude,
         longitude = location?.longitude,
+        customName = customName,
+        comment = comment,
     )
 }
 
@@ -212,5 +224,12 @@ fun WaypointSnapshot.toRoutePlannerWaypoint(): RoutePlannerWaypoint {
         isPlaceName && placeName != null -> StringDesc.Raw(placeName)
         else -> location?.toRoutePlannerWaypoint()?.name
     }
-    return RoutePlannerWaypoint(id = id, name = restoredName, placeName = placeName, location = location)
+    return RoutePlannerWaypoint(
+        id = id,
+        name = restoredName,
+        placeName = placeName,
+        location = location,
+        customName = customName,
+        comment = comment,
+    )
 }

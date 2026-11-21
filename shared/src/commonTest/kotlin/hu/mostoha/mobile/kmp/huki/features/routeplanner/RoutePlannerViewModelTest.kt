@@ -3,12 +3,15 @@ package hu.mostoha.mobile.kmp.huki.features.routeplanner
 import app.cash.turbine.Event
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
+import dev.icerock.moko.resources.desc.Raw
 import dev.icerock.moko.resources.desc.RawStringDesc
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
@@ -23,6 +26,7 @@ import hu.mostoha.mobile.kmp.huki.model.domain.OsmType
 import hu.mostoha.mobile.kmp.huki.model.domain.Place
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceCategory
 import hu.mostoha.mobile.kmp.huki.model.domain.PlaceSource
+import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlanRequest
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerProfile
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerSession
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
@@ -79,11 +83,11 @@ class RoutePlannerViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { locationMonitoringService.locationUpdates } returns locationUpdates
         everySuspend { locationMonitoringService.lastKnownLocation() } returns MY_LOCATION
-        everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+        everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
             NetworkResult.Success(ROUTE_RESPONSE)
         everySuspend { geocodingRepository.reverseGeocode(any()) } returns NetworkResult.Success(null)
         everySuspend { placeHistoryRepository.recordVisit(any()) } returns Unit
-        everySuspend { gpxRepository.saveRoutePlan(any(), any(), any()) } returns SAVED_GPX_URI
+        everySuspend { gpxRepository.saveRoutePlan(any(), any(), any(), any()) } returns SAVED_GPX_URI
     }
 
     @AfterTest
@@ -591,7 +595,7 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
 
             viewModel.uiEffects.test {
-                viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked)
+                viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 expectMostRecentItem() shouldBe RoutePlannerUiEffects.MinimizeSheet
@@ -652,7 +656,7 @@ class RoutePlannerViewModelTest {
             val targetStop = viewModel.uiState.value.stops.last()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked(waypointId = targetStop.id))
 
-            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked)
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
             // The sheet's own dismissal callback fires right after pick on map closed it.
             viewModel.onEvent(RoutePlannerUiEvents.WaypointSearchDismissed)
 
@@ -662,32 +666,18 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a pick is pending - When a location is long tapped - Then the sheet is expanded again`() {
+    fun `Given a pick is pending - When a location is long tapped - Then the pick ends and the sheet stays minimized`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked())
-            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked)
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
 
             viewModel.uiEffects.test {
                 viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(Location(47.5, 18.5)))
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                emittedEffects() shouldContain RoutePlannerUiEffects.ExpandSheet
+                emittedEffects() shouldBe listOf(RoutePlannerUiEffects.MinimizeSheet)
                 viewModel.uiState.value.isPickingOnMap shouldBe false
-            }
-        }
-    }
-
-    @Test
-    fun `Given no pick is pending - When a location is long tapped - Then the sheet is left alone`() {
-        runTest {
-            val viewModel = createViewModel()
-
-            viewModel.uiEffects.test {
-                viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(Location(47.5, 18.5)))
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                emittedEffects() shouldNotContain RoutePlannerUiEffects.ExpandSheet
             }
         }
     }
@@ -702,6 +692,555 @@ class RoutePlannerViewModelTest {
 
             viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, null)
             analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanWaypointRemoved
+        }
+    }
+
+    @Test
+    fun `Given stops - When AddEmptyStopClicked - Then an empty stop is appended`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", null)
+            viewModel.uiState.value.isWaypointSearchVisible shouldBe false
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanEmptyStopAdded
+        }
+    }
+
+    @Test
+    fun `Given an empty stop above the minimum - When it is removed - Then it is dropped`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            val emptyStop = viewModel.uiState.value.stops.last()
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(emptyStop.id))
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+        }
+    }
+
+    @Test
+    fun `Given an empty stop - When AddEmptyStopClicked - Then no second empty stop is added`() {
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, null)
+            viewModel.uiState.value.isAddStopEnabled shouldBe false
+            analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanEmptyStopAdded
+        }
+    }
+
+    @Test
+    fun `Given an added empty stop - When pick on map targets it - Then the long tap fills it`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            val targetStop = viewModel.uiState.value.stops.last()
+            val location = Location(47.5, 18.5)
+
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked(waypointId = targetStop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(location))
+
+            viewModel.uiState.value.stops.last().location shouldBe location
+            viewModel.uiState.value.stops.size shouldBe 3
+        }
+    }
+
+    @Test
+    fun `Given a filled stop - When StopClicked - Then it is selected`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+
+            viewModel.uiState.value.selectedStop shouldBe stop
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanStopSelected
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When StopClicked again - Then it is deselected`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+
+            viewModel.uiState.value.selectedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When AddEmptyStopClicked - Then the selection is cleared`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(viewModel.uiState.value.stops.last().id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+
+            viewModel.uiState.value.selectedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given an empty stop - When a filled stop is clicked - Then only the filled stop is expanded`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            val (filledStop, emptyStop) = viewModel.uiState.value.stops.takeLast(2)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(filledStop.id))
+
+            viewModel.uiState.value.isStopExpanded(filledStop) shouldBe true
+            viewModel.uiState.value.isStopExpanded(emptyStop) shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a selected stop and an empty stop - When the empty stop is clicked - Then it expands again`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            val (filledStop, emptyStop) = viewModel.uiState.value.stops.takeLast(2)
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(filledStop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(emptyStop.id))
+
+            viewModel.uiState.value.isStopExpanded(filledStop) shouldBe false
+            viewModel.uiState.value.isStopExpanded(emptyStop) shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When it is removed - Then nothing is selected`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Rám-szakadék")))
+            val stop = viewModel.uiState.value.stops[1]
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(stop.id))
+
+            viewModel.uiState.value.selectedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given a filled stop - When StopMoveClicked - Then moving starts and the sheet is minimized`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+
+            viewModel.uiEffects.test {
+                viewModel.onEvent(RoutePlannerUiEvents.StopMoveClicked(viewModel.uiState.value.stops.last().id))
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                emittedEffects() shouldBe listOf(RoutePlannerUiEffects.MinimizeSheet)
+                viewModel.uiState.value.isMovingStop shouldBe true
+            }
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its start is renamed - Then its end gets the same name and comment`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+            val start = viewModel.uiState.value.stops.first()
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(start.id, name = "Parkoló", comment = "Ingyenes"))
+
+            val end = viewModel.uiState.value.stops.last()
+            end.customName shouldBe "Parkoló"
+            end.comment shouldBe "Ingyenes"
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its start is replaced from search - Then it stays a round trip`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(viewModel.uiState.value.stops.first().id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.SearchPlaceAdded(place("Ram-hegy")))
+
+            val uiState = viewModel.uiState.value
+            uiState.isRoundTrip shouldBe true
+            uiState.stops.names() shouldBe listOf("Ram-hegy", "Dobogókő", "Ram-hegy")
+        }
+    }
+
+    @Test
+    fun `Given a renamed stop - When its marker is dragged - Then it moves and keeps its name and comment`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(stop.id, name = "Kilátó", comment = "Forrás"))
+            viewModel.onEvent(RoutePlannerUiEvents.StopMoveClicked(stop.id))
+            val target = Location(47.7, 18.9)
+            val snappedMarker = Location(PLACE_LOCATION.latitude + 0.0001, PLACE_LOCATION.longitude)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDragged(from = snappedMarker, to = target))
+
+            val moved = viewModel.uiState.value.stops.last()
+            moved.id shouldBe stop.id
+            moved.location shouldBe target
+            moved.customName shouldBe "Kilátó"
+            moved.comment shouldBe "Forrás"
+            viewModel.uiState.value.isMovingStop shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a planned stop - When its snapped marker is clicked - Then the stop is selected`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            val snappedMarker = Location(PLACE_LOCATION.latitude + 0.0001, PLACE_LOCATION.longitude)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopMarkerClicked(snappedMarker))
+
+            viewModel.uiState.value.selectedStop?.id shouldBe stop.id
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When its marker is clicked - Then the selection ends`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.StopMarkerClicked(PLACE_LOCATION))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopMarkerClicked(PLACE_LOCATION))
+
+            viewModel.uiState.value.selectedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given a stop being moved - When StopDeselected - Then the selection and the move end`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.StopMoveClicked(stop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
+
+            viewModel.uiState.value.selectedStop shouldBe null
+            viewModel.uiState.value.isMovingStop shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given picking on the map - When StopDeselected - Then picking ends`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
+
+            viewModel.uiState.value.isPickingOnMap shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a selected stop - When its marker is dragged - Then the selection ends`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopClicked(stop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDragged(from = PLACE_LOCATION, to = Location(47.7, 18.9)))
+
+            viewModel.uiState.value.selectedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given my location as start - When its marker is dragged - Then it becomes an ordinary stop`() {
+        runTest {
+            val viewModel = createViewModel()
+            testDispatcher.scheduler.advanceUntilIdle()
+            val start = viewModel.uiState.value.stops.first()
+            val startLocation = start.location ?: error("My location has no fix")
+            val target = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDragged(from = startLocation, to = target))
+
+            val moved = viewModel.uiState.value.stops.first()
+            moved.location shouldBe target
+            moved.id shouldNotBe RoutePlannerUiState.MY_LOCATION_WAYPOINT_ID
+        }
+    }
+
+    @Test
+    fun `Given a replace pick - When StopDeselected and the map long tapped - Then a stop is added and the target kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
+            viewModel.onEvent(RoutePlannerUiEvents.StopDeselected)
+            val location = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(location))
+
+            val stops = viewModel.uiState.value.stops
+            stops.size shouldBe 3
+            stops[1] shouldBe stop
+            stops.last().location shouldBe location
+        }
+    }
+
+    @Test
+    fun `Given two stops at the same place - When one marker is dragged - Then only that stop moves`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Pilis", FAR_PLACE_LOCATION)))
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val target = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopDragged(from = PLACE_LOCATION, to = target))
+
+            val stops = viewModel.uiState.value.stops
+            stops[1].location shouldBe target
+            stops[3].location shouldBe PLACE_LOCATION
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When AddEmptyStopClicked - Then no stop is added`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+
+            val uiState = viewModel.uiState.value
+            uiState.isAddStopEnabled shouldBe false
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", MY_LOCATION_NAME)
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When RoundTripClicked - Then its mirrored end is dropped`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+            uiState.isRoundTrip shouldBe false
+            uiState.isAddStopEnabled shouldBe true
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its start is removed - Then the mirrored end is dropped and the start kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(viewModel.uiState.value.stops.first().id))
+
+            val uiState = viewModel.uiState.value
+            uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+            uiState.isRoundTrip shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a round trip - When its end is removed - Then the start is kept`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(viewModel.uiState.value.stops.last().id))
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő")
+        }
+    }
+
+    @Test
+    fun `Given a planned stop - When its marker is clicked - Then only the marker click is logged`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopMarkerClicked(PLACE_LOCATION))
+
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanStopMarkerClicked
+            analyticsService.loggedEvents shouldNotContain AnalyticsEvent.RoutePlanStopSelected
+        }
+    }
+
+    @Test
+    fun `Given an abandoned replace pick - When an empty stop is added and the map long tapped - Then the empty stop is filled`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.PickOnMapClicked())
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            val location = Location(47.7, 18.9)
+
+            viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(location))
+
+            viewModel.uiState.value.stops[1] shouldBe stop
+            viewModel.uiState.value.stops.last().location shouldBe location
+        }
+    }
+
+    @Test
+    fun `Given a move in progress - When the map is long tapped - Then moving ends`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            viewModel.onEvent(RoutePlannerUiEvents.StopMoveClicked(viewModel.uiState.value.stops.last().id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.LocationAdded(Location(47.7, 18.9)))
+
+            viewModel.uiState.value.isMovingStop shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given two empty stops - When nothing is selected - Then only the first one is expanded`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.WaypointRemoved(RoutePlannerUiState.MY_LOCATION_WAYPOINT_ID))
+            val (first, second) = viewModel.uiState.value.stops
+
+            viewModel.uiState.value.isStopExpanded(first) shouldBe true
+            viewModel.uiState.value.isStopExpanded(second) shouldBe false
+        }
+    }
+
+    @Test
+    fun `Given a filled stop - When replaced from search - Then the new place takes its spot`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id))
+            viewModel.onEvent(RoutePlannerUiEvents.SearchPlaceAdded(place("Rám-szakadék")))
+
+            viewModel.uiState.value.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Rám-szakadék")
+            analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanStopReplaceClicked
+        }
+    }
+
+    @Test
+    fun `Given a filled stop - When search is clicked for it - Then it is the replaced stop`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopReplaceClicked(stop.id))
+
+            viewModel.uiState.value.replacedStop shouldBe stop
+        }
+    }
+
+    @Test
+    fun `Given an empty stop - When it is searched - Then nothing is replaced`() {
+        runTest {
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(RoutePlannerUiEvents.AddEmptyStopClicked)
+            viewModel.onEvent(RoutePlannerUiEvents.AddStopFromSearchClicked(viewModel.uiState.value.stops.last().id))
+
+            viewModel.uiState.value.replacedStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given a filled stop - When renamed - Then it shows the new name and keeps its address`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenameClicked(stop.id))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(stop.id, name = " Kilátó ", comment = " Forrás "))
+
+            val renamed = viewModel.uiState.value.stops.last()
+            renamed.displayName shouldBe StringDesc.Raw("Kilátó")
+            renamed.placeName shouldBe "Dobogókő"
+            renamed.comment shouldBe "Forrás"
+            viewModel.uiState.value.renamingStop shouldBe null
+        }
+    }
+
+    @Test
+    fun `Given a renamed stop - When renamed to blank - Then its resolved name comes back`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(stop.id, name = "Kilátó", comment = ""))
+
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(stop.id, name = "  ", comment = ""))
+
+            viewModel.uiState.value.stops.last().displayName shouldBe StringDesc.Raw("Dobogókő")
+        }
+    }
+
+    @Test
+    fun `Given a renamed stop with a comment - When save clicked - Then the GPX gets the new name and comment`() {
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
+            testDispatcher.scheduler.advanceUntilIdle()
+            val stop = viewModel.uiState.value.stops.last()
+            viewModel.onEvent(RoutePlannerUiEvents.StopRenamed(stop.id, name = "Kilátó", comment = "Forrás"))
+
+            viewModel.onEvent(RoutePlannerUiEvents.SaveRouteClicked)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            verifySuspend(exactly(1)) {
+                gpxRepository.saveRoutePlan(
+                    any(),
+                    listOf(null, "Kilátó"),
+                    RoutePlannerProfile.ON_TRAILS,
+                    listOf(null, "Forrás"),
+                )
+            }
         }
     }
 
@@ -749,7 +1288,7 @@ class RoutePlannerViewModelTest {
 
             val uiState = viewModel.uiState.value
             uiState.isRoundTrip shouldBe true
-            uiState.isRoundTripEnabled shouldBe false
+            uiState.isRoundTripEnabled shouldBe true
             uiState.stops.names() shouldBe listOf(MY_LOCATION_NAME, "Dobogókő", "Ram-hegy", MY_LOCATION_NAME)
             uiState.stops.last().location shouldBe MY_LOCATION
         }
@@ -769,7 +1308,7 @@ class RoutePlannerViewModelTest {
     }
 
     @Test
-    fun `Given a round trip - When stop types are read - Then the first stop is a start`() {
+    fun `Given a round trip - When stop types are read - Then both ends are round trip stops`() {
         runTest {
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
@@ -778,23 +1317,9 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
 
             val uiState = viewModel.uiState.value
-            uiState.stopType(0) shouldBe WaypointType.START
+            uiState.stopType(0) shouldBe WaypointType.ROUND_TRIP
             uiState.stopType(1) shouldBe WaypointType.INTERMEDIATE
-            uiState.stopType(uiState.stops.lastIndex) shouldBe WaypointType.END
-        }
-    }
-
-    @Test
-    fun `Given a round trip - When round trip clicked again - Then the route is unchanged`() {
-        runTest {
-            val viewModel = createViewModel()
-            viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
-            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
-            val roundTripStops = viewModel.uiState.value.stops
-
-            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
-
-            viewModel.uiState.value.stops shouldBe roundTripStops
+            uiState.stopType(uiState.stops.lastIndex) shouldBe WaypointType.ROUND_TRIP
         }
     }
 
@@ -879,7 +1404,7 @@ class RoutePlannerViewModelTest {
             }
             // My location has no geocoded place, so only the searched stop carries a name.
             verifySuspend(exactly(1)) {
-                gpxRepository.saveRoutePlan(any(), listOf(null, "Dobogókő"), RoutePlannerProfile.ON_TRAILS)
+                gpxRepository.saveRoutePlan(any(), listOf(null, "Dobogókő"), RoutePlannerProfile.ON_TRAILS, any())
             }
             analyticsService.loggedEvents shouldContain AnalyticsEvent.RoutePlanSaved(RouteProfile.ON_TRAILS)
         }
@@ -903,6 +1428,7 @@ class RoutePlannerViewModelTest {
                     any(),
                     listOf("Téry Ödön út", "Dobogókő"),
                     RoutePlannerProfile.ON_TRAILS,
+                    any(),
                 )
             }
         }
@@ -939,7 +1465,7 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.SaveRouteClicked)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            verifySuspend(exactly(0)) { gpxRepository.saveRoutePlan(any(), any(), any()) }
+            verifySuspend(exactly(0)) { gpxRepository.saveRoutePlan(any(), any(), any(), any()) }
         }
     }
 
@@ -952,14 +1478,14 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.SaveRouteClicked)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            verifySuspend(exactly(0)) { gpxRepository.saveRoutePlan(any(), any(), any()) }
+            verifySuspend(exactly(0)) { gpxRepository.saveRoutePlan(any(), any(), any(), any()) }
         }
     }
 
     @Test
     fun `Given a failing storage - When save clicked - Then the save error is shown and the plan is kept`() {
         runTest {
-            everySuspend { gpxRepository.saveRoutePlan(any(), any(), any()) } throws IllegalStateException("disk full")
+            everySuspend { gpxRepository.saveRoutePlan(any(), any(), any(), any()) } throws IllegalStateException("disk full")
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
             testDispatcher.scheduler.advanceUntilIdle()
@@ -1002,9 +1528,9 @@ class RoutePlannerViewModelTest {
             viewModel.onEvent(RoutePlannerUiEvents.ProfileSelected(RoutePlannerProfile.BIKE))
             testDispatcher.scheduler.advanceUntilIdle()
 
-            verifySuspend(exactly(1)) { routePlannerRepository.getRoutePlan(RoutePlannerProfile.BIKE, any()) }
+            verifySuspend(exactly(1)) { routePlannerRepository.getRoutePlan(matches { it.routeProfile == RoutePlannerProfile.BIKE }) }
             verifySuspend(exactly(0)) {
-                routePlannerRepository.getRoutePlan(RoutePlannerProfile.SHORTEST_ROUTE, any())
+                routePlannerRepository.getRoutePlan(matches { it.routeProfile == RoutePlannerProfile.SHORTEST_ROUTE })
             }
         }
     }
@@ -1012,7 +1538,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given no internet - When route is planned - Then the error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel()
 
@@ -1031,7 +1557,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given rate limited response - When route is planned - Then the daily limit error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.RATE_LIMITED)
             val viewModel = createViewModel()
 
@@ -1053,7 +1579,7 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given an empty route response - When route is planned - Then the not found error is shown`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Success(GraphhopperRouteResponse())
             val viewModel = createViewModel()
 
@@ -1067,12 +1593,12 @@ class RoutePlannerViewModelTest {
     @Test
     fun `Given a failed route plan - When retry clicked - Then the route is planned again`() {
         runTest {
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Error(NetworkError.NO_INTERNET)
             val viewModel = createViewModel()
             viewModel.onEvent(RoutePlannerUiEvents.PlaceAdded(place("Dobogókő")))
             testDispatcher.scheduler.advanceUntilIdle()
-            everySuspend { routePlannerRepository.getRoutePlan(any(), any()) } returns
+            everySuspend { routePlannerRepository.getRoutePlan(any()) } returns
                 NetworkResult.Success(ROUTE_RESPONSE)
 
             viewModel.onEvent(RoutePlannerUiEvents.RetryClicked)
@@ -1250,7 +1776,7 @@ class RoutePlannerViewModelTest {
 
             viewModel.uiState.value.session shouldBe session
             verifySuspend {
-                routePlannerRepository.getRoutePlan(RoutePlannerProfile.BIKE, listOf(FAR_PLACE_LOCATION, PLACE_LOCATION))
+                routePlannerRepository.getRoutePlan(RoutePlanRequest(RoutePlannerProfile.BIKE, listOf(FAR_PLACE_LOCATION, PLACE_LOCATION)))
             }
         }
     }

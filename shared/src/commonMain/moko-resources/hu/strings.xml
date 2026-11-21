@@ -82,9 +82,16 @@
     <string name="route_planner_profile_bike">Kerékpár</string>
     <string name="route_planner_my_location">Saját pozíció</string>
     <string name="route_planner_waypoint_empty">Válassz helyet</string>
-    <string name="route_planner_add_waypoint">Megálló hozzáadása</string>
     <string name="route_planner_round_trip">Körtúra</string>
-    <string name="route_planner_more_stops">még %d megálló</string>
+    <string name="route_planner_round_trip_undo">Körtúra felbontása</string>
+    <string name="round_trip_wizard_title">Körtúra Varázsló</string>
+    <string name="round_trip_wizard_distance_title">Túra hossza</string>
+    <string name="round_trip_wizard_distance_value">%d km</string>
+    <string name="round_trip_wizard_regenerate">Újratervezés</string>
+    <string name="round_trip_wizard_save">Mentés</string>
+    <string name="round_trip_wizard_a11y_expand">Körtúra Varázsló kinyitása</string>
+    <string name="round_trip_wizard_a11y_minimize">Körtúra Varázsló kicsinyítése</string>
+    <string name="round_trip_wizard_a11y_start_actions">Kiindulópont műveletei</string>
     <string name="route_planner_max_stops_reached">Elérted a megállók maximális számát (%d)</string>
     <string name="route_planner_save">Útvonal mentése</string>
     <string name="route_planner_loading">Útvonal tervezése…</string>
@@ -94,14 +101,34 @@
     <string name="route_planner_daily_limit_error_title">Napi limit elérve</string>
     <string name="route_planner_daily_limit_error_message">Elértük az útvonaltervező szolgáltatás napi limitjét. Kérlek próbáld meg holnap.</string>
     <string name="route_planner_add_stop_title">Új megálló</string>
+    <string name="route_planner_replace_stop_title">Megálló cseréje</string>
+    <string name="route_planner_replace_stop_subtitle">Felülírja: %s</string>
+    <string name="route_planner_empty_stop_pick_on_map">Térképen</string>
+    <string name="route_planner_empty_stop_search">Keresőből</string>
+    <string name="route_planner_stop_move">Áthelyezés</string>
+    <string name="route_planner_stop_replace">Kereső</string>
+    <string name="route_planner_stop_rename">Átnevezés</string>
+    <string name="route_planner_rename_title">%d. megálló</string>
+    <string name="route_planner_rename_name">Név</string>
+    <string name="route_planner_rename_address">Eredeti cím: %s</string>
+    <string name="route_planner_rename_comment">Megjegyzés</string>
+    <string name="route_planner_rename_comment_placeholder">Pl. szép kilátás, itt érdemes pihenni</string>
+    <string name="route_planner_rename_cancel">Mégse</string>
+    <string name="route_planner_rename_save">Mentés</string>
     <string name="route_planner_pick_my_location">Aktuális pozícióm</string>
-    <string name="route_planner_pick_on_map">Térképen hosszú klikkel</string>
+    <string name="route_planner_a11y_expand">Útvonaltervező kinyitása</string>
+    <string name="route_planner_a11y_minimize">Útvonaltervező kicsinyítése</string>
     <string name="route_planner_a11y_profiles">Útvonal típusa</string>
     <string name="route_planner_a11y_add_stop">Új megálló hozzáadása</string>
-    <string name="route_planner_a11y_round_trip">Körtúra készítése</string>
     <string name="route_planner_a11y_delete_stop">Megálló törlése</string>
+    <string name="route_planner_a11y_select_stop">Megálló kijelölése</string>
     <string name="route_planner_a11y_move_up">Megálló mozgatása felfelé</string>
     <string name="route_planner_a11y_move_down">Megálló mozgatása lefelé</string>
+    <string name="route_planner_long_press_hint_title">Klikkelj hosszan a térképen</string>
+    <string name="route_planner_long_press_hint_message">Hosszú klikkel bármikor rakhatsz le akár több pontot is egymás után.</string>
+    <string name="route_planner_move_hint_title">Húzd át a megállót</string>
+    <string name="route_planner_move_hint_message">Bármelyik megállót áthelyezheted, ha hosszan nyomva tartod és elhúzod.</string>
+    <string name="route_planner_a11y_dismiss_long_press_hint">Tipp bezárása</string>
 
     <string name="place_details_loading">Hely keresése…</string>
     <string name="place_details_route_plan">Útvonaltervezés</string>
@@ -113,6 +140,8 @@
 
     <string name="gpx_distance_info_window_start">Kezdőpont</string>
     <string name="gpx_distance_info_window_end">Végpont</string>
+    <string name="gpx_distance_info_window_a11y_show_comment">Megjegyzés megjelenítése</string>
+    <string name="gpx_distance_info_window_a11y_hide_comment">Megjegyzés elrejtése</string>
 
     <string name="gpx_control_a11y_fab">GPX vezérlő</string>
     <string name="gpx_control_route_visibility_show">Útvonal megjelenítése</string>
@@ -146,8 +175,11 @@
     <string name="menu_item_settings_description">Alkalmazás beállításai</string>
     <string name="menu_a11y_open_settings">Beállítások megnyitása</string>
     <string name="menu_item_route_planner">Útvonaltervező</string>
-    <string name="menu_item_route_planner_description">Tervezz túraútvonalakon vagy kívül</string>
+    <string name="menu_item_route_planner_description">Útvonal több megálló megadásával</string>
     <string name="menu_a11y_open_route_planner">Útvonaltervező megnyitása</string>
+    <string name="menu_item_round_trip_wizard">Körtúra Varázsló</string>
+    <string name="menu_item_round_trip_wizard_description">Körtúra egyetlen pont és távolság megadásával</string>
+    <string name="menu_a11y_open_round_trip_wizard">Körtúra Varázsló megnyitása</string>
     <string name="menu_item_discover">Felfedező</string>
     <string name="menu_item_discover_description">Kirándulóhelyek és túraötletek</string>
     <string name="menu_a11y_open_discover">Felfedező megnyitása</string>

@@ -43,4 +43,6 @@ sealed interface FeatureSession {
 data class RoutePlannerSession(
     val routeProfile: RoutePlannerProfile,
     val waypoints: List<RoutePlannerWaypoint>,
+    val mode: RoutePlannerMode = RoutePlannerMode.PLANNER,
+    val roundTrip: RoundTripOptions? = null,
 )

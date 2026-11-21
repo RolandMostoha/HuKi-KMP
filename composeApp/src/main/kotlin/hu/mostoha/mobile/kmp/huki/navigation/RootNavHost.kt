@@ -49,6 +49,7 @@ private object Routes {
     const val LOCATION_IQ = "location_iq"
     const val SUPPORT = "support"
     const val EXTRA_OPEN_ROUTE_PLANNER_KEY = "extra_open_route_planner"
+    const val EXTRA_OPEN_ROUND_TRIP_WIZARD_KEY = "extra_open_round_trip_wizard"
     const val EXTRA_OPEN_DISCOVER_KEY = "extra_open_discover"
     const val EXTRA_OPEN_MAP_LABEL_SCALE_KEY = "extra_open_map_label_scale"
     const val EXTRA_GPX_URI_KEY = "extra_gpx_uri"
@@ -120,6 +121,9 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
             val openRoutePlanner by entry.savedStateHandle
                 .getStateFlow(Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY, false)
                 .collectAsStateWithLifecycle()
+            val openRoundTripWizard by entry.savedStateHandle
+                .getStateFlow(Routes.EXTRA_OPEN_ROUND_TRIP_WIZARD_KEY, false)
+                .collectAsStateWithLifecycle()
             val openDiscover by entry.savedStateHandle
                 .getStateFlow(Routes.EXTRA_OPEN_DISCOVER_KEY, false)
                 .collectAsStateWithLifecycle()
@@ -151,6 +155,10 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 },
                 openRoutePlanner = openRoutePlanner,
                 onOpenRoutePlannerConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = false },
+                openRoundTripWizard = openRoundTripWizard,
+                onOpenRoundTripWizardConsumed = {
+                    entry.savedStateHandle[Routes.EXTRA_OPEN_ROUND_TRIP_WIZARD_KEY] = false
+                },
                 openDiscover = openDiscover,
                 onOpenDiscoverConsumed = { entry.savedStateHandle[Routes.EXTRA_OPEN_DISCOVER_KEY] = false },
                 openMapLabelScale = openMapLabelScale,
@@ -165,6 +173,11 @@ fun RootNavHost(incomingLinkStore: IncomingLinkStore = koinInject()) {
                 onSettingsClicked = { navController.navigate(Routes.SETTINGS) },
                 onRoutePlannerClicked = {
                     navController.getBackStackEntry<Main>().savedStateHandle[Routes.EXTRA_OPEN_ROUTE_PLANNER_KEY] = true
+                    navController.popBackStack<Main>(inclusive = false)
+                },
+                onRoundTripWizardClicked = {
+                    navController.getBackStackEntry<Main>()
+                        .savedStateHandle[Routes.EXTRA_OPEN_ROUND_TRIP_WIZARD_KEY] = true
                     navController.popBackStack<Main>(inclusive = false)
                 },
                 onDiscoverClicked = {

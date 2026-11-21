@@ -1,0 +1,105 @@
+appId: ${APP_ID}
+---
+# Round-trip Wizard: a loop of a chosen length from my location, opened from the Menu.
+- launchApp:
+    clearState: true
+    arguments:
+      skipWhatsNew: true
+    permissions: { all: allow }
+# About 1 km west of Dobogókő, inside Hungary
+- setLocation:
+    latitude: 47.7205
+    longitude: 18.8830
+- extendedWaitUntil:
+    visible:
+      id: MAP_MAPBOX
+    timeout: 15000
+- tapOn: "Menu"
+- scrollUntilVisible:
+    element:
+      id: MENU_ROW_ROUND_TRIP_WIZARD
+    direction: DOWN
+- tapOn:
+    id: MENU_ROW_ROUND_TRIP_WIZARD
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_SHEET
+    timeout: 15000
+- assertVisible: "Round-trip Wizard|Körtúra Varázsló"
+- assertVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+- assertVisible:
+    id: ROUND_TRIP_WIZARD_START_ROW
+- assertVisible: "10 km"
+
+# The loop is planned right away from my location
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 25000
+- assertNotVisible:
+    id: ROUTE_PLANNER_ERROR
+
+# Regenerate draws another loop of the same length
+- tapOn:
+    id: ROUND_TRIP_WIZARD_REGENERATE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 25000
+
+# Another profile replans the loop
+- tapOn: "Bike|Kerékpár"
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_STATS
+    timeout: 25000
+
+# The start's actions open from its "…" button, and Rename names it
+- tapOn:
+    id: ROUND_TRIP_WIZARD_START_MORE_BUTTON
+- assertVisible:
+    id: ROUTE_PLANNER_STOP_MOVE
+- assertVisible:
+    id: ROUTE_PLANNER_STOP_REPLACE
+- tapOn:
+    id: ROUTE_PLANNER_STOP_RENAME
+- extendedWaitUntil:
+    visible:
+      id: ROUTE_PLANNER_RENAME_NAME
+    timeout: 10000
+- tapOn:
+    id: ROUTE_PLANNER_RENAME_NAME
+- eraseText
+- inputText: "Parkoló"
+- tapOn:
+    id: ROUTE_PLANNER_RENAME_DONE
+- extendedWaitUntil:
+    visible: "Parkoló"
+    timeout: 10000
+
+# Minimized keeps the length, stats and buttons, without the profile picker
+- tapOn:
+    id: ROUTE_PLANNER_DETENT_BUTTON
+- waitForAnimationToEnd
+- assertVisible:
+    id: ROUND_TRIP_WIZARD_DISTANCE_SLIDER
+- assertVisible:
+    id: ROUND_TRIP_WIZARD_SAVE_BUTTON
+- assertNotVisible:
+    id: ROUTE_PLANNER_PROFILE_PICKER
+- tapOn:
+    id: ROUTE_PLANNER_DETENT_BUTTON
+- waitForAnimationToEnd
+
+# Save opens the saved loop as a GPX
+- tapOn:
+    id: ROUND_TRIP_WIZARD_SAVE_BUTTON
+- extendedWaitUntil:
+    visible:
+      id: GPX_DETAILS_CLOSE_BUTTON
+    timeout: 15000
+- assertNotVisible:
+    id: ROUTE_PLANNER_SHEET
+- tapOn:
+    id: GPX_DETAILS_CLOSE_BUTTON
