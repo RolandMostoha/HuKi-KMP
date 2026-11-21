@@ -4,34 +4,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
 import hu.mostoha.mobile.kmp.huki.util.mokoString
-
-private val MultiLineShape = RoundedCornerShape(24.dp)
 
 @Composable
 fun RoundedTextField(
@@ -48,7 +40,7 @@ fun RoundedTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
-    val shape = if (singleLine) CircleShape else MultiLineShape
+    val shape = if (singleLine) HuKiTextFieldDefaults.singleLineShape else HuKiTextFieldDefaults.multiLineShape
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Dimens.Small),
@@ -63,9 +55,7 @@ fun RoundedTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = fieldModifier
-                .fillMaxWidth()
-                .shadow(elevation = 1.dp, shape = shape, clip = false),
+            modifier = fieldModifier.fillMaxWidth(),
             placeholder = placeholder?.let { { Text(text = it) } },
             trailingIcon = {
                 if (value.text.isNotEmpty()) {
@@ -83,12 +73,7 @@ fun RoundedTextField(
             shape = shape,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            ),
+            colors = HuKiTextFieldDefaults.colors(),
         )
         if (supportingText != null) {
             Text(

@@ -306,6 +306,8 @@ val [actual] = operation(X)
 - Use icons from the official Google Font icon set: https://fonts.google.com/icons. 
   - Download the Android vector drawable directly, never hand-write path data: `https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/<icon_name>/default/24px.xml` → `res/drawable/ic_<icon_name>.xml`.
 - Prefer official Material3 components instead of custom views
+- Sheets opened on top of another sheet (e.g. the route planner's rename and stop search) use `secondarySheetColor` as background.
+- Text fields share `HuKiTextFieldDefaults` (`ui/components`): white pill, hairline outline, light hint.
 - Whenever makes sense, extract UI components to separate classes -> `@Composable` functions.
 
 ### SwiftUI - iOS

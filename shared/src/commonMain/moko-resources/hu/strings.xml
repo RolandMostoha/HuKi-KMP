@@ -104,7 +104,7 @@
     <string name="route_planner_rename_name">Név</string>
     <string name="route_planner_rename_address">Eredeti cím: %s</string>
     <string name="route_planner_rename_comment">Megjegyzés</string>
-    <string name="route_planner_rename_comment_placeholder">Pl. itt van forrás, érdemes megtölteni a kulacsot</string>
+    <string name="route_planner_rename_comment_placeholder">Pl. szép kilátás, itt érdemes pihenni</string>
     <string name="route_planner_rename_cancel">Mégse</string>
     <string name="route_planner_rename_save">Mentés</string>
     <string name="route_planner_pick_my_location">Aktuális pozícióm</string>

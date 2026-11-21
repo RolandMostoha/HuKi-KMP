@@ -19,16 +19,12 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextRange
@@ -42,6 +38,7 @@ import hu.mostoha.mobile.android.huki.R
 import hu.mostoha.mobile.huki.shared.SharedRes
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.theme.secondarySheetColor
 import hu.mostoha.mobile.kmp.huki.ui.components.RoundedTextField
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -66,7 +63,7 @@ fun RoutePlannerRenameStopBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = secondarySheetColor,
         dragHandle = null,
         modifier = modifier.testTagAsResourceId(TestTags.ROUTE_PLANNER_RENAME_SHEET),
     ) {
@@ -92,17 +89,12 @@ private fun RoutePlannerRenameStopContent(
     onDone: (name: String, comment: String) -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
-    isNameFocused: Boolean = true,
 ) {
     var name by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(currentName, TextRange(currentName.length)))
     }
     var comment by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(currentComment, TextRange(currentComment.length)))
-    }
-    val focusRequester = remember { FocusRequester() }
-    if (isNameFocused) {
-        LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
     Column(
         modifier = modifier
@@ -120,7 +112,7 @@ private fun RoutePlannerRenameStopContent(
             FilledIconButton(
                 onClick = onCancel,
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                 ),
             ) {
@@ -160,7 +152,6 @@ private fun RoutePlannerRenameStopContent(
                 ),
                 keyboardActions = KeyboardActions(onDone = { onDone(name.text, comment.text) }),
                 fieldModifier = Modifier
-                    .focusRequester(focusRequester)
                     .testTagAsResourceId(TestTags.ROUTE_PLANNER_RENAME_NAME),
             )
             RoundedTextField(
@@ -190,7 +181,6 @@ private fun RoutePlannerRenameStopContentPreview() {
             address = "Háromkő-hegy, Pilisszentkereszt",
             onDone = { _, _ -> },
             onCancel = {},
-            isNameFocused = false,
         )
     }
 }

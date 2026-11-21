@@ -104,7 +104,7 @@
     <string name="route_planner_rename_name">Name</string>
     <string name="route_planner_rename_address">Original address: %s</string>
     <string name="route_planner_rename_comment">Comment</string>
-    <string name="route_planner_rename_comment_placeholder">E.g. there's a spring here, worth refilling your bottle</string>
+    <string name="route_planner_rename_comment_placeholder">E.g. nice view, a good place to rest</string>
     <string name="route_planner_rename_cancel">Cancel</string>
     <string name="route_planner_rename_save">Save</string>
     <string name="route_planner_pick_my_location">My actual location</string>

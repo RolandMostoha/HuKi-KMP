@@ -43,6 +43,7 @@ import hu.mostoha.mobile.kmp.huki.features.routeplanner.RoutePlannerUiEvents
 import hu.mostoha.mobile.kmp.huki.model.domain.Location
 import hu.mostoha.mobile.kmp.huki.model.domain.RoutePlannerWaypoint
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import hu.mostoha.mobile.kmp.huki.theme.secondarySheetColor
 import hu.mostoha.mobile.kmp.huki.ui.components.SearchField
 import hu.mostoha.mobile.kmp.huki.ui.components.SecondaryButton
 import hu.mostoha.mobile.kmp.huki.ui.features.search.DestinationsSection
@@ -68,7 +69,7 @@ fun RoutePlannerSearchBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(RoutePlannerUiEvents.WaypointSearchDismissed) },
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        containerColor = secondarySheetColor,
         dragHandle = null,
         modifier = modifier,
     ) {
