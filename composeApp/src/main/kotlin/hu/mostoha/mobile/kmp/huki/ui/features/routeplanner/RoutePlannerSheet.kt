@@ -13,13 +13,10 @@ import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -45,11 +42,19 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlin.math.roundToInt
+
+/**
+ * The tallest the expanded sheet grows before its stop list scrolls: a strip of the map stays visible above it,
+ * except in landscape where the height is scarce.
+ */
+fun routePlannerMaxExpandedHeight(containerHeight: Dp, statusBarInset: Dp, isLandscape: Boolean): Dp =
+    containerHeight - statusBarInset - if (isLandscape) 0.dp else Dimens.RoutePlannerMapPeekHeight
 
 private val SheetShape = RoundedCornerShape(topStart = Dimens.ExtraLarge, topEnd = Dimens.ExtraLarge)
 
@@ -59,21 +64,20 @@ fun RoutePlannerSheet(
     onDetentChange: (RoutePlannerDetent) -> Unit,
     minimizedHeight: Dp,
     expandedHeight: Dp,
+    maxExpandedHeight: Dp,
     modifier: Modifier = Modifier,
     aboveSheet: @Composable () -> Unit = {},
     content: @Composable (sheetModifier: Modifier) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
-        val statusBarInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
         val state = remember { AnchoredDraggableState(initialValue = detent) }
         val animatedMinimizedHeight by animateDpAsState(minimizedHeight, label = "minimizedHeight")
-        val anchors = remember(maxHeight, animatedMinimizedHeight, expandedHeight, statusBarInset) {
+        val anchors = remember(maxHeight, animatedMinimizedHeight, expandedHeight) {
             with(density) {
                 DraggableAnchors {
                     RoutePlannerDetent.MINIMIZED at (maxHeight - animatedMinimizedHeight).toPx()
                     RoutePlannerDetent.EXPANDED at (maxHeight - expandedHeight).toPx()
-                    RoutePlannerDetent.FULL_SCREEN at statusBarInset.toPx()
                 }
             }
         }
@@ -107,7 +111,6 @@ fun RoutePlannerSheet(
             }
         }
         val sheetTop = remember { SheetTop() }
-        val fullScreenHeight = maxHeight - statusBarInset
         val containerHeightPx = with(density) { maxHeight.toPx() }
         Box(
             modifier = Modifier.layout { measurable, constraints ->
@@ -128,7 +131,7 @@ fun RoutePlannerSheet(
                     sheetTop = sheetTop,
                     containerHeightPx = containerHeightPx,
                 )
-                .then(if (detent == RoutePlannerDetent.FULL_SCREEN) Modifier.height(fullScreenHeight) else Modifier)
+                .heightIn(max = maxExpandedHeight)
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
                         while (true) {
@@ -182,9 +185,7 @@ private fun Modifier.sheetContentLayout(
         }
         // Between the minimized and expanded sheet the content animates its own height, so the sheet
         // keeps its bottom edge and follows it instead of sliding a content that already changed
-        val followsContent = !interaction.isActive &&
-            listOf(detent, state.currentValue, state.targetValue).none { it == RoutePlannerDetent.FULL_SCREEN }
-        sheetTop.px = if (followsContent) {
+        sheetTop.px = if (!interaction.isActive) {
             sheetTop.followContent(contentTop = containerHeightPx - placeable.height, contentHeight = placeable.height)
         } else {
             state.requireOffset().also { sheetTop.holdAt(it) }
@@ -255,7 +256,6 @@ private fun AnchoredDraggableState<RoutePlannerDetent>.updateExpandedAnchor(posi
     val newAnchors = DraggableAnchors {
         RoutePlannerDetent.MINIMIZED at anchors.positionOf(RoutePlannerDetent.MINIMIZED)
         RoutePlannerDetent.EXPANDED at position
-        RoutePlannerDetent.FULL_SCREEN at anchors.positionOf(RoutePlannerDetent.FULL_SCREEN)
     }
     updateAnchors(newAnchors, targetValue)
 }

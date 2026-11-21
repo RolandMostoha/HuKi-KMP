@@ -2,6 +2,16 @@ import Shared
 import SwiftUI
 
 extension MainView {
+    /// Keeps a strip of the map visible above the expanded planner, except in landscape where the height is scarce.
+    var routePlannerMaxExpandedHeight: CGFloat {
+        guard screenHeight > 0 else { return .infinity }
+        return screenHeight - topSafeAreaInset - (isLandscape ? 0 : Dimens.routePlannerMapPeekHeight)
+    }
+
+    var isRoutePlannerAtMaxHeight: Bool {
+        routePlannerDetent == .expanded && routePlannerHeights.expanded >= routePlannerMaxExpandedHeight - 1
+    }
+
     func routePlannerSheet(stops: [RoutePlannerWaypoint], restored: RoutePlannerSession?) -> some View {
         RoutePlannerSheetView(
             strings: strings,
@@ -37,7 +47,7 @@ extension MainView {
                 viewModel.onEvent(event: MainUiEventsSheetDismissed())
             },
             detent: routePlannerDetent,
-            onExpandRequest: { routePlannerDetent = .fullScreen },
+            maxExpandedHeight: routePlannerMaxExpandedHeight,
             onDetentChange: { routePlannerDetent = $0 },
             onHeightsChange: { heights in
                 routePlannerHeights = heights
@@ -58,7 +68,7 @@ extension MainView {
         RoutePlannerHintOverlay(
             strings: strings,
             sheetFrame: routePlannerSheetFrame,
-            hint: routePlannerDetent == .fullScreen ? nil : uiState.visibleRoutePlannerHint,
+            hint: isRoutePlannerAtMaxHeight ? nil : uiState.visibleRoutePlannerHint,
             onDismiss: {
                 viewModel.onEvent(event: MainUiEventsRoutePlannerHintDismissed.shared)
             }
@@ -68,8 +78,7 @@ extension MainView {
     private var routePlannerDetents: Set<PresentationDetent> {
         [
             presentationDetent(for: .minimized),
-            presentationDetent(for: .expanded),
-            presentationDetent(for: .fullScreen)
+            presentationDetent(for: .expanded)
         ]
     }
 
@@ -79,8 +88,6 @@ extension MainView {
             return .custom(RoutePlannerMinimizedDetent.self)
         case .expanded:
             return .custom(RoutePlannerExpandedDetent.self)
-        case .fullScreen:
-            return .large
         }
     }
 
@@ -88,13 +95,7 @@ extension MainView {
         Binding(
             get: { presentationDetent(for: routePlannerDetent) },
             set: { newValue in
-                if newValue == .large {
-                    routePlannerDetent = .fullScreen
-                } else if newValue == .custom(RoutePlannerMinimizedDetent.self) {
-                    routePlannerDetent = .minimized
-                } else {
-                    routePlannerDetent = .expanded
-                }
+                routePlannerDetent = newValue == .custom(RoutePlannerMinimizedDetent.self) ? .minimized : .expanded
             }
         )
     }
@@ -114,7 +115,7 @@ private struct RoutePlannerMinimizedDetent: CustomPresentationDetent {
 
 private struct RoutePlannerExpandedDetent: CustomPresentationDetent {
     static func height(in context: Context) -> CGFloat? {
-        RoutePlannerDetentHeights.current.expanded
+        min(RoutePlannerDetentHeights.current.expanded, context.maxDetentValue)
     }
 }
 

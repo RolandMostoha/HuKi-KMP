@@ -24,12 +24,9 @@ struct RoutePlannerSheetHeights: Equatable {
 enum RoutePlannerDetent {
     /// Keeps only the title, stats and save button
     case minimized
-    /// Shows all content but keeps only a few stops
+    /// Fits all stops up to a height cap, past which the stop list scrolls
     case expanded
-    /// Shows all stops and all content
-    case fullScreen
 
-    /// The header button switches between the map, where the sheet is minimized, and the stop list
     var toggled: RoutePlannerDetent {
         self == .minimized ? .expanded : .minimized
     }
@@ -46,7 +43,7 @@ struct RoutePlannerSheetView: View {
     let onRoutePlanSaved: (String) -> Void
     let onDismissRequest: () -> Void
     let detent: RoutePlannerDetent
-    let onExpandRequest: () -> Void
+    let maxExpandedHeight: CGFloat
     let onDetentChange: (RoutePlannerDetent) -> Void
     let onHeightsChange: (RoutePlannerSheetHeights) -> Void
     let onMinimizeRequest: () -> Void
@@ -72,7 +69,7 @@ struct RoutePlannerSheetView: View {
         onRoutePlanSaved: @escaping (String) -> Void,
         onDismissRequest: @escaping () -> Void,
         detent: RoutePlannerDetent = .expanded,
-        onExpandRequest: @escaping () -> Void = {},
+        maxExpandedHeight: CGFloat = .infinity,
         onDetentChange: @escaping (RoutePlannerDetent) -> Void = { _ in },
         onHeightsChange: @escaping (RoutePlannerSheetHeights) -> Void = { _ in },
         onMinimizeRequest: @escaping () -> Void = {},
@@ -89,7 +86,7 @@ struct RoutePlannerSheetView: View {
         self.onRoutePlanSaved = onRoutePlanSaved
         self.onDismissRequest = onDismissRequest
         self.detent = detent
-        self.onExpandRequest = onExpandRequest
+        self.maxExpandedHeight = maxExpandedHeight
         self.onDetentChange = onDetentChange
         self.onHeightsChange = onHeightsChange
         self.onMinimizeRequest = onMinimizeRequest
@@ -131,7 +128,7 @@ struct RoutePlannerSheetView: View {
                     viewModel.onEvent(event: event)
                 },
                 detent: detent,
-                onExpandRequest: onExpandRequest,
+                maxExpandedHeight: maxExpandedHeight,
                 onDetentChange: onDetentChange,
                 onHeightsChange: onHeightsChange
             )

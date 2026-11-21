@@ -40,7 +40,6 @@ fun RoutePlannerBottomSheet(
     restored: RoutePlannerSession?,
     mapEvent: RoutePlannerMapEvent?,
     detent: RoutePlannerDetent,
-    onMoreStopsClick: () -> Unit,
     onDetentChange: (RoutePlannerDetent) -> Unit,
     onRoutePlanUpdated: (
         routePlan: RoutePlan?,
@@ -119,7 +118,6 @@ fun RoutePlannerBottomSheet(
         onDetentChange = onDetentChange,
         onMinimizedHeightMeasured = onMinimizedHeightMeasured,
         onExpandedHeightMeasured = onExpandedHeightMeasured,
-        onMoreStopsClick = onMoreStopsClick,
         modifier = modifier,
     )
     // Removing a modal sheet from composition skips its exit animation, so it is hidden first

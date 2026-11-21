@@ -1,5 +1,6 @@
 package hu.mostoha.mobile.kmp.huki.ui.features.main
 
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,9 +12,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ButtonDefaults
@@ -40,6 +45,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,6 +96,7 @@ import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerDetent
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerHintCard
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerMapEvent
 import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.RoutePlannerSheet
+import hu.mostoha.mobile.kmp.huki.ui.features.routeplanner.routePlannerMaxExpandedHeight
 import hu.mostoha.mobile.kmp.huki.ui.features.search.SearchBottomSheet
 import hu.mostoha.mobile.kmp.huki.ui.features.whatsnew.WhatsNewBottomSheet
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -313,9 +320,17 @@ private fun MainContent(
         },
         containerColor = Color.Transparent,
     ) { _ ->
-        Box(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxSize(),
         ) {
+            val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+            val routePlannerMaxHeight = routePlannerMaxExpandedHeight(
+                containerHeight = maxHeight,
+                statusBarInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+                isLandscape = isLandscape,
+            )
+            val isRoutePlannerAtMaxHeight = routePlannerDetent == RoutePlannerDetent.EXPANDED &&
+                routePlannerExpandedHeight >= routePlannerMaxHeight - 1.dp
             MapContent(
                 mapUiState = uiState.mapUiState,
                 mapUiEffects = mapUiEffects,
@@ -326,7 +341,8 @@ private fun MainContent(
                     detent = routePlannerDetent,
                     minimizedHeight = routePlannerPeekHeight,
                     expandedHeight = routePlannerExpandedHeight,
-                    isHintShown = uiState.visibleRoutePlannerHint != null,
+                    isHintShown = uiState.visibleRoutePlannerHint != null && !isRoutePlannerAtMaxHeight,
+                    maxInset = maxHeight * Dimens.ROUTE_PLANNER_MAX_CAMERA_INSET_FRACTION,
                 ),
                 listSheetHeight = if (uiState.mapUiState.landscapes != null) {
                     landscapesSheetHeights.collapsed
@@ -401,7 +417,7 @@ private fun MainContent(
                         onDispose { routePlannerDetent = RoutePlannerDetent.EXPANDED }
                     }
                     RoutePlannerSheetOverlay(
-                        hint = uiState.visibleRoutePlannerHint,
+                        hint = uiState.visibleRoutePlannerHint.takeUnless { isRoutePlannerAtMaxHeight },
                         stops = sheet.stops,
                         restored = sheet.restored,
                         mapEvent = routePlannerMapEvent,
@@ -409,6 +425,7 @@ private fun MainContent(
                         onDetentChange = { routePlannerDetent = it },
                         minimizedHeight = routePlannerPeekHeight,
                         expandedHeight = routePlannerExpandedHeight,
+                        maxExpandedHeight = routePlannerMaxHeight,
                         onEvent = onEvent,
                         onLocationIqClicked = onLocationIqClicked,
                         onMinimizedHeightMeasured = { routePlannerPeekHeight = it },
@@ -501,14 +518,13 @@ private fun routePlannerMapInset(
     minimizedHeight: Dp,
     expandedHeight: Dp,
     isHintShown: Boolean,
+    maxInset: Dp,
 ): Dp? {
+    if (sheet !is Sheet.RoutePlanner) return null
     val hintOffset = if (isHintShown) Dimens.RoutePlannerHintCameraOffset else 0.dp
-    return when {
-        sheet !is Sheet.RoutePlanner -> null
-        detent == RoutePlannerDetent.FULL_SCREEN -> null
-        detent == RoutePlannerDetent.MINIMIZED -> minimizedHeight + hintOffset
-        else -> expandedHeight + hintOffset
-    }
+    val sheetHeight = if (detent == RoutePlannerDetent.MINIMIZED) minimizedHeight else expandedHeight
+    // Past this the route would only shrink into a thin strip, so it frames higher and runs under the sheet
+    return minOf(sheetHeight + hintOffset, maxInset)
 }
 
 @Composable
@@ -521,6 +537,7 @@ private fun RoutePlannerSheetOverlay(
     onDetentChange: (RoutePlannerDetent) -> Unit,
     minimizedHeight: Dp,
     expandedHeight: Dp,
+    maxExpandedHeight: Dp,
     onEvent: (MainUiEvents) -> Unit,
     onLocationIqClicked: () -> Unit,
     onMinimizedHeightMeasured: (Dp) -> Unit,
@@ -538,9 +555,10 @@ private fun RoutePlannerSheetOverlay(
             onDetentChange = onDetentChange,
             minimizedHeight = minimizedHeight,
             expandedHeight = expandedHeight,
+            maxExpandedHeight = maxExpandedHeight,
             aboveSheet = {
                 AnimatedVisibility(
-                    visible = hint != null && detent != RoutePlannerDetent.FULL_SCREEN,
+                    visible = hint != null,
                     enter = fadeIn() + slideInVertically { it / 2 },
                     exit = fadeOut() + slideOutVertically { it / 2 },
                 ) {
@@ -565,7 +583,6 @@ private fun RoutePlannerSheetOverlay(
                 restored = restored,
                 mapEvent = mapEvent,
                 detent = detent,
-                onMoreStopsClick = { onDetentChange(RoutePlannerDetent.FULL_SCREEN) },
                 onDetentChange = onDetentChange,
                 onLocationIqClick = onLocationIqClicked,
                 onMinimizedHeightMeasured = onMinimizedHeightMeasured,

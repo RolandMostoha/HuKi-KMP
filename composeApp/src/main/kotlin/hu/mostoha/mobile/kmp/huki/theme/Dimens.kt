@@ -43,8 +43,11 @@ object Dimens {
 
     val RoutePlannerPeekHeight = 200.dp
     val RoutePlannerRowHeight = 48.dp
-    val RoutePlannerRowHeightExpanded = 56.dp
-    val RoutePlannerListMaxHeight = 400.dp
+
+    /**
+     * Map left visible below the status bar above a fully grown planner sheet.
+     */
+    val RoutePlannerMapPeekHeight = 100.dp
     val RoutePlannerWaypointIconColumnWidth = 20.dp
     val RoutePlannerConnectorWidth = 2.dp
     val RoutePlannerStopActionSize = 44.dp
@@ -124,6 +127,11 @@ object Dimens {
      * Fixed room for the hint card above the planner sheet while it shows, so it never covers the route's last stops.
      */
     val RoutePlannerHintCameraOffset = 112.dp
+
+    /**
+     * Share of the screen the planner sheet may at most take from the route's camera frame.
+     */
+    const val ROUTE_PLANNER_MAX_CAMERA_INSET_FRACTION = 0.55f
 
     val OktContentPaddingPortrait = PaddingValues(
         top = 120.dp,

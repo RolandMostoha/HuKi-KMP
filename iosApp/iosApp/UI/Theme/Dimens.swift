@@ -152,6 +152,10 @@ enum Dimens {
 
     static let routePlannerDetentHeight: CGFloat = 520
     static let routePlannerMinimizedDetentHeight: CGFloat = 190
+    /// Map left visible below the safe area above a fully grown planner sheet.
+    static let routePlannerMapPeekHeight: CGFloat = 100
+    /// Share of the screen the planner sheet may at most take from the route's camera frame.
+    static let routePlannerMaxCameraInsetFraction: CGFloat = 0.55
     /// Fixed room for the long-press hint above the planner sheet, so it never covers the route's stops.
     static let routePlannerHintCameraOffset: CGFloat = 112
 

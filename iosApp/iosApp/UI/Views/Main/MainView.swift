@@ -12,6 +12,7 @@ struct MainView: View {
     @State var oktDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var landscapesDetent: PresentationDetent = .height(Dimens.oktDetentMinHeight)
     @State var screenHeight: CGFloat = 0
+    @State var topSafeAreaInset: CGFloat = 0
     @State var placeDetailsHeight: CGFloat = Dimens.placeDetailsDetentHeight
     @State var discoverHeight: CGFloat = Dimens.discoverDetentHeight
     @State var whatsNewHeight: CGFloat = Dimens.whatsNewDetentHeight
@@ -50,8 +51,11 @@ struct MainView: View {
     }
 
     func routePlannerMapInset(uiState: MainUiState) -> CGFloat {
-        let isHintShown = uiState.isRoutePlannerLongPressHintVisible && routePlannerDetent != .fullScreen
-        return routePlannerSheetHeight + (isHintShown ? Dimens.routePlannerHintCameraOffset : 0)
+        let isHintShown = uiState.isRoutePlannerLongPressHintVisible && !isRoutePlannerAtMaxHeight
+        let inset = routePlannerSheetHeight + (isHintShown ? Dimens.routePlannerHintCameraOffset : 0)
+        // Past this the route would only shrink into a thin strip, so it frames higher and runs under the sheet
+        guard screenHeight > 0 else { return inset }
+        return min(inset, screenHeight * Dimens.routePlannerMaxCameraInsetFraction)
     }
 
     init(viewModel: MainViewModel) {
@@ -233,6 +237,9 @@ struct MainView: View {
             proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
         } action: { height in
             screenHeight = height
+        }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { inset in
+            topSafeAreaInset = inset
         }
     }
 

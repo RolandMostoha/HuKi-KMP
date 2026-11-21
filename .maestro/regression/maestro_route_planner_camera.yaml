@@ -50,8 +50,7 @@ name: Route planner camera regression
 - waitForAnimationToEnd
 - takeScreenshot: 03_expanded_again
 
-# The detents by swiping the sheet. Maestro swipes are long, so one can skip a detent (minimized straight to full
-# screen): the screenshots show where each landed, the recording strips show how it got there
+# The detents by swiping the sheet: the screenshots show where each landed, the recording strips show how it got there
 - swipe:
     from:
       id: ROUTE_PLANNER_TITLE

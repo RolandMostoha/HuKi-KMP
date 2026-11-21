@@ -111,20 +111,12 @@ private func previewUiState(
     )
 }
 
-#Preview("Collapsed stops") {
-    RoutePlannerContentView(
-        strings: Strings(),
-        uiState: previewUiState(waypoints: previewManyWaypoints, isLoading: true),
-        onEvent: { _ in }
-    )
-}
-
-#Preview("Full screen stops") {
+#Preview("Many stops") {
     RoutePlannerContentView(
         strings: Strings(),
         uiState: previewUiState(waypoints: previewManyWaypoints, isLoading: true),
         onEvent: { _ in },
-        detent: .fullScreen
+        maxExpandedHeight: 520
     )
 }
 
@@ -151,7 +143,7 @@ private func previewUiState(
         strings: Strings(),
         uiState: previewUiState(waypoints: previewMaxWaypoints),
         onEvent: { _ in },
-        detent: .fullScreen
+        maxExpandedHeight: 700
     )
 }
 

@@ -121,14 +121,6 @@ appId: ${APP_ID}
       - assertVisible:
           id: ROUTE_PLANNER_SHEET
 - assertVisible:
-    id: ROUTE_PLANNER_MORE_STOPS_ROW
-- tapOn:
-    id: ROUTE_PLANNER_MORE_STOPS_ROW
-- extendedWaitUntil:
-    notVisible:
-      id: ROUTE_PLANNER_MORE_STOPS_ROW
-    timeout: 5000
-- assertVisible:
     id: ROUTE_PLANNER_WAYPOINT_LIST
 - assertVisible:
     id: ROUTE_PLANNER_ADD_STOP_ROW

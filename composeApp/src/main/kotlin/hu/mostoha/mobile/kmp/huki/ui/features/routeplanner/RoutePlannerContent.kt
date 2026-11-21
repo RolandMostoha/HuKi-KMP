@@ -15,16 +15,14 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,7 +78,6 @@ fun RoutePlannerContent(
     uiState: RoutePlannerUiState,
     detent: RoutePlannerDetent,
     onEvent: (RoutePlannerUiEvents) -> Unit,
-    onMoreStopsClick: () -> Unit,
     modifier: Modifier = Modifier,
     onDetentChange: (RoutePlannerDetent) -> Unit = {},
     onMinimizedHeightMeasured: (Dp) -> Unit = {},
@@ -93,8 +90,6 @@ fun RoutePlannerContent(
         targetValue = if (uiState.isRoutePlanLoading) 0f else 1f,
         label = "stopListAlpha",
     )
-    val isFullScreen = detent == RoutePlannerDetent.FULL_SCREEN
-    val rowHeight = if (isFullScreen) Dimens.RoutePlannerRowHeightExpanded else Dimens.RoutePlannerRowHeight
     val plannerFraction = rememberPlannerReveal(isMinimized)
     val isPlannerCollapsed = isMinimized && !plannerFraction.isRunning
     var cardHeight by remember { mutableStateOf(Dp.Unspecified) }
@@ -129,11 +124,7 @@ fun RoutePlannerContent(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier.wrapContentHeight())
-                .padding(top = Dimens.ExtraSmall),
-        ) {
+        Column(modifier = Modifier.padding(top = Dimens.ExtraSmall)) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,17 +139,17 @@ fun RoutePlannerContent(
                     onGraphhopperClick = { onEvent(RoutePlannerUiEvents.GraphhopperAttributionClicked) },
                 )
             }
-            // The sheet follows its content's height, so the planner block's own size animation moves the sheet
+            // The sheet follows its content's height, so the planner block's own size animation moves the sheet.
+            // Under the sheet's height cap the stop list takes what is left and scrolls.
             Box(
                 modifier = Modifier
-                    .then(weightWhen(isFullScreen))
+                    .weight(weight = 1f, fill = false)
                     .revealed(fraction = { plannerFraction.value })
                     .then(if (isPlannerCollapsed) Modifier.clearAndSetSemantics {} else Modifier),
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(if (isFullScreen) Modifier.fillMaxHeight() else Modifier)
                         .padding(
                             start = Dimens.ExtraLarge,
                             top = Dimens.ExtraSmall,
@@ -174,7 +165,7 @@ fun RoutePlannerContent(
                         visible = uiState.isStopListVisible,
                         enter = fadeIn() + expandVertically(),
                         exit = fadeOut() + shrinkVertically(),
-                        modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
+                        modifier = Modifier.weight(weight = 1f, fill = false),
                     ) {
                         Box {
                             Column(
@@ -183,11 +174,8 @@ fun RoutePlannerContent(
                             ) {
                                 RoutePlannerWaypointList(
                                     uiState = uiState,
-                                    detent = detent,
                                     onEvent = onEvent,
-                                    onMoreStopsClick = onMoreStopsClick,
-                                    rowHeight = rowHeight,
-                                    modifier = Modifier.then(weightWhen(isFullScreen, fill = false)),
+                                    modifier = Modifier.weight(weight = 1f, fill = false),
                                 )
                                 RoutePlannerStopActions(
                                     isAddStopEnabled = uiState.isAddStopEnabled,
@@ -373,9 +361,6 @@ private fun Modifier.hiddenWhileLoading(isLoading: Boolean, alpha: Float): Modif
             },
         )
 
-// The full screen stage pins the stats and the save button to the bottom, so the stop list takes
-// whatever space is left instead of the sheet growing past the screen.
-
 @Composable
 private fun RoutePlannerHeader(
     detent: RoutePlannerDetent,
@@ -477,7 +462,6 @@ private fun RoutePlannerContentPreview() {
             uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan),
             detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
@@ -492,7 +476,6 @@ private fun RoutePlannerContentErrorPreview() {
             ),
             detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
@@ -505,7 +488,6 @@ private fun RoutePlannerContentMinimizedPreview() {
             uiState = PreviewRoutePlanner.uiState(routePlan = PreviewRoutePlanner.routePlan),
             detent = RoutePlannerDetent.MINIMIZED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
@@ -519,23 +501,19 @@ private fun RoutePlannerContentMinimizedSelectedStopPreview() {
             uiState = uiState.copy(selectedStopId = uiState.stops.last().id),
             detent = RoutePlannerDetent.MINIMIZED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
 
-@Preview
+@Preview(heightDp = 640)
 @Composable
-private fun RoutePlannerContentFullScreenPreview() {
+private fun RoutePlannerContentManyStopsPreview() {
     HuKiTheme {
         RoutePlannerContent(
-            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(6)),
-            detent = RoutePlannerDetent.FULL_SCREEN,
+            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(12)),
+            detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
+            modifier = Modifier.heightIn(max = 640.dp),
         )
     }
 }
-
-private fun ColumnScope.weightWhen(isFullScreen: Boolean, fill: Boolean = true): Modifier =
-    if (isFullScreen) Modifier.weight(weight = 1f, fill = fill) else Modifier

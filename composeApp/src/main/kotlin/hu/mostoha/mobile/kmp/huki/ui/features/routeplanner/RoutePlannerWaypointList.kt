@@ -4,13 +4,13 @@ import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,6 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +41,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LocalPinnableContainer
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -60,47 +67,28 @@ import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoImage
 import hu.mostoha.mobile.kmp.huki.util.mokoString
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
-private const val MAX_DEFAULT_STOP_COUNT = 3
 private const val SURFACE_ALPHA = 0.5f
+private const val REVEAL_FOLLOW_MILLIS = 600L
+private val AutoScrollStep = 8.dp
 private val LiftedStopElevation = 4.dp
 private val LiftedStopShape = RoundedCornerShape(Dimens.Medium)
 
 @Composable
 fun RoutePlannerWaypointList(
     uiState: RoutePlannerUiState,
-    detent: RoutePlannerDetent,
     onEvent: (RoutePlannerUiEvents) -> Unit,
-    onMoreStopsClick: () -> Unit,
     modifier: Modifier = Modifier,
     rowHeight: Dp = Dimens.RoutePlannerRowHeight,
 ) {
-    val stops = uiState.stops
-    val isFullScreen = detent == RoutePlannerDetent.FULL_SCREEN
-    val isCollapsed = !isFullScreen && stops.size > MAX_DEFAULT_STOP_COUNT
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.Large))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = SURFACE_ALPHA)),
     ) {
-        if (isCollapsed) {
-            Column(modifier = Modifier.padding(horizontal = Dimens.MediumLarge)) {
-                CollapsedStops(
-                    uiState = uiState,
-                    rowHeight = rowHeight,
-                    onEvent = onEvent,
-                    onMoreStopsClick = onMoreStopsClick,
-                )
-            }
-        } else {
-            ReorderableStops(
-                uiState = uiState,
-                rowHeight = rowHeight,
-                isFullScreen = isFullScreen,
-                onEvent = onEvent,
-            )
-        }
+        ReorderableStops(uiState = uiState, rowHeight = rowHeight, onEvent = onEvent)
         if (uiState.isMaxStopsReached) {
             RoutePlannerMaxStopsRow(
                 maxStopCount = RoutePlanConstants.MAX_WAYPOINT_COUNT,
@@ -112,33 +100,9 @@ fun RoutePlannerWaypointList(
 }
 
 @Composable
-private fun CollapsedStops(
-    uiState: RoutePlannerUiState,
-    rowHeight: Dp,
-    onEvent: (RoutePlannerUiEvents) -> Unit,
-    onMoreStopsClick: () -> Unit,
-) {
-    val stops = uiState.stops
-    StopItem(uiState = uiState, index = 0, rowHeight = rowHeight, isReorderable = false, onEvent = onEvent)
-    RoutePlannerMoreStopsRow(
-        hiddenStopCount = stops.size - 2,
-        onClick = onMoreStopsClick,
-        rowHeight = rowHeight,
-    )
-    StopItem(
-        uiState = uiState,
-        index = stops.lastIndex,
-        rowHeight = rowHeight,
-        isReorderable = false,
-        onEvent = onEvent,
-    )
-}
-
-@Composable
 private fun ColumnScope.ReorderableStops(
     uiState: RoutePlannerUiState,
     rowHeight: Dp,
-    isFullScreen: Boolean,
     onEvent: (RoutePlannerUiEvents) -> Unit,
 ) {
     val stops = uiState.stops
@@ -150,14 +114,35 @@ private fun ColumnScope.ReorderableStops(
     val coroutineScope = rememberCoroutineScope()
     var drag by remember { mutableStateOf<StopDrag?>(null) }
     var dragOffset by remember { mutableFloatStateOf(0f) }
+    // How far the list scrolled under the dragged row, which moves its slot but not the row under the finger
+    var dragScroll by remember { mutableFloatStateOf(0f) }
     val stopIds = remember(stops) { stops.map { it.id } }
     // The drag gesture outlives reorders that keep its row's index, so it reads the order when a drag starts
     val currentStopIds by rememberUpdatedState(stopIds)
     // A drag belongs to the order it started on, so the reordered list never shows its offsets for a frame
     val activeDrag = drag?.takeIf { it.stopIds == stopIds }
+    var movedStopId by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(stopIds) { drag = null }
+    StopsIntoView(
+        listState = listState,
+        stopIds = stopIds,
+        selectedStopId = uiState.selectedStop?.id,
+        movedStopId = movedStopId,
+        onMovedStopShown = { movedStopId = null },
+    )
+    DragAutoScroll(
+        listState = listState,
+        drag = activeDrag,
+        fingerOffset = { dragOffset - dragScroll },
+        onScrolled = { consumed ->
+            dragScroll += consumed
+            dragOffset += consumed
+        },
+    )
     val dropIndex by remember(activeDrag, movableIndices) {
-        derivedStateOf { activeDrag?.let { listState.dropIndex(it.index, dragOffset, movableIndices) } }
+        derivedStateOf {
+            activeDrag?.let { listState.dropIndex(it, dragOffset - dragScroll, movableIndices) }
+        }
     }
     val moveUpLabel = mokoString(SharedRes.strings.route_planner_a11y_move_up)
     val moveDownLabel = mokoString(SharedRes.strings.route_planner_a11y_move_down)
@@ -166,30 +151,34 @@ private fun ColumnScope.ReorderableStops(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .then(
-                if (isFullScreen) {
-                    // Fills only what a long list needs, so the max stops row stays under the last stop.
-                    Modifier.weight(weight = 1f, fill = false)
-                } else {
-                    Modifier.heightIn(max = Dimens.RoutePlannerListMaxHeight)
-                },
-            )
+            // Fills only what the stops need, so the max stops row stays under the last stop
+            .weight(weight = 1f, fill = false)
             .testTag(TestTags.ROUTE_PLANNER_WAYPOINT_LIST),
     ) {
         itemsIndexed(stops, key = { _, stop -> stop.id }) { index, _ ->
             val isDragged = activeDrag?.index == index
+            // The dragged row stays composed while autoscroll moves its slot out of the list's viewport
+            val pinnableContainer = LocalPinnableContainer.current
+            DisposableEffect(isDragged) {
+                val handle = if (isDragged) pinnableContainer?.pin() else null
+                onDispose { handle?.release() }
+            }
             val makeRoomOffset by animateFloatAsState(
                 targetValue = makeRoomOffset(index, activeDrag, dropIndex),
                 label = "stopMakeRoomOffset",
             )
             val lift by animateFloatAsState(targetValue = if (isDragged) 1f else 0f, label = "stopLift")
+            // A pinned row whose slot scrolled away is placed next to the visible rows instead of in its slot,
+            // so the dragged row is drawn from where it is placed
+            var placedTop by remember { mutableFloatStateOf(0f) }
             Box(
                 modifier = Modifier
                     .zIndex(if (isDragged || lift > 0f) 1f else 0f)
+                    .onPlaced { placedTop = it.positionInParent().y }
                     .graphicsLayer {
                         translationY = when {
                             activeDrag == null -> 0f
-                            isDragged -> dragOffset
+                            isDragged -> activeDrag.startOffset + dragOffset - dragScroll - placedTop
                             else -> makeRoomOffset
                         }
                     }
@@ -226,24 +215,25 @@ private fun ColumnScope.ReorderableStops(
                         detectDragGesturesAfterLongPress(
                             onDragStart = {
                                 dragOffset = 0f
-                                drag = StopDrag(
-                                    index = index,
-                                    size = listState.itemSize(index),
-                                    stopIds = currentStopIds,
-                                )
+                                dragScroll = 0f
+                                drag = listState.startDrag(index, currentStopIds)
                             },
                             onDrag = { change, dragAmount ->
                                 change.consume()
                                 dragOffset += dragAmount.y
                             },
                             onDragEnd = {
-                                val target = listState.dropIndex(index, dragOffset, movableIndices)
+                                val endedDrag = drag ?: return@detectDragGesturesAfterLongPress
+                                val fingerOffset = dragOffset - dragScroll
+                                val target = listState.dropIndex(endedDrag, fingerOffset, movableIndices)
                                 coroutineScope.launch {
                                     // The row settles into its new slot before the list reorders under it
-                                    animate(dragOffset, listState.slotOffset(index, target)) { value, _ ->
+                                    val dropOffset = listState.dropOffset(endedDrag, dragScroll, target)
+                                    animate(dragOffset, dropOffset) { value, _ ->
                                         dragOffset = value
                                     }
                                     if (target != index) {
+                                        movedStopId = endedDrag.stopIds[index]
                                         onEvent(RoutePlannerUiEvents.WaypointMoved(index, target))
                                     } else {
                                         drag = null
@@ -279,14 +269,61 @@ private fun LiftedStopBackground(lift: () -> Float, modifier: Modifier = Modifie
     )
 }
 
+@Composable
+private fun StopsIntoView(
+    listState: LazyListState,
+    stopIds: List<String>,
+    selectedStopId: String?,
+    movedStopId: String?,
+    onMovedStopShown: () -> Unit,
+) {
+    var previousStopIds by remember { mutableStateOf(stopIds) }
+    val currentStopIds by rememberUpdatedState(stopIds)
+    LaunchedEffect(stopIds) {
+        // A stop added below the visible rows, or dropped at the list's edge, would land out of sight
+        val shownId = stopIds.firstOrNull { it !in previousStopIds } ?: movedStopId?.takeIf { it in stopIds }
+        previousStopIds = stopIds
+        onMovedStopShown()
+        shownId?.let { listState.followIntoView(it, stopIds.indexOf(it)) }
+    }
+    // A stop selected on the map can sit outside the scrolled list
+    LaunchedEffect(selectedStopId) {
+        selectedStopId?.let { listState.followIntoView(it, currentStopIds.indexOf(it)) }
+    }
+}
+
+@Composable
+private fun DragAutoScroll(
+    listState: LazyListState,
+    drag: StopDrag?,
+    fingerOffset: () -> Float,
+    onScrolled: (Float) -> Unit,
+) {
+    val step = with(LocalDensity.current) { AutoScrollStep.toPx() }
+    LaunchedEffect(drag) {
+        val currentDrag = drag ?: return@LaunchedEffect
+        while (true) {
+            withFrameNanos { }
+            val delta = listState.autoScrollDelta(currentDrag, fingerOffset(), step)
+            if (delta != 0f) onScrolled(listState.scrollBy(delta))
+        }
+    }
+}
+
 /**
- * A stop being dragged to a new place in the order of [stopIds].
+ * A stop being dragged to a new place in the order of [stopIds], from its slot at [startOffset] in the list.
  */
 private data class StopDrag(
     val index: Int,
     val size: Int,
+    val startOffset: Int,
     val stopIds: List<String>,
 )
+
+private fun LazyListState.startDrag(index: Int, stopIds: List<String>): StopDrag {
+    val item = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+    return StopDrag(index = index, size = item?.size ?: 0, startOffset = item?.offset ?: 0, stopIds = stopIds)
+}
 
 /**
  * The rows between the dragged stop and its drop place step aside by the dragged row's height.
@@ -299,31 +336,66 @@ private fun makeRoomOffset(index: Int, drag: StopDrag?, dropIndex: Int?): Float 
         else -> 0f
     }
 
-private fun LazyListState.itemSize(index: Int): Int =
-    layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }?.size ?: 0
+/**
+ * Scrolls the list while the dragged row, [fingerOffset] away from where it started, presses on its edge.
+ */
+private fun LazyListState.autoScrollDelta(drag: StopDrag, fingerOffset: Float, step: Float): Float {
+    val top = drag.startOffset + fingerOffset
+    val bottom = top + drag.size
+    val edge = drag.size / 2f
+    return when {
+        top < layoutInfo.viewportStartOffset + edge && canScrollBackward -> -step
+        bottom > layoutInfo.viewportEndOffset - edge && canScrollForward -> step
+        else -> 0f
+    }
+}
 
 /**
  * The stop whose row the dragged row's center is over.
  */
-private fun LazyListState.dropIndex(index: Int, dragOffset: Float, movableIndices: IntRange): Int {
+private fun LazyListState.dropIndex(drag: StopDrag, fingerOffset: Float, movableIndices: IntRange): Int {
     val items = layoutInfo.visibleItemsInfo
-    val dragged = items.firstOrNull { it.index == index } ?: return index
-    val center = dragged.offset + dragged.size / 2f + dragOffset
+    if (items.isEmpty()) return drag.index
+    val center = drag.startOffset + drag.size / 2f + fingerOffset
     val target = items.firstOrNull { center < it.offset + it.size }?.index ?: items.last().index
     return target.coerceIn(movableIndices)
 }
 
 /**
- * How far the row at [index] moves to land in [target]'s place once the rows in between stepped aside.
+ * The drag offset that lands the dragged row, [scrolled] away from its slot, in [target]'s place once the rows in
+ * between stepped aside.
  */
-private fun LazyListState.slotOffset(index: Int, target: Int): Float {
-    val items = layoutInfo.visibleItemsInfo
-    val dragged = items.firstOrNull { it.index == index } ?: return 0f
-    val targetItem = items.firstOrNull { it.index == target } ?: return 0f
-    return when {
-        target > index -> (targetItem.offset + targetItem.size - dragged.offset - dragged.size).toFloat()
-        target < index -> (targetItem.offset - dragged.offset).toFloat()
-        else -> 0f
+private fun LazyListState.dropOffset(drag: StopDrag, scrolled: Float, target: Int): Float {
+    val targetItem = layoutInfo.visibleItemsInfo.firstOrNull { it.index == target }
+    val slotTop = drag.startOffset - scrolled
+    val targetTop = when {
+        targetItem == null -> slotTop
+        target > drag.index -> (targetItem.offset + targetItem.size - drag.size).toFloat()
+        target < drag.index -> targetItem.offset.toFloat()
+        else -> slotTop
+    }
+    return targetTop - drag.startOffset + scrolled
+}
+
+/**
+ * Scrolls the stop with [key] at [index] into view, and keeps it there while its card opens.
+ */
+private suspend fun LazyListState.followIntoView(key: String, index: Int) {
+    if (index < 0) return
+    withTimeoutOrNull(REVEAL_FOLLOW_MILLIS) {
+        snapshotFlow { layoutInfo }.collect { info ->
+            val item = info.visibleItemsInfo.firstOrNull { it.key == key }
+            if (item == null) {
+                animateScrollToItem(index)
+                return@collect
+            }
+            val overTop = info.viewportStartOffset - item.offset
+            val overBottom = item.offset + item.size - info.viewportEndOffset
+            when {
+                overTop > 0 -> scrollBy(-overTop.toFloat())
+                overBottom > 0 -> scrollBy(minOf(overBottom, -overTop).toFloat())
+            }
+        }
     }
 }
 
@@ -424,36 +496,18 @@ private fun RoutePlannerWaypointListPreview() {
     HuKiTheme {
         RoutePlannerWaypointList(
             uiState = PreviewRoutePlanner.uiState(),
-            detent = RoutePlannerDetent.EXPANDED,
             onEvent = {},
-            onMoreStopsClick = {},
         )
     }
 }
 
-@Preview
+@Preview(heightDp = 300)
 @Composable
-private fun RoutePlannerWaypointListCollapsedPreview() {
+private fun RoutePlannerWaypointListManyStopsPreview() {
     HuKiTheme {
         RoutePlannerWaypointList(
-            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(4)),
-            detent = RoutePlannerDetent.EXPANDED,
+            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(8)),
             onEvent = {},
-            onMoreStopsClick = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun RoutePlannerWaypointListExpandedPreview() {
-    HuKiTheme {
-        RoutePlannerWaypointList(
-            uiState = PreviewRoutePlanner.uiState(stops = PreviewRoutePlanner.manyStops(4)),
-            detent = RoutePlannerDetent.FULL_SCREEN,
-            onEvent = {},
-            rowHeight = Dimens.RoutePlannerRowHeightExpanded,
-            onMoreStopsClick = {},
         )
     }
 }

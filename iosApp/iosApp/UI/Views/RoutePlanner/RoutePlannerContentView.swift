@@ -6,7 +6,7 @@ struct RoutePlannerContentView: View {
     let uiState: RoutePlannerUiState
     let onEvent: (RoutePlannerUiEvents) -> Void
     var detent: RoutePlannerDetent = .expanded
-    var onExpandRequest: () -> Void = {}
+    var maxExpandedHeight: CGFloat = .infinity
     var onDetentChange: (RoutePlannerDetent) -> Void = { _ in }
     var onHeightsChange: (RoutePlannerSheetHeights) -> Void = { _ in }
 
@@ -51,7 +51,7 @@ struct RoutePlannerContentView: View {
             }
         }
         .padding(.top, 20)
-        .fixedSize(horizontal: false, vertical: !isFullScreen || !showsPlanner)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func routeRegion(showsPlanner: Bool) -> some View {
@@ -144,8 +144,20 @@ struct RoutePlannerContentView: View {
     }
 
     private var waypointsList: some View {
-        List {
-            waypointsSection
+        ScrollViewReader { proxy in
+            List {
+                waypointsSection
+            }
+            .onChange(of: uiState.stops.map(\.id)) { oldIds, newIds in
+                // A stop added below the visible rows would land out of sight
+                guard let addedId = newIds.first(where: { !oldIds.contains($0) }) else { return }
+                withAnimation(.stateChange) { proxy.scrollTo(addedId) }
+            }
+            // A stop selected on the map can sit outside the scrolled list
+            .onChange(of: uiState.selectedStop?.id) { _, selectedId in
+                guard let selectedId else { return }
+                withAnimation(.stateChange) { proxy.scrollTo(selectedId) }
+            }
         }
         .listStyle(.insetGrouped)
         .environment(\.defaultMinListRowHeight, 0)
@@ -156,24 +168,19 @@ struct RoutePlannerContentView: View {
         .scrollBounceBehavior(.basedOnSize)
         // A resized List animates its center, which drops the rows while the sheet grows,
         // so it keeps one height and an animated, clipping frame reveals the part in use
-        .frame(height: isFullScreen ? nil : Self.waypointsListMaxHeight, alignment: .top)
-        .frame(height: isFullScreen ? nil : waypointsListHeight(for: detent), alignment: .top)
+        .frame(height: maxWaypointsListHeight, alignment: .top)
+        .frame(height: waypointsListHeight, alignment: .top)
         .clipped()
-        .frame(maxHeight: isFullScreen ? .infinity : nil)
         .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_WAYPOINT_LIST)
     }
 
     private var waypointsSection: some View {
         Section {
-            if isStopsCollapsed {
-                collapsedStopRows
-            } else {
-                ForEach(Array(uiState.stops.enumerated()), id: \.element.id) { index, waypoint in
-                    waypointRow(waypoint, index: index, type: uiState.stopType(index: Int32(index)))
-                }
-                .onMove { indices, destination in
-                    moveWaypoint(from: indices, to: destination)
-                }
+            ForEach(Array(uiState.stops.enumerated()), id: \.element.id) { index, waypoint in
+                waypointRow(waypoint, index: index, type: uiState.stopType(index: Int32(index)))
+            }
+            .onMove { indices, destination in
+                moveWaypoint(from: indices, to: destination)
             }
             if uiState.isMaxStopsReached {
                 RoutePlannerMaxStopsRowView(
@@ -187,24 +194,6 @@ struct RoutePlannerContentView: View {
         }
         .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
         .listRowBackground(Color(.tertiarySystemFill))
-    }
-
-    @ViewBuilder
-    private var collapsedStopRows: some View {
-        if let first = uiState.stops.first, let last = uiState.stops.last {
-            waypointRow(first, index: 0, type: uiState.stopType(index: 0))
-                .moveDisabled(true)
-            RoutePlannerMoreStopsRowView(
-                strings: strings,
-                hiddenStopCount: uiState.stops.count - 2,
-                rowHeight: rowHeight,
-                onTap: onExpandRequest
-            )
-            .frame(height: rowHeight)
-            .moveDisabled(true)
-            waypointRow(last, index: uiState.stops.count - 1, type: .end)
-                .moveDisabled(true)
-        }
     }
 
     private var stopActions: some View {
@@ -231,31 +220,36 @@ struct RoutePlannerContentView: View {
         .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_SAVE_BUTTON)
     }
 
-    // The List gets an explicit height from its pinned row heights, so the sheet resizes in the same update.
-    private static let waypointsListMaxHeight: CGFloat = 400
+    /// Below this the list keeps its height and the sheet outgrows the cap instead, as only landscape gets this tight.
+    private static let minWaypointsListHeight: CGFloat = 2 * rowHeight
     private static let defaultProfilePickerHeight: CGFloat = 32
     private static let stackSpacing: CGFloat = 16
     private static let routeRegionSpacing: CGFloat = 10
     private static let stopActionsSpacing: CGFloat = 12
     private static let headerIconSize: CGFloat = 24
-    private static let maxDefaultStopCount = 3
+    private static let rowHeight: CGFloat = 44
     static let minimizedRowHeight: CGFloat = 44
 
-    private var isFullScreen: Bool {
-        detent == .fullScreen
-    }
-
-    private var isStopsCollapsed: Bool {
-        detent == .expanded && uiState.stops.count > Self.maxDefaultStopCount
-    }
-
     private var rowHeight: CGFloat {
-        isFullScreen ? 56 : 44
+        Self.rowHeight
+    }
+
+    /// The List keeps this one height, its rows pinned to the top, since a resized List animates its center
+    /// and drops the rows while the sheet grows. A clipping frame reveals the part in use.
+    private var maxWaypointsListHeight: CGFloat {
+        let nonListHeight = minimizedHeight + Self.stackSpacing + profilePickerHeight
+            + Self.stopActionsSpacing + RoutePlannerStopActionsView.height + Self.routeRegionSpacing
+        let available = maxExpandedHeight.isFinite ? maxExpandedHeight - nonListHeight : stopRowsHeight
+        return max(available, Self.minWaypointsListHeight)
+    }
+
+    private var waypointsListHeight: CGFloat {
+        min(stopRowsHeight, maxWaypointsListHeight)
     }
 
     private var heights: RoutePlannerSheetHeights {
         let stopListHeight = uiState.isStopListVisible
-            ? waypointsListHeight(for: .expanded)
+            ? waypointsListHeight
                 + Self.stopActionsSpacing + RoutePlannerStopActionsView.height + Self.routeRegionSpacing
             : 0
         let plannerHeight = profilePickerHeight + stopListHeight
@@ -337,17 +331,12 @@ private extension RoutePlannerContentView {
         )
     }
 
-    func waypointsListHeight(for detent: RoutePlannerDetent) -> CGFloat {
-        let stops = uiState.stops
-        let isCollapsed = detent == .expanded && stops.count > Self.maxDefaultStopCount
-        let visibleStops = isCollapsed ? [stops.first, stops.last].compactMap { $0 } : stops
-        let stopsHeight = visibleStops.reduce(CGFloat(0)) { height, stop in
+    var stopRowsHeight: CGFloat {
+        let stopsHeight = uiState.stops.reduce(CGFloat(0)) { height, stop in
             let isCard = uiState.isStopExpanded(stop: stop)
             return height + (isCard ? RoutePlannerStopCard.height(rowHeight: rowHeight) : rowHeight)
         }
-        let extraRowCount = (isCollapsed ? 1 : 0) + (uiState.isMaxStopsReached ? 1 : 0)
-        let rowsHeight = stopsHeight + CGFloat(extraRowCount) * rowHeight
-        return min(rowsHeight, Self.waypointsListMaxHeight)
+        return stopsHeight + (uiState.isMaxStopsReached ? rowHeight : 0)
     }
 
     func moveWaypoint(from indices: IndexSet, to destination: Int) {

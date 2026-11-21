@@ -367,8 +367,7 @@ extension MapView {
     }
 
     func refitRoutePlannerCamera(inset: CGFloat? = nil) {
-        guard routePlannerDetent != .fullScreen,
-              uiState.mapUiState.routePlan != nil,
+        guard uiState.mapUiState.routePlan != nil,
               let effect = lastRoutePlannerCamera else { return }
         routePlannerMapInset = inset ?? routePlannerSheetHeight
         updateCamera(effect)

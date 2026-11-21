@@ -84,7 +84,6 @@
     <string name="route_planner_waypoint_empty">Choose a place</string>
     <string name="route_planner_round_trip">Round trip</string>
     <string name="route_planner_round_trip_undo">Undo round trip</string>
-    <string name="route_planner_more_stops">%d more stops</string>
     <string name="route_planner_max_stops_reached">You’ve reached the maximum number of stops (%d)</string>
     <string name="route_planner_save">Save Route</string>
     <string name="route_planner_loading">Planning the route…</string>
