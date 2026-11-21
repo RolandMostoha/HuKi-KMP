@@ -1,0 +1,5 @@
+- TuHu és Mapnik alaptérképként választható
+- Kerékpáros útvonalak fedő rétegként
+- GPX útvonalak kommentjei megjelennek
+- Teljesen újragondolt útvonaltervező
+- Körtúra varázsló
