@@ -32,7 +32,6 @@ object HuKiSwitchDefaults {
         val uncheckedBorder = neutral.copy(alpha = UNCHECKED_BORDER_ALPHA)
         val colors = SwitchDefaults.colors(
             checkedTrackColor = primary,
-            // The check takes the track's color, like the Material 3 switch
             checkedIconColor = primary,
             uncheckedTrackColor = uncheckedTrack,
             uncheckedThumbColor = uncheckedThumb,

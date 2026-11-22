@@ -51,6 +51,7 @@ import hu.mostoha.mobile.kmp.huki.features.settings.SettingsUiState
 import hu.mostoha.mobile.kmp.huki.features.settings.SettingsViewModel
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
 import hu.mostoha.mobile.kmp.huki.theme.HuKiTheme
+import hu.mostoha.mobile.kmp.huki.ui.components.HuKiSwitchDefaults
 import hu.mostoha.mobile.kmp.huki.ui.components.ScreenViewEffect
 import hu.mostoha.mobile.kmp.huki.util.TestTags
 import hu.mostoha.mobile.kmp.huki.util.mokoString
@@ -348,6 +349,8 @@ private fun SettingsSwitchItem(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            colors = HuKiSwitchDefaults.colors(),
+            thumbContent = HuKiSwitchDefaults.thumbContent(checked),
             modifier = Modifier
                 .padding(start = Dimens.Large)
                 .testTag(testTag),
