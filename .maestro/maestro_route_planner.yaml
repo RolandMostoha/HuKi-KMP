@@ -130,13 +130,17 @@ appId: ${APP_ID}
 # A round trip takes no new stops until it is undone, which drops its mirrored end
 - tapOn:
     id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
-- assertVisible: "Undo round trip|Körtúra felbontása"
+- assertVisible:
+    id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
+    checked: true
 - assertVisible:
     id: ROUTE_PLANNER_ADD_STOP_ROW
     enabled: false
 - tapOn:
     id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
-- assertVisible: "Round trip|Körtúra"
+- assertVisible:
+    id: ROUTE_PLANNER_ROUND_TRIP_BUTTON
+    checked: false
 - assertVisible:
     id: ROUTE_PLANNER_ADD_STOP_ROW
     enabled: true

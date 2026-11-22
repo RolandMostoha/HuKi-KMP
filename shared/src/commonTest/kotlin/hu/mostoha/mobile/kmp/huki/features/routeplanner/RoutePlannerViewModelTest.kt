@@ -179,7 +179,7 @@ class RoutePlannerViewModelTest {
             uiState.stops.first().location shouldBe MY_LOCATION
             uiState.stops.last().location shouldBe null
             uiState.isRoundTrip shouldBe false
-            uiState.isRoundTripEnabled shouldBe true
+            uiState.isRoundTripEnabled shouldBe false
             uiState.isSaveEnabled shouldBe false
         }
     }
@@ -1274,6 +1274,20 @@ class RoutePlannerViewModelTest {
             val markers = viewModel.uiState.value.routePlanMarkers
             markers.map { it.location } shouldBe markers.map { it.location }.distinct()
             markers.first().type shouldBe WaypointType.ROUND_TRIP
+        }
+    }
+
+    @Test
+    fun `Given only the start is filled - When the stops are read - Then round trip is disabled`() {
+        runTest {
+            val viewModel = createViewModel()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onEvent(RoutePlannerUiEvents.RoundTripClicked)
+
+            val uiState = viewModel.uiState.value
+            uiState.isRoundTripEnabled shouldBe false
+            uiState.isRoundTrip shouldBe false
         }
     }
 

@@ -9,7 +9,8 @@ struct RoutePlannerStopActionsView: View {
     let onAddStopClicked: () -> Void
     let onRoundTripClicked: () -> Void
 
-    static let height: CGFloat = 38
+    /// Fits the full-size system switch with the same inset all around, the add stop button matches it
+    static let height: CGFloat = 44
 
     var body: some View {
         HStack(spacing: 12) {
@@ -20,13 +21,9 @@ struct RoutePlannerStopActionsView: View {
                 action: onAddStopClicked
             )
             .accessibilityIdentifier(TestTags.shared.ROUTE_PLANNER_ADD_STOP_ROW)
-            RoutePlannerStopActionButton(
-                systemImage: "arrow.trianglehead.counterclockwise",
-                title: strings.get(
-                    id: isRoundTrip
-                        ? SharedRes.strings().route_planner_round_trip_undo
-                        : SharedRes.strings().route_planner_round_trip
-                ),
+            RoutePlannerRoundTripToggle(
+                title: strings.get(id: SharedRes.strings().route_planner_round_trip),
+                isOn: isRoundTrip,
                 isEnabled: isRoundTripEnabled,
                 action: onRoundTripClicked
             )
@@ -53,6 +50,46 @@ private struct RoutePlannerStopActionButton: View {
                 .contentShape(.capsule)
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.4)
+        .animation(.toggle, value: isEnabled)
+    }
+}
+
+private struct RoutePlannerRoundTripToggle: View {
+    let title: String
+    let isOn: Bool
+    let isEnabled: Bool
+    let action: () -> Void
+
+    // The system switch's fixed height, centered in the capsule so its end inset matches the top and bottom ones
+    private static let switchHeight: CGFloat = 31
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Color(SharedRes.colors().primary.getUIColor()))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                // The switch below carries the same title for VoiceOver
+                .accessibilityHidden(true)
+            // The state lives in the ViewModel, so the switch reports a flip instead of owning the value. Touches go to
+            // the capsule only, so a tap on the knob flips it once
+            Toggle(title, isOn: Binding(get: { isOn }, set: { _ in action() }))
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .tint(Color(SharedRes.colors().primary.getUIColor()))
+                .allowsHitTesting(false)
+        }
+        .padding(.leading, 16)
+        .padding(.trailing, (RoutePlannerStopActionsView.height - Self.switchHeight) / 2)
+        .frame(maxWidth: .infinity, minHeight: RoutePlannerStopActionsView.height)
+        .accessibilityElement(children: .combine)
+        .background(Color(.tertiarySystemFill), in: .capsule)
+        .contentShape(.capsule)
+        .onTapGesture { if isEnabled { action() } }
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
         .animation(.toggle, value: isEnabled)

@@ -71,10 +71,15 @@ data class RoutePlannerUiState(
             stops.first().location == stops.last().location
 
     /**
-     * A round trip's button undoes it, otherwise it closes the route back to its start.
+     * A round trip's button undoes it, otherwise it closes the route back to its start, which needs a stop to visit
+     * besides the start.
      */
     val isRoundTripEnabled: Boolean
-        get() = !isRoundTripWizard && (isRoundTrip || !isMaxStopsReached && stops.firstOrNull()?.location != null)
+        get() = !isRoundTripWizard &&
+            (isRoundTrip || !isMaxStopsReached && stops.firstOrNull()?.location != null && filledStopCount > 1)
+
+    private val filledStopCount: Int
+        get() = stops.count { it.location != null }
 
     val isMaxStopsReached: Boolean
         get() = stops.size >= RoutePlanConstants.MAX_WAYPOINT_COUNT

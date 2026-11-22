@@ -83,7 +83,6 @@
     <string name="route_planner_my_location">My location</string>
     <string name="route_planner_waypoint_empty">Choose a place</string>
     <string name="route_planner_round_trip">Round trip</string>
-    <string name="route_planner_round_trip_undo">Undo round trip</string>
     <string name="round_trip_wizard_title">Round-trip Wizard</string>
     <string name="round_trip_wizard_distance_title">Route length</string>
     <string name="round_trip_wizard_distance_value">%d km</string>

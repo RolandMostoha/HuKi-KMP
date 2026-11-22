@@ -83,7 +83,6 @@
     <string name="route_planner_my_location">Saját pozíció</string>
     <string name="route_planner_waypoint_empty">Válassz helyet</string>
     <string name="route_planner_round_trip">Körtúra</string>
-    <string name="route_planner_round_trip_undo">Körtúra felbontása</string>
     <string name="round_trip_wizard_title">Körtúra Varázsló</string>
     <string name="round_trip_wizard_distance_title">Túra hossza</string>
     <string name="round_trip_wizard_distance_value">%d km</string>
