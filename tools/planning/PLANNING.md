@@ -46,14 +46,15 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### General / Design / tech tasks
 
-| Status | Feature                                                                                                                                                                                                                                      |
-|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                                                                                                                                                    |
-| `[ ]`  | App store preview video (optional)                                                                                                                                                                                                           |
-| `[ ]`  | App store header picture/video (optional)                                                                                                                                                                                                    |
-| `[ ]`  | iPhone duo / proper iPad support                                                                                                                                                                                                             |
-| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then)                                                                                                                               |
-| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                                                                                                                                              |
+| Status | Feature                                                                                                        |
+|--------|----------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | SwiftUi previews don't work atm, because of Mapbox startup init breaks it                                      |
+| `[ ]`  | iOS: Swipe gesture back handler to                                                                             |
+| `[ ]`  | App store preview video (optional)                                                                             |
+| `[ ]`  | App store header picture/video (optional)                                                                      |
+| `[ ]`  | iPhone duo / proper iPad support                                                                               |
+| `[ ]`  | Distribution cert expires **2027-08-20** → re-export `.p12` and update the secret (or migrate to `match` then) |
+| `[?]`  | Android remove shadows from UI elements -> Material recommends separate by colors, not shadows.                |
 
 ### Bugs
 
@@ -199,6 +200,8 @@ Show gpx comments in the info window ![img_15.png](img_15.png)
 | `[x]`  | RoutePlanner | Its really hard to properly drag the sheet, it also has a sudden flashy jump. /Users/mostoha.roland/Desktop/Screen_recording_20261120_071844.mp4                                                                                                                                                         |
 | `[x]`  | RoutePlanner | Route planner list row drag and drop touch feedback weird boxy.                                                                                                                                                                                                                                          |
 | `[x]`  | RoutePlanner | Add "Round-trip Wizard" to menu. It brings up a similar like RoutePlanner sheet with one destination, and a distance slider. Check HuKi-Android for the BE implementation.  ![img_19.png](img_19.png)     ![img_20.png](img_20.png) ![img_21.png](img_21.png)                                            |
+| `[R]`  | RoutePlanner | Sheets are shaking                                                                                                                                                                                                                                                                                       |
+| `[R]`  | RoutePlanner | round trip button ellipsized in HU lang                                                                                                                                                                                                                                                                  |
 | `[ ]`  | RoutePlanner | For both route planner and round trip wizard. In minimized state add an "eye" fab above-right the sheet, which does the same as GPX eye icon, temporarily hides the route so we can see behind the route and check hiking routes while planning.                                                         |
 | `[ ]`  | RoutePlanner | When the roundtrip brings back you in the same route, lets mark the "turning back" point somehow                                                                                                                                                                                                         |
 | `[ ]`  | RoutePlanner | Landscape mode: the expanded sheet is taller than the screen, its header slides under the status bar, the stats squash and Save Route is cut off, no map is left visible. Needs a landscape layout (e.g. side panel) on both platforms                                                                   |

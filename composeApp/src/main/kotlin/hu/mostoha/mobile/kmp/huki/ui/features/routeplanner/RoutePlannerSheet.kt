@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import hu.mostoha.mobile.kmp.huki.theme.Dimens
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlin.math.roundToInt
@@ -111,6 +113,7 @@ fun RoutePlannerSheet(
             }
         }
         val sheetTop = remember { SheetTop() }
+        LaunchedEffect(sheetTop) { sheetTop.releaseIdleHolds() }
         val containerHeightPx = with(density) { maxHeight.toPx() }
         Box(
             modifier = Modifier.layout { measurable, constraints ->
@@ -200,14 +203,19 @@ private fun Modifier.sheetContentLayout(
  */
 private class SheetTop {
     var px by mutableFloatStateOf(0f)
-    private var heldPx: Float? = null
+
+    // State, so releasing it remeasures the content that reads it
+    private var heldPx by mutableStateOf<Float?>(null)
     private var lastContentHeight = 0
+    private var stillFrames = 0
+    private var passCount = 0
 
     /**
      * Keeps the top where a drag or its settle left it, until the content following it catches up.
      */
     fun holdAt(top: Float) {
         heldPx = top
+        stillFrames = 0
     }
 
     /**
@@ -215,18 +223,44 @@ private class SheetTop {
      * and following it right away would move the sheet back, so the top holds while the content catches up.
      */
     fun followContent(contentTop: Float, contentHeight: Int): Float {
+        passCount++
         val held = heldPx
-        val isCatchingUp = held != null &&
-            (
-                contentTop > held &&
-                    contentHeight > lastContentHeight ||
-                    contentTop < held &&
-                    contentHeight < lastContentHeight
-                )
+        val previousHeight = lastContentHeight
         lastContentHeight = contentHeight
-        if (isCatchingUp) return held
+        if (held == null) return contentTop
+        val isResizingTowardsTop = if (contentTop > held) {
+            contentHeight > previousHeight
+        } else {
+            contentTop < held && contentHeight < previousHeight
+        }
+        // The resize can skip a frame or two, which must not count as having caught up
+        stillFrames = if (contentHeight == previousHeight) stillFrames + 1 else 0
+        val isPaused = contentTop != held && stillFrames in 1..MAX_STILL_FRAMES
+        if (isResizingTowardsTop || isPaused) return held
         heldPx = null
         return contentTop
+    }
+
+    /**
+     * A hold ends on a later layout pass, which a content that stopped changing never brings, so a hold without passes
+     * for a couple of frames is released here.
+     */
+    suspend fun releaseIdleHolds() {
+        snapshotFlow { heldPx != null }.collectLatest { isHolding ->
+            while (isHolding) {
+                val passesBefore = passCount
+                repeat(IDLE_RELEASE_FRAMES) { withFrameNanos { } }
+                if (passCount == passesBefore) {
+                    heldPx = null
+                    return@collectLatest
+                }
+            }
+        }
+    }
+
+    private companion object {
+        const val MAX_STILL_FRAMES = 3
+        const val IDLE_RELEASE_FRAMES = 2
     }
 }
 
