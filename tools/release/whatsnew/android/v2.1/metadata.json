@@ -1,13 +1,13 @@
 {
-  "releaseDate": "2026-11-21",
+  "releaseDate": "2026-11-22",
   "message": {
     "title": {
-      "en-US": "WELCOME TO HuKi 2.0",
-      "hu-HU": "ÜDV A HuKi 2.0-BAN"
+      "en-US": "HuKi 2.1 - Based on your feedback",
+      "hu-HU": "HuKi 2.1 - A visszajelzéseitek alapján"
     },
     "body": {
-      "en-US": "HuKi 2.0 is a new chapter in the life of the app. It has been completely rewritten, with a new map, a more modern look and many new features.",
-      "hu-HU": "A HuKi 2.0 egy új fejezet az alkalmazás életében. Az app teljesen újra lett írva, megújult térképpel, modernebb megjelenéssel és számos új funkcióval készült."
+      "en-US": "Based on your feedback, in HuKi 2.1 I wanted to bring back the most important things you missed from the old version.",
+      "hu-HU": "A visszajelzéseitekre alapozva a HuKi 2.1-ben szerettem volna visszahozni a legfontosabb dolgokat, amiket a régi verzióból hiányoltatok."
     },
     "footer": {
       "en-US": "Happy exploring and I wish you lots of great hikes!",
