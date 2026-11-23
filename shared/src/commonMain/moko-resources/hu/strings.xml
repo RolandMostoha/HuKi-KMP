@@ -226,7 +226,7 @@
     <string name="menu_a11y_open_tuhu">turistautak.hu weboldal megnyitása</string>
     <string name="menu_a11y_open_waymarked_trails">Waymarked Trails weboldal megnyitása</string>
     <string name="menu_item_support">HuKi támogatása</string>
-    <string name="menu_item_support_description">Támogatásod hozzájárul a HuKi fejlesztéséhez és fenntartásához.</string>
+    <string name="menu_item_support_description">Segíti a HuKi fejlesztését és fenntartását</string>
     <string name="menu_item_support_button">Támogatom</string>
     <string name="menu_a11y_open_support">Támogatás megnyitása</string>
     <string name="menu_supporter_title">Köszönöm a támogatást!</string>

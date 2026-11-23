@@ -75,13 +75,12 @@ extension MenuView {
         MenuSupportCardView(
             title: strings.get(id: SharedRes.strings().menu_item_support),
             message: strings.get(id: SharedRes.strings().menu_item_support_description),
-            buttonTitle: strings.get(id: SharedRes.strings().menu_item_support_button),
             accessibilityLabel: strings.get(id: SharedRes.strings().menu_a11y_open_support),
             testTag: TestTags.shared.MENU_ROW_SUPPORT,
             action: { viewModel.onEvent(event: MenuUiEventsSupportClicked.shared) }
         )
         .padding(.horizontal, 16)
-        .padding(.top, 16)
+        .padding(.bottom, 16)
     }
 
     func supporterSection(animal: SupportAnimal) -> some View {

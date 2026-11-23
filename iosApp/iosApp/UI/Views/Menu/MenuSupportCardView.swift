@@ -4,43 +4,46 @@ import SwiftUI
 struct MenuSupportCardView: View {
     let title: String
     let message: String
-    let buttonTitle: String
     let accessibilityLabel: String
     let testTag: String
     let action: () -> Void
 
     private let cardColor = SwiftUI.Color(.systemBackground)
+    private let shape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            SupportAnimalBadgesView(ringColor: cardColor, size: 36)
-            Text(title)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.primary)
-                .padding(.top, 14)
-            Text(message)
-                .font(.subheadline)
-                .lineSpacing(2)
-                .foregroundStyle(.secondary)
+        Button(action: action) {
+            HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Pulls the invisible card-colored ring out so the circles line up with the text
+                    SupportAnimalBadgesView(ringColor: cardColor, size: 32)
+                        .padding(.leading, -3)
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .padding(.top, 8)
+                    Text(message)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 2)
+                }
+                .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 4)
-            supportButton
-                .padding(.top, 16)
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(SwiftUI.Color(SharedRes.colors().supportRed.getUIColor()))
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(cardColor, in: shape)
+            .contentShape(shape)
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(cardColor, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-    }
-
-    private var supportButton: some View {
-        BaseButton(
-            icon: .system("heart.fill"),
-            title: buttonTitle,
-            foregroundColor: .white,
-            backgroundColor: SwiftUI.Color(SharedRes.colors().supportRed.getUIColor()),
-            action: action
-        )
+        .buttonStyle(PressFeedbackButtonStyle())
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint(message)
+        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier(testTag)
     }
 }
@@ -48,8 +51,7 @@ struct MenuSupportCardView: View {
 #Preview {
     MenuSupportCardView(
         title: "HuKi támogatása",
-        message: "Támogatásod hozzájárul a HuKi fenntartásához és fejlesztéséhez.",
-        buttonTitle: "Támogatom",
+        message: "Segíti a HuKi fejlesztését és fenntartását.",
         accessibilityLabel: "Támogatás megnyitása",
         testTag: "",
         action: {}

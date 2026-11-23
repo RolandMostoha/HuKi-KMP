@@ -37,12 +37,11 @@ struct MenuView: View {
                     Spacer().frame(height: 10)
                     if let supporterAnimal = uiState.supporterAnimal {
                         supporterSection(animal: supporterAnimal)
+                    } else {
+                        supportSection
                     }
                     mainFeaturesSection
                     guidesSection
-                    if uiState.supporterAnimal == nil {
-                        supportSection
-                    }
                     contactSection
                     legalSection
                     supportersSection

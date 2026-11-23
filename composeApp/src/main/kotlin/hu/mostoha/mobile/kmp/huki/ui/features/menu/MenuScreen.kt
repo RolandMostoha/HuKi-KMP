@@ -6,10 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -187,10 +185,19 @@ private fun MenuContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MenuHero(versionName = uiState.versionName)
-            Spacer(modifier = Modifier.height(Dimens.Medium))
-            uiState.supporterAnimal?.let { animal ->
+            val supporterAnimal = uiState.supporterAnimal
+            if (supporterAnimal != null) {
                 MenuSupporterCard(
-                    animal = animal,
+                    animal = supporterAnimal,
+                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
+                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, bottom = Dimens.Large),
+                )
+            } else {
+                MenuSupportCard(
+                    title = mokoString(SharedRes.strings.menu_item_support),
+                    message = mokoString(SharedRes.strings.menu_item_support_description),
+                    contentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
+                    testTag = TestTags.MENU_ROW_SUPPORT,
                     onClick = { onEvent(MenuUiEvents.SupportClicked) },
                     modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, bottom = Dimens.Large),
                 )
@@ -333,17 +340,6 @@ private fun MenuContent(
                     )
                 }
             }
-            if (uiState.supporterAnimal == null) {
-                MenuSupportCard(
-                    title = mokoString(SharedRes.strings.menu_item_support),
-                    message = mokoString(SharedRes.strings.menu_item_support_description),
-                    buttonText = mokoString(SharedRes.strings.menu_item_support_button),
-                    buttonContentDescription = mokoString(SharedRes.strings.menu_a11y_open_support),
-                    testTag = TestTags.MENU_ROW_SUPPORT,
-                    onClick = { onEvent(MenuUiEvents.SupportClicked) },
-                    modifier = Modifier.padding(start = Dimens.Large, end = Dimens.Large, top = Dimens.Large),
-                )
-            }
             MenuSectionHeader(text = mokoString(SharedRes.strings.menu_section_contact))
             MenuCard {
                 MenuRow(
@@ -457,7 +453,7 @@ private fun MenuHero(versionName: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = Dimens.Large),
+            .padding(bottom = Dimens.Large + Dimens.Small),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
@@ -477,7 +473,7 @@ private fun MenuHero(versionName: String) {
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = Dimens.Large),
+            modifier = Modifier.padding(top = Dimens.Medium),
         )
         Text(
             text = mokoString(SharedRes.strings.menu_app_description),
