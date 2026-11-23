@@ -6,7 +6,6 @@
 |--------|-----------------------------|
 | `[ ]`  | Not started                 |
 | `[R]`  | Required for Next Release   |
-| `[G]`  | Android 2.0 Go-Live         |
 | `[~]`  | In progress                 |
 | `[x]`  | Done                        |
 | `[-]`  | Cancelled / deprioritized   |
@@ -29,19 +28,6 @@
 11. Landscapes
 12. Place Category search (peaks, rivers, caves etc.)
 
-## Release plan
-
-### Android Go-live
-
-Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly covered in HuKi-KMP:
-
-- Extra GPX features (e.g. altitude coloring)
-- Font/map sizing → this is one of the most used features in legacy
-- Support / Billing
-- Full-offline mode - to have an incentive to switch
-- Place Category → LIQ? Might be dropped entirely, OSM-Overpass data is not too useful because of duplications and
-  outdated data
-
 ## Backlog
 
 ### General / Design / tech tasks
@@ -60,20 +46,18 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Bug                                                                                                                                                                                                                        |
 |--------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Altitude   | iOS: Altitude is barely readable in dark mode, also scale bar                                                                                                                                                              |
 | `[ ]`  | MyLocation | There is no hard timeout for a location fix. If My Location button is clicked and location fix doesnt come, it loads inifinitely. After a fixed timeout, we should show an alert "Couldn't find location, try again later" |
 | `[ ]`  | Map        | Bug: iOS. With the Standard (City) base layer, closing the Layers sheet flashes the map empty for a few frames right after the dismiss animation, then it redraws. Satellite/Outdoors don't flash.                         |
 | `[ ]`  | GPX        | Bug: Travel time. `naismith()` downhill corrections never apply: `atan(slope)` is in radians but compared to -5 / -12 degrees, so descents are timed like flat ground.                                                     |
 | `[?]`  | Settings   | Bug: (Could repro only once) Android and iOS?. 1. For waypoints the infow window is not shown by default. 2. Roundtrip GPX file shows 0m 0min for the ROUNTRIP POI.                                                        |
-| `[x]`  | GPX        | Bug: Maps navigation crashed on waypoint-only GPX files (no START / END waypoint), and their "Navigate to end" button was missing.                                                                                         |
 
 ### Design
 
-| Status | Scope          | Bug                                                                                              |
-|--------|----------------|--------------------------------------------------------------------------------------------------|
-| `[ ]`  | Landscapes&OKT | Slow down the section / landscape animations, moving from section to section happens too quickly |
-| `[ ]`  | GPX            | Design: Use pills for distance and travel time ![img_11.png](img_11.png)                         |
-| `[ ]`  | Android-Design | Theming, coloring fixes, i like ios colors more ![img_8.png](img_8.png). ![img_9.png](img_9.png) |
+| Status | Scope          | Bug                                                                                                                                                                                                        |
+|--------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Landscapes&OKT | Slow down the section / landscape animations, moving from section to section happens too quickly                                                                                                           |
+| `[ ]`  | GPX            | Design: Use pills for distance and travel time ![gpx_distance_time_pills.png](images/gpx_distance_time_pills.png)                                                                                          |
+| `[ ]`  | Android-Design | Theming, coloring fixes, i like ios colors more ![android_theming_ios_colors_1.png](images/android_theming_ios_colors_1.png). ![android_theming_ios_colors_2.png](images/android_theming_ios_colors_2.png) |
 
 ### FEATURE: Map
 
@@ -85,9 +69,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope  | Task                                                                                                                                                                                                           |
 |--------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | Layers | Add back Tuhu baase layer from HuKi-Android                                                                                                                                                                    |
-| `[x]`  | Layers | Add Bike Routes overlay from Waymarked Trails cycling: https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png                                                                                                |
-| `[x]`  | Layers | Add MAPNIK to base layers. make the row horizontally scrollable since there are 5 elements.                                                                                                                    |
 | `[ ]`  | Layers | When GPX layer is clicked, raise a dialog / actions menu with: 3 most recent GPX files (+ show all) + 1 button "Import from file system". If there is no GPX in collection, raise the import flow right after. |
 
 ### FEATURE: Landscape orientation
@@ -106,7 +87,6 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 | Status | Scope      | Task                                                                                                                                                                                                                                                                  |
 |--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | MyLocation | Instead of the arrow compass indicator in My Location marker, use cone shaped one. ![img_5.png](img_5.png). Legacy vs today for reference:![img_6.png](img_6.png)                                                                                                     |
 | `[ ]`  | MyLocation | Location permission rationale screen: show a "why we need location" priming screen before the OS prompt (and a denied → open-Settings recovery path). Location permission has a 33% blind spot. 213 granted, 10 denied_always, and 110 users (33%) never fire either. |
 
 ### FEATURE: Search
@@ -132,18 +112,16 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: GPX
 
-| Status | Scope      | Task                                                                                                                                                    |
-|--------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPX        | Display waypoint comments in a window                                                                                                                   |
-| `[x]`  | GPXDetails | Add a button to hide - show route (Útvonal elrejtése), similarly to STARTED GPX ![img.png](img.png). Between Start route and Reverse direction buttons. |
-| `[x]`  | GPX        | Arrow icons are rare in the route and barely visible. Brainstorm how can we improve it. Example Természetjáró ![img_1.png](img_1.png)                   |
-| `[?]`  | GPX        | Also: Auto-detect direction next to manual setup                                                                                                        |
+| Status | Scope | Task                                                                                                                       |
+|--------|-------|----------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | GPX   | Display waypoint comments in a window ![gpx_waypoint_comment_info_window.png](images/gpx_waypoint_comment_info_window.png) |
+| `[?]`  | GPX   | Also: Auto-detect direction next to manual setup                                                                           |
 
 ### FEATURE: GPX Collection
 
 | Status | Scope         | Task                                                                                                                                                                                                                                                                                                                                                                           |
 |--------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | GPXCollection | Reduce the landsacpes text size, like "Börzsöny, Dunakanyar" -> "Börzsöny" ![img_22.png](img_22.png)                                                                                                                                                                                                                                                                           |
+| `[ ]`  | GPXCollection | Reduce the landsacpes text size, like "Börzsöny, Dunakanyar" -> "Börzsöny" ![gpx_collection_landscape_text.png](images/gpx_collection_landscape_text.png)                                                                                                                                                                                                                      |
 | `[ ]`  | GPXCollection | Implement rename file                                                                                                                                                                                                                                                                                                                                                          |
 | `[ ]`  | GPXCollection | Searchbar, free search text by gpx name                                                                                                                                                                                                                                                                                                                                        |
 | `[ ]`  | GPXCollection | "Mark Completed" GPX files. Updated metadata schema.                                                                                                                                                                                                                                                                                                                           |
@@ -165,43 +143,9 @@ Android 2.0 Go-Live: will only happen if legacy HuKi's feature set is mostly cov
 
 ### FEATURE: Route Planner
 
-lets disjoin new waypoint and round trip actions to dedicated buttons below the WPs ![img_7.png](img_7.png)
-
-if user clicks on new waypoint, instead of immediately raising the search sheet, lets add an "empty waypoint". ![img_12.png](img_12.png)
-
-The empty waypoint can be also re-dragged, moved and has 2 actions: select on map and select from search.
-
-When select from search -> original sheet behavior
-When select on map -> minimize the RP sheet, and place the POI on next long click.
-
-Lets implement the waypoint edit option. when the user clicks on the waypoint with a single click, it gets highlighted as the empty WP.
-
-3 actions reveal: ![img_13.png](img_13.png). "Move" "Search" "Rename"
-
-1. Move - sheet is minimized. we show a hint similar like select on map hint, which explains that it can be moved with long tap drag (anytime). Also implement that any WP can be drag and dropped, not just the selected.
-2. Search - opens the search sheet and a selection overrides the WP
-3. Rename - ![img_14.png](img_14.png). Use our LG styling. WP name can be renamed (useful for long geocoded names). also GPX comment can be added.
-
-Show gpx comments in the info window ![img_15.png](img_15.png)
-
 | Status | Scope        | Task                                                                                                                                                                                                                                                                                                     |
 |--------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[x]`  | RoutePlanner | Header: settings button left, centered title with "Powered by GraphHopper" below it, close button right. Compact sheet on Android                                                                                                                                                                        |
-| `[x]`  | RoutePlanner | README: "The Routing API calculates hiking routes between up to 10 stops," - remove up to 10 stops part                                                                                                                                                                                                  |
-| `[x]`  | RoutePlanner | Make route plans max 15 WPs instead of 10                                                                                                                                                                                                                                                                |
-| `[x]`  | RoutePlanner | Contextual hints above the planner sheet: "Klikkelj hosszan a térképen" while picking a stop on the map, "Drag a stop to move it" while moving one. Each shows while its mode is on and goes away when the mode ends or is dismissed. Reuses the Quick guide long-tap animation. ![img_3.png](img_3.png) |
-| `[x]`  | RoutePlanner | lets disjoin new waypoint and round trip actions to dedicated buttons below the WPs ![img_7.png](img_7.png)                                                                                                                                                                                              |
-| `[x]`  | RoutePlanner | Add rename and comment possibility to route planner.                                                                                                                                                                                                                                                     |
-| `[x]`  | RoutePlanner | Use a matching grey color for edit name sheet bg. Make the edit text hint a bit lighter text color so it indicates it just a hint not a filled input. ![img_16.png](img_16.png)                                                                                                                          |
-| `[x]`  | RoutePlanner | Android: add some content padding so the hint doesnt cover the WPs on the bottom. Just add some hardcoded extra, avoid recalculations and unnecessary draggings pullings. ![img_18.png](img_18.png)                                                                                                      |
-| `[x]`  | RoutePlanner | Android: one map camera move per action — no double pulls on Pick on map, long-press add, remove stop (also minimized + selected)                                                                                                                                                                        |
-| `[x]`  | RoutePlanner | Android: larger touch area (44dp) for the route plan markers, so long-press drag is easier, marker size unchanged                                                                                                                                                                                        |
-| `[x]`  | RoutePlanner | iOS: hint padding for the map camera (first try was reverted: Select stop → Move zoomed the camera far out)                                                                                                                                                                                              |
-| `[x]`  | RoutePlanner | Its really hard to properly drag the sheet, it also has a sudden flashy jump. /Users/mostoha.roland/Desktop/Screen_recording_20261120_071844.mp4                                                                                                                                                         |
-| `[x]`  | RoutePlanner | Route planner list row drag and drop touch feedback weird boxy.                                                                                                                                                                                                                                          |
-| `[x]`  | RoutePlanner | Add "Round-trip Wizard" to menu. It brings up a similar like RoutePlanner sheet with one destination, and a distance slider. Check HuKi-Android for the BE implementation.  ![img_19.png](img_19.png)     ![img_20.png](img_20.png) ![img_21.png](img_21.png)                                            |
-| `[R]`  | RoutePlanner | Sheets are shaking                                                                                                                                                                                                                                                                                       |
-| `[R]`  | RoutePlanner | round trip button ellipsized in HU lang                                                                                                                                                                                                                                                                  |
+| `[R]`  | RoutePlanner | Route Planner Sheet is still shaking on manual swip                                                                                                                                                                                                                                                      |
 | `[ ]`  | RoutePlanner | For both route planner and round trip wizard. In minimized state add an "eye" fab above-right the sheet, which does the same as GPX eye icon, temporarily hides the route so we can see behind the route and check hiking routes while planning.                                                         |
 | `[ ]`  | RoutePlanner | When the roundtrip brings back you in the same route, lets mark the "turning back" point somehow                                                                                                                                                                                                         |
 | `[ ]`  | RoutePlanner | Landscape mode: the expanded sheet is taller than the screen, its header slides under the status bar, the stats squash and Save Route is cut off, no map is left visible. Needs a landscape layout (e.g. side panel) on both platforms                                                                   |
@@ -248,9 +192,9 @@ Show gpx comments in the info window ![img_15.png](img_15.png)
 - Base concept: subscriptions and one time payments. Categorized by wild animals (e.g. Board=1EUR/month, Owl=1EUR).
 - The benefit of supporting is just visual: showing the supporter animal in various places (e.g. WhatsNew)
 
-| Status | Scope   | Task                                                                                                                                                                                                                                                                                                                                                                                                   |
-|--------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `[ ]`  | Support | If the user is supporter, implement an easter egg. At random times (make it rare), show the chosen animal as a POI in the map. It should have a reveal animation, with a drop shadow. Sg like: ![img_17.png](img_17.png). On click it shows a thanks info window and dismisses shortly after.                                                                                                          |
+| Status | Scope   | Task                                                                                                                                                                                                                                                                                                                                       |
+|--------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `[ ]`  | Support | If the user is supporter, implement an easter egg. At random times (make it rare), show the chosen animal as a POI in the map. It should have a reveal animation, with a drop shadow. Sg like: ![support_easter_egg_animal.png](images/support_easter_egg_animal.png). On click it shows a thanks info window and dismisses shortly after. |
 
 ### FEATURE: Analytics
 
@@ -266,20 +210,24 @@ Lets plan the support strategy for Android (google-play-billing) - iOS().
 
 ## Ideas / Experimental features
 
-### AI feature / AppFunctions
+### AIRoutePlanner
 
 Users describe what they want in the hike, and ChatBot can process the stops and creates a route plan
 
-![img_4.png](img_4.png)
+![ai_route_planner_chatgpt.png](images/ai_route_planner_chatgpt.png)
 
 In this example, HuKI can process the stops suggested by ChatGPT and creates a route plan.
+
+Decision: manual prompt + readable `huki.hu/route` link first (Phase 1A PoC → 1B), native AI integrations (AppFunctions, App Intents, MCP) postponed.
+
+[AI_ROUTE_PLANNER.md](AI_ROUTE_PLANNER.md)
 
 ### Hosting our own tile server for hiking layer
 
 - Actual tile server is "https://a.tile.openstreetmap.hu/tt/{z}/{x}/{y}.png"
 - The main idea is to host our own tile server for hiking layer and switch from actual
 - Hiking layer can be downloaded from: https://data2.openstreetmap.hu/index.php
-- TuraReteg.sqlitedb, ttszin.zip, tt.zip etc. ![img_2.png](img_2.png)
+- TuraReteg.sqlitedb, ttszin.zip, tt.zip etc. ![hiking_layer_downloads.png](images/hiking_layer_downloads.png)
 - Create a tile server based on the tile PNGs
 - Set periodic sync for the tiles e.g. 2 weeks
 - Check validity of the idea - can this improve the app? better response times? better caching? more reliable? cost? cloud setup? google vs AWS?
@@ -368,7 +316,6 @@ email, chat). A zipped bundle is plain data, so an Android export imports on iOS
 | `[ ]`  | GPX Import | `GpxCollectionArchiver` unzip to temp, then loop each `.gpx` through `GpxStorage.saveToFileSystem`      |
 | `[ ]`  | GPX Import | iOS: declare imported/exported UTI + `CFBundleDocumentTypes`, handle inbound via `.onOpenURL`           |
 | `[ ]`  | GPX Import | Android: `<intent-filter>` ACTION_VIEW/ACTION_SEND for `.hukigpx`/zip, read URI in `onNewIntent`        |
-| `[x]`  | GPX Import | Android: open plain `.gpx` files from other apps (email attachments, file managers), as in HuKi-Android |
 | `[ ]`  | GPX Import | Extend existing file pickers to also accept `.hukigpx`/`.zip`                                           |
 | `[ ]`  | GPX Import | Manifest-driven import preview/summary ("X new, Y duplicates")                                          |
 | `[ ]`  | GPX Import | iOS unzip needs a lib (ZIPFoundation via SPM or libarchive); Android uses `java.util.zip`               |
