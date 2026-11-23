@@ -1,0 +1,5 @@
+- TuHu and Mapnik available as base maps
+- Bike routes as an overlay
+- GPX route comments are shown
+- Completely redesigned route planner
+- Round-trip wizard
